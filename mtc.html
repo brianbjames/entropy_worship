@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Theory Calculator</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        select { margin: 10px 0; }
+        .results { margin-top: 20px; }
+        .table { width: 100%; border-collapse: collapse; }
+        .table th, .table td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+        .table th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+
+<select id="noteroot" onchange="updateResults()">
+    <option value="C">C</option>
+    <option value="C#">C#</option>
+    <option value="D">D</option>
+    <option value="D#">D#</option>
+    <option value="E">E</option>
+    <option value="F">F</option>
+    <option value="F#">F#</option>
+    <option value="G">G</option>
+    <option value="G#">G#</option>
+    <option value="A">A</option>
+    <option value="A#">A#</option>
+    <option value="B">B</option>
+</select>
+
+<select id="octave" onchange="updateResults()">
+    <option value="-1">-1</option>
+    <option value="0">0</option>
+    <option value="1">1</option>
+    <option value="2">2</option>
+    <option value="3">3</option>
+    <option value="4">4</option>
+    <option value="5">5</option>
+    <option value="6">6</option>
+    <option value="7">7</option>
+    <option value="8">8</option>
+</select>
+
+<select id="mode" onchange="updateResults()">
+    <option value="Ionian">Ionian (Major)</option>
+    <option value="Dorian">Dorian</option>
+    <option value="Phrygian">Phrygian</option>
+    <option value="Lydian">Lydian</option>
+    <option value="Mixolydian">Mixolydian</option>
+    <option value="Aeolian">Aeolian (Natural Minor)</option>
+    <option value="Locrian">Locrian</option>
+</select>
+
+<div class="results" id="results"></div>
+
+<script>
+    const notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+    const modes = {
+        "Ionian": [0, 2, 4, 5, 7, 9, 11],
+        "Dorian": [0, 2, 3, 5, 7, 9, 10],
+        "Phrygian": [0, 1, 3, 5, 7, 8, 10],
+        "Lydian": [0, 2, 4, 6, 7, 9, 11],
+        "Mixolydian": [0, 2, 4, 5, 7, 9, 10],
+        "Aeolian": [0, 2, 3, 5, 7, 8, 10],
+        "Locrian": [0, 1, 3, 5, 6, 8, 10]
+    };
+
+    function updateResults() {
+        const noteroot = document.getElementById("noteroot").value;
+        const octave = parseInt(document.getElementById("octave").value);
+        const mode = document.getElementById("mode").value;
+
+        const noteRootIndex = notes.indexOf(noteroot);
+        const modeIntervals = modes[mode];
+
+        // Calculate scale
+        const scale = modeIntervals.map(interval => notes[(noteRootIndex + interval) % notes.length]);
+
+        // Create table rows for diatonic chords and MIDI numbers
+        const diatonicChords = modeIntervals.map((_, i) => {
+            const chordRoot = scale[i];
+            const third = scale[(i + 2) % scale.length];
+            const fifth = scale[(i + 4) % scale.length];
+            const seventh = scale[(i + 6) % scale.length]; // Calculate the 7th
+
+            // Calculate MIDI numbers
+            const rootMidi = calculateMidiNumber(chordRoot, octave);
+            const thirdMidi = calculateMidiNumber(third, octave);
+            const fifthMidi = calculateMidiNumber(fifth, octave);
+            const seventhMidi = calculateMidiNumber(seventh, octave); // MIDI for 7th
+
+            return `<tr>
+                <td>${chordRoot}</td>
+                <td>${third}</td>
+                <td>${fifth}</td>
+                <td>${seventh}</td>
+                <td>MIDI: ${rootMidi}, ${thirdMidi}, ${fifthMidi}, ${seventhMidi}</td>
+            </tr>`;
+        }).join("");
+
+        // Display results in table format
+        document.getElementById("results").innerHTML = `
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Root</th>
+                        <th scope="col">Third</th>
+                        <th scope="col">Fifth</th>
+                        <th scope="col">Seventh</th>
+                        <th scope="col">MIDI Numbers</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${diatonicChords}
+                </tbody>
+            </table>
+        `;
+    }
+
+    function calculateMidiNumber(note, octave) {
+        const noteIndex = notes.indexOf(note);
+        return (octave + 1) * 12 + noteIndex; // MIDI number calculation
+    }
+
+    // Initial call to display results based on default selections
+    updateResults();
+</script>
+
+</body>
+</html>

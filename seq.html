@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>16-Step Sequencer with Oscillator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+    .sequencer-container {
+      margin: 20px;
+    }
+    .step {
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      margin: 5px;
+      background-color: #ccc;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+    .step.active {
+      background-color: #4caf50; /* Green when active (enabled) */
+    }
+    .step.triggered {
+      background-color: red; /* Red when triggered */
+    }
+    .slider-container {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      align-items: center;
+      margin-top: 20px; /* Adjust margin for space between steps and sliders */
+    }
+    .slider-container input[type="range"] {
+      width: 100px;
+      height: 15px;
+    }
+    .slider-container label {
+      text-align: center;
+      display: block;
+      width: 100px;
+    }
+    .control-container {
+      margin-top: 20px;
+    }
+    .sequencer-header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    .sequencer-header input,
+    .sequencer-header button {
+      margin: 0 10px;
+    }
+    select {
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>16-Step Sequencer</h1>
+
+<!-- Sequencer Header -->
+<div class="sequencer-header">
+  <label for="tempo">Tempo: </label>
+  <input type="number" id="tempo" value="120" min="30" max="300">
+  <button id="start-stop">Start</button>
+</div>
+
+<!-- Sequencer Steps -->
+<div class="sequencer-container" id="sequencer"></div>
+
+<!-- Step Control Panel (Now Positioned Below the Steps) -->
+<div class="slider-container">
+  <select id="waveform-selector">
+    <option value="sine">Sine</option>
+    <option value="triangle">Triangle</option>
+    <option value="square">Square</option>
+    <option value="sawtooth">Sawtooth</option>
+  </select>
+  <div>
+    <label for="pitch">Pitch</label>
+    <input type="range" id="pitch" min="100" max="1000" value="440" step="1">
+  </div>
+  <div>
+    <label for="attack">Attack</label>
+    <input type="range" id="attack" min="0" max="1" value="0.1" step="0.01">
+  </div>
+  <div>
+    <label for="decay">Decay</label>
+    <input type="range" id="decay" min="0" max="1" value="0.1" step="0.01">
+  </div>
+  <div>
+    <label for="sustain">Sustain</label>
+    <input type="range" id="sustain" min="0" max="1" value="0.5" step="0.01">
+  </div>
+  <div>
+    <label for="release">Release</label>
+    <input type="range" id="release" min="0" max="1" value="0.3" step="0.01">
+  </div>
+</div>
+
+<script>
+  const tempoInput = document.getElementById('tempo');
+  const startStopButton = document.getElementById('start-stop');
+  const sequencerContainer = document.getElementById('sequencer');
+  const waveformSelector = document.getElementById('waveform-selector');
+  const pitchSlider = document.getElementById('pitch');
+  const attackSlider = document.getElementById('attack');
+  const decaySlider = document.getElementById('decay');
+  const sustainSlider = document.getElementById('sustain');
+  const releaseSlider = document.getElementById('release');
+
+  let audioContext;
+  let intervalId;
+  let currentStep = 0;
+  let isPlaying = false;
+  let steps = Array(16).fill(false); // 16 steps, all off by default
+  let stepDuration = 60 / parseFloat(tempoInput.value) / 4; // Tempo-based duration
+
+  // Initialize stepSettings with random values for each step
+  let stepSettings = new Array(16).fill(null).map(() => ({
+    pitch: Math.floor(Math.random() * (1000 - 100 + 1)) + 100, // Random pitch between 100 and 1000
+    attack: Math.random() * 0.2,  // Random Attack value between 0 and 0.2
+    decay: Math.random() * 0.3,   // Random Decay value between 0 and 0.3
+    sustain: Math.random() * 0.8, // Random Sustain value between 0 and 0.8
+    release: Math.random() * 0.3, // Random Release value between 0 and 0.3
+    waveform: 'sine' // Default waveform is sine
+  }));
+
+  // Create AudioContext
+  function createAudioContext() {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)(); // Ensure AudioContext is created when the user interacts
+  }
+
+  // Start or stop the sequencer
+  function togglePlay() {
+    if (isPlaying) {
+      clearInterval(intervalId);
+      startStopButton.textContent = 'Start';
+    } else {
+      if (!audioContext) createAudioContext();  // Create oscillator only when starting
+      startStopButton.textContent = 'Stop';
+      currentStep = 0; // Reset to first step when starting
+      stepDuration = (60 / parseFloat(tempoInput.value)) / 4; // Update duration based on tempo
+      intervalId = setInterval(playStep, stepDuration * 1000); // Start playing
+    }
+    isPlaying = !isPlaying;
+  }
+
+  // Play the current step in the sequencer
+  function playStep() {
+    const currentTime = audioContext.currentTime;
+
+    // Get the current step settings
+    const { pitch, attack, decay, sustain, release, waveform } = stepSettings[currentStep];
+
+    // If step is active, trigger the sound
+    if (steps[currentStep]) {
+      triggerSound(currentTime, pitch, attack, decay, sustain, release, waveform);
+    }
+
+    // Light up the current step in red
+    highlightStep(currentStep);
+
+    // Move to the next step
+    currentStep = (currentStep + 1) % 16;
+
+    // Update UI (highlight active step)
+    updateUI();
+  }
+
+  // Trigger the oscillator sound with a simple envelope
+  function triggerSound(currentTime, pitch, attack, decay, sustain, release, waveform) {
+    const newOscillator = audioContext.createOscillator();
+    newOscillator.type = waveform;
+    newOscillator.frequency.setValueAtTime(pitch, currentTime);
+
+    const newGainNode = audioContext.createGain();
+    newGainNode.gain.setValueAtTime(0, currentTime);
+
+    newOscillator.connect(newGainNode);
+    newGainNode.connect(audioContext.destination);
+
+    newOscillator.start(currentTime);
+
+    newGainNode.gain.linearRampToValueAtTime(1, currentTime + attack);
+    newGainNode.gain.linearRampToValueAtTime(sustain, currentTime + attack + decay);
+    newGainNode.gain.setValueAtTime(sustain, currentTime + attack + decay);
+    newGainNode.gain.linearRampToValueAtTime(0, currentTime + attack + decay + release);
+
+    newOscillator.stop(currentTime + attack + decay + release);
+  }
+
+  // Highlight the current step in red
+  function highlightStep(stepIndex) {
+    const stepElement = document.querySelectorAll('.step')[stepIndex];
+    if (stepElement) {
+      stepElement.classList.add('triggered');
+      setTimeout(() => {
+        stepElement.classList.remove('triggered');
+      }, stepDuration * 1000); 
+    }
+  }
+
+  // Update the UI based on the current steps and values
+  function updateUI() {
+    const stepButtons = document.querySelectorAll('.step');
+    stepButtons.forEach((button, index) => {
+      button.classList.toggle('active', steps[index]);
+    });
+  }
+
+  // Create the sequencer UI
+  function createSequencerUI() {
+    sequencerContainer.innerHTML = '';
+    for (let i = 0; i < 16; i++) {
+      const stepButton = document.createElement('div');
+      stepButton.classList.add('step');
+      stepButton.addEventListener('click', () => toggleStep(i));
+      sequencerContainer.appendChild(stepButton);
+    }
+  }
+
+  // Toggle step enable/disable
+  function toggleStep(stepIndex) {
+    steps[stepIndex] = !steps[stepIndex]; // Toggle the step state (on/off)
+    updateUI();
+    updateSliders(stepIndex); // Update sliders to match the selected step
+  }
+
+  // Initialize the UI
+  function init() {
+    createSequencerUI(); // Create step sequence buttons
+    startStopButton.addEventListener('click', togglePlay); // Start/Stop button listener
+
+    // Tempo change listener
+    tempoInput.addEventListener('input', () => {
+      stepDuration = 60 / parseFloat(tempoInput.value) / 4;
+    });
+
+    // Space bar listener to start/stop sequencer
+    document.addEventListener('keydown', (event) => {
+      if (event.key === ' ') {
+        togglePlay();
+      }
+    });
+
+    // Set default step settings
+    updateSliders(0); // Initialize with first step's settings
+  }
+
+  // Update sliders and waveform pulldown based on selected step
+  function updateSliders(stepIndex) {
+    const settings = stepSettings[stepIndex];
+    waveformSelector.value = settings.waveform;
+    pitchSlider.value = settings.pitch;
+    attackSlider.value = settings.attack;
+    decaySlider.value = settings.decay;
+    sustainSlider.value = settings.sustain;
+    releaseSlider.value = settings.release;
+
+    // Add event listeners to sliders and pulldown to update settings independently
+    waveformSelector.onchange = (event) => {
+      stepSettings[stepIndex].waveform = event.target.value;
+    };
+    pitchSlider.oninput = (event) => {
+      stepSettings[stepIndex].pitch = parseFloat(event.target.value);
+    };
+    attackSlider.oninput = (event) => {
+      stepSettings[stepIndex].attack = parseFloat(event.target.value);
+    };
+    decaySlider.oninput = (event) => {
+      stepSettings[stepIndex].decay = parseFloat(event.target.value);
+    };
+    sustainSlider.oninput = (event) => {
+      stepSettings[stepIndex].sustain = parseFloat(event.target.value);
+    };
+    releaseSlider.oninput = (event) => {
+      stepSettings[stepIndex].release = parseFloat(event.target.value);
+    };
+  }
+
+  init(); // Initialize everything on page load
+</script>
+
+</body>
+</html>
