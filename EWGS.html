@@ -25,16 +25,17 @@
 <meta property="og:image:alt" content="WARNING: Experimental Project"> <!-- Image description -->
 <meta property="article:tag" content="Entropy Worship. WARNING: Experimental Project">
 
-<link href="/styles.css" rel="stylesheet">
+<!-- Processing.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/processing.js/1.4.8/processing.min.js"></script>
+<!-- Bootstrap CSS -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://getbootstrap.com/assets/js/color-modes.js"></script>
+<!-- Augmented UI CSS -->
+<link rel="stylesheet" type="text/css" href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css">
+<!-- Sci UI CSS -->
+<link href="styles.css" rel="stylesheet">
         <style>
-        .heading {
-            color: rgba(120,200,255,0.8); 
-        }
-        body {
-            text-align: left;
-            margin: 0;
-            padding: 0;
-        }
+
         .sequencer-container {
             margin: 0px;
         width: 100%;                /* Set the width of the container */
@@ -50,17 +51,15 @@
             width: 20px;
             height: 20px;
             border-radius: 5%;
-            background-color: rgba(120,200,255,0.8); /* Default background color set to blue */
             cursor: pointer;
             position: relative;
-            padding: 3px;
-            margin: 0.25rem auto;
+            padding: 1px;
+            margin: 1px;
             font-size: 1.75rem;
-            border: 2px solid #000;
             transition: background-color 0.3s ease, box-shadow 0.1s ease;
         }
         .step.active {
-            background-color: green !important; /* Green when active */
+            background-color: rgb(51, 1, 1) !important; /* Green when active */
         }
         .step.triggered {
             background-color: yellow !important; /* Yellow when triggered */
@@ -80,56 +79,135 @@
     gap: 10px;  /* Adds some space between the button and the input */
 }
 
-#start-stop {
-    padding: 10px 20px;  /* Adjusts button size */
-}
-
 #tempo {
     padding: 5px 10px;  /* Adjusts input field size */
     width: 80px;  /* You can adjust the width of the input */
 }
+@font-face {
+    font-family: 'ThirdParty';
+    src: url('thirdpar.ttf') format('truetype'); /* Specify the path to the TTF file */
+    font-weight: normal; /* Adjust as necessary */
+    font-style: normal; /* Adjust as necessary */
+        }
+        @font-face {
+    font-family: 'Heiko';
+    src: url('heiko.ttf') format('truetype'); /* Specify the path to the TTF file */
+    font-weight: normal; /* Adjust as necessary */
+    font-style: normal; /* Adjust as necessary */
+        }
+        @font-face {
+    font-family: 'Tomorrow';
+    src: url('Tomorrow-Regular.ttf') format('truetype'); /* Specify the path to the TTF file */
+    font-weight: normal; /* Adjust as necessary */
+    font-style: normal; /* Adjust as necessary */
+        }
+
+        .heading {
+            color: #e80f0fcc; 
+            text-size-adjust: relative;
+
+        }
+        h1 {
+            text-align: left;
+            margin: 0;
+            padding: 0;
+            font-family: 'ThirdParty', sans-serif; /* Fallback to a generic font */
+        }
+        h2 {
+            text-align: left;
+            margin: 0;
+            padding: 0;
+            font-family: 'Heiko', sans-serif; /* Fallback to a generic font */
+        }
+        h3 {
+            text-align: left;
+            color: #e80f0fcc; 
+            margin: 0;
+            padding: 0;
+            font-family: 'ThirdParty', sans-serif; /* Fallback to a generic font */
+        }
+        h4 {
+            text-align: left;
+            margin: 0;
+            padding: 0;
+            font-family: 'Heiko', sans-serif; /* Fallback to a generic font */
+        }
+        h5 {
+            text-align: left;
+            margin: 0;
+            padding: 0;
+            font-size: 1.0rem;
+            font-family: 'Tomorrow', sans-serif; /* Fallback to a generic font */
+        }
+        body {
+          position: relative;
+          background-image: url('http://www.entropyworship.com/images/EW_Second_Law_Cover_W_Aerotek_Logo.png'); 
+          background-size: cover;
+          background-position: center;
+          color: white;
+          text-align: left;
+          margin: 0;
+          padding: 0;
+          font-family: 'Tomorrow', sans-serif; 
+          background-attachment: fixed; /* For desktop */
+        }
+        .transparent-bg {
+    background-color: transparent !important;
+}
+        /* Landscape prompt styles */
+        .landscape-prompt {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            display: none; /* Hidden by default */
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 1000; /* Ensures it sits above other elements */
+        }
 
     </style>
 
 </head>
 <body>
-    <div class="container"><!--Main container-->
-        <h1 class="heading">ENTROPY WORSHIP</h1>
-        <h1 class="panel info shown">Web Build 2.0.10.21.2024</h1>
-
-
+    <div class="container" style="width: 100%"><!--Main container-->
+        <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c"><!--Header panel-->
+            <div class="card-header border-danger">
+                <h1 class="heading display-6" style="font-size: 1.5rem;">ENTROPY WORSHIP</h1>
+                <h2 class="panel info shown" style="font-size: 1.5rem;">build 3.0.11.03.24</h1>
+            </div>
+        </div>
                 <div class="panel info shown"><!--EW909 panel-->
          <div class="header">
-        <h3 class="title">EW909</h3>
-
-
+            <h2 class="panel info shown" style="font-size: 1.5rem;">EW909</h1>
         </div>
-            <div class="body">
-                JavaScript 909 Clone Build 1.0<br><br>
-        <div class="controls-container">
+            <div class="body" style="color: white;">
+                JavaScript 909 Clone Build 1.1<br><br>
+        <div class="container" style="padding-bottom: 10px;">
             <!--<h1>EW909 Sequencer</h1>-->
-            
-		<button id="start-stop" class="toast toast-info">Start</button><input type="number" id="tempo" value="120" min="1" max="500" class="input" >
+		<button id="start-stop" class="btn btn-outline-light btn">Start</button> <input type="number" id="tempo" value="120" min="1" max="500" style="color: white;" class="input btn btn-outline-light" >
 		</div>
-
 		<!-- Sequencer -->
 		<!-- Sequencer Steps for Kick Drum -->
 		<div class="panel info shown">
 		<div class="sequencer-container" id="kick-sequencer"></div>
         <div class="slider-container">
-            <label for="kick-tuning" style="padding-left: 10px;">BD Tuning:</label>
+            <label for="kick-tuning" style="padding-left: 10px; color: white;">BD Tuning:</label>
             <input type="range" id="kick-tuning" min="0.5" max="2" step="0.01" value="1"/>
-            <span id="kick-tuning-value">1.00</span>
+            <!--<span id="kick-tuning-value">1.00</span>-->
         </div>
         </div>
-
 		<!-- Sequencer Steps for Snare Drum -->
 		<div class="panel info shown">
 		<div class="sequencer-container" id="snare-sequencer"></div>
 		<div class="slider-container">
-            <label for="snare-tuning" style="padding-left: 10px;">SN Tuning:</label>
+            <label for="snare-tuning" style="padding-left: 10px; color: white;">SN Tuning:</label>
             <input type="range" id="snare-tuning" min="0.5" max="2" step="0.01" value="1" />
-            <span id="snare-tuning-value">1.00</span>
+            <!--<span id="snare-tuning-value">1.00</span>-->
         </div>
         </div>
 
@@ -137,9 +215,9 @@
 		<div class="panel info shown">
 		<div class="sequencer-container" id="tom-l-sequencer"></div>
 		<div class="slider-container">
-            <label for="tom-l-tuning" style="padding-left: 10px;">LT Tuning:</label>
+            <label for="tom-l-tuning" style="padding-left: 10px; color: white;">LT Tuning:</label>
             <input type="range" id="tom-l-tuning" min="0.5" max="2" step="0.01" value="1" />
-            <span id="tom-l-tuning-value">1.00</span>
+            <!--<span id="tom-l-tuning-value">1.00</span>-->
         </div>
         </div>
 
@@ -147,9 +225,9 @@
 		<div class="panel info shown">
 		<div class="sequencer-container" id="tom-h-sequencer"></div>
 		<div class="slider-container">
-            <label for="tom-h-tuning" style="padding-left: 10px;">HT Tuning:</label>
+            <label for="tom-h-tuning" style="padding-left: 10px; color: white;">HT Tuning:</label>
             <input type="range" id="tom-h-tuning" min="0.5" max="2" step="0.01" value="1" />
-            <span id="tom-h-tuning-value">1.00</span>
+            <!--<span id="tom-h-tuning-value">1.00</span>-->
         </div>
         </div>
 
@@ -157,9 +235,9 @@
 		<div class="panel info shown">
 		<div class="sequencer-container" id="clap-sequencer"></div>
 		<div class="slider-container">
-            <label for="clap-tuning" style="padding-left: 10px;">CP Tuning:</label>
+            <label for="clap-tuning" style="padding-left: 10px; color: white;">CP Tuning:</label>
             <input type="range" id="clap-tuning" min="0.5" max="2" step="0.01" value="1" />
-            <span id="clap-tuning-value">1.00</span>
+            <!--<span id="clap-tuning-value">1.00</span>-->
         </div>
         </div>
 
@@ -167,9 +245,9 @@
 		<div class="panel info shown">
 		<div class="sequencer-container" id="hihat-open-sequencer"></div>
 		<div class="slider-container">
-            <label for="hihat-open-tuning" style="padding-left: 10px;">OH Tuning:</label>
+            <label for="hihat-open-tuning" style="padding-left: 10px; color: white;">OH Tuning:</label>
             <input type="range" id="hihat-open-tuning" min="0.5" max="2" step="0.01" value="1" />
-            <span id="hihat-open-tuning-value">1.00</span>
+            <!--<span id="hihat-open-tuning-value">1.00</span>-->
         </div>
         </div>
         
@@ -177,9 +255,9 @@
 		<div class="panel info shown">
 		<div class="sequencer-container" id="hihat-close-sequencer"></div>
         <div class="slider-container">
-            <label for="hihat-close-tuning" style="padding-left: 10px;">CH Tuning:</label>
+            <label for="hihat-close-tuning" style="padding-left: 10px; color: white;">CH Tuning:</label>
             <input type="range" id="hihat-close-tuning" min="0.5" max="2" step="0.01" value="1" />
-            <span id="hihat-close-tuning-value">1.00</span>
+            <!--<span id="hihat-close-tuning-value">1.00</span>-->
         </div>
         </div>
 
@@ -187,9 +265,9 @@
 		<div class="panel info shown">
 		<div class="sequencer-container" id="cymbal-sequencer"></div>
         <div class="slider-container">
-            <label for="cymbal-tuning" style="padding-left: 10px;">CB Tuning:</label>
+            <label for="cymbal-tuning" style="padding-left: 10px; color: white;">CY Tuning:</label>
             <input type="range" id="cymbal-tuning" min="0.5" max="2" step="0.01" value="1" />
-            <span id="cymbal-tuning-value">1.00</span>
+            <!--<span id="cymbal-tuning-value">1.00</span>-->
         </div>
         </div>
         
@@ -197,9 +275,9 @@
 		<div class="panel info shown">
 		<div class="sequencer-container" id="rim-sequencer"></div>
         <div class="slider-container">
-            <label for="rim-tuning" style="padding-left: 10px;">RM Tuning:</label>
+            <label for="rim-tuning" style="padding-left: 10px; color: white;">RM Tuning:</label>
             <input type="range" id="rim-tuning" min="0.5" max="2" step="0.01" value="1" />
-            <span id="rim-tuning-value">1.00</span>
+            <!--<span id="rim-tuning-value">1.00</span>-->
         </div>
         </div>
 
@@ -207,28 +285,14 @@
 		<div class="panel info shown">
 		<div class="sequencer-container" id="ride-sequencer"></div>
 		<div class="slider-container">
-            <label for="ride-tuning" style="padding-left: 10px;">RD Tuning:</label>
+            <label for="ride-tuning" style="padding-left: 10px; color: white;">RD Tuning:</label>
             <input type="range" id="ride-tuning" min="0.5" max="2" step="0.01" value="1" />
-            <span id="ride-tuning-value">1.00</span>
+            <!--<span id="ride-tuning-value">1.00</span>-->
         </div>
         </div>
-
         </div><!--body close-->
-        </div><!--EW909 panel close-->
-        
-        <div class="panel warning shown"><!--Bugs panel-->
-         <div class="header">
-        <h3 class="title">Known Issues</h3>
-        </div>
-            <div class="body">
-                - Steps not flashing red as the sequence progresses. Investigating fix.<br>
-                - Tempo slowing down as voices are adjusted. Fix identified.<br>
-                Report bugs and enhancements <a href="mailto:brian@entropyworship.com" target="_blank">here</a>.
-            </div>
-        </div>        
-
+        </div><!--EW909 panel close-->     
       </div><!--close of main container-->
-			
 <script>
     const tempoInput = document.getElementById('tempo');
     const startStopButton = document.getElementById('start-stop');
@@ -435,15 +499,15 @@
         ];
 
         containers.forEach((container, index) => {
-            container.innerHTML = ''; // Clear any previous steps
-            stepArrays[index].forEach((step, stepIndex) => {
-                const stepElement = document.createElement('div');
-                stepElement.classList.add('step');
-                if (step) stepElement.classList.add('active');
-                stepElement.addEventListener('click', () => toggleStep(stepIndex, stepArrays[index], stepElement));
-                container.appendChild(stepElement);
-            });
+        container.innerHTML = ''; // Clear any previous steps
+        stepArrays[index].forEach((step, stepIndex) => {
+            const stepElement = document.createElement('button'); // Change to 'button' for Bootstrap styling
+            stepElement.classList.add('btn', 'btn-danger', 'btn-lg', 'step'); // Add Bootstrap classes
+            if (step) stepElement.classList.add('active');
+            stepElement.addEventListener('click', () => toggleStep(stepIndex, stepArrays[index], stepElement));
+            container.appendChild(stepElement);
         });
+    });
     }
 
     // Update step duration based on tempo input
@@ -463,11 +527,9 @@
             clearInterval(intervalId);
         }
     });
-
     // Initial setup
     createAudioContext();
     renderSequencer();
-
     // Store the current tuning values (default is 1)
     let currentKickTuning = 1.0;
     let currentSnareTuning = 1.0;
@@ -479,62 +541,51 @@
     let currentCymbalTuning = 1.0;
     let currentRimTuning = 1.0;
     let currentRideTuning = 1.0;
-
     // Event listeners for all the tuning sliders
     document.getElementById('kick-tuning').addEventListener('input', (event) => {
         currentKickTuning = parseFloat(event.target.value);
         document.getElementById('kick-tuning-value').textContent = currentKickTuning.toFixed(2);
     });
-
     document.getElementById('snare-tuning').addEventListener('input', (event) => {
         currentSnareTuning = parseFloat(event.target.value);
         document.getElementById('snare-tuning-value').textContent = currentSnareTuning.toFixed(2);
     });
-
     document.getElementById('tom-l-tuning').addEventListener('input', (event) => {
         currentTomLTuning = parseFloat(event.target.value);
         document.getElementById('tom-l-tuning-value').textContent = currentTomLTuning.toFixed(2);
     });
-
     document.getElementById('tom-h-tuning').addEventListener('input', (event) => {
         currentTomHTuning = parseFloat(event.target.value);
         document.getElementById('tom-h-tuning-value').textContent = currentTomHTuning.toFixed(2);
     });
-
     document.getElementById('clap-tuning').addEventListener('input', (event) => {
         currentClapTuning = parseFloat(event.target.value);
         document.getElementById('clap-tuning-value').textContent = currentClapTuning.toFixed(2);
     });
-
     document.getElementById('hihat-open-tuning').addEventListener('input', (event) => {
         currentHihatOpenTuning = parseFloat(event.target.value);
         document.getElementById('hihat-open-tuning-value').textContent = currentHihatOpenTuning.toFixed(2);
     });
-
     document.getElementById('hihat-close-tuning').addEventListener('input', (event) => {
         currentHihatCloseTuning = parseFloat(event.target.value);
         document.getElementById('hihat-close-tuning-value').textContent = currentHihatCloseTuning.toFixed(2);
     });
-
     document.getElementById('cymbal-tuning').addEventListener('input', (event) => {
         currentCymbalTuning = parseFloat(event.target.value);
         document.getElementById('cymbal-tuning-value').textContent = currentCymbalTuning.toFixed(2);
     });
-
     document.getElementById('rim-tuning').addEventListener('input', (event) => {
         currentRimTuning = parseFloat(event.target.value);
         document.getElementById('rim-tuning-value').textContent = currentRimTuning.toFixed(2);
     });
-
     document.getElementById('ride-tuning').addEventListener('input', (event) => {
         currentRideTuning = parseFloat(event.target.value);
         document.getElementById('ride-tuning-value').textContent = currentRideTuning.toFixed(2);
     });
-
 </script>
-
-
-
-			
 </body>
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </html>
