@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENTROPY WORSHIP Calc</title>
+    <meta name="description" content="ENTROPY WORSHIP Calculator">
+    <meta name="keywords" content="Dark, Techno, Electronic, Industrial, Ambient, Noise, Avant-Garde, Experimental, Doom, Music, God, Deity, Worship, Death, Philosophy, Religion, Spiritual, Gospel, Electronic Music, Experimental Music">
+    <meta itemprop="name" content="ENTROPY WORSHIP Calculator">
+    <meta itemprop="description" content="WARNING: Experimental Project">
+    <meta name="twitter:url" content="https://www.entropyworship.com">
+    <meta name="twitter:site" content="@EntropyWorship">
+    <meta name="twitter:title" content="ENTROPY WORSHIP Calculator">
+    <meta name="twitter:description" content="ENTROPY WORSHIP Calculator">
+    <meta name="twitter:creator" content="@EntropyWorship">
+    <meta property="og:title" content="ENTROPY WORSHIP Calculator" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.entropyworship.com" />
+    <meta property="og:description" content="ENTROPY WORSHIP Calculator" />
+    <meta property="og:site_name" content="ENTROPY WORSHIP Calculator" />
+    <meta property="og:image:alt" content="WARNING: Experimental Project">
+
+<!-- Bootstrap CSS -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://getbootstrap.com/assets/js/color-modes.js"></script>
+<!-- Augmented UI CSS -->
+<link rel="stylesheet" type="text/css" href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css">
+<!-- Sci UI CSS -->
+<link href="styles.css" rel="stylesheet">
+    <style>
+        .output {
+            margin-top: 20px;
+            font-size: 1.2rem;
+        }
+@font-face {
+    font-family: 'ThirdParty';
+    src: url('thirdpar.ttf') format('truetype'); /* Specify the path to the TTF file */
+    font-weight: normal; /* Adjust as necessary */
+    font-style: normal; /* Adjust as necessary */
+        }
+        @font-face {
+    font-family: 'Heiko';
+    src: url('heiko.ttf') format('truetype'); /* Specify the path to the TTF file */
+    font-weight: normal; /* Adjust as necessary */
+    font-style: normal; /* Adjust as necessary */
+        }
+        @font-face {
+    font-family: 'Tomorrow';
+    src: url('Tomorrow-Regular.ttf') format('truetype'); /* Specify the path to the TTF file */
+    font-weight: normal; /* Adjust as necessary */
+    font-style: normal; /* Adjust as necessary */
+        }
+
+        .heading {
+            color: #e80f0fcc; 
+            text-size-adjust: relative;
+
+        }
+        h1 {
+            text-align: left;
+            margin: 0;
+            padding: 0;
+            font-family: 'ThirdParty', sans-serif; /* Fallback to a generic font */
+        }
+        h2 {
+            text-align: left;
+            margin: 0;
+            padding: 0;
+            font-family: 'Heiko', sans-serif; /* Fallback to a generic font */
+        }
+        h3 {
+            text-align: left;
+            color: #e80f0fcc; 
+            margin: 0;
+            padding: 0;
+            font-family: 'ThirdParty', sans-serif; /* Fallback to a generic font */
+        }
+        h4 {
+            text-align: left;
+            margin: 0;
+            padding: 0;
+            font-family: 'Heiko', sans-serif; /* Fallback to a generic font */
+        }
+        h5 {
+            text-align: left;
+            margin: 0;
+            padding: 0;
+            font-size: 1.0rem;
+            font-family: 'Tomorrow', sans-serif; /* Fallback to a generic font */
+        }
+        body {
+          position: relative;
+          background-image: url('http://www.entropyworship.com/images/EW_Second_Law_Cover_W_Aerotek_Logo.png'); 
+          background-size: cover;
+          background-position: center;
+          color: white;
+          text-align: left;
+          margin: 0;
+          padding: 0;
+          font-family: 'Tomorrow', sans-serif; 
+          background-attachment: fixed; /* For desktop */
+        }
+        .transparent-bg {
+    background-color: transparent !important;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c"><!--Header panel-->
+            <div class="card-header border-danger">
+                <h1 class="heading display-6" style="font-size: 1.5rem;">ENTROPY WORSHIP</h1>
+                <h2 class="panel info shown" style="font-size: 1.5rem;">build 3.0.11.03.24</h1>
+            </div>
+            <div class="card-body">
+                <h2>Calc</h2>
+                <div class="row">
+                    <div class="form-group">
+                        <select id="octave" class="form-select btn-outline-light btn">
+                            <option value="-1">-1</option>
+                            <option value="0">0</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select id="note" class="form-select btn-outline-light btn">
+                            <option value="C">C</option>
+                            <option value="C#">C#</option>
+                            <option value="D">D</option>
+                            <option value="D#">D#</option>
+                            <option value="E">E</option>
+                            <option value="F">F</option>
+                            <option value="F#">F#</option>
+                            <option value="G">G</option>
+                            <option value="G#">G#</option>
+                            <option value="A">A</option>
+                            <option value="A#">A#</option>
+                            <option value="B">B</option>
+                        </select>
+                    </div>
+                    
+                </div>
+                <table class="table table-bordered mt-4 table-sm" style="color: white;">
+                    <thead>
+                        <tr>
+                          <th scope="col"></th>
+                          <th scope="col">MIDI Value</th>
+                          <th scope="col">Frequency</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <th scope="row">Root</th>
+                          <td><span id="midiValue">N/A</span></td>
+                          <td><span id="frequency">N/A</span></td>
+                        </tr>
+                        <tr>
+                          <th scope="row">2</th>
+                          <td>Jacob</td>
+                          <td>Thornton</td>
+                        </tr>
+                        <tr>
+                          <th scope="row">3</th>
+                          <td colspan="2">Larry the Bird</td>
+                        </tr>
+                      </tbody>
+                    <tbody> 
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+// Map of notes to MIDI values
+const noteToMIDI = {
+    'C': 0, 'C#': 1, 'D': 2, 'D#': 3, 'E': 4, 'F': 5, 'F#': 6, 'G': 7, 'G#': 8, 'A': 9, 'A#': 10, 'B': 11
+};
+
+// All notes and limited notes (for specific octave 9)
+const allNotes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+const limitedNotes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G'];
+
+// Update the note options based on the selected octave
+function updateNoteOptions() {
+    const octave = parseInt(document.getElementById('octave').value); // Get selected octave
+    const noteSelect = document.getElementById('note'); // Get the note dropdown
+    noteSelect.innerHTML = ''; // Clear existing options
+
+    // Choose notes based on octave
+    const notesToDisplay = octave === 9 ? limitedNotes : allNotes;
+
+    // Add options to the note select dropdown
+    notesToDisplay.forEach(note => {
+        const option = document.createElement('option');
+        option.value = note;
+        option.textContent = note;
+        noteSelect.appendChild(option);
+    });
+
+    // Update output when the note options are changed
+    updateOutput();
+}
+
+// Calculate MIDI and frequency values
+function calculateMIDIAndFrequency() {
+    const octave = parseInt(document.getElementById('octave').value); // Get selected octave
+    const note = document.getElementById('note').value; // Get selected note
+
+    // Calculate the MIDI value
+    const midiValue = noteToMIDI[note] + (octave + 1) * 12;
+
+    // Calculate the frequency using the formula: frequency = 440 * 2^((midiValue - 69) / 12)
+    const frequency = 440 * Math.pow(2, (midiValue - 69) / 12);
+
+    return { midiValue, frequency };
+}
+
+// Update the output spans in the table with the new values
+function updateOutput() {
+    // Get the MIDI value and frequency
+    const { midiValue, frequency } = calculateMIDIAndFrequency();
+
+    // Update the spans with the new values
+    document.getElementById('midiValue').innerText = midiValue; // Update MIDI value
+    document.getElementById('frequency').innerText = frequency.toFixed(10) + " Hz"; // Update Frequency with 10 decimal places
+}
+
+// Add event listeners to the pulldowns
+document.getElementById('octave').addEventListener('change', updateNoteOptions);
+document.getElementById('note').addEventListener('change', updateOutput);
+
+// Initial setup: update the note options and output when the page loads
+updateNoteOptions(); // Initially update the note options based on the default octave
+
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
