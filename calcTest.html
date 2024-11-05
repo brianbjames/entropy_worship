@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Theory Calculator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+
+        select, input {
+            margin-bottom: 10px;
+            padding: 5px;
+        }
+
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th, td {
+            padding: 8px;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Music Theory Mode Calculator</h1>
+
+    <div>
+        <label for="root-note">Select Root Note:</label>
+        <select id="root-note">
+            <option value="C">C</option>
+            <option value="C#">C#</option>
+            <option value="D">D</option>
+            <option value="D#">D#</option>
+            <option value="E">E</option>
+            <option value="F">F</option>
+            <option value="F#">F#</option>
+            <option value="G">G</option>
+            <option value="G#">G#</option>
+            <option value="A">A</option>
+            <option value="A#">A#</option>
+            <option value="B">B</option>
+        </select>
+
+        <label for="mode">Select Mode:</label>
+        <select id="mode">
+            <option value="major">Ionian (Major)</option>
+            <option value="dorian">Dorian</option>
+            <option value="phrygian">Phrygian</option>
+            <option value="lydian">Lydian</option>
+            <option value="mixolydian">Mixolydian</option>
+            <option value="minor">Aeolian (Minor)</option>
+            <option value="locrian">Locrian</option>
+        </select>
+
+        <label for="octave-range">Select Octave Range:</label>
+        <input type="number" id="octave-range" min="-1" max="9" value="4">
+
+        <button onclick="generateMode()">Generate Mode</button>
+    </div>
+
+    <table id="mode-table" style="display: none;">
+        <thead>
+            <tr>
+                <th>Note</th>
+                <th>MIDI Number</th>
+                <th>Frequency (Hz)</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <script>
+        // Musical Note to Frequency Map (based on A4 = 440Hz)
+        const noteFrequencies = {
+            'C': 261.63, 'C#': 277.18, 'D': 293.66, 'D#': 311.13,
+            'E': 329.63, 'F': 349.23, 'F#': 369.99, 'G': 392.00,
+            'G#': 415.30, 'A': 440.00, 'A#': 466.16, 'B': 493.88
+        };
+
+        // Mode Intervals
+        const modeIntervals = {
+            'major': [0, 2, 4, 5, 7, 9, 11],
+            'minor': [0, 2, 3, 5, 7, 8, 10],
+            'dorian': [0, 2, 3, 5, 7, 9, 10],
+            'phrygian': [0, 1, 3, 5, 7, 8, 10],
+            'lydian': [0, 2, 4, 6, 7, 9, 11],
+            'mixolydian': [0, 2, 4, 5, 7, 9, 10],
+            'locrian': [0, 1, 3, 5, 6, 8, 10]
+        };
+
+        // Helper functions
+        function getNoteFrequency(note, octave) {
+            const baseFrequency = noteFrequencies[note];
+            if (baseFrequency) {
+                const octaveShift = octave - 4; // A4 is base, octave 4
+                return baseFrequency * Math.pow(2, octaveShift);
+            }
+            return 0;
+        }
+
+        function getMidiNumber(note, octave) {
+            const noteOrder = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+            const rootMidi = 60; // MIDI number for Middle C (C4)
+            const noteIndex = noteOrder.indexOf(note);
+            if (noteIndex === -1) return null;
+            return rootMidi + (noteIndex + (octave - 4) * 12);
+        }
+
+        function generateMode() {
+            const rootNote = document.getElementById("root-note").value;
+            const mode = document.getElementById("mode").value;
+            const octave = parseInt(document.getElementById("octave-range").value);
+            const intervals = modeIntervals[mode];
+
+            const notesInMode = [];
+            const midiNumbers = [];
+            const frequencies = [];
+            
+            // Generate notes for each interval in the mode
+            const startingIndex = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'].indexOf(rootNote);
+
+            for (let i = 0; i < 7; i++) {
+                const noteIndex = (startingIndex + intervals[i]) % 12;
+                const note = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'][noteIndex];
+                notesInMode.push(note);
+                midiNumbers.push(getMidiNumber(note, octave));
+                frequencies.push(getNoteFrequency(note, octave).toFixed(2));
+            }
+
+            // Generate the table output
+            const tableBody = document.getElementById("mode-table").getElementsByTagName('tbody')[0];
+            tableBody.innerHTML = ''; // Clear previous table rows
+
+            for (let i = 0; i < notesInMode.length; i++) {
+                const row = tableBody.insertRow();
+                row.insertCell(0).textContent = notesInMode[i];
+                
+                // Display MIDI number or "N/A" if it's >= 128
+                const midiValue = midiNumbers[i];
+                row.insertCell(1).textContent = (midiValue >= 128) ? "N/A" : midiValue;
+
+                row.insertCell(2).textContent = frequencies[i];
+            }
+
+            document.getElementById("mode-table").style.display = "table";
+        }
+    </script>
+
+</body>
+</html>

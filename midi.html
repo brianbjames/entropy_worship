@@ -146,7 +146,17 @@
                             <option value="B">B</option>
                         </select>
                     </div>
-                    
+                    <div class="form-group">
+                        <select id="mode" class="form-select btn-outline-light btn">
+                            <option value="Ionian">Ionian (Major)</option>
+                            <option value="Dorian">Dorian</option>
+                            <option value="Phrygian">Phrygian</option>
+                            <option value="Lydian">Lydian</option>
+                            <option value="Mixolydian">Mixolydian</option>
+                            <option value="Aeolian">Aeolian (Natural Minor)</option>
+                            <option value="Locrian">Locrian</option>
+                        </select>
+                    </div>
                 </div>
                 <table class="table table-bordered mt-4 table-sm" style="color: white;">
                     <thead>
@@ -159,17 +169,43 @@
                       <tbody>
                         <tr>
                           <th scope="row">Root</th>
-                          <td><span id="midiValue">N/A</span></td>
+                          <td><span id="midiValueRoot">N/A</span></td>
                           <td><span id="frequency">N/A</span></td>
                         </tr>
                         <tr>
-                          <th scope="row">2</th>
-                          <td>Jacob</td>
-                          <td>Thornton</td>
+                          <th scope="row">2nd</th>
+                          <td>N/A</td>
+                          <td>N/A</td>
                         </tr>
                         <tr>
-                          <th scope="row">3</th>
-                          <td colspan="2">Larry the Bird</td>
+                          <th scope="row">3rd</th>
+                          <td>N/A</td>
+                          <td>N/A</td>
+                        </tr>
+                        <tr>
+                          <th scope="row">4th</th>
+                          <td>N/A</td>
+                          <td>N/A</td>
+                        </tr>
+                        <tr>
+                          <th scope="row">5th</th>
+                          <td>N/A</td>
+                          <td>N/A</td>
+                        </tr>
+                        <tr>
+                          <th scope="row">6th</th>
+                          <td>N/A</td>
+                          <td>N/A</td>
+                        </tr>
+                        <tr>
+                          <th scope="row">7th</th>
+                          <td>N/A</td>
+                          <td>N/A</td>
+                        </tr>
+                        <tr>
+                          <th scope="row">Octave</th>
+                          <td>N/A</td>
+                          <td>N/A</td>
                         </tr>
                       </tbody>
                     <tbody> 
@@ -216,21 +252,21 @@ function calculateMIDIAndFrequency() {
     const note = document.getElementById('note').value; // Get selected note
 
     // Calculate the MIDI value
-    const midiValue = noteToMIDI[note] + (octave + 1) * 12;
+    const midiValueRoot = noteToMIDI[note] + (octave + 1) * 12;
 
-    // Calculate the frequency using the formula: frequency = 440 * 2^((midiValue - 69) / 12)
-    const frequency = 440 * Math.pow(2, (midiValue - 69) / 12);
+    // Calculate the frequency using the formula: frequency = 440 * 2^((midiValueRoot - 69) / 12)
+    const frequency = 440 * Math.pow(2, (midiValueRoot - 69) / 12);
 
-    return { midiValue, frequency };
+    return { midiValueRoot, frequency };
 }
 
 // Update the output spans in the table with the new values
 function updateOutput() {
     // Get the MIDI value and frequency
-    const { midiValue, frequency } = calculateMIDIAndFrequency();
+    const { midiValueRoot, frequency } = calculateMIDIAndFrequency();
 
     // Update the spans with the new values
-    document.getElementById('midiValue').innerText = midiValue; // Update MIDI value
+    document.getElementById('midiValueRoot').innerText = midiValueRoot; // Update MIDI value
     document.getElementById('frequency').innerText = frequency.toFixed(10) + " Hz"; // Update Frequency with 10 decimal places
 }
 
