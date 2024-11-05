@@ -41,6 +41,7 @@
     <option value="6">6</option>
     <option value="7">7</option>
     <option value="8">8</option>
+    <option value="9">9</option>
 </select>
 
 <select id="mode" onchange="updateResults()">
@@ -75,28 +76,64 @@
         const noteRootIndex = notes.indexOf(noteroot);
         const modeIntervals = modes[mode];
 
-        // Calculate scale
+        // Calculate scale (the notes in the selected mode)
         const scale = modeIntervals.map(interval => notes[(noteRootIndex + interval) % notes.length]);
 
-        // Create table rows for diatonic chords and MIDI numbers
-        const diatonicChords = modeIntervals.map((_, i) => {
+        // Calculate MIDI numbers for root, third, fifth, seventh
+        const midiValues = modeIntervals.map((_, i) => {
             const chordRoot = scale[i];
             const third = scale[(i + 2) % scale.length];
             const fifth = scale[(i + 4) % scale.length];
-            const seventh = scale[(i + 6) % scale.length]; // Calculate the 7th
+            const seventh = scale[(i + 6) % scale.length];
 
-            // Calculate MIDI numbers
-            const rootMidi = calculateMidiNumber(chordRoot, octave);
-            const thirdMidi = calculateMidiNumber(third, octave);
-            const fifthMidi = calculateMidiNumber(fifth, octave);
-            const seventhMidi = calculateMidiNumber(seventh, octave); // MIDI for 7th
+            // Initial MIDI numbers for root, third, fifth, seventh
+            const rootMidi = calculateMidiNumber(chordRoot, octave);  // root
+            let thirdMidi = calculateMidiNumber(third, octave);      // third
+            let fifthMidi = calculateMidiNumber(fifth, octave);      // fifth
+            let seventhMidi = calculateMidiNumber(seventh, octave); // seventh
+
+            // Check if the third, fifth, or seventh are lower than the root and adjust octave if necessary
+            if (thirdMidi < rootMidi) {
+                thirdMidi += 12; // Move to the next octave if below root
+            }
+            if (fifthMidi < rootMidi) {
+                fifthMidi += 12; // Move to the next octave if below root
+            }
+            if (seventhMidi < rootMidi) {
+                seventhMidi += 12; // Move to the next octave if below root
+            }
+
+            // Return the final MIDI values
+            return {
+                rootMidi,
+                thirdMidi,
+                fifthMidi,
+                seventhMidi
+            };
+        });
+
+        // Adjust MIDI numbers: if any are above 127, set them to 'N/A'
+        const adjustedValues = midiValues.map(value => {
+            return {
+                rootMidi: adjustMidiValue(value.rootMidi),
+                thirdMidi: adjustMidiValue(value.thirdMidi),
+                fifthMidi: adjustMidiValue(value.fifthMidi),
+                seventhMidi: adjustMidiValue(value.seventhMidi)
+            };
+        });
+
+        // Create table rows with the adjusted MIDI values
+        const diatonicChords = adjustedValues.map((value, i) => {
+            const chordRoot = scale[i];
+            const third = scale[(i + 2) % scale.length];
+            const fifth = scale[(i + 4) % scale.length];
+            const seventh = scale[(i + 6) % scale.length];
 
             return `<tr>
-                <td>${chordRoot}</td>
-                <td>${third}</td>
-                <td>${fifth}</td>
-                <td>${seventh}</td>
-                <td>MIDI: ${rootMidi}, ${thirdMidi}, ${fifthMidi}, ${seventhMidi}</td>
+                <td>${chordRoot} (${value.rootMidi})</td>
+                <td>${third} (${value.thirdMidi})</td>
+                <td>${fifth} (${value.fifthMidi})</td>
+                <td>${seventh} (${value.seventhMidi})</td>
             </tr>`;
         }).join("");
 
@@ -109,7 +146,6 @@
                         <th scope="col">Third</th>
                         <th scope="col">Fifth</th>
                         <th scope="col">Seventh</th>
-                        <th scope="col">MIDI Numbers</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -121,7 +157,15 @@
 
     function calculateMidiNumber(note, octave) {
         const noteIndex = notes.indexOf(note);
-        return (octave + 1) * 12 + noteIndex; // MIDI number calculation
+        return (octave + 1) * 12 + noteIndex;
+    }
+
+    // Function to check if the MIDI number is valid (<= 127)
+    function adjustMidiValue(midiValue) {
+        if (midiValue > 127) {
+            return "N/A"; // MIDI value above 127 is invalid
+        }
+        return midiValue; // Return the MIDI value if it's valid
     }
 
     // Initial call to display results based on default selections
