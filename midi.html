@@ -32,23 +32,23 @@
             margin-top: 20px;
             font-size: 1.2rem;
         }
-@font-face {
-    font-family: 'ThirdParty';
-    src: url('thirdpar.ttf') format('truetype'); /* Specify the path to the TTF file */
-    font-weight: normal; /* Adjust as necessary */
-    font-style: normal; /* Adjust as necessary */
+        @font-face {
+        font-family: 'ThirdParty';
+        src: url('thirdpar.ttf') format('truetype'); /* Specify the path to the TTF file */
+        font-weight: normal; /* Adjust as necessary */
+        font-style: normal; /* Adjust as necessary */
         }
         @font-face {
-    font-family: 'Heiko';
-    src: url('heiko.ttf') format('truetype'); /* Specify the path to the TTF file */
-    font-weight: normal; /* Adjust as necessary */
-    font-style: normal; /* Adjust as necessary */
+            font-family: 'Heiko';
+            src: url('heiko.ttf') format('truetype'); /* Specify the path to the TTF file */
+            font-weight: normal; /* Adjust as necessary */
+            font-style: normal; /* Adjust as necessary */
         }
         @font-face {
-    font-family: 'Tomorrow';
-    src: url('Tomorrow-Regular.ttf') format('truetype'); /* Specify the path to the TTF file */
-    font-weight: normal; /* Adjust as necessary */
-    font-style: normal; /* Adjust as necessary */
+            font-family: 'Tomorrow';
+            src: url('Tomorrow-Regular.ttf') format('truetype'); /* Specify the path to the TTF file */
+            font-weight: normal; /* Adjust as necessary */
+            font-style: normal; /* Adjust as necessary */
         }
 
         .heading {
@@ -90,7 +90,7 @@
         }
         body {
           position: relative;
-          background-image: url('http://www.entropyworship.com/images/EW_Second_Law_Cover_W_Aerotek_Logo.png'); 
+          background-image: url('http://www.entropyworship.com/images/Iridescent-Nebula.jpg'); 
           background-size: cover;
           background-position: center;
           color: white;
@@ -101,8 +101,35 @@
           background-attachment: fixed; /* For desktop */
         }
         .transparent-bg {
-    background-color: transparent !important;
-}
+        background-color: transparent !important;
+        }
+        select { margin: 10px 0; }
+        .results { margin-top: 20px; }
+        #volumeSlider { width: 50%; }
+        .modal-content {
+            background-color: black !important; /* Set the background to black */
+            color: white; /* Make text color white for contrast */
+            opacity: 75%;
+        }
+
+        .modal-header {
+            border-bottom: 1px solid #444; /* Optional: Adjust the modal header's border */
+        }
+
+        .modal-body {
+            color: white; /* Ensure text within the body is also white */
+        }
+
+        .modal-footer {
+            border-top: 1px solid #444; /* Optional: Adjust the modal footer's border */
+        }
+
+        .btn-close {
+            color: white; /* Change close button color to white */
+        }
+        .btn-primary {
+            color: white; /* Change close button color to white */
+        }
     </style>
 </head>
 <body>
@@ -114,173 +141,279 @@
             </div>
             <div class="card-body">
                 <h2>Calc</h2>
-                <div class="row">
-                    <div class="form-group">
-                        <select id="octave" class="form-select btn-outline-light btn">
-                            <option value="-1">-1</option>
-                            <option value="0">0</option>
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                            <option value="8">8</option>
-                            <option value="9">9</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <select id="note" class="form-select btn-outline-light btn">
+                <div class="form-group">
+                    <div class="row">
+                        <button class="btn btn-outline-light btn-sm" id="stopAllButton">Stop</button>
+                        <select id="noteroot" class="form-select form-select-lg btn-outline-light btn" onchange="updateResults()">
                             <option value="C">C</option>
-                            <option value="C#">C#</option>
+                            <option value="C♯">C♯</option>
                             <option value="D">D</option>
-                            <option value="D#">D#</option>
-                            <option value="E">E</option>
+                            <option value="D♯">D♯</option>
+                            <option value="E" selected>E</option>
                             <option value="F">F</option>
-                            <option value="F#">F#</option>
+                            <option value="F♯">F♯</option>
                             <option value="G">G</option>
-                            <option value="G#">G#</option>
+                            <option value="G♯">G♯</option>
                             <option value="A">A</option>
-                            <option value="A#">A#</option>
+                            <option value="A♯">A♯</option>
                             <option value="B">B</option>
                         </select>
-                    </div>
-                    <div class="form-group">
-                        <select id="mode" class="form-select btn-outline-light btn">
-                            <option value="Ionian">Ionian (Major)</option>
+                        <select id="mode" class="form-select form-select-lg btn-outline-light btn" onchange="updateResults()">
+                            <option value="Ionian">Ionian</option>
                             <option value="Dorian">Dorian</option>
-                            <option value="Phrygian">Phrygian</option>
+                            <option value="Phrygian" selected>Phrygian</option>
                             <option value="Lydian">Lydian</option>
                             <option value="Mixolydian">Mixolydian</option>
-                            <option value="Aeolian">Aeolian (Natural Minor)</option>
+                            <option value="Aeolian">Aeolian</option>
                             <option value="Locrian">Locrian</option>
                         </select>
+                        <input type="range" class="form-range" id="volumeSlider" min="0" max="100" value="50">
+                        
                     </div>
                 </div>
-                <table class="table table-bordered mt-4 table-sm" style="color: white;">
-                    <thead>
-                        <tr>
-                          <th scope="col"></th>
-                          <th scope="col">MIDI Value</th>
-                          <th scope="col">Frequency</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr>
-                          <th scope="row">Root</th>
-                          <td><span id="midiValueRoot">N/A</span></td>
-                          <td><span id="frequency">N/A</span></td>
-                        </tr>
-                        <tr>
-                          <th scope="row">2nd</th>
-                          <td>N/A</td>
-                          <td>N/A</td>
-                        </tr>
-                        <tr>
-                          <th scope="row">3rd</th>
-                          <td>N/A</td>
-                          <td>N/A</td>
-                        </tr>
-                        <tr>
-                          <th scope="row">4th</th>
-                          <td>N/A</td>
-                          <td>N/A</td>
-                        </tr>
-                        <tr>
-                          <th scope="row">5th</th>
-                          <td>N/A</td>
-                          <td>N/A</td>
-                        </tr>
-                        <tr>
-                          <th scope="row">6th</th>
-                          <td>N/A</td>
-                          <td>N/A</td>
-                        </tr>
-                        <tr>
-                          <th scope="row">7th</th>
-                          <td>N/A</td>
-                          <td>N/A</td>
-                        </tr>
-                        <tr>
-                          <th scope="row">Octave</th>
-                          <td>N/A</td>
-                          <td>N/A</td>
-                        </tr>
-                      </tbody>
-                    <tbody> 
-                    </tbody>
-                </table>
+                <div class="results" id="results"></div>
+                 <!-- Modal for MIDI note information -->
+                <div class="modal fade" id="midiModal" tabindex="-1" aria-labelledby="midiModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-body">
+                                <p id="midiValue"></p>
+                                <p id="frequency"></p>
+                                <p id="octave"></p>
+                                <button class="btn btn-dark" id="playButton">Play</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-// Map of notes to MIDI values
-const noteToMIDI = {
-    'C': 0, 'C#': 1, 'D': 2, 'D#': 3, 'E': 4, 'F': 5, 'F#': 6, 'G': 7, 'G#': 8, 'A': 9, 'A#': 10, 'B': 11
-};
+        
+        const notes = ["C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B"];
+        const modes = {
+            "Ionian": [0, 2, 4, 5, 7, 9, 11],
+            "Dorian": [0, 2, 3, 5, 7, 9, 10],
+            "Phrygian": [0, 1, 3, 5, 7, 8, 10],
+            "Lydian": [0, 2, 4, 6, 7, 9, 11],
+            "Mixolydian": [0, 2, 4, 5, 7, 9, 10],
+            "Aeolian": [0, 2, 3, 5, 7, 8, 10],
+            "Locrian": [0, 1, 3, 5, 6, 8, 10]
+        };
+    
+        const romanNumerals = {
+            "Ionian": ["I", "ii", "iii", "IV", "V", "vi", "vii°"],
+            "Dorian": ["i", "ii", "III", "IV", "v", "vi°", "VII"],
+            "Phrygian": ["i", "II", "III", "iv", "v°", "VI", "vii"],
+            "Lydian": ["I", "II", "iii", "iv°", "V", "vi", "vii"],
+            "Mixolydian": ["I", "ii", "iii°", "IV", "v", "vi", "VII"],
+            "Aeolian": ["i", "ii°", "III", "iv", "v", "VI", "VII"],
+            "Locrian": ["i°", "II", "iii", "iv", "V", "VI", "vii"]
+        };
+    
+        // Degree names for each scale degree
+        const degreeNames = [
+            "Tonic",           // 1st degree
+            "Supertonic",      // 2nd degree
+            "Mediant",         // 3rd degree
+            "Subdominant",     // 4th degree
+            "Dominant",        // 5th degree
+            "Submediant",      // 6th degree
+            "Leading Tone"     // 7th degree
+        ];
+    
+        let currentVolume = 0.5;
+        let audioContext;
+        let oscillators = [];
+        let gainNodes = [];
+        let globalGainNode;
+        let isPlaying = [];
 
-// All notes and limited notes (for specific octave 9)
-const allNotes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
-const limitedNotes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G'];
+            // Add a function to update the modal's play/stop button to "Play"
+        function resetModalPlayButton() {
+            const playButton = document.getElementById("playButton");
+            playButton.innerText = "Play";
+            if (playButton.innerText === "Stop") {
+                playButton.innerText = "Play"; // Reset to "Play" if it was "Stop"
+            }
+        }
 
-// Update the note options based on the selected octave
-function updateNoteOptions() {
-    const octave = parseInt(document.getElementById('octave').value); // Get selected octave
-    const noteSelect = document.getElementById('note'); // Get the note dropdown
-    noteSelect.innerHTML = ''; // Clear existing options
-
-    // Choose notes based on octave
-    const notesToDisplay = octave === 9 ? limitedNotes : allNotes;
-
-    // Add options to the note select dropdown
-    notesToDisplay.forEach(note => {
-        const option = document.createElement('option');
-        option.value = note;
-        option.textContent = note;
-        noteSelect.appendChild(option);
-    });
-
-    // Update output when the note options are changed
-    updateOutput();
+        // Event listener for the Stop All button
+        document.getElementById('stopAllButton').addEventListener('click', () => {
+            stopAllOscillators(); // Stop all oscillators
+            
+            // Reset any modal stop button to Play
+            resetModalPlayButton();
+        });
+    
+// Setup audio context and global gain node
+function setupAudioContext() {
+    // Create a new AudioContext
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    // Create a global gain node
+    globalGainNode = audioContext.createGain();
+    globalGainNode.connect(audioContext.destination);  // Connect to audio context output
+    globalGainNode.gain.setValueAtTime(currentVolume, audioContext.currentTime); // Set initial volume
 }
 
-// Calculate MIDI and frequency values
-function calculateMIDIAndFrequency() {
-    const octave = parseInt(document.getElementById('octave').value); // Get selected octave
-    const note = document.getElementById('note').value; // Get selected note
+// Event listener to update the global volume when the slider is changed
+document.getElementById('volumeSlider').addEventListener('input', (e) => {
+    currentVolume = e.target.value / 100;  // Convert slider value to a decimal
+    globalGainNode.gain.setValueAtTime(currentVolume, audioContext.currentTime); // Set volume globally
+    // Optionally update the volume value in UI (you can add a span to show the volume value)
+    document.getElementById("volumeValue").innerText = `Volume: ${e.target.value}%`;
+});
+    
+        // Update results when inputs change
+        function updateResults() {
+            const noteroot = document.getElementById("noteroot").value;
+            const mode = document.getElementById("mode").value;
+            const octave = -1;  // Default octave set to -1
+    
+            const noteRootIndex = notes.indexOf(noteroot);
+            const modeIntervals = modes[mode];
+            const romanHeaders = romanNumerals[mode];
+    
+            // Calculate scale
+            const scale = modeIntervals.map(interval => notes[(noteRootIndex + interval) % notes.length]);
+    
+            // Step 1: Calculate MIDI values for each note in the scale
+            const midiValues = scale.map(note => getMidiValuesForNote(note, octave));
+    
+            // Generate table rows with Roman numeral chord names, note names, and MIDI data
+            const diatonicChords = scale.map((_, i) => {
+                const rootNote = scale[i]; // The root note for the chord is the corresponding scale note
+                const rootMidi = midiValues[i].join(", ");
+                return `<tr>
+                    <td>${romanHeaders[i]}</td>
+                    <td>${rootNote}</td>
+                    <td>${generateMidiLinks(rootMidi)}</td>
+                </tr>`;
+            }).join("");
+    
+            // Display results in table with dynamic Roman numeral headers, note names, and MIDI data
+            document.getElementById("results").innerHTML = `
+                <table class="table table-bordered mt-4 table-sm" style="color: white;">
+                    <tbody>
+                        ${diatonicChords}
+                    </tbody>
+                </table>
+            `;
+        }
+    
+        // Helper function to generate clickable MIDI links
+        function generateMidiLinks(midi) {
+            return midi.split(', ').map(midiValue => {
+                const frequency = midiToFrequency(parseInt(midiValue));
+                return `<button class="btn btn-outline-light btn-sm" style="color: white;><a href="#" data-midi="${midiValue}" data-frequency="${frequency}" onclick="openModal('${midiValue}', '${frequency}')">${midiValue}</a></button>`;
+            }).join(" ");
+        }
+    
+    // Function to open the modal and show information, including octave
+    function openModal(midiValue, frequency) {
+        const octave = Math.floor(midiValue / 12) - 1; // Calculate octave based on MIDI value
+        document.getElementById("midiValue").innerText = `MIDI Value: ${midiValue}`;
+        document.getElementById("frequency").innerText = `Frequency: ${frequency} Hz`;
+        document.getElementById("octave").innerText = `Octave: ${octave}`;
+        
+        const playButton = document.getElementById("playButton");
 
-    // Calculate the MIDI value
-    const midiValueRoot = noteToMIDI[note] + (octave + 1) * 12;
+        // Add event listener to play button
+        playButton.onclick = () => {
+            if (isPlaying[midiValue]) {
+                stopOscillator(midiValue);
+                playButton.innerText = "Play"; // Change button to "Play"
+                isPlaying[midiValue] = false;
+            } else {
+                startOscillator(frequency, midiValue);
+                playButton.innerText = "Stop"; // Change button to "Stop"
+                isPlaying[midiValue] = true;
+            }
+        };
 
-    // Calculate the frequency using the formula: frequency = 440 * 2^((midiValueRoot - 69) / 12)
-    const frequency = 440 * Math.pow(2, (midiValueRoot - 69) / 12);
-
-    return { midiValueRoot, frequency };
-}
-
-// Update the output spans in the table with the new values
-function updateOutput() {
-    // Get the MIDI value and frequency
-    const { midiValueRoot, frequency } = calculateMIDIAndFrequency();
-
-    // Update the spans with the new values
-    document.getElementById('midiValueRoot').innerText = midiValueRoot; // Update MIDI value
-    document.getElementById('frequency').innerText = frequency.toFixed(10) + " Hz"; // Update Frequency with 10 decimal places
-}
-
-// Add event listeners to the pulldowns
-document.getElementById('octave').addEventListener('change', updateNoteOptions);
-document.getElementById('note').addEventListener('change', updateOutput);
-
-// Initial setup: update the note options and output when the page loads
-updateNoteOptions(); // Initially update the note options based on the default octave
-
+        // Show the modal
+        const myModal = new bootstrap.Modal(document.getElementById('midiModal'));
+        myModal.show();
+    }
+    
+        // Convert MIDI value to frequency (A440 = 69 in MIDI)
+        function midiToFrequency(midi) {
+            return 440 * Math.pow(2, (midi - 69) / 12);
+        }
+    
+        // Function to start playing the sound for the given frequency
+        function startOscillator(frequency, midiValue) {
+            const oscillator = audioContext.createOscillator();
+            oscillator.type = 'sine'; // Sine wave
+            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+    
+            // Set volume using the global gain node
+            oscillator.connect(globalGainNode); // Connect oscillator to the global gain node
+    
+            oscillator.start();
+    
+            // Store oscillator
+            oscillators[midiValue] = oscillator;
+        }
+    
+        // Function to stop the oscillator
+        function stopOscillator(midiValue) {
+            if (oscillators[midiValue]) {
+                oscillators[midiValue].stop();
+                oscillators[midiValue].disconnect();
+            }
+        }
+    
+        // Stop all oscillators
+        function stopAllOscillators() {
+            for (let midiValue in oscillators) {
+                stopOscillator(midiValue);
+            }
+        }
+    
+        // Event listener to update the global volume when the slider is changed
+        document.getElementById('volumeSlider').addEventListener('input', (e) => {
+            currentVolume = e.target.value / 100;
+            document.getElementById("volumeValue").innerText = e.target.value;
+            globalGainNode.gain.setValueAtTime(currentVolume, audioContext.currentTime); // Update global volume
+        });
+    
+        // Event listener for the Stop All button
+        document.getElementById('stopAllButton').addEventListener('click', () => {
+            stopAllOscillators();
+        });
+    
+        // Calculate MIDI values for a given note
+        function getMidiValuesForNote(note, octave) {
+            const noteIndex = notes.indexOf(note);
+            const midiValues = [];
+            
+            for (let i = -1; i <= 11; i++) {
+                const midi = (octave + i) * 12 + noteIndex;
+                if (midi >= 0 && midi <= 127) { // Valid MIDI range
+                    midiValues.push(midi);
+                }
+            }
+    
+            midiValues.sort((a, b) => a - b); // Sort MIDI values
+            return midiValues;
+        }
+    
+        // Initial call to setup audio context and display results
+        setupAudioContext();
+        updateResults();
     </script>
+    
 
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- jQuery (v3.6.0) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Popper.js (required for Bootstrap 4) -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+
+<!-- Bootstrap JavaScript (v4.5.2) -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 </body>
 </html>
