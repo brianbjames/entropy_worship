@@ -30,20 +30,6 @@
     <option value="B">B</option>
 </select>
 
-<select id="octave" onchange="updateResults()">
-    <option value="-1">-1</option>
-    <option value="0">0</option>
-    <option value="1">1</option>
-    <option value="2">2</option>
-    <option value="3">3</option>
-    <option value="4">4</option>
-    <option value="5">5</option>
-    <option value="6">6</option>
-    <option value="7">7</option>
-    <option value="8">8</option>
-    <option value="9">9</option>
-</select>
-
 <select id="mode" onchange="updateResults()">
     <option value="Ionian">Ionian</option>
     <option value="Dorian">Dorian</option>
@@ -69,18 +55,18 @@
     };
 
     const romanNumerals = {
-    "Ionian": ["I", "ii", "iii", "IV", "V", "vi", "vii°"],  // Major scale (major and diminished chords)
-    "Dorian": ["i", "ii", "III", "IV", "v", "vi°", "VII"],   // Minor scale (major and minor chords)
-    "Phrygian": ["i", "II", "III", "iv", "v°", "VI", "vii"],  // Minor scale with lowered second
-    "Lydian": ["I", "II", "iii", "iv°", "V", "vi", "vii"],    // Major scale with raised fourth
-    "Mixolydian": ["I", "ii", "iii°", "IV", "v", "vi", "VII"], // Major scale with lowered seventh
-    "Aeolian": ["i", "ii°", "III", "iv", "v", "VI", "VII"],    // Natural minor scale
-    "Locrian": ["i°", "II", "iii", "iv", "V", "VI", "vii"]   // Minor scale with lowered second and fifth
+    "Ionian": ["I", "ii", "iii", "IV", "V", "vi", "vii°"],
+    "Dorian": ["i", "ii", "III", "IV", "v", "vi°", "VII"],
+    "Phrygian": ["i", "II", "III", "iv", "v°", "VI", "vii"],
+    "Lydian": ["I", "II", "iii", "iv°", "V", "vi", "vii"],
+    "Mixolydian": ["I", "ii", "iii°", "IV", "v", "vi", "VII"],
+    "Aeolian": ["i", "ii°", "III", "iv", "v", "VI", "VII"],
+    "Locrian": ["i°", "II", "iii", "iv", "V", "VI", "vii"]
 };
 
     function updateResults() {
         const noteroot = document.getElementById("noteroot").value;
-        const octave = parseInt(document.getElementById("octave").value);
+        const octave = -1;  // Default octave set to -1
         const mode = document.getElementById("mode").value;
 
         const noteRootIndex = notes.indexOf(noteroot);
