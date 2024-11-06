@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Music Theory Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body { font-family: Arial, sans-serif; padding: 20px; }
         select { margin: 10px 0; }
@@ -11,16 +12,23 @@
         .table { width: 100%; border-collapse: collapse; }
         .table th, .table td { border: 1px solid #ccc; padding: 10px; text-align: left; }
         .table th { background-color: #f2f2f2; }
+        #volumeSlider { width: 10%; }
     </style>
 </head>
 <body>
+
+<div class="mb-3">
+    <input type="range" class="form-range" id="volumeSlider" min="0" max="100" value="50">
+    <p>Output Volume: <span id="volumeValue">50</span>%</p>
+    <button class="btn btn-danger" id="stopAllButton">Stop</button>
+</div>
 
 <select id="noteroot" onchange="updateResults()">
     <option value="C">C</option>
     <option value="C#">C#</option>
     <option value="D">D</option>
     <option value="D#">D#</option>
-    <option value="E">E</option>
+    <option value="E" selected>E</option>
     <option value="F">F</option>
     <option value="F#">F#</option>
     <option value="G">G</option>
@@ -33,7 +41,7 @@
 <select id="mode" onchange="updateResults()">
     <option value="Ionian">Ionian</option>
     <option value="Dorian">Dorian</option>
-    <option value="Phrygian">Phrygian</option>
+    <option value="Phrygian" selected>Phrygian</option>
     <option value="Lydian">Lydian</option>
     <option value="Mixolydian">Mixolydian</option>
     <option value="Aeolian">Aeolian</option>
@@ -41,6 +49,26 @@
 </select>
 
 <div class="results" id="results"></div>
+
+<!-- Modal for MIDI note information -->
+<div class="modal fade" id="midiModal" tabindex="-1" aria-labelledby="midiModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="midiModalLabel">MIDI Note Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="midiValue"></p>
+                <p id="frequency"></p>
+                <p id="octave"></p>
+                <button class="btn btn-primary" id="playButton">Play</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
     const notes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
@@ -55,19 +83,46 @@
     };
 
     const romanNumerals = {
-    "Ionian": ["I", "ii", "iii", "IV", "V", "vi", "vii°"],
-    "Dorian": ["i", "ii", "III", "IV", "v", "vi°", "VII"],
-    "Phrygian": ["i", "II", "III", "iv", "v°", "VI", "vii"],
-    "Lydian": ["I", "II", "iii", "iv°", "V", "vi", "vii"],
-    "Mixolydian": ["I", "ii", "iii°", "IV", "v", "vi", "VII"],
-    "Aeolian": ["i", "ii°", "III", "iv", "v", "VI", "VII"],
-    "Locrian": ["i°", "II", "iii", "iv", "V", "VI", "vii"]
-};
+        "Ionian": ["I", "ii", "iii", "IV", "V", "vi", "vii°"],
+        "Dorian": ["i", "ii", "III", "IV", "v", "vi°", "VII"],
+        "Phrygian": ["i", "II", "III", "iv", "v°", "VI", "vii"],
+        "Lydian": ["I", "II", "iii", "iv°", "V", "vi", "vii"],
+        "Mixolydian": ["I", "ii", "iii°", "IV", "v", "vi", "VII"],
+        "Aeolian": ["i", "ii°", "III", "iv", "v", "VI", "VII"],
+        "Locrian": ["i°", "II", "iii", "iv", "V", "VI", "vii"]
+    };
 
+    // Degree names for each scale degree
+    const degreeNames = [
+        "Tonic",           // 1st degree
+        "Supertonic",      // 2nd degree
+        "Mediant",         // 3rd degree
+        "Subdominant",     // 4th degree
+        "Dominant",        // 5th degree
+        "Submediant",      // 6th degree
+        "Leading Tone"     // 7th degree
+    ];
+
+    let currentVolume = 0.5;
+    let audioContext;
+    let oscillators = [];
+    let gainNodes = [];
+    let globalGainNode;
+    let isPlaying = [];
+
+    // Set up audio context and global gain node
+    function setupAudioContext() {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        globalGainNode = audioContext.createGain(); // Global gain node for volume control
+        globalGainNode.connect(audioContext.destination); // Connect global gain to audio context output
+        globalGainNode.gain.setValueAtTime(currentVolume, audioContext.currentTime); // Set initial volume
+    }
+
+    // Update results when inputs change
     function updateResults() {
         const noteroot = document.getElementById("noteroot").value;
-        const octave = -1;  // Default octave set to -1
         const mode = document.getElementById("mode").value;
+        const octave = -1;  // Default octave set to -1
 
         const noteRootIndex = notes.indexOf(noteroot);
         const modeIntervals = modes[mode];
@@ -76,64 +131,24 @@
         // Calculate scale
         const scale = modeIntervals.map(interval => notes[(noteRootIndex + interval) % notes.length]);
 
-        // Step 1: Calculate MIDI values for each chord
+        // Step 1: Calculate MIDI values for each note in the scale
         const midiValues = scale.map(note => getMidiValuesForNote(note, octave));
 
         // Generate table rows with Roman numeral chord names, note names, and MIDI data
         const diatonicChords = scale.map((_, i) => {
-            const chordRoot = scale[i];
-            const second = scale[(i + 1) % scale.length];
-            const third = scale[(i + 2) % scale.length];
-            const fourth = scale[(i + 3) % scale.length];
-            const fifth = scale[(i + 4) % scale.length];
-            const sixth = scale[(i + 5) % scale.length];
-            const seventh = scale[(i + 6) % scale.length];
-
-            // Gather MIDI values for each chord
+            const rootNote = scale[i]; // The root note for the chord is the corresponding scale note
             const rootMidi = midiValues[i].join(", ");
-            const secondMidi = midiValues[(i + 1) % scale.length].join(", ");
-            const thirdMidi = midiValues[(i + 2) % scale.length].join(", ");
-            const fourthMidi = midiValues[(i + 3) % scale.length].join(", ");
-            const fifthMidi = midiValues[(i + 4) % scale.length].join(", ");
-            const sixthMidi = midiValues[(i + 5) % scale.length].join(", ");
-            const seventhMidi = midiValues[(i + 6) % scale.length].join(", ");
-
-            // Gather note names for each chord
-            const rootNote = scale[i];
-            const secondNote = scale[(i + 1) % scale.length];
-            const thirdNote = scale[(i + 2) % scale.length];
-            const fourthNote = scale[(i + 3) % scale.length];
-            const fifthNote = scale[(i + 4) % scale.length];
-            const sixthNote = scale[(i + 5) % scale.length];
-            const seventhNote = scale[(i + 6) % scale.length];
-
             return `<tr>
+                <td>${degreeNames[i]}</td>  <!-- Degree name column -->
+                <td>${rootNote}</td>
                 <td>${romanHeaders[i]}</td>
-                <td>${rootNote} (${rootMidi})</td>
-                <td>${secondNote} (${secondMidi})</td>
-                <td>${thirdNote} (${thirdMidi})</td>
-                <td>${fourthNote} (${fourthMidi})</td>
-                <td>${fifthNote} (${fifthMidi})</td>
-                <td>${sixthNote} (${sixthMidi})</td>
-                <td>${seventhNote} (${seventhMidi})</td>
+                <td>${generateMidiLinks(rootMidi)}</td>
             </tr>`;
         }).join("");
 
         // Display results in table with dynamic Roman numeral headers, note names, and MIDI data
         document.getElementById("results").innerHTML = `
             <table class="table">
-                <thead>
-                    <tr>
-                        <th scope="col"></th>
-                        <th scope="col">${romanHeaders[0]}</th>
-                        <th scope="col">${romanHeaders[1]}</th>
-                        <th scope="col">${romanHeaders[2]}</th>
-                        <th scope="col">${romanHeaders[3]}</th>
-                        <th scope="col">${romanHeaders[4]}</th>
-                        <th scope="col">${romanHeaders[5]}</th>
-                        <th scope="col">${romanHeaders[6]}</th>
-                    </tr>
-                </thead>
                 <tbody>
                     ${diatonicChords}
                 </tbody>
@@ -141,25 +156,106 @@
         `;
     }
 
+    // Helper function to generate clickable MIDI links
+    function generateMidiLinks(midi) {
+        return midi.split(', ').map(midiValue => {
+            const frequency = midiToFrequency(parseInt(midiValue));
+            return `<a href="#" data-midi="${midiValue}" data-frequency="${frequency}" onclick="openModal('${midiValue}', '${frequency}')">${midiValue}</a>`;
+        }).join(" ");
+    }
+
+    // Function to open the modal and show information, including octave
+    function openModal(midiValue, frequency) {
+        const octave = Math.floor(midiValue / 12) - 1; // Calculate octave based on MIDI value
+        document.getElementById("midiValue").innerText = `MIDI Value: ${midiValue}`;
+        document.getElementById("frequency").innerText = `Frequency: ${frequency} Hz`;
+        document.getElementById("octave").innerText = `Octave: ${octave}`;
+
+        const playButton = document.getElementById("playButton");
+
+        // Add event listener to play button
+        playButton.onclick = () => {
+            if (isPlaying[midiValue]) {
+                stopOscillator(midiValue);
+                playButton.innerText = "Play";
+                isPlaying[midiValue] = false;
+            } else {
+                startOscillator(frequency, midiValue);
+                playButton.innerText = "Stop";
+                isPlaying[midiValue] = true;
+            }
+        };
+
+        // Show the modal
+        const myModal = new bootstrap.Modal(document.getElementById('midiModal'));
+        myModal.show();
+    }
+
+    // Convert MIDI value to frequency (A440 = 69 in MIDI)
+    function midiToFrequency(midi) {
+        return 440 * Math.pow(2, (midi - 69) / 12);
+    }
+
+    // Function to start playing the sound for the given frequency
+    function startOscillator(frequency, midiValue) {
+        const oscillator = audioContext.createOscillator();
+        oscillator.type = 'sine'; // Sine wave
+        oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+
+        // Set volume using the global gain node
+        oscillator.connect(globalGainNode); // Connect oscillator to the global gain node
+
+        oscillator.start();
+
+        // Store oscillator
+        oscillators[midiValue] = oscillator;
+    }
+
+    // Function to stop the oscillator
+    function stopOscillator(midiValue) {
+        if (oscillators[midiValue]) {
+            oscillators[midiValue].stop();
+            oscillators[midiValue].disconnect();
+        }
+    }
+
+    // Stop all oscillators
+    function stopAllOscillators() {
+        for (let midiValue in oscillators) {
+            stopOscillator(midiValue);
+        }
+    }
+
+    // Event listener to update the global volume when the slider is changed
+    document.getElementById('volumeSlider').addEventListener('input', (e) => {
+        currentVolume = e.target.value / 100;
+        document.getElementById("volumeValue").innerText = e.target.value;
+        globalGainNode.gain.setValueAtTime(currentVolume, audioContext.currentTime); // Update global volume
+    });
+
+    // Event listener for the Stop All button
+    document.getElementById('stopAllButton').addEventListener('click', () => {
+        stopAllOscillators();
+    });
+
+    // Calculate MIDI values for a given note
     function getMidiValuesForNote(note, octave) {
         const noteIndex = notes.indexOf(note);
         const midiValues = [];
         
-        // Generate all MIDI values for this note in different octaves (from octave 0 to 9)
         for (let i = -1; i <= 11; i++) {
             const midi = (octave + i) * 12 + noteIndex;
-            if (midi >= 0 && midi <= 127) { // Only add if MIDI is in valid range (0 to 127)
+            if (midi >= 0 && midi <= 127) { // Valid MIDI range
                 midiValues.push(midi);
             }
         }
 
-        // Sort MIDI values from lowest to highest
-        midiValues.sort((a, b) => a - b);
-
+        midiValues.sort((a, b) => a - b); // Sort MIDI values
         return midiValues;
     }
 
-    // Initial call to display results based on default selections
+    // Initial call to setup audio context and display results
+    setupAudioContext();
     updateResults();
 </script>
 
