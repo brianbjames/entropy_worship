@@ -181,40 +181,51 @@
     <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c"><!--Header panel-->
         <div class="card-header border-danger">
             <h1 class="heading display-6" style="font-size: 1.5rem;">ENTROPY WORSHIP</h1>
-            <h2 class="panel info shown" style="font-size: 1.5rem;">build 3.0.11.03.24</h1>
+            <h2 class="panel info shown" style="font-size: 1.5rem;">build 3.0.11.03.24</h2>
+        </div>
+        <div class="card-body">
+            <h2>Calc</h2>
+            
+
         </div>
     </div>
-    <div class="mb-3">
-        <input type="range" class="form-range" id="volumeSlider" min="0" max="100" value="50">
-        <p>Output Volume: <span id="volumeValue">50</span>%</p>
-        <button class="btn btn-danger" id="stopAllButton">Stop</button>
+    
+        <div class="row">
+        <div class="form-group">
+            <input type="range" class="form-range" id="volumeSlider" min="0" max="100" value="50">
+            <p>Volume: <span id="volumeValue">50</span>%</p>
+        </div>
     </div>
-
-    <select id="noteroot" onchange="updateResults()">
-        <option value="C">C</option>
-        <option value="C#">C#</option>
-        <option value="D">D</option>
-        <option value="D#">D#</option>
-        <option value="E" selected>E</option>
-        <option value="F">F</option>
-        <option value="F#">F#</option>
-        <option value="G">G</option>
-        <option value="G#">G#</option>
-        <option value="A">A</option>
-        <option value="A#">A#</option>
-        <option value="B">B</option>
-    </select>
-
-    <select id="mode" onchange="updateResults()">
-        <option value="Ionian">Ionian</option>
-        <option value="Dorian">Dorian</option>
-        <option value="Phrygian" selected>Phrygian</option>
-        <option value="Lydian">Lydian</option>
-        <option value="Mixolydian">Mixolydian</option>
-        <option value="Aeolian">Aeolian</option>
-        <option value="Locrian">Locrian</option>
-    </select>
-
+    <div class="form-group">
+        <button class="btn btn-outline-light btn" id="stopAllButton">Stop</button>
+    </div>
+    <div class="form-group">
+        <select id="noteroot" class="form-select btn-outline-light btn" onchange="updateResults()">
+            <option value="C">C</option>
+            <option value="C#">C#</option>
+            <option value="D">D</option>
+            <option value="D#">D#</option>
+            <option value="E" selected>E</option>
+            <option value="F">F</option>
+            <option value="F#">F#</option>
+            <option value="G">G</option>
+            <option value="G#">G#</option>
+            <option value="A">A</option>
+            <option value="A#">A#</option>
+            <option value="B">B</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <select id="mode" class="form-select btn-outline-light btn" onchange="updateResults()">
+            <option value="Ionian">Ionian</option>
+            <option value="Dorian">Dorian</option>
+            <option value="Phrygian" selected>Phrygian</option>
+            <option value="Lydian">Lydian</option>
+            <option value="Mixolydian">Mixolydian</option>
+            <option value="Aeolian">Aeolian</option>
+            <option value="Locrian">Locrian</option>
+        </select>
+    </div>
     <div class="results" id="results"></div>
 
     <!-- Modal for MIDI note information -->
@@ -316,7 +327,7 @@
 
         // Display results in table with dynamic Roman numeral headers, note names, and MIDI data
         document.getElementById("results").innerHTML = `
-            <table class="table" table-borderless>
+            <table class="table table-bordered mt-4 table-sm" style="color: white;">
                 <tbody>
                     ${diatonicChords}
                 </tbody>
