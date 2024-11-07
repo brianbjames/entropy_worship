@@ -106,7 +106,7 @@
         }
         select { margin: 10px 0; }
         .results { margin-top: 20px; }
-        #volumeSlider { width: 50%; }
+        #volumeSlider { width: 100%; }
         .modal-content {
             background-color: black !important; /* Set the background to black */
             color: white; /* Make text color white for contrast */
@@ -186,10 +186,18 @@
                         </div>
                     </div>
                 </div>
+                <div class="modal fade" id="rootModal" tabindex="-1" aria-labelledby="rootModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-body">
+                                <p id="rootNote"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-
     <script>
         
         const notes = ["C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B"];
@@ -265,7 +273,106 @@ document.getElementById('volumeSlider').addEventListener('input', (e) => {
     // Optionally update the volume value in UI (you can add a span to show the volume value)
     document.getElementById("volumeValue").innerText = `Volume: ${e.target.value}%`;
 });
-    
+
+        //These arrays are for overwriting incorrectly spelled enharomic notes
+        // Ionian (Major Scale)
+        let cShIonian = ["C♯", "D♯", "E♯", "F♯", "G♯", "A♯", "B♯"];
+        let cIonian = ["C", "D", "E", "F", "G", "A", "B"];
+        let dIonian = ["D", "E", "F♯", "G", "A", "B", "C♯"];
+        let dShIonian = ["D♯", "E♯", "F𝄪", "G♯", "A♯", "B♯", "C𝄪"]; // Corrected F♯ to F𝄪
+        let eIonian = ["E", "F♯", "G♯", "A", "B", "C♯", "D♯"];
+        let fIonian = ["F", "G", "A", "B♭", "C", "D", "E"];
+        let fShIonian = ["F♯", "G♯", "A♯", "B", "C♯", "D♯", "E♯"];
+        let gIonian = ["G", "A", "B", "C", "D", "E", "F♯"];
+        let gShIonian = ["G♯", "A♯", "B♯", "C♯", "D♯", "E♯", "F𝄪"]; // Corrected F♯ to F𝄪
+        let aIonian = ["A", "B", "C♯", "D", "E", "F♯", "G♯"];
+        let aShIonian = ["A♯", "B♯", "C𝄪", "D♯", "E♯", "F𝄪", "G𝄪"];
+        let bIonian = ["B", "C♯", "D♯", "E", "F♯", "G♯", "A♯"];
+
+        // Dorian Mode
+        let cDorian = ["C", "D", "E♭", "F", "G", "A", "B♭"];
+        let cShDorian = ["C♯", "D♯", "E", "F♯", "G♯", "A♯", "B"];
+        let dDorian = ["D", "E", "F", "G", "A", "B", "C"];
+        let dShDorian = ["D♯", "E♯", "F♯", "G♯", "A♯", "B♯", "C♯"];
+        let eDorian = ["E", "F♯", "G", "A", "B", "C♯", "D"];
+        let fDorian = ["F", "G", "A♭", "B♭", "C", "D", "E♭"];
+        let fShDorian = ["F♯", "G♯", "A", "B", "C♯", "D♯", "E"];
+        let gDorian = ["G", "A", "B♭", "C", "D", "E", "F"];
+        let gShDorian = ["G♯", "A♯", "B", "C♯", "D♯", "E♯", "F♯"];
+        let aDorian = ["A", "B", "C", "D", "E", "F♯", "G"];
+        let aShDorian = ["A♯", "B♯", "C♯", "D♯", "E♯", "F𝄪", "G♯"];
+        let bDorian = ["B", "C♯", "D", "E", "F♯", "G♯", "A"];
+
+        // Phrygian Mode
+        let cPhrygian = ["C", "D♭", "E♭", "F", "G", "A♭", "B♭"];
+        let cShPhrygian = ["C♯", "D", "E", "F♯", "G♯", "A", "B"];
+        let dPhrygian = ["D", "E♭", "F", "G", "A", "B♭", "C"];
+        let dShPhrygian = ["D♯", "E", "F", "G♯", "A♯", "B", "C♯"];
+        let ePhrygian = ["E", "F", "G", "A", "B", "C", "D"];
+        let fPhrygian = ["F", "G♭", "A♭", "B♭", "C", "D♭", "E♭"];
+        let fShPhrygian = ["F♯", "G", "A", "B", "C♯", "D", "E"];
+        let gPhrygian = ["G", "A♭", "B♭", "C", "D", "E♭", "F"];
+        let gShPhrygian = ["G♯", "A", "B", "C♯", "D♯", "E", "F♯"];
+        let aPhrygian = ["A", "B♭", "C", "D", "E", "F", "G"];
+        let aShPhrygian = ["A♯", "B", "C♯", "D♯", "E♯", "F♯", "G♯"];
+        let bPhrygian = ["B", "C", "D", "E", "F♯", "G", "A"];
+
+        // Lydian Mode
+        let cLydian = ["C", "D", "E", "F♯", "G", "A", "B"];
+        let cShLydian = ["C♯", "D♯", "E♯", "F𝄪", "G♯", "A♯", "B♯"];
+        let dLydian = ["D", "E", "F♯", "G♯", "A", "B", "C♯"];
+        let dShLydian = ["D♯", "E♯", "F𝄪", "G𝄪", "A♯", "B♯", "C𝄪"];
+        let eLydian = ["E", "F♯", "G♯", "A♯", "B", "C♯", "D♯"];
+        let fLydian = ["F", "G", "A", "B", "C", "D", "E"];
+        let fShLydian = ["F♯", "G♯", "A♯", "B♯", "C♯", "D♯", "E♯"];
+        let gLydian = ["G", "A", "B", "C♯", "D", "E", "F♯"];
+        let gShLydian = ["G♯", "A♯", "B♯", "C𝄪", "D♯", "E♯", "F♯"];
+        let aLydian = ["A", "B", "C♯", "D♯", "E", "F♯", "G♯"];
+        let aShLydian = ["A♯", "B♯", "C𝄪", "D𝄪", "E♯", "F𝄪", "G𝄪"];
+        let bLydian = ["B", "C♯", "D♯", "E♯", "F♯", "G♯", "A♯"];
+
+        // Mixolydian Mode
+        let cMixolydian = ["C", "D", "E", "F", "G", "A", "B♭"];
+        let cShMixolydian = ["C♯", "D♯", "E♯", "F♯", "G♯", "A♯", "B"];
+        let dMixolydian = ["D", "E", "F♯", "G", "A", "B", "C"];
+        let dShMixolydian = ["D♯", "E♯", "F𝄪", "G♯", "A♯", "B♯", "C♯"];
+        let eMixolydian = ["E", "F♯", "G♯", "A", "B", "C♯", "D"];
+        let fMixolydian = ["F", "G", "A", "B♭", "C", "D", "E♭"];
+        let fShMixolydian = ["F♯", "G♯", "A♯", "B", "C♯", "D♯", "E"];
+        let gMixolydian = ["G", "A", "B", "C", "D", "E", "F"];
+        let gShMixolydian = ["G♯", "A♯", "B♯", "C♯", "D♯", "E♯", "F♯"];
+        let aMixolydian = ["A", "B", "C♯", "D", "E", "F♯", "G"];
+        let aShMixolydian = ["A♯", "B♯", "C𝄪", "D♯", "E♯", "F𝄪", "G♯"];
+        let bMixolydian = ["B", "C♯", "D♯", "E", "F♯", "G♯", "A"];
+
+        // Aeolian Mode (Natural Minor)
+        let cAeolian = ["C", "D", "E♭", "F", "G", "A♭", "B♭"];
+        let cShAeolian = ["C♯", "D♯", "E", "F♯", "G♯", "A", "B"];
+        let dAeolian = ["D", "E♭", "F", "G", "A", "B♭", "C"];
+        let dShAeolian = ["D♯", "E", "F", "G♯", "A♯", "B", "C♯"];
+        let eAeolian = ["E", "F♯", "G", "A", "B", "C", "D"];
+        let fAeolian = ["F", "G♭", "A♭", "B♭", "C", "D♭", "E♭"];
+        let fShAeolian = ["F♯", "G", "A", "B", "C♯", "D", "E"];
+        let gAeolian = ["G", "A♭", "B♭", "C", "D", "E♭", "F"];
+        let gShAeolian = ["G♯", "A", "B", "C♯", "D♯", "E", "F♯"];
+        let aAeolian = ["A", "B♭", "C", "D", "E", "F", "G"];
+        let aShAeolian = ["A♯", "B", "C♯", "D♯", "E♯", "F", "G♯"];
+        let bAeolian = ["B", "C", "D", "E", "F♯", "G♯", "A"];
+
+        // Locrian Mode
+        let cLocrian = ["C", "D♭", "E♭", "F", "G♭", "A♭", "B♭"];
+        let cShLocrian = ["C♯", "D", "E", "F♯", "G", "A", "B"];
+        let dLocrian = ["D", "E♭", "F", "G", "A♭", "B♭", "C"];
+        let dShLocrian = ["D♯", "E", "F", "G♯", "A", "B", "C♯"];
+        let eLocrian = ["E", "F", "G", "A", "B♭", "C", "D"];
+        let fLocrian = ["F", "G♭", "A♭", "B♭", "C", "D♭", "E♭"];
+        let fShLocrian = ["F♯", "G", "A", "B", "C♯", "D", "E"];
+        let gLocrian = ["G", "A♭", "B♭", "C", "D♭", "E♭", "F"];
+        let gShLocrian = ["G♯", "A", "B", "C♯", "D", "E", "F♯"];
+        let aLocrian = ["A", "B♭", "C", "D", "E♭", "F", "G"];
+        let aShLocrian = ["A♯", "B", "C♯", "D♯", "E", "F♯", "G♯"];
+        let bLocrian = ["B", "C", "D", "E", "F", "G", "A"];
+
         // Update results when inputs change
         function updateResults() {
             const noteroot = document.getElementById("noteroot").value;
@@ -282,207 +389,106 @@ document.getElementById('volumeSlider').addEventListener('input', (e) => {
             // Calculate MIDI values for each note in the scale
             const midiValues = scale.map(note => getMidiValuesForNote(note, octave));
 
-            //These arrays are for overwriting incorrectly spelled enharomic notes, need to add the rest!!!
-            // Ionian (Major Scale)
-            let cIonian = ["C", "D", "E", "F", "G", "A", "B"];
-            let cShIonian = ["C♯", "D♯", "E♯", "F♯", "G♯", "A♯", "B♯"];
-            let dIonian = ["D", "E", "F♯", "G", "A", "B", "C♯"];
-            let dShIonian = ["D♯", "E♯", "F𝄪", "G♯", "A♯", "B♯", "C𝄪"]; // Corrected F♯ to F𝄪
-            let eIonian = ["E", "F♯", "G♯", "A", "B", "C♯", "D♯"];
-            let fIonian = ["F", "G", "A", "B♭", "C", "D", "E"];
-            let fShIonian = ["F♯", "G♯", "A♯", "B", "C♯", "D♯", "E♯"];
-            let gIonian = ["G", "A", "B", "C", "D", "E", "F♯"];
-            let gShIonian = ["G♯", "A♯", "B♯", "C♯", "D♯", "E♯", "F𝄪"]; // Corrected F♯ to F𝄪
-            let aIonian = ["A", "B", "C♯", "D", "E", "F♯", "G♯"];
-            let aShIonian = ["A♯", "B♯", "C𝄪", "D♯", "E♯", "F𝄪", "G𝄪"];
-            let bIonian = ["B", "C♯", "D♯", "E", "F♯", "G♯", "A♯"];
-
-            // Dorian Mode
-            let cDorian = ["C", "D", "E♭", "F", "G", "A", "B♭"];
-            let cShDorian = ["C♯", "D♯", "E", "F♯", "G♯", "A♯", "B"];
-            let dDorian = ["D", "E", "F", "G", "A", "B", "C"];
-            let dShDorian = ["D♯", "E♯", "F♯", "G♯", "A♯", "B♯", "C♯"];
-            let eDorian = ["E", "F♯", "G", "A", "B", "C♯", "D"];
-            let fDorian = ["F", "G", "A♭", "B♭", "C", "D", "E♭"];
-            let fShDorian = ["F♯", "G♯", "A", "B", "C♯", "D♯", "E"];
-            let gDorian = ["G", "A", "B♭", "C", "D", "E", "F"];
-            let gShDorian = ["G♯", "A♯", "B", "C♯", "D♯", "E♯", "F♯"];
-            let aDorian = ["A", "B", "C", "D", "E", "F♯", "G"];
-            let aShDorian = ["A♯", "B♯", "C♯", "D♯", "E♯", "F𝄪", "G♯"];
-            let bDorian = ["B", "C♯", "D", "E", "F♯", "G♯", "A"];
-
-            // Phrygian Mode
-            let cPhrygian = ["C", "D♭", "E♭", "F", "G", "A♭", "B♭"];
-            let cShPhrygian = ["C♯", "D", "E", "F♯", "G♯", "A", "B"];
-            let dPhrygian = ["D", "E♭", "F", "G", "A", "B♭", "C"];
-            let dShPhrygian = ["D♯", "E", "F", "G♯", "A♯", "B", "C♯"];
-            let ePhrygian = ["E", "F", "G", "A", "B", "C", "D"];
-            let fPhrygian = ["F", "G♭", "A♭", "B♭", "C", "D♭", "E♭"];
-            let fShPhrygian = ["F♯", "G", "A", "B", "C♯", "D", "E"];
-            let gPhrygian = ["G", "A♭", "B♭", "C", "D", "E♭", "F"];
-            let gShPhrygian = ["G♯", "A", "B", "C♯", "D♯", "E", "F♯"];
-            let aPhrygian = ["A", "B♭", "C", "D", "E", "F", "G"];
-            let aShPhrygian = ["A♯", "B", "C♯", "D♯", "E♯", "F♯", "G♯"];
-            let bPhrygian = ["B", "C", "D", "E", "F♯", "G", "A"];
-
-            // Lydian Mode
-            let cLydian = ["C", "D", "E", "F♯", "G", "A", "B"];
-            let cShLydian = ["C♯", "D♯", "E♯", "F𝄪", "G♯", "A♯", "B♯"];
-            let dLydian = ["D", "E", "F♯", "G♯", "A", "B", "C♯"];
-            let dShLydian = ["D♯", "E♯", "F𝄪", "G𝄪", "A♯", "B♯", "C𝄪"];
-            let eLydian = ["E", "F♯", "G♯", "A♯", "B", "C♯", "D♯"];
-            let fLydian = ["F", "G", "A", "B", "C", "D", "E"];
-            let fShLydian = ["F♯", "G♯", "A♯", "B♯", "C♯", "D♯", "E♯"];
-            let gLydian = ["G", "A", "B", "C♯", "D", "E", "F♯"];
-            let gShLydian = ["G♯", "A♯", "B♯", "C𝄪", "D♯", "E♯", "F♯"];
-            let aLydian = ["A", "B", "C♯", "D♯", "E", "F♯", "G♯"];
-            let aShLydian = ["A♯", "B♯", "C𝄪", "D𝄪", "E♯", "F𝄪", "G𝄪"];
-            let bLydian = ["B", "C♯", "D♯", "E♯", "F♯", "G♯", "A♯"];
-
-            // Mixolydian Mode
-            let cMixolydian = ["C", "D", "E", "F", "G", "A", "B♭"];
-            let cShMixolydian = ["C♯", "D♯", "E♯", "F♯", "G♯", "A♯", "B"];
-            let dMixolydian = ["D", "E", "F♯", "G", "A", "B", "C"];
-            let dShMixolydian = ["D♯", "E♯", "F𝄪", "G♯", "A♯", "B♯", "C♯"];
-            let eMixolydian = ["E", "F♯", "G♯", "A", "B", "C♯", "D"];
-            let fMixolydian = ["F", "G", "A", "B♭", "C", "D", "E♭"];
-            let fShMixolydian = ["F♯", "G♯", "A♯", "B", "C♯", "D♯", "E"];
-            let gMixolydian = ["G", "A", "B", "C", "D", "E", "F"];
-            let gShMixolydian = ["G♯", "A♯", "B♯", "C♯", "D♯", "E♯", "F♯"];
-            let aMixolydian = ["A", "B", "C♯", "D", "E", "F♯", "G"];
-            let aShMixolydian = ["A♯", "B♯", "C𝄪", "D♯", "E♯", "F𝄪", "G♯"];
-            let bMixolydian = ["B", "C♯", "D♯", "E", "F♯", "G♯", "A"];
-
-            // Aeolian Mode (Natural Minor)
-            let cAeolian = ["C", "D", "E♭", "F", "G", "A♭", "B♭"];
-            let cShAeolian = ["C♯", "D♯", "E", "F♯", "G♯", "A", "B"];
-            let dAeolian = ["D", "E♭", "F", "G", "A", "B♭", "C"];
-            let dShAeolian = ["D♯", "E", "F", "G♯", "A♯", "B", "C♯"];
-            let eAeolian = ["E", "F", "G", "A", "B", "C", "D"];
-            let fAeolian = ["F", "G♭", "A♭", "B♭", "C", "D♭", "E♭"];
-            let fShAeolian = ["F♯", "G", "A", "B", "C♯", "D", "E"];
-            let gAeolian = ["G", "A♭", "B♭", "C", "D", "E♭", "F"];
-            let gShAeolian = ["G♯", "A", "B", "C♯", "D♯", "E", "F♯"];
-            let aAeolian = ["A", "B♭", "C", "D", "E", "F", "G"];
-            let aShAeolian = ["A♯", "B", "C♯", "D♯", "E♯", "F", "G♯"];
-            let bAeolian = ["B", "C", "D", "E", "F♯", "G♯", "A"];
-
-            // Locrian Mode
-            let cLocrian = ["C", "D♭", "E♭", "F", "G♭", "A♭", "B♭"];
-            let cShLocrian = ["C♯", "D", "E", "F♯", "G", "A", "B"];
-            let dLocrian = ["D", "E♭", "F", "G", "A♭", "B♭", "C"];
-            let dShLocrian = ["D♯", "E", "F", "G♯", "A", "B", "C♯"];
-            let eLocrian = ["E", "F", "G", "A", "B♭", "C", "D"];
-            let fLocrian = ["F", "G♭", "A♭", "B♭", "C", "D♭", "E♭"];
-            let fShLocrian = ["F♯", "G", "A", "B", "C♯", "D", "E"];
-            let gLocrian = ["G", "A♭", "B♭", "C", "D♭", "E♭", "F"];
-            let gShLocrian = ["G♯", "A", "B", "C♯", "D", "E", "F♯"];
-            let aLocrian = ["A", "B♭", "C", "D", "E♭", "F", "G"];
-            let aShLocrian = ["A♯", "B", "C♯", "D♯", "E", "F♯", "G♯"];
-            let bLocrian = ["B", "C", "D", "E", "F", "G", "A"];
-
-
-    
             // Generate table rows with Roman numeral chord names, note names, and MIDI data
             const diatonicChords = scale.map((_, i) => {
             let rootNote = scale[i]; // The root note for the chord is the corresponding calculated scale note
             // Ionian (Major Scale)
-            let cIonianRootsString = cIonian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let cShIonianRootsString = cShIonian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let dIonianRootsString = dIonian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let dShIonianRootsString = dShIonian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let eIonianRootsString = eIonian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let fIonianRootsString = fIonian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let fShIonianRootsString = fShIonian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let gIonianRootsString = gIonian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let gShIonianRootsString = gShIonian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let aIonianRootsString = aIonian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let aShIonianRootsString = aShIonian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let bIonianRootsString = bIonian[i]; // Need to do this to overwrite for enharmonic misspellings
+            let cIonianRootsString = cIonian[i]; 
+            let cShIonianRootsString = cShIonian[i]; 
+            let dIonianRootsString = dIonian[i]; 
+            let dShIonianRootsString = dShIonian[i]; 
+            let eIonianRootsString = eIonian[i]; 
+            let fIonianRootsString = fIonian[i]; 
+            let fShIonianRootsString = fShIonian[i]; 
+            let gIonianRootsString = gIonian[i]; 
+            let gShIonianRootsString = gShIonian[i]; 
+            let aIonianRootsString = aIonian[i]; 
+            let aShIonianRootsString = aShIonian[i]; 
+            let bIonianRootsString = bIonian[i]; 
 
             // Dorian Mode
-            let cDorianRootsString = cDorian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let cShDorianRootsString = cShDorian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let dDorianRootsString = dDorian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let dShDorianRootsString = dShDorian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let eDorianRootsString = eDorian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let fDorianRootsString = fDorian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let fShDorianRootsString = fShDorian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let gDorianRootsString = gDorian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let gShDorianRootsString = gShDorian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let aDorianRootsString = aDorian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let aShDorianRootsString = aShDorian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let bDorianRootsString = bDorian[i]; // Need to do this to overwrite for enharmonic misspellings
+            let cDorianRootsString = cDorian[i]; 
+            let cShDorianRootsString = cShDorian[i]; 
+            let dDorianRootsString = dDorian[i]; 
+            let dShDorianRootsString = dShDorian[i]; 
+            let eDorianRootsString = eDorian[i]; 
+            let fDorianRootsString = fDorian[i]; 
+            let fShDorianRootsString = fShDorian[i]; 
+            let gDorianRootsString = gDorian[i]; 
+            let gShDorianRootsString = gShDorian[i]; 
+            let aDorianRootsString = aDorian[i]; 
+            let aShDorianRootsString = aShDorian[i]; 
+            let bDorianRootsString = bDorian[i]; 
 
             // Phrygian Mode
-            let cPhrygianRootsString = cPhrygian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let cShPhrygianRootsString = cShPhrygian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let dPhrygianRootsString = dPhrygian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let dShPhrygianRootsString = dShPhrygian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let ePhrygianRootsString = ePhrygian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let fPhrygianRootsString = fPhrygian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let fShPhrygianRootsString = fShPhrygian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let gPhrygianRootsString = gPhrygian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let gShPhrygianRootsString = gShPhrygian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let aPhrygianRootsString = aPhrygian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let aShPhrygianRootsString = aShPhrygian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let bPhrygianRootsString = bPhrygian[i]; // Need to do this to overwrite for enharmonic misspellings
+            let cPhrygianRootsString = cPhrygian[i]; 
+            let cShPhrygianRootsString = cShPhrygian[i]; 
+            let dPhrygianRootsString = dPhrygian[i]; 
+            let dShPhrygianRootsString = dShPhrygian[i]; 
+            let ePhrygianRootsString = ePhrygian[i]; 
+            let fPhrygianRootsString = fPhrygian[i]; 
+            let fShPhrygianRootsString = fShPhrygian[i]; 
+            let gPhrygianRootsString = gPhrygian[i]; 
+            let gShPhrygianRootsString = gShPhrygian[i]; 
+            let aPhrygianRootsString = aPhrygian[i]; 
+            let aShPhrygianRootsString = aShPhrygian[i]; 
+            let bPhrygianRootsString = bPhrygian[i]; 
 
             // Lydian Mode
-            let cLydianRootsString = cLydian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let cShLydianRootsString = cShLydian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let dLydianRootsString = dLydian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let dShLydianRootsString = dShLydian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let eLydianRootsString = eLydian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let fLydianRootsString = fLydian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let fShLydianRootsString = fShLydian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let gLydianRootsString = gLydian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let gShLydianRootsString = gShLydian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let aLydianRootsString = aLydian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let aShLydianRootsString = aShLydian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let bLydianRootsString = bLydian[i]; // Need to do this to overwrite for enharmonic misspellings
+            let cLydianRootsString = cLydian[i]; 
+            let cShLydianRootsString = cShLydian[i]; 
+            let dLydianRootsString = dLydian[i]; 
+            let dShLydianRootsString = dShLydian[i]; 
+            let eLydianRootsString = eLydian[i]; 
+            let fLydianRootsString = fLydian[i]; 
+            let fShLydianRootsString = fShLydian[i]; 
+            let gLydianRootsString = gLydian[i]; 
+            let gShLydianRootsString = gShLydian[i]; 
+            let aLydianRootsString = aLydian[i]; 
+            let aShLydianRootsString = aShLydian[i]; 
+            let bLydianRootsString = bLydian[i]; 
 
             // Mixolydian Mode
-            let cMixolydianRootsString = cMixolydian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let cShMixolydianRootsString = cShMixolydian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let dMixolydianRootsString = dMixolydian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let dShMixolydianRootsString = dShMixolydian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let eMixolydianRootsString = eMixolydian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let fMixolydianRootsString = fMixolydian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let fShMixolydianRootsString = fShMixolydian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let gMixolydianRootsString = gMixolydian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let gShMixolydianRootsString = gShMixolydian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let aMixolydianRootsString = aMixolydian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let aShMixolydianRootsString = aShMixolydian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let bMixolydianRootsString = bMixolydian[i]; // Need to do this to overwrite for enharmonic misspellings
+            let cMixolydianRootsString = cMixolydian[i]; 
+            let cShMixolydianRootsString = cShMixolydian[i]; 
+            let dMixolydianRootsString = dMixolydian[i]; 
+            let dShMixolydianRootsString = dShMixolydian[i]; 
+            let eMixolydianRootsString = eMixolydian[i]; 
+            let fMixolydianRootsString = fMixolydian[i]; 
+            let fShMixolydianRootsString = fShMixolydian[i]; 
+            let gMixolydianRootsString = gMixolydian[i]; 
+            let gShMixolydianRootsString = gShMixolydian[i]; 
+            let aMixolydianRootsString = aMixolydian[i]; 
+            let aShMixolydianRootsString = aShMixolydian[i]; 
+            let bMixolydianRootsString = bMixolydian[i]; 
 
             // Aeolian Mode (Natural Minor Scale)
-            let cAeolianRootsString = cAeolian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let cShAeolianRootsString = cShAeolian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let dAeolianRootsString = dAeolian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let dShAeolianRootsString = dShAeolian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let eAeolianRootsString = eAeolian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let fAeolianRootsString = fAeolian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let fShAeolianRootsString = fShAeolian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let gAeolianRootsString = gAeolian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let gShAeolianRootsString = gShAeolian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let aAeolianRootsString = aAeolian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let aShAeolianRootsString = aShAeolian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let bAeolianRootsString = bAeolian[i]; // Need to do this to overwrite for enharmonic misspellings
+            let cAeolianRootsString = cAeolian[i]; 
+            let cShAeolianRootsString = cShAeolian[i]; 
+            let dAeolianRootsString = dAeolian[i]; 
+            let dShAeolianRootsString = dShAeolian[i]; 
+            let eAeolianRootsString = eAeolian[i]; 
+            let fAeolianRootsString = fAeolian[i]; 
+            let fShAeolianRootsString = fShAeolian[i]; 
+            let gAeolianRootsString = gAeolian[i]; 
+            let gShAeolianRootsString = gShAeolian[i]; 
+            let aAeolianRootsString = aAeolian[i]; 
+            let aShAeolianRootsString = aShAeolian[i]; 
+            let bAeolianRootsString = bAeolian[i]; 
 
             // Locrian Mode
-            let cLocrianRootsString = cLocrian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let cShLocrianRootsString = cShLocrian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let dLocrianRootsString = dLocrian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let dShLocrianRootsString = dShLocrian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let eLocrianRootsString = eLocrian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let fLocrianRootsString = fLocrian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let fShLocrianRootsString = fShLocrian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let gLocrianRootsString = gLocrian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let gShLocrianRootsString = gShLocrian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let aLocrianRootsString = aLocrian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let aShLocrianRootsString = aShLocrian[i]; // Need to do this to overwrite for enharmonic misspellings
-            let bLocrianRootsString = bLocrian[i]; // Need to do this to overwrite for enharmonic misspellings
+            let cLocrianRootsString = cLocrian[i]; 
+            let cShLocrianRootsString = cShLocrian[i]; 
+            let dLocrianRootsString = dLocrian[i]; 
+            let dShLocrianRootsString = dShLocrian[i]; 
+            let eLocrianRootsString = eLocrian[i]; 
+            let fLocrianRootsString = fLocrian[i]; 
+            let fShLocrianRootsString = fShLocrian[i]; 
+            let gLocrianRootsString = gLocrian[i]; 
+            let gShLocrianRootsString = gShLocrian[i]; 
+            let aLocrianRootsString = aLocrian[i]; 
+            let aShLocrianRootsString = aShLocrian[i]; 
+            let bLocrianRootsString = bLocrian[i]; 
             // Ionian (Major Scale)
             if (mode === "Ionian" && noteroot === "C") {
                 rootNote = cIonian[i];
@@ -749,10 +755,10 @@ document.getElementById('volumeSlider').addEventListener('input', (e) => {
                 rootNote = bLocrian[i];
             }
 
-                    const rootMidi = midiValues[i].join(", ");
+            const rootMidi = midiValues[i].join(", ");
                 return `<tr>
                     <td>${romanHeaders[i]}</td>
-                    <td>${rootNote}</td>
+                    <td><button class="btn btn-outline-light btn-sm" style="color: white;><a href="#" data-scaleDegree="${rootNote}" onclick="openRootModal('${rootNote}')">${rootNote}</a></button></td>
                     <td>${generateMidiLinks(rootMidi)}</td>
                 </tr>`;
             }).join("");
@@ -766,6 +772,7 @@ document.getElementById('volumeSlider').addEventListener('input', (e) => {
                 </table>
             `;
         }
+
         // Helper function to generate clickable MIDI links
         function generateMidiLinks(midi) {
             return midi.split(', ').map(midiValue => {
@@ -773,13 +780,19 @@ document.getElementById('volumeSlider').addEventListener('input', (e) => {
                 return `<button class="btn btn-outline-light btn-sm" style="color: white;><a href="#" data-midi="${midiValue}" data-frequency="${frequency}" onclick="openModal('${midiValue}', '${frequency}')">${midiValue}</a></button>`;
             }).join(" ");
         }
-    // Function to open the modal and show information, including octave
-    function openModal(midiValue, frequency) {
+
+        // Helper function to generate clickable scale degree links
+        function generateScaleDegreeLinks(scaleDegree) {
+            return `<button class="btn btn-outline-light btn-sm" style="color: white;><a href="#" data-scaleDegree="${rootNote}" onclick="openRootModal('${rootNote}')">${rootNote}</a></button>`;
+        }
+
+        // Function to open the modal and show information, including octave
+        function openModal(midiValue, frequency) {
         const octave = Math.floor(midiValue / 12) - 1; // Calculate octave based on MIDI value
         document.getElementById("midiValue").innerText = `MIDI Value: ${midiValue}`;
         document.getElementById("frequency").innerText = `Frequency: ${frequency} Hz`;
         document.getElementById("octave").innerText = `Octave: ${octave}`;
-        
+
         const playButton = document.getElementById("playButton");
 
         // Add event listener to play button
@@ -794,9 +807,16 @@ document.getElementById('volumeSlider').addEventListener('input', (e) => {
                 isPlaying[midiValue] = true;
             }
         };
-
         // Show the modal
         const myModal = new bootstrap.Modal(document.getElementById('midiModal'));
+        myModal.show();
+    }
+
+       // Function to open the ROOT modal and show information, including octave
+       function openRootModal(rootNote) {
+        document.getElementById("rootNote").innerText = `Root: ${rootNote}`;
+        // Show the modal
+        const myModal = new bootstrap.Modal(document.getElementById('rootModal'));
         myModal.show();
     }
     
