@@ -27,6 +27,7 @@
 <link rel="stylesheet" type="text/css" href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css">
 <!-- Sci UI CSS -->
 <link href="styles.css" rel="stylesheet">
+
     <style>
         .output {
             margin-top: 20px;
@@ -278,13 +279,20 @@ document.getElementById('volumeSlider').addEventListener('input', (e) => {
             // Calculate scale
             const scale = modeIntervals.map(interval => notes[(noteRootIndex + interval) % notes.length]);
     
-            // Step 1: Calculate MIDI values for each note in the scale
+            // Calculate MIDI values for each note in the scale
             const midiValues = scale.map(note => getMidiValuesForNote(note, octave));
+
+            //These arrays are for overwriting incorrectly spelled enharomic notes, need to add the rest!!!
+            const cShIonian = ["C♯", "D♯", "E♯", "F♯", "G♯", "A♯", "B♯"];
     
             // Generate table rows with Roman numeral chord names, note names, and MIDI data
             const diatonicChords = scale.map((_, i) => {
-                const rootNote = scale[i]; // The root note for the chord is the corresponding scale note
-                const rootMidi = midiValues[i].join(", ");
+                let rootNote = scale[i]; // The root note for the chord is the corresponding calculated scale note
+                let cShIonianRootsString = cShIonian[i]; //Need to do this to overwrite for enharmonic misspellings
+                if (mode === "Ionian" && noteroot === "C♯") {
+                    rootNote = cShIonian[i];  
+                };
+                    const rootMidi = midiValues[i].join(", ");
                 return `<tr>
                     <td>${romanHeaders[i]}</td>
                     <td>${rootNote}</td>
@@ -301,7 +309,6 @@ document.getElementById('volumeSlider').addEventListener('input', (e) => {
                 </table>
             `;
         }
-    
         // Helper function to generate clickable MIDI links
         function generateMidiLinks(midi) {
             return midi.split(', ').map(midiValue => {
@@ -309,7 +316,6 @@ document.getElementById('volumeSlider').addEventListener('input', (e) => {
                 return `<button class="btn btn-outline-light btn-sm" style="color: white;><a href="#" data-midi="${midiValue}" data-frequency="${frequency}" onclick="openModal('${midiValue}', '${frequency}')">${midiValue}</a></button>`;
             }).join(" ");
         }
-    
     // Function to open the modal and show information, including octave
     function openModal(midiValue, frequency) {
         const octave = Math.floor(midiValue / 12) - 1; // Calculate octave based on MIDI value
