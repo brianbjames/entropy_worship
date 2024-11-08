@@ -138,7 +138,7 @@
         <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c"><!--Header panel-->
             <div class="card-header border-danger">
                 <h1 class="heading display-6" style="font-size: 1.5rem;">ENTROPY WORSHIP</h1>
-                <h2 class="panel info shown" style="font-size: 1.5rem;">build 3.0.11.03.24</h1>
+                <h2 class="panel info shown" style="font-size: 1.5rem;">build 3.0.11.07.24</h1>
             </div>
             <div class="card-body">
                 <h2>midicalc</h2>
@@ -191,6 +191,7 @@
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-body">
+                                <!--<p id="romanHeaders"></p>-->
                                 <p id="rootNote"></p>
                                 <p id="thirdNote"></p>
                                 <p id="fifthNote"></p>
@@ -248,9 +249,6 @@
         function resetModalPlayButton() {
             const playButton = document.getElementById("playButton");
             playButton.innerText = "Play";
-            if (playButton.innerText === "Stop") {
-                playButton.innerText = "Play"; // Reset to "Play" if it was "Stop"
-            }
         }
 
         // Event listener for the Stop All button
@@ -386,7 +384,8 @@ document.getElementById('volumeSlider').addEventListener('input', (e) => {
     
             const noteRootIndex = notes.indexOf(noteroot);
             const modeIntervals = modes[mode];
-            const romanHeaders = romanNumerals[mode];
+            let romanHeaders = romanNumerals[mode];
+           
     
             // Calculate scale
             const scale = modeIntervals.map(interval => notes[(noteRootIndex + interval) % notes.length]);
@@ -397,7 +396,6 @@ document.getElementById('volumeSlider').addEventListener('input', (e) => {
             // Generate table rows with Roman numeral chord names, note names, and MIDI data
             const diatonicChords = scale.map((_, i) => {
             let rootNote = scale[i]; // The root note for the chord is the corresponding calculated scale note
-            
             
             // Ionian (Major Scale)
             let cIonianRootsString = cIonian[i]; 
@@ -1098,11 +1096,11 @@ document.getElementById('volumeSlider').addEventListener('input', (e) => {
                 seventhNote = bLocrian[6];
                 ninthNote = bLocrian[1];
             }
+            
 
             const rootMidi = midiValues[i].join(", ");
                 return `<tr>
-                    <td>${romanHeaders[i]}</td>
-                    <td><button class="btn btn-outline-light btn-sm" style="color: white;><a href="#" data-scaleDegree="${rootNote}" data-scaleDegree3="${thirdNote}" data-scaleDegree5="${fifthNote}" data-scaleDegree7="${seventhNote}" data-scaleDegree9="${ninthNote}" onclick="openRootModal('${rootNote}')">${rootNote}</a></button></td>
+                    <td><button class="btn btn-outline-light btn-sm" style="color: white;><a href="#" data-scaleDegree="${rootNote}" data-scaleDegree3="${thirdNote}" data-scaleDegree5="${fifthNote}" data-scaleDegree7="${seventhNote}" data-scaleDegree9="${ninthNote}" data-romans="${romanHeaders[i]}" onclick="openRootModal('${rootNote}')">${rootNote} ${romanHeaders[i]}</a></button></td>
                     <td>${generateMidiLinks(rootMidi)}</td>
                 </tr>`;
             }).join("");
@@ -1127,7 +1125,7 @@ document.getElementById('volumeSlider').addEventListener('input', (e) => {
 
         // Helper function to generate clickable scale degree links
         function generateScaleDegreeLinks(scaleDegree) {
-            return `<button class="btn btn-outline-light btn-sm" style="color: white;><a href="#" data-scaleDegree="${rootNote}" onclick="openRootModal('${rootNote}')">${rootNote}</a></button>`;
+            return `<button class="btn btn-outline-light btn-sm" style="color: white;><a href="#" data-scaleDegree="${rootNote}" data-romanHeader="${romanHeaders}" onclick="openRootModal('${rootNote}')">${rootNote}</a></button>`;
         }
 
         // Function to open the modal and show information, including octave
@@ -1158,6 +1156,7 @@ document.getElementById('volumeSlider').addEventListener('input', (e) => {
 
        // Function to open the ROOT modal and show information, including octave
        function openRootModal(rootNote) {
+        //document.getElementById("romanHeaders").innerText = `Chord: ${romanHeaders}`;
         document.getElementById("rootNote").innerText = `Root: ${rootNote}`;
         document.getElementById("thirdNote").innerText = `Third: ${thirdNote}`;
         document.getElementById("fifthNote").innerText = `Fifth: ${fifthNote}`;
