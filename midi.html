@@ -141,7 +141,7 @@
                 <h2 class="panel info shown" style="font-size: 1.5rem;">build 3.0.11.07.24</h1>
             </div>
             <div class="card-body">
-                <h2>midicalc</h2>
+                <h2>ewmidicalc</h2>
                 <div class="form-group">
                     <div class="row">
                         <button class="btn btn-outline-light btn-sm" id="stopAllButton">Stop</button>
@@ -191,12 +191,12 @@
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-body">
-                                <!--<p id="romanHeaders"></p>-->
                                 <p id="rootNote"></p>
                                 <p id="thirdNote"></p>
                                 <p id="fifthNote"></p>
                                 <p id="seventhNote"></p>
                                 <p id="ninthNote"></p>
+                                <!--<p id="nextChord"></p>-->
                             </div>
                         </div>
                     </div>
@@ -1096,11 +1096,25 @@ document.getElementById('volumeSlider').addEventListener('input', (e) => {
                 seventhNote = bLocrian[6];
                 ninthNote = bLocrian[1];
             }
-            
+
+           
+            // This figures out what chord progression text should be written WIP!!
+            /*if (romanHeaders.includes("I") || romanHeaders[i].includes("i") || romanHeaders[i].includes("i°")){
+                nextChord = "Progresses to any chord";
+            } else {
+                nextChord = "";
+            }
+            if (romanHeaders.includes("ii")) {
+                nextChord = "Progresses vii° or V";
+            }
+            if (romanHeaders.includes("II")) {
+                nextChord = "Progresses vii° or V";
+            }*/
+
 
             const rootMidi = midiValues[i].join(", ");
                 return `<tr>
-                    <td><button class="btn btn-outline-light btn-sm" style="color: white;><a href="#" data-scaleDegree="${rootNote}" data-scaleDegree3="${thirdNote}" data-scaleDegree5="${fifthNote}" data-scaleDegree7="${seventhNote}" data-scaleDegree9="${ninthNote}" data-romans="${romanHeaders[i]}" onclick="openRootModal('${rootNote}')">${rootNote} ${romanHeaders[i]}</a></button></td>
+                    <td><button class="btn btn-outline-light btn-sm" style="color: white;><a href="#" data-scaleDegree="${rootNote}" data-scaleDegree3="${thirdNote}" data-scaleDegree5="${fifthNote}" data-scaleDegree7="${seventhNote}" data-scaleDegree9="${ninthNote}" onclick="openRootModal('${rootNote}')">${rootNote} ${romanHeaders[i]}</a></button></td>
                     <td>${generateMidiLinks(rootMidi)}</td>
                 </tr>`;
             }).join("");
@@ -1125,7 +1139,7 @@ document.getElementById('volumeSlider').addEventListener('input', (e) => {
 
         // Helper function to generate clickable scale degree links
         function generateScaleDegreeLinks(scaleDegree) {
-            return `<button class="btn btn-outline-light btn-sm" style="color: white;><a href="#" data-scaleDegree="${rootNote}" data-romanHeader="${romanHeaders}" onclick="openRootModal('${rootNote}')">${rootNote}</a></button>`;
+            return `<button class="btn btn-outline-light btn-sm" style="color: white;><a href="#" data-scaleDegree="${rootNote}" onclick="openRootModal('${rootNote}')">${rootNote}</a></button>`;
         }
 
         // Function to open the modal and show information, including octave
@@ -1145,7 +1159,7 @@ document.getElementById('volumeSlider').addEventListener('input', (e) => {
                 isPlaying[midiValue] = false;
             } else {
                 startOscillator(frequency, midiValue);
-                playButton.innerText = "Stop"; // Change button to "Stop"
+                //playButton.innerText = "Stop"; // Change button to "Stop"
                 isPlaying[midiValue] = true;
             }
         };
@@ -1156,12 +1170,12 @@ document.getElementById('volumeSlider').addEventListener('input', (e) => {
 
        // Function to open the ROOT modal and show information, including octave
        function openRootModal(rootNote) {
-        //document.getElementById("romanHeaders").innerText = `Chord: ${romanHeaders}`;
         document.getElementById("rootNote").innerText = `Root: ${rootNote}`;
         document.getElementById("thirdNote").innerText = `Third: ${thirdNote}`;
         document.getElementById("fifthNote").innerText = `Fifth: ${fifthNote}`;
         document.getElementById("seventhNote").innerText = `Seventh: ${seventhNote}`;
         document.getElementById("ninthNote").innerText = `Ninth: ${ninthNote}`;
+        //document.getElementById("nextChord").innerText = `${nextChord}`;
         // Show the modal
         const myModal = new bootstrap.Modal(document.getElementById('rootModal'));
         myModal.show();
