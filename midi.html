@@ -211,7 +211,86 @@
         </div>
     </div>
     <script>
-        
+
+// example usage: keyContext.note.mode.ionian.chords.supertonic returns "D, F, A"
+const keyContext = {
+    c: {//C Start here
+    name: "C",
+    mode: {
+        ionian: {
+            name: "Ionian",
+            romans: ["I", "ii", "iii", "IV", "V", "vi", "vii°"],
+            scale: ["C", "D", "E", "F", "G", "A", "B"],
+            midiNotes: ["0", "2", "4", "5", "7", "9", "11"],
+            chords: {
+                tonic: ["C", "E", "G"],     
+                supertonic: ["D", "F", "A"],
+                mediant: ["E", "G", "B"],
+                subdominant: ["F", "A", "C"],
+                dominant: ["G", "B", "D"],  
+                submediant: ["A", "C", "E"],
+                leadingTone: ["B", "D", "F"],
+            },  
+        },
+        dorian: {
+            name: "Dorian",
+            romans: ["i", "ii", "III", "IV", "v", "vi°", "VII"],
+            scale: ["C", "D", "E", "F", "G", "A", "B"],
+            midiNotes: ["0", "2", "4", "5", "7", "9", "11"],
+            chords: {   
+
+            },  
+        },
+        phrygian: {
+            name: "Phrygian",
+            romans: ["i", "II", "III", "iv", "v°", "VI", "vii"],
+            scale: ["C", "D", "E", "F", "G", "A", "B"],
+            midiNotes: ["0", "2", "4", "5", "7", "9", "11"],
+            chords: {   
+
+            },  
+        },
+        lydian: {
+            name: "Lydian",
+            romans: ["I", "II", "iii", "iv°", "V", "vi", "vii"],
+            scale: ["C", "D", "E", "F", "G", "A", "B"],
+            midiNotes: ["0", "2", "4", "5", "7", "9", "11"],
+            chords: {   
+
+            },  
+        },
+        mixolydian: {
+            name: "Mixolydian",
+            romans: ["I", "ii", "iii°", "IV", "v", "vi", "VII"],
+            scale: ["C", "D", "E", "F", "G", "A", "B"],
+            midiNotes: ["0", "2", "4", "5", "7", "9", "11"],
+            chords: {   
+
+            },  
+        },
+        aeolian: {
+            name: "Aeolian",
+            romans: ["i", "ii°", "III", "iv", "v", "VI", "VII"],
+            scale: ["C", "D", "E", "F", "G", "A", "B"],
+            midiNotes: ["0", "2", "4", "5", "7", "9", "11"],
+            chords: {   
+
+            },  
+        },
+        locrian: {
+            name: "Locrian",
+            romans: ["i°", "II", "iii", "iv", "V", "VI", "vii"],
+            scale: ["C", "D", "E", "F", "G", "A", "B"],
+            midiNotes: ["0", "2", "4", "5", "7", "9", "11"],
+            chords: {   
+
+            },  
+        },
+    },
+    },//C End here
+};
+
+
         const notes = ["C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B"];
         const modes = {
             "Ionian": [0, 2, 4, 5, 7, 9, 11],
@@ -503,16 +582,13 @@ document.getElementById('volumeSlider').addEventListener('input', (e) => {
 
 
 
-
-
-
             // Ionian (Major Scale)
             if (mode === "Ionian" && noteroot === "C") {
                 rootNote = cIonian[i];        
                 thirdNote = cIonian[2];  
                 fifthNote = cIonian[4];   
-                seventhNote = cIonian[6]; 
-                ninthNote = cIonian[1];    
+                seventhNote = keyContext.c.mode.ionian.chords.tonic.join(", "); 
+                ninthNote = keyContext.c.mode.ionian.chords.tonic.join(", ");    
             }
             if (mode === "Ionian" && noteroot === "C♯") {
                 rootNote = cShIonian[i];
@@ -1113,6 +1189,7 @@ document.getElementById('volumeSlider').addEventListener('input', (e) => {
 
             const rootMidi = midiValues[i].join(", ");
                 return `<tr>
+                    <td>${romanHeaders[i]}</td>
                     <td><button class="btn btn-outline-light btn-sm" style="color: white;><a href="#" data-scaleDegree="${rootNote}" data-scaleDegree3="${thirdNote}" data-scaleDegree5="${fifthNote}" data-scaleDegree7="${seventhNote}" data-scaleDegree9="${ninthNote}" onclick="openRootModal('${rootNote}')">${rootNote} ${romanHeaders[i]}</a></button></td>
                     <td>${generateMidiLinks(rootMidi)}</td>
                 </tr>`;
