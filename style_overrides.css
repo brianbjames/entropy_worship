@@ -1,0 +1,102 @@
+        .output {
+            margin-top: 20px;
+            font-size: 1.2rem;
+        }
+        @font-face {
+        font-family: 'ThirdParty';
+        src: url('thirdpar.ttf') format('truetype'); /* Specify the path to the TTF file */
+        font-weight: normal; /* Adjust as necessary */
+        font-style: normal; /* Adjust as necessary */
+        }
+        @font-face {
+            font-family: 'Heiko';
+            src: url('heiko.ttf') format('truetype'); /* Specify the path to the TTF file */
+            font-weight: normal; /* Adjust as necessary */
+            font-style: normal; /* Adjust as necessary */
+        }
+        @font-face {
+            font-family: 'Tomorrow';
+            src: url('Tomorrow-Regular.ttf') format('truetype'); /* Specify the path to the TTF file */
+            font-weight: normal; /* Adjust as necessary */
+            font-style: normal; /* Adjust as necessary */
+        }
+
+        .heading {
+            color: #e80f0fcc; 
+            text-size-adjust: relative;
+
+        }
+        h1 {
+            text-align: left;
+            margin: 0;
+            padding: 0;
+            font-family: 'ThirdParty', sans-serif; /* Fallback to a generic font */
+        }
+        h2 {
+            text-align: left;
+            margin: 0;
+            padding: 0;
+            font-family: 'Heiko', sans-serif; /* Fallback to a generic font */
+        }
+        h3 {
+            text-align: left;
+            color: #e80f0fcc; 
+            margin: 0;
+            padding: 0;
+            font-family: 'ThirdParty', sans-serif; /* Fallback to a generic font */
+        }
+        h4 {
+            text-align: left;
+            margin: 0;
+            padding: 0;
+            font-family: 'Heiko', sans-serif; /* Fallback to a generic font */
+        }
+        h5 {
+            text-align: left;
+            margin: 0;
+            padding: 0;
+            font-size: 1.0rem;
+            font-family: 'Tomorrow', sans-serif; /* Fallback to a generic font */
+        }
+        body {
+          position: relative;
+          background-image: url('http://www.entropyworship.com/images/Iridescent-Nebula.jpg'); 
+          background-size: cover;
+          background-position: center;
+          color: white;
+          text-align: left;
+          margin: 0;
+          padding: 0;
+          font-family: 'Tomorrow', sans-serif; 
+          background-attachment: fixed; /* For desktop */
+        }
+        .transparent-bg {
+        background-color: transparent !important;
+        }
+        select { margin: 10px 0; }
+        .results { margin-top: 20px; }
+        #volumeSlider { width: 100%; }
+        .modal-content {
+            background-color: black !important; /* Set the background to black */
+            color: white; /* Make text color white for contrast */
+            opacity: 75%;
+        }
+
+        .modal-header {
+            border-bottom: 1px solid #444; /* Optional: Adjust the modal header's border */
+        }
+
+        .modal-body {
+            color: white; /* Ensure text within the body is also white */
+        }
+
+        .modal-footer {
+            border-top: 1px solid #444; /* Optional: Adjust the modal footer's border */
+        }
+
+        .btn-close {
+            color: white; /* Change close button color to white */
+        }
+        .btn-primary {
+            color: white; /* Change close button color to white */
+        }
