@@ -1,0 +1,49 @@
+@font-face {
+    font-family: "ThirdParty";
+    src: url("../fonts/thirdpar.ttf") format("truetype"); /* Specify the path to the TTF file */
+    font-weight: normal; /* Adjust as necessary */
+    font-style: normal; /* Adjust as necessary */
+}
+@font-face {
+    font-family: "Heiko";
+    src: url("../fonts/heiko.ttf") format("truetype"); /* Specify the path to the TTF file */
+    font-weight: normal; /* Adjust as necessary */
+    font-style: normal; /* Adjust as necessary */
+}
+@font-face {
+    font-family: "Tomorrow";
+    src: url("../fonts/Tomorrow-Regular.ttf") format("truetype"); /* Specify the path to the TTF file */
+    font-weight: normal; /* Adjust as necessary */
+    font-style: normal; /* Adjust as necessary */
+}
+
+button {
+    font-family: "Tomorrow", sans-serif;
+}
+
+select {
+    font-family: "Tomorrow", sans-serif;
+}
+
+table {
+    font-family: "Courier", sans-serif;
+}
+
+.table {
+    --bs-table-color: var(--bs-gray-600);
+    --bs-table-bg: var(--bs-gray-100);
+    --bs-table-border-color: transparent;
+}
+
+table {
+    border-collapse: collapse;
+}
+tr {
+    border: solid;
+    border-width: 1px;
+}
+td {
+    width: 60px;
+    border: solid;
+    border-width: 1px;
+}
