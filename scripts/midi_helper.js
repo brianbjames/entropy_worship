@@ -1,20 +1,22 @@
-// Convert MIDI value to frequency (A440 = 69 in MIDI)
-
-class MIDIUtilities {
-  static function midiToFrequency(midiNoteNumber) {
+class MIDIUtil {
+  // Convert MIDI value to frequency (A440 = 69 in MIDI)
+  static midiToFrequency(midiNoteNumber) {
     return 440 * Math.pow(2, (midiNoteNumber - 69) / 12);
   }
-  static function getOctave(midiNoteNumber) {
+
+  // Convert MIDI value to frequency (A440 = 69 in MIDI)
+  static getOctave(midiNoteNumber) {
     return Math.floor(midiNoteNumber / 12) - 1;
   }
 
   // Calculate MIDI values for a given note
-  static function getMidiValuesForNote(note, octave) {
-    let noteIndex = notes.indexOf(note);
-    let midiValues = [];
-    for (let i = -1; i <= 11; i++) {
+  static getMidiValuesForNote(note, octave) {
+    var noteIndex = notes.indexOf(note);
+    var midiValues = [];
+    for (var i = -1; i <= 11; i++) {
       let midi = (octave + i) * 12 + noteIndex;
-      if (midi >= 0 && midi <= 127) { // Valid MIDI range
+      // Valid MIDI range
+      if (midi >= 0 && midi <= 127) {
         midiValues.push(midi);
       }
     }

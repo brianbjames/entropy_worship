@@ -28,6 +28,10 @@
 <!-- Sci UI CSS -->
 <link href="styles.css" rel="stylesheet">
 <link rel="stylesheet" href="styles/midi.css">
+<script src="./scripts/midi_helper.js"></script>
+<script src="./scripts/note_and_scale_definitions.js"></script>
+<script src="./scripts/oscillator.js"></script>
+
 </head>
 <body>
     <div class="container">
@@ -66,7 +70,6 @@
                             <option value="Locrian">Locrian</option>
                         </select>
                         <input type="range" class="form-range" id="volumeSlider" min="0" max="100" value="50">
-                        
                     </div>
                 </div>
                 <div class="results" id="results"></div>
@@ -101,48 +104,16 @@
             </div>
         </div>
     </div>
-    <script>
-        
-        const notes = ["C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B"];
-        const modes = {
-            "Ionian": [0, 2, 4, 5, 7, 9, 11],
-            "Dorian": [0, 2, 3, 5, 7, 9, 10],
-            "Phrygian": [0, 1, 3, 5, 7, 8, 10],
-            "Lydian": [0, 2, 4, 6, 7, 9, 11],
-            "Mixolydian": [0, 2, 4, 5, 7, 9, 10],
-            "Aeolian": [0, 2, 3, 5, 7, 8, 10],
-            "Locrian": [0, 1, 3, 5, 6, 8, 10]
-        };
-    
-        const romanNumerals = {
-            "Ionian": ["I", "ii", "iii", "IV", "V", "vi", "vii°"],
-            "Dorian": ["i", "ii", "III", "IV", "v", "vi°", "VII"],
-            "Phrygian": ["i", "II", "III", "iv", "v°", "VI", "vii"],
-            "Lydian": ["I", "II", "iii", "iv°", "V", "vi", "vii"],
-            "Mixolydian": ["I", "ii", "iii°", "IV", "v", "vi", "VII"],
-            "Aeolian": ["i", "ii°", "III", "iv", "v", "VI", "VII"],
-            "Locrian": ["i°", "II", "iii", "iv", "V", "VI", "vii"]
-        };
-    
-        // Degree names for each scale degree
-        const degreeNames = [
-            "Tonic",           // 1st degree
-            "Supertonic",      // 2nd degree
-            "Mediant",         // 3rd degree
-            "Subdominant",     // 4th degree
-            "Dominant",        // 5th degree
-            "Submediant",      // 6th degree
-            "Leading Tone"     // 7th degree
-        ];
-    
-        let currentVolume = 0.5;
-        let audioContext;
-        let oscillators = [];
-        let gainNodes = [];
-        let globalGainNode;
-        let isPlaying = [];
 
-            // Add a function to update the modal's play/stop button to "Play"
+    <script>
+        // let currentVolume = 0.5;
+        // let audioContext;
+        // let oscillators = [];
+        // let gainNodes = [];
+        // let globalGainNode;
+        // let isPlaying = [];
+
+        // Add a function to update the modal's play/stop button to "Play"
         function resetModalPlayButton() {
             const playButton = document.getElementById("playButton");
             playButton.innerText = "Play";
@@ -150,29 +121,29 @@
 
         // Event listener for the Stop All button
         document.getElementById('stopAllButton').addEventListener('click', () => {
-            stopAllOscillators(); // Stop all oscillators
-            
+            // Stop all oscillators
+            stopAllOscillators();
             // Reset any modal stop button to Play
             resetModalPlayButton();
         });
-    
-// Setup audio context and global gain node
-function setupAudioContext() {
-    // Create a new AudioContext
-    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-    // Create a global gain node
-    globalGainNode = audioContext.createGain();
-    globalGainNode.connect(audioContext.destination);  // Connect to audio context output
-    globalGainNode.gain.setValueAtTime(currentVolume, audioContext.currentTime); // Set initial volume
-}
 
-// Event listener to update the global volume when the slider is changed
-document.getElementById('volumeSlider').addEventListener('input', (e) => {
-    currentVolume = e.target.value / 100;  // Convert slider value to a decimal
-    globalGainNode.gain.setValueAtTime(currentVolume, audioContext.currentTime); // Set volume globally
-    // Optionally update the volume value in UI (you can add a span to show the volume value)
-    document.getElementById("volumeValue").innerText = `Volume: ${e.target.value}%`;
-});
+        // // Setup audio context and global gain node
+        // function setupAudioContext() {
+        //     // Create a new AudioContext
+        //     audioContext = AudioContext.makeAudioContextFactory(window);
+        //     // Create a global gain node
+        //     globalGainNode = audioContext.createGain();
+        //     globalGainNode.connect(audioContext.destination);  // Connect to audio context output
+        //     globalGainNode.gain.setValueAtTime(currentVolume, audioContext.currentTime); // Set initial volume
+        // }
+
+        // Event listener to update the global volume when the slider is changed
+        document.getElementById('volumeSlider').addEventListener('input', (e) => {
+            currentVolume = e.target.value / 100;  // Convert slider value to a decimal
+            globalGainNode.gain.setValueAtTime(currentVolume, audioContext.currentTime); // Set volume globally
+            // Optionally update the volume value in UI (you can add a span to show the volume value)
+            document.getElementById("volumeValue").innerText = `Volume: ${e.target.value}%`;
+        });
 
         //These arrays are for overwriting incorrectly spelled enharomic notes
         // Ionian (Major Scale)
@@ -275,122 +246,122 @@ document.getElementById('volumeSlider').addEventListener('input', (e) => {
 
         // Update results when inputs change
         function updateResults() {
+
             const noteroot = document.getElementById("noteroot").value;
             const mode = document.getElementById("mode").value;
             const octave = -1;  // Default octave set to -1
-    
+
             const noteRootIndex = notes.indexOf(noteroot);
             const modeIntervals = modes[mode];
             let romanHeaders = romanNumerals[mode];
-           
-    
+
             // Calculate scale
             const scale = modeIntervals.map(interval => notes[(noteRootIndex + interval) % notes.length]);
-    
+
             // Calculate MIDI values for each note in the scale
-            const midiValues = scale.map(note => getMidiValuesForNote(note, octave));
+            const midiValues = scale.map(note => MIDIUtil.getMidiValuesForNote(note, octave));
 
             // Generate table rows with Roman numeral chord names, note names, and MIDI data
             const diatonicChords = scale.map((_, i) => {
             let rootNote = scale[i]; // The root note for the chord is the corresponding calculated scale note
-            
+
             // Ionian (Major Scale)
-            let cIonianRootsString = cIonian[i]; 
-            let cShIonianRootsString = cShIonian[i]; 
-            let dIonianRootsString = dIonian[i]; 
-            let dShIonianRootsString = dShIonian[i]; 
-            let eIonianRootsString = eIonian[i]; 
-            let fIonianRootsString = fIonian[i]; 
-            let fShIonianRootsString = fShIonian[i]; 
-            let gIonianRootsString = gIonian[i]; 
-            let gShIonianRootsString = gShIonian[i]; 
-            let aIonianRootsString = aIonian[i]; 
-            let aShIonianRootsString = aShIonian[i]; 
-            let bIonianRootsString = bIonian[i]; 
+            let cIonianRootsString = cIonian[i];
+            let cShIonianRootsString = cShIonian[i];
+            let dIonianRootsString = dIonian[i];
+            let dShIonianRootsString = dShIonian[i];
+            let eIonianRootsString = eIonian[i];
+            let fIonianRootsString = fIonian[i];
+            let fShIonianRootsString = fShIonian[i];
+            let gIonianRootsString = gIonian[i];
+            let gShIonianRootsString = gShIonian[i];
+            let aIonianRootsString = aIonian[i];
+            let aShIonianRootsString = aShIonian[i];
+            let bIonianRootsString = bIonian[i];
 
             // Dorian Mode
-            let cDorianRootsString = cDorian[i]; 
-            let cShDorianRootsString = cShDorian[i]; 
-            let dDorianRootsString = dDorian[i]; 
-            let dShDorianRootsString = dShDorian[i]; 
-            let eDorianRootsString = eDorian[i]; 
-            let fDorianRootsString = fDorian[i]; 
-            let fShDorianRootsString = fShDorian[i]; 
-            let gDorianRootsString = gDorian[i]; 
-            let gShDorianRootsString = gShDorian[i]; 
-            let aDorianRootsString = aDorian[i]; 
-            let aShDorianRootsString = aShDorian[i]; 
-            let bDorianRootsString = bDorian[i]; 
+            let cDorianRootsString = cDorian[i];
+            let cShDorianRootsString = cShDorian[i];
+            let dDorianRootsString = dDorian[i];
+            let dShDorianRootsString = dShDorian[i];
+            let eDorianRootsString = eDorian[i];
+            let fDorianRootsString = fDorian[i];
+            let fShDorianRootsString = fShDorian[i];
+            let gDorianRootsString = gDorian[i];
+            let gShDorianRootsString = gShDorian[i];
+            let aDorianRootsString = aDorian[i];
+            let aShDorianRootsString = aShDorian[i];
+            let bDorianRootsString = bDorian[i];
 
             // Phrygian Mode
-            let cPhrygianRootsString = cPhrygian[i]; 
-            let cShPhrygianRootsString = cShPhrygian[i]; 
-            let dPhrygianRootsString = dPhrygian[i]; 
-            let dShPhrygianRootsString = dShPhrygian[i]; 
-            let ePhrygianRootsString = ePhrygian[i]; 
-            let fPhrygianRootsString = fPhrygian[i]; 
-            let fShPhrygianRootsString = fShPhrygian[i]; 
-            let gPhrygianRootsString = gPhrygian[i]; 
-            let gShPhrygianRootsString = gShPhrygian[i]; 
-            let aPhrygianRootsString = aPhrygian[i]; 
-            let aShPhrygianRootsString = aShPhrygian[i]; 
-            let bPhrygianRootsString = bPhrygian[i]; 
+            let cPhrygianRootsString = cPhrygian[i];
+            let cShPhrygianRootsString = cShPhrygian[i];
+            let dPhrygianRootsString = dPhrygian[i];
+            let dShPhrygianRootsString = dShPhrygian[i];
+            let ePhrygianRootsString = ePhrygian[i];
+            let fPhrygianRootsString = fPhrygian[i];
+            let fShPhrygianRootsString = fShPhrygian[i];
+            let gPhrygianRootsString = gPhrygian[i];
+            let gShPhrygianRootsString = gShPhrygian[i];
+            let aPhrygianRootsString = aPhrygian[i];
+            let aShPhrygianRootsString = aShPhrygian[i];
+            let bPhrygianRootsString = bPhrygian[i];
 
             // Lydian Mode
-            let cLydianRootsString = cLydian[i]; 
-            let cShLydianRootsString = cShLydian[i]; 
-            let dLydianRootsString = dLydian[i]; 
-            let dShLydianRootsString = dShLydian[i]; 
-            let eLydianRootsString = eLydian[i]; 
-            let fLydianRootsString = fLydian[i]; 
-            let fShLydianRootsString = fShLydian[i]; 
-            let gLydianRootsString = gLydian[i]; 
-            let gShLydianRootsString = gShLydian[i]; 
-            let aLydianRootsString = aLydian[i]; 
-            let aShLydianRootsString = aShLydian[i]; 
-            let bLydianRootsString = bLydian[i]; 
+            let cLydianRootsString = cLydian[i];
+            let cShLydianRootsString = cShLydian[i];
+            let dLydianRootsString = dLydian[i];
+            let dShLydianRootsString = dShLydian[i];
+            let eLydianRootsString = eLydian[i];
+            let fLydianRootsString = fLydian[i];
+            let fShLydianRootsString = fShLydian[i];
+            let gLydianRootsString = gLydian[i];
+            let gShLydianRootsString = gShLydian[i];
+            let aLydianRootsString = aLydian[i];
+            let aShLydianRootsString = aShLydian[i];
+            let bLydianRootsString = bLydian[i];
 
             // Mixolydian Mode
-            let cMixolydianRootsString = cMixolydian[i]; 
-            let cShMixolydianRootsString = cShMixolydian[i]; 
-            let dMixolydianRootsString = dMixolydian[i]; 
-            let dShMixolydianRootsString = dShMixolydian[i]; 
-            let eMixolydianRootsString = eMixolydian[i]; 
-            let fMixolydianRootsString = fMixolydian[i]; 
-            let fShMixolydianRootsString = fShMixolydian[i]; 
-            let gMixolydianRootsString = gMixolydian[i]; 
-            let gShMixolydianRootsString = gShMixolydian[i]; 
-            let aMixolydianRootsString = aMixolydian[i]; 
-            let aShMixolydianRootsString = aShMixolydian[i]; 
-            let bMixolydianRootsString = bMixolydian[i]; 
+            let cMixolydianRootsString = cMixolydian[i];
+            let cShMixolydianRootsString = cShMixolydian[i];
+            let dMixolydianRootsString = dMixolydian[i];
+            let dShMixolydianRootsString = dShMixolydian[i];
+            let eMixolydianRootsString = eMixolydian[i];
+            let fMixolydianRootsString = fMixolydian[i];
+            let fShMixolydianRootsString = fShMixolydian[i];
+            let gMixolydianRootsString = gMixolydian[i];
+            let gShMixolydianRootsString = gShMixolydian[i];
+            let aMixolydianRootsString = aMixolydian[i];
+            let aShMixolydianRootsString = aShMixolydian[i];
+            let bMixolydianRootsString = bMixolydian[i];
 
             // Aeolian Mode (Natural Minor Scale)
-            let cAeolianRootsString = cAeolian[i]; 
-            let cShAeolianRootsString = cShAeolian[i]; 
-            let dAeolianRootsString = dAeolian[i]; 
-            let dShAeolianRootsString = dShAeolian[i]; 
-            let eAeolianRootsString = eAeolian[i]; 
-            let fAeolianRootsString = fAeolian[i]; 
-            let fShAeolianRootsString = fShAeolian[i]; 
-            let gAeolianRootsString = gAeolian[i]; 
-            let gShAeolianRootsString = gShAeolian[i]; 
-            let aAeolianRootsString = aAeolian[i]; 
-            let aShAeolianRootsString = aShAeolian[i]; 
-            let bAeolianRootsString = bAeolian[i]; 
+            let cAeolianRootsString = cAeolian[i];
+            let cShAeolianRootsString = cShAeolian[i];
+            let dAeolianRootsString = dAeolian[i];
+            let dShAeolianRootsString = dShAeolian[i];
+            let eAeolianRootsString = eAeolian[i];
+            let fAeolianRootsString = fAeolian[i];
+            let fShAeolianRootsString = fShAeolian[i];
+            let gAeolianRootsString = gAeolian[i];
+            let gShAeolianRootsString = gShAeolian[i];
+            let aAeolianRootsString = aAeolian[i];
+            let aShAeolianRootsString = aShAeolian[i];
+            let bAeolianRootsString = bAeolian[i];
 
             // Locrian Mode
-            let cLocrianRootsString = cLocrian[i]; 
-            let cShLocrianRootsString = cShLocrian[i]; 
-            let dLocrianRootsString = dLocrian[i]; 
-            let dShLocrianRootsString = dShLocrian[i]; 
-            let eLocrianRootsString = eLocrian[i]; 
-            let fLocrianRootsString = fLocrian[i]; 
-            let fShLocrianRootsString = fShLocrian[i]; 
-            let gLocrianRootsString = gLocrian[i]; 
-            let gShLocrianRootsString = gShLocrian[i]; 
-            let aLocrianRootsString = aLocrian[i]; 
-            let aShLocrianRootsString = aShLocrian[i]; 
-            let bLocrianRootsString = bLocrian[i]; 
+            let cLocrianRootsString = cLocrian[i];
+            let cShLocrianRootsString = cShLocrian[i];
+            let dLocrianRootsString = dLocrian[i];
+            let dShLocrianRootsString = dShLocrian[i];
+            let eLocrianRootsString = eLocrian[i];
+            let fLocrianRootsString = fLocrian[i];
+            let fShLocrianRootsString = fShLocrian[i];
+            let gLocrianRootsString = gLocrian[i];
+            let gShLocrianRootsString = gShLocrian[i];
+            let aLocrianRootsString = aLocrian[i];
+            let aShLocrianRootsString = aShLocrian[i];
+            let bLocrianRootsString = bLocrian[i];
 
             // Ionian (Major Scale)
             if (mode === "Ionian" && noteroot === "C") {
@@ -994,7 +965,6 @@ document.getElementById('volumeSlider').addEventListener('input', (e) => {
                 ninthNote = bLocrian[1];
             }
 
-           
             // This figures out what chord progression text should be written WIP!!
             /*if (romanHeaders.includes("I") || romanHeaders[i].includes("i") || romanHeaders[i].includes("i°")){
                 nextChord = "Progresses to any chord";
@@ -1008,14 +978,13 @@ document.getElementById('volumeSlider').addEventListener('input', (e) => {
                 nextChord = "Progresses vii° or V";
             }*/
 
-
             const rootMidi = midiValues[i].join(", ");
                 return `<tr>
                     <td><button class="btn btn-outline-light btn-sm" style="color: white;><a href="#" data-scaleDegree="${rootNote}" data-scaleDegree3="${thirdNote}" data-scaleDegree5="${fifthNote}" data-scaleDegree7="${seventhNote}" data-scaleDegree9="${ninthNote}" onclick="openRootModal('${rootNote}')">${rootNote} ${romanHeaders[i]}</a></button></td>
-                    <td>${generateMidiLinks(rootMidi)}</td>
+                    ${generateMidiLinks(rootMidi)}
                 </tr>`;
             }).join("");
-    
+
             // Display results in table with dynamic Roman numeral headers, note names, and MIDI data
             document.getElementById("results").innerHTML = `
                 <table class="table table-bordered mt-4 table-sm" style="color: white;">
@@ -1026,11 +995,26 @@ document.getElementById('volumeSlider').addEventListener('input', (e) => {
             `;
         }
 
+        function getMidiNotesAndFrequencies(midi) {
+          return midi.split(', ').map(midiValue => {
+              const midiNotesAndFrequencies = {
+                midiValue: midiValue,
+                frequency: MIDIUtil.midiToFrequency(parseInt(midiValue))
+              }
+              return midiNotesAndFrequencies
+          });
+        }
+
         // Helper function to generate clickable MIDI links
         function generateMidiLinks(midi) {
-            return midi.split(', ').map(midiValue => {
-                const frequency = midiToFrequency(parseInt(midiValue));
-                return `<button class="btn btn-outline-light btn-sm" style="color: white;><a href="#" data-midi="${midiValue}" data-frequency="${frequency}" onclick="openModal('${midiValue}', '${frequency}')">${midiValue}</a></button>`;
+            let midiNotesAndFrequencies = getMidiNotesAndFrequencies(midi)
+            return midiNotesAndFrequencies.map(values => {
+              let midiValue = values.midiValue
+              let frequency = values.frequency
+              return `
+              <td>
+                <button class="btn btn-outline-light btn-sm" style="color: white;><a href="#" data-midi="${midiValue}" data-frequency="${frequency}" onclick="openModal('${midiValue}', '${frequency}')">${midiValue}</a></button>
+              </td>`;
             }).join(" ");
         }
 
@@ -1041,111 +1025,91 @@ document.getElementById('volumeSlider').addEventListener('input', (e) => {
 
         // Function to open the modal and show information, including octave
         function openModal(midiValue, frequency) {
-        const octave = Math.floor(midiValue / 12) - 1; // Calculate octave based on MIDI value
-        document.getElementById("midiValue").innerText = `MIDI Value: ${midiValue}`;
-        document.getElementById("frequency").innerText = `Frequency: ${frequency} Hz`;
-        document.getElementById("octave").innerText = `Octave: ${octave}`;
+            const octave = MIDIUtil.getOctave(midiValue);
+            document.getElementById("midiValue").innerText = `MIDI Value: ${midiValue}`;
+            document.getElementById("frequency").innerText = `Frequency: ${frequency} Hz`;
+            document.getElementById("octave").innerText = `Octave: ${octave}`;
 
-        const playButton = document.getElementById("playButton");
+            const playButton = document.getElementById("playButton");
 
-        // Add event listener to play button
-        playButton.onclick = () => {
-            if (isPlaying[midiValue]) {
-                stopOscillator(midiValue);
-                playButton.innerText = "Play"; // Change button to "Play"
-                isPlaying[midiValue] = false;
-            } else {
-                startOscillator(frequency, midiValue);
-                //playButton.innerText = "Stop"; // Change button to "Stop"
-                isPlaying[midiValue] = true;
-            }
-        };
-        // Show the modal
-        const myModal = new bootstrap.Modal(document.getElementById('midiModal'));
-        myModal.show();
-    }
+            // Add event listener to play button
+            playButton.onclick = () => {
+                if (isPlaying[midiValue]) {
+                    stopOscillator(midiValue);
+                    playButton.innerText = "Play"; // Change button to "Play"
+                    isPlaying[midiValue] = false;
+                } else {
+                    startOscillator(frequency, midiValue);
+                    //playButton.innerText = "Stop"; // Change button to "Stop"
+                    isPlaying[midiValue] = true;
+                }
+            };
 
-       // Function to open the ROOT modal and show information, including octave
-       function openRootModal(rootNote) {
-        document.getElementById("rootNote").innerText = `Root: ${rootNote}`;
-        document.getElementById("thirdNote").innerText = `Third: ${thirdNote}`;
-        document.getElementById("fifthNote").innerText = `Fifth: ${fifthNote}`;
-        document.getElementById("seventhNote").innerText = `Seventh: ${seventhNote}`;
-        document.getElementById("ninthNote").innerText = `Ninth: ${ninthNote}`;
-        //document.getElementById("nextChord").innerText = `${nextChord}`;
-        // Show the modal
-        const myModal = new bootstrap.Modal(document.getElementById('rootModal'));
-        myModal.show();
-    }
-    
-        // Convert MIDI value to frequency (A440 = 69 in MIDI)
-        function midiToFrequency(midi) {
-            return 440 * Math.pow(2, (midi - 69) / 12);
+            // Show the modal
+            const myModal = new bootstrap.Modal(document.getElementById('midiModal'));
+            myModal.show();
         }
-    
-        // Function to start playing the sound for the given frequency
-        function startOscillator(frequency, midiValue) {
-            const oscillator = audioContext.createOscillator();
-            oscillator.type = 'sine'; // Sine wave
-            oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-    
-            // Set volume using the global gain node
-            oscillator.connect(globalGainNode); // Connect oscillator to the global gain node
-    
-            oscillator.start();
-    
-            // Store oscillator
-            oscillators[midiValue] = oscillator;
+
+           // Function to open the ROOT modal and show information, including octave
+        function openRootModal(rootNote) {
+            document.getElementById("rootNote").innerText = `Root: ${rootNote}`;
+            document.getElementById("thirdNote").innerText = `Third: ${thirdNote}`;
+            document.getElementById("fifthNote").innerText = `Fifth: ${fifthNote}`;
+            document.getElementById("seventhNote").innerText = `Seventh: ${seventhNote}`;
+            document.getElementById("ninthNote").innerText = `Ninth: ${ninthNote}`;
+            //document.getElementById("nextChord").innerText = `${nextChord}`;
+            // Show the modal
+            const myModal = new bootstrap.Modal(document.getElementById('rootModal'));
+            myModal.show();
         }
-    
-        // Function to stop the oscillator
-        function stopOscillator(midiValue) {
-            if (oscillators[midiValue]) {
-                oscillators[midiValue].stop();
-                oscillators[midiValue].disconnect();
-            }
-        }
-    
-        // Stop all oscillators
-        function stopAllOscillators() {
-            for (let midiValue in oscillators) {
-                stopOscillator(midiValue);
-            }
-        }
-    
+
+        // // Function to start playing the sound for the given frequency
+        // function startOscillator(frequency, midiValue) {
+        //     const oscillator = audioContext.createOscillator();
+        //     oscillator.type = 'sine'; // Sine wave
+        //     oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+
+        //     // Set volume using the global gain node
+        //     oscillator.connect(globalGainNode); // Connect oscillator to the global gain node
+
+        //     oscillator.start();
+
+        //     // Store oscillator
+        //     oscillators[midiValue] = oscillator;
+        // }
+
+        // // Function to stop the oscillator
+        // function stopOscillator(midiValue) {
+        //     if (oscillators[midiValue]) {
+        //         oscillators[midiValue].stop();
+        //         oscillators[midiValue].disconnect();
+        //     }
+        // }
+
+        // // Stop all oscillators
+        // function stopAllOscillators() {
+        //     for (let midiValue in oscillators) {
+        //         stopOscillator(midiValue);
+        //     }
+        // }
+
         // Event listener to update the global volume when the slider is changed
         document.getElementById('volumeSlider').addEventListener('input', (e) => {
             currentVolume = e.target.value / 100;
             document.getElementById("volumeValue").innerText = e.target.value;
             globalGainNode.gain.setValueAtTime(currentVolume, audioContext.currentTime); // Update global volume
         });
-    
+
         // Event listener for the Stop All button
         document.getElementById('stopAllButton').addEventListener('click', () => {
             stopAllOscillators();
         });
-    
-        // Calculate MIDI values for a given note
-        function getMidiValuesForNote(note, octave) {
-            const noteIndex = notes.indexOf(note);
-            const midiValues = [];
-            
-            for (let i = -1; i <= 11; i++) {
-                const midi = (octave + i) * 12 + noteIndex;
-                if (midi >= 0 && midi <= 127) { // Valid MIDI range
-                    midiValues.push(midi);
-                }
-            }
-    
-            midiValues.sort((a, b) => a - b); // Sort MIDI values
-            return midiValues;
-        }
-    
+
         // Initial call to setup audio context and display results
-        setupAudioContext();
+        setupAudioContext(window);
         updateResults();
     </script>
-    
+
 
 <!-- jQuery (v3.6.0) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

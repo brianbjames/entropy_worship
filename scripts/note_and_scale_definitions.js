@@ -5,6 +5,7 @@
 //
 
 const notes = ["C", "C♯/D♭", "D", "D♯/E♭", "E", "F", "F♯/G♭", "G", "G♯/A♭", "A", "A♯/B♭", "B"];
+
 const modes = {
     "Ionian": [0, 2, 4, 5, 7, 9, 11],
     "Dorian": [0, 2, 3, 5, 7, 9, 10],
@@ -35,4 +36,3 @@ const degreeNames = [
     "Submediant",      // 6th degree
     "Leading Tone"     // 7th degree
 ];
-
