@@ -20,11 +20,83 @@
             font-weight: normal; /* Adjust as necessary */
             font-style: normal; /* Adjust as necessary */
         }
+        @font-face {
+            font-family: 'Chargen';
+            src: url('fonts/6809-Chargen.otf') format('opentype'),
+            font-weight: normal;
+            font-style: normal;
+          }
+          @font-face {
+            font-family: 'BERGAN';
+            src: url('fonts/BERGAN.otf') format('opentype'),
+            font-weight: normal;
+            font-style: normal;
+          }
+          @font-face {
+            font-family: 'BIONICKIDSIMPLESLANTED';
+            src: url('fonts/BIONICKIDSIMPLESLANTED.ttf') format('truetype'),
+            font-weight: normal;
+            font-style: normal;
+          }
+          @font-face {
+            font-family: 'KogniGear';
+            src: url('fonts/KogniGear.ttf') format('truetype'),
+            font-weight: normal;
+            font-style: normal;
+          }
+          @font-face {
+            font-family: 'Meladiox';
+            src: url('fonts/Meladiox.otf') format('opentype'),
+            font-weight: normal;
+            font-style: normal;
+          }
+          @font-face {
+            font-family: 'mionta';
+            src: url('fonts/mionta.ttf') format('truetype'),
+            font-weight: normal;
+            font-style: normal;
+          }
+          @font-face {
+            font-family: 'NCLBRAYQOSE';
+            src: url('fonts/NCLBRAYQOSE.otf') format('opentype'),
+            font-weight: normal;
+            font-style: normal;
+          }
+          @font-face {
+            font-family: 'NCLGesrob';
+            src: url('fonts/NCLGesrob.otf') format('opentype'),
+            font-weight: normal;
+            font-style: normal;
+          }
+          @font-face {
+            font-family: 'sector_034';
+            src: url('fonts/sector_034.ttf') format('truetype'),
+            font-weight: normal;
+            font-style: normal;
+          }
+          @font-face {
+            font-family: 'Univox';
+            src: url('fonts/Univox.otf') format('opentype'),
+            font-weight: normal;
+            font-style: normal;
+          }
+          @font-face {
+            font-family: 'VT323-Regular';
+            src: url('fonts/VT323-Regular.ttf') format('truetype'),
+            font-weight: normal;
+            font-style: normal;
+          }
+          @font-face {
+            font-family: 'Xirod';
+            src: url('fonts/Xirod.otf') format('opentype'),
+            font-weight: normal;
+            font-style: normal;
+          }
+          
 
         .heading {
             color: #e80f0fcc; 
             text-size-adjust: relative;
-
         }
         h1 {
             text-align: left;
@@ -36,6 +108,8 @@
             text-align: left;
             margin: 0;
             padding: 0;
+            font-size: 1.0rem !important; 
+            color: white !important;
             font-family: 'Heiko', sans-serif; /* Fallback to a generic font */
         }
         h3 {
@@ -43,32 +117,40 @@
             color: #e80f0fcc; 
             margin: 0;
             padding: 0;
-            font-family: 'ThirdParty', sans-serif; /* Fallback to a generic font */
+            font-size: 1.75rem !important; 
+            color: white !important;
+            font-family: 'BIONICKIDSIMPLESLANTED', sans-serif; /* Fallback to a generic font */
         }
         h4 {
             text-align: left;
             margin: 0;
             padding: 0;
-            font-family: 'Heiko', sans-serif; /* Fallback to a generic font */
+            font-size: 1.55rem !important; 
+            color: white !important;
+            font-family: 'NCLGesrob', sans-serif; /* Fallback to a generic font */
         }
         h5 {
             text-align: left;
             margin: 0;
             padding: 0;
-            font-size: 1.0rem;
-            font-family: 'Tomorrow', sans-serif; /* Fallback to a generic font */
+            font-size: 1.25rem !important; 
+            color: white !important;
+            font-family: 'sector_034', sans-serif; /* Fallback to a generic font */
         }
         body {
           position: relative;
           background-image: url('http://www.entropyworship.com/images/EW_Second_Law_Cover_W_Aerotek_Logo.png'); 
           background-size: cover;
           background-position: center;
-          color: white;
+          color: white !important;
           text-align: left;
           margin: 0;
           padding: 0;
           font-family: 'Tomorrow', sans-serif; 
           background-attachment: fixed; /* For desktop */
+        }
+        a {
+            text-decoration: none;
         }
         .transparent-bg {
         background-color: transparent !important;
@@ -99,4 +181,19 @@
         }
         .btn-primary {
             color: white; /* Change close button color to white */
+        }
+        /* Landscape prompt styles */
+        .landscape-prompt {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            display: none; /* Hidden by default */
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 1000; /* Ensures it sits above other elements */
         }
