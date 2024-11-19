@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ENTROPY WORSHIP UI Library</title>
+<!-- Bootstrap CSS -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<!-- Augmented UI CSS -->
+<link rel="stylesheet" type="text/css" href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css">
+<!-- SciUI CSS -->
+<link href="styles.css" type="text/css" rel="stylesheet">
+<!-- Cyberpunk CSS -->
+<link rel="stylesheet" type="text/css" href="cyberpunk.css">
+<!-- Override CSS -->
+<link href="style_overrides.css" rel="stylesheet">
+<style>
+        @font-face {
+    font-family: 'ThirdParty';
+    src: url('thirdpar.ttf') format('truetype'); /* Specify the path to the TTF file */
+    font-weight: normal; /* Adjust as necessary */
+    font-style: normal; /* Adjust as necessary */
+        }
+        @font-face {
+    font-family: 'Heiko';
+    src: url('heiko.ttf') format('truetype'); /* Specify the path to the TTF file */
+    font-weight: normal; /* Adjust as necessary */
+    font-style: normal; /* Adjust as necessary */
+        }
+        @font-face {
+    font-family: 'Tomorrow';
+    src: url('Tomorrow-Regular.ttf') format('truetype'); /* Specify the path to the TTF file */
+    font-weight: normal; /* Adjust as necessary */
+    font-style: normal; /* Adjust as necessary */
+        }
+        a {
+          text-decoration: none;
+        }
+        .heading {
+            color: #e80f0fcc; 
+            text-size-adjust: relative;
+
+        }
+        h1 {
+            text-align: left;
+            margin: 0;
+            padding: 0;
+            font-family: 'ThirdParty', sans-serif; /* Fallback to a generic font */
+        }
+        h2 {
+            text-align: left;
+            margin: 0;
+            padding: 0;
+            font-family: 'Heiko', sans-serif; /* Fallback to a generic font */
+        }
+        h3 {
+            text-align: left;
+            color: #e80f0fcc; 
+            margin: 0;
+            padding: 0;
+            font-family: 'ThirdParty', sans-serif; /* Fallback to a generic font */
+        }
+        h4 {
+            text-align: left;
+            margin: 0;
+            padding: 0;
+            font-family: 'Heiko', sans-serif; /* Fallback to a generic font */
+        }
+        h5 {
+            text-align: left;
+            margin: 0;
+            padding: 0;
+            font-size: 1.0rem;
+            font-family: 'Tomorrow', sans-serif; /* Fallback to a generic font */
+        }
+        body {
+          position: relative;
+          background-image: url('http://www.entropyworship.com/images/galaxy-fractal-art.jpg'); 
+          background-size: cover;
+          background-position: center;
+          color: white;
+          text-align: left;
+          margin: 0;
+          padding: 0;
+          font-family: 'Tomorrow', sans-serif; 
+          background-attachment: fixed; /* For desktop */
+        }
+        .transparent-bg {
+            background-color: transparent !important;
+        }
+        /* Landscape prompt styles */
+        .landscape-prompt {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            display: none; /* Hidden by default */
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 1000; /* Ensures it sits above other elements */
+        }
+</style>
+</head>
+<body>
+    <div class="container"><!--Main Container-->
+        <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c"><!--Header card-->
+            <div class="card-header border-danger">
+                <h1 class="heading display-6" style="font-size: 1.5rem;">ENTROPY WORSHIP h1</h1>
+                <h2 class="panel info shown" style="font-size: 1.5rem;">build 3.0.11.18.24 h1</h1>
+                  this is the panel and heading in a card-header in a card in a container
+            </div>
+            <div class="card-body">
+              card body in the same card as the header
+                <h2 class="panel info shown" style="font-size: 1.5rem; color: white;">ewuilibrary panel info shown h2</h2>
+                <h2 class="panel shown" style="font-size: 1.5rem; color: white;">panel h2</h2>
+                <h2 class="panel success shown" style="font-size: 1.5rem; color: white;">panel success h2</h2>
+                <h2 class="panel warning shown" style="font-size: 1.5rem; color: white;">panel warning h2</h2>
+                <h2 class="panel error shown" style="font-size: 1.5rem; color: white;">panel error h2</h2>
+                this the card-body and panel info shown in the same container
+                <div class="body" style="color: white;">
+                  body text Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Entropia, in the context of thermodynamics, is the measure of disorder or randomness in a system. Quisque efficitur, ligula ut convallis euismod, ex velit auctor velit, ac suscipit erat magna nec libero. Integer euismod, urna at egestas vehicula, justo arcu scelerisque libero, sit amet imperdiet elit purus sed turpis.
+
+                  Vivamus scelerisque, sapien at maximus tristique, libero libero euismod urna, ac fermentum ante lacus eget urna. In entropia, every closed system tends to increase in disorder over time, which is why it is often referred to as the "arrow of time." Mauris bibendum fermentum nisi, et convallis augue varius ut. Ut elementum dui ut felis fermentum, quis tempus urna malesuada.
+                  </div>
+                <div class="card-body">
+                  card-body text                   
+                  Aenean sit amet bibendum ante, non viverra felis. Nulla auctor euismod sapien, et iaculis dui maximus nec. Quis sit amet vehicula risus. Nullam accumsan felis sit amet ligula fermentum tempus. Nulla vitae felis in justo faucibus maximus.
+
+                  Suspendisse potenti. Sed viverra sapien vitae efficitur tincidunt. Aliquam erat volutpat. Entropia est etiam fundamentalis in teoria informationis, cum velocius fluxus informationis altior entropiam significet. Cras tristique maximus erat. Integer congue augue sed eros fermentum efficitur.
+                  <h2 class="panel info shown" style="font-size: 1.5rem; color: white;">Bootstrap Buttons</h2>
+                    <a href="#" target="_blank" class="btn btn-danger btn-sm">Link btn btn-danger btn-sm</a>
+                    <a href="#" target="_blank" class="btn btn-outline-danger btn-sm">btn btn-outline-danger btn-sm</a>
+                    <a href="#" target="_blank" class="btn btn-light btn-sm">btn btn-light btn-sm</a>
+                    <a href="#" target="_blank" class="btn btn-outline-light btn-sm">btn btn-outline-light btn-sm</a>
+                    <a href="#" target="_blank" class="btn btn-primary btn-sm">btn btn-primary btn-sm</a>
+                    <a href="#" target="_blank" class="btn btn-outline-primary btn-sm">btn btn-outline-primary btn-sm</a>
+                    <a href="#" target="_blank" class="btn btn-secondary btn-sm">btn btn-secondary btn-sm</a>
+                    <a href="#" target="_blank" class="btn btn-outline-secondary btn-sm">btn btn-outline-secondary btn-sm</a>
+                    <a href="#" target="_blank" class="btn btn-success btn-sm">btn btn-success btn-sm</a>
+                    <a href="#" target="_blank" class="btn btn-outline-success btn-sm">btn btn-outline-success btn-sm</a>
+                    <a href="#" target="_blank" class="btn btn-warning btn-sm">btn btn-warning btn-sm</a>
+                    <a href="#" target="_blank" class="btn btn-outline-warning btn-sm">btn btn-outline-warning btn-sm</a>
+                    <a href="#" target="_blank" class="btn btn-info btn-sm">btn btn-info btn-sm</a>
+                    <a href="#" target="_blank" class="btn btn-outline-info btn-sm">btn btn-outline-info btn-sm</a>
+                    <a href="#" target="_blank" class="btn btn-dark btn-sm">btn btn-dark btn-sm</a>
+                    <a href="#" target="_blank" class="btn btn-outline-dark btn-sm">btn btn-outline-dark btn-sm</a>
+                    <a href="#" target="_blank" class="btn btn-link btn-sm">btn btn-link btn-sm</a>
+                    <a href="#" target="_blank" class="btn btn-dark btn-lg">btn btn-dark btn-lg</a>
+                  </div>
+            </div>
+        </div><!--Header panel-->
+        <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c"><!--Release panel-->
+            <div class="card-header border-danger">
+                <h2 class="title ">masonry card col and rows h2</h2>
+            </div>
+            <div class="row row-cols-2" data-masonry='{"percentPosition": true }'><!--First Masonry panel-->
+                <div class="col">
+                    <div class="card transparent-bg border-danger">
+                      <!-- First Image Container -->
+                      <div class="card-body">
+                        <img class="img-fluid" style="width: 100%; aspect-ratio: 1; object-fit: cover;" src="http://www.entropyworship.com/images/EW_Second_Law_Cover_W_Aerotek_Logo.png" alt="Second Law Cover">
+                        <h5 class="card-title">This is in a row row-cols-2 h5 in a card</h5>
+                        <a href="https://www.beatport.com/release/second-law/4812389" target="_blank" class="btn btn-danger btn-sm">Pre-Order</a>
+                      </div>
+                    </div>
+                  </div>
+                <div class="col">
+                  <div class="card transparent-bg border-danger">
+                    <!-- Second Image Container -->
+                    <div class="card-body">
+                      <h5 class="card-title">This is also in a row row-cols-2 h5</h5>
+                    </div>
+                  </div>
+                  <div class="card transparent-bg border-danger">
+                    <!-- Second Image Container -->
+                    <div class="card-body">
+                      <h5 class="card-title">And also is this in a row row-cols-2 h5</h5>
+                      card body text
+                      <!-- Buttons -->
+                      <h2 class="panel info shown" style="font-size: 1.5rem; color: white;">SciUI Buttons</h2>
+                      <button class="button">button</button>
+                      <button class="button success">Success Button</button>
+                      <button class="button warning">Warning Button</button>
+                      <button class="button error alert">Warning Error</button>
+                    </div>
+                  </div>
+                  <div class="card transparent-bg border-danger">
+                    <div class="card-body">
+                      <h2 class="panel info shown" style="font-size: 1.5rem; color: white;">panel h</h2>
+                      <h2 class="panel shown" style="font-size: 1.5rem; color: white;">panel h2</h2>
+                      <h3 class="panel error shown" style="font-size: 1.5rem; color: white;">panel error h3</h3>
+                      <h4 class="panel error shown" style="font-size: 1.5rem; color: white;">panel error h4</h4>
+                      <h5 class="panel error shown" style="font-size: 1.5rem; color: white;">panel error h5</h5>
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                  <div class="card transparent-bg border-danger">
+                    <div class="card-body">
+                      <h5 class="card-title">transparent-bg border-danger row row-cols-2 h5 this is in the next col</h5>
+                    </div>
+                  </div>
+                  <div class="card transparent-bg border">
+                    <div class="card-body">
+                      <h5 class="card-title">transparent-bg border row row-cols-2 h5</h5>
+                    </div>
+                  </div>
+                  <div class="card transparent-bg border-success">
+                    <!-- Second Image Container -->
+                    <div class="card-body">
+                      <h5 class="card-title">transparent-bg border-success row row-cols-2 h5</h5>
+                    </div>
+                  </div>
+                  <div class="card transparent-bg border-warning">
+                    <!-- Second Image Container -->
+                    <div class="card-body">
+                      <h5 class="card-title">transparent-bg border-warning row row-cols-2 h5</h5>
+                    </div>
+                  </div>
+                  <div class="card transparent-bg border-info">
+                    <!-- Second Image Container -->
+                    <div class="card-body">
+                      <h5 class="card-title">transparent-bg border-info row row-cols-2 h5</h5>
+                    </div>
+                  </div>
+                  <div class="card transparent-bg border-error">
+                    <!-- Second Image Container -->
+                    <div class="card-body">
+                      <h5 class="card-title">transparent-bg border-error row row-cols-2 h5</h5>
+                    </div>
+                  </div>
+                  <div class="card transparent-bg border-danger">
+                    <!-- Second Image Container -->
+                    <div class="card-body">
+                      <h5 class="card-title">transparent-bg border-danger row row-cols-2 h5</h5>
+                    </div>
+                  </div>
+                  <div class="card transparent-bg border-danger">
+                    <!-- Second Image Container -->
+                    <div class="card-body">
+                      <h5 class="card-title">transparent-bg border-danger row row-cols-2 h5</h5>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="col">
+                    <div class="card transparent-bg border-danger">
+                      <h2 class="panel warning shown" style="font-size: 1.5rem; color: white;">panel warning h2</h2>
+                      <div class="card-body">
+                        <h2 class="panel success shown" style="font-size: 1.5rem; color: white;">panel success h2</h2>
+                        card-body text                   
+                        Aenean sit amet bibendum ante, non viverra felis. Nulla auctor euismod sapien, et iaculis dui maximus nec. Quis sit amet vehicula risus. Nullam accumsan felis sit amet ligula fermentum tempus. Nulla vitae felis in justo faucibus maximus.
+                        <!-- Inputs -->
+                        <h2 class="panel info shown" style="font-size: 1.5rem; color: white;">sciui default Inputs</h2>
+                        <div class="input">
+                            <label for="text-input">input label text Suspendisse potenti. Sed viverra sapien vitae efficitur tincidunt. Aliquam erat volutpat.</label>
+                            <input type="text" id="text-input" placeholder="Enter text here...">
+                            <textarea id="textarea-input" placeholder="Enter text here..."></textarea>
+                            <select id="select-input">
+                                <option value="1">Option 1</option>
+                                <option value="2">Option 2</option>
+                                <option value="3">Option 3</option>
+                            </select>
+                        </div>
+
+                        </div>
+                      </div>
+                </div>
+              </div><!--Masonry panel close-->
+
+        </div>]
+        <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c">
+            <div class="card-header border-danger">
+                <h2 class="title">card no masonry table h2</h2>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless" style="color: white;">
+                  <thead>
+                    <tr>
+                      <th scope="col">#</th>
+                      <th scope="col">First</th>
+                      <th scope="col">Second</th>
+                      <th scope="col">Third</th>
+                    </tr>
+                  </thead>
+                    <tbody>
+                      <tr>
+                        <th scope="row">081724</th>
+                        <td><a href="https://www.ra.co/events/1964938" target="_blank" class="btn btn-outline-light btn-sm">DOMAIN</a></td>
+                        <td>F8, 1192 Folsom, SF</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">052724</th>
+                        <td><a href="http://www.haggardsolutions.com" target="_blank" class="btn btn-outline-light btn-sm">Broom & Board 4.0</a></td>
+                        <td>Undislosed Location</td>
+                      </tr>
+                    </tbody>
+                  </table>
+            </div>
+        </div><!--card no masonry close-->
+
+        <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c"><!--Second Masonry card-->
+          <div class="card-header border-danger">
+              <h2 class="title">masonry card col and rows h2</h2>
+          </div>
+          <div class="row row-cols-2" data-masonry='{"percentPosition": true }'><!--Masonry panel-->
+              <div class="col">
+                  <div class="card transparent-bg border-danger">
+                    <!-- Checkboxes -->
+                    <h2 class="panel info shown" style="font-size: 1.5rem; color: white;">Checkboxes</h2>
+                    <div class="checkbox">
+                        <input type="checkbox" id="checkbox1">
+                        <label for="checkbox1">Checkbox 1</label>
+                    </div>
+                    <div class="checkbox">
+                        <input type="checkbox" id="checkbox2" checked>
+                        <label for="checkbox2">Checkbox 2</label>
+                    </div>
+
+                    <!-- Radio buttons -->
+                    <h2 class="panel info shown" style="font-size: 1.5rem; color: white;">Radio Buttons</h2>
+                    <div class="radio">
+                        <input type="radio" id="radio1" name="radio-group">
+                        <label for="radio1">Radio 1</label>
+                    </div>
+                    <div class="radio">
+                        <input type="radio" id="radio2" name="radio-group" checked>
+                        <label for="radio2">Radio 2</label>
+                    </div>
+
+                    <!-- Metrics -->
+                    <h2 class="panel info shown" style="font-size: 1.5rem; color: white;">Metrics</h2>
+                    <div class="row">
+                      <div class="metric">
+                          <div class="value">100</div>
+                          <div class="label">Metric 1</div>
+                      </div>
+                      <div class="metric success">
+                          <div class="value">200</div>
+                          <div class="label">Success Metric</div>
+                      </div>
+                      <div class="metric warning">
+                          <div class="value">50</div>
+                          <div class="label">Warning Metric</div>
+                      </div>
+                      <div class="metric error">
+                          <div class="value">0</div>
+                          <div class="label">Error Metric</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <div class="col">
+                <div class="card transparent-bg border-danger">
+                  <!-- Second Image Container -->
+                  <div class="card-body">
+                    <!-- Uploader -->
+                    <h2 class="panel info shown" style="font-size: 1.5rem; color: white;">Uploader</h2>
+                    <div class="uploader" style="width: 75%;">
+                        <label for="fileInput">Upload File</label>
+                        <input type="file" id="fileInput">
+                    </div>
+                    <!-- Button Grid -->
+                    <h2 class="panel info shown" style="font-size: 1.5rem; color: white;">Button Grid</h2>
+                    <div class="buttongrid">
+                      <table>
+                          <tr>
+                              <td><button class="button success">Success Button</button></td>
+                              <td><button class="button warning">Warning Button</button></td>
+                          </tr>
+                          <tr>
+                            <td><button class="button error">Error Button</button></td>
+                            <td><button class="button round">Round Button</button></td>
+                          </tr>
+                          <tr>
+                            <td><button class="button info">Info Button</button></td>
+                            <td><button class="button alert">Alert Button</button></td>
+                        </tr>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div><!-- Second Masonry panel close-->
+          </div><!--card no masonry panel-->
+          <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c">
+              <div class="card-header border-danger">
+                  <h2 class="title">card no masonry table h2</h2>
+              </div>
+              <div class="card-body">
+                <h2 class="panel info shown" style="font-size: 1.5rem; color: white;">Cyberpunk</h2>
+                <h1>Cyberpunk UI Components Example</h1>
+
+                <h1 class="cyber-h">Elements</h1>
+                    <ul class="cyber-ul">
+                        <li><a href="#section-colors" class="cyber-a">Colors</a></li>
+                        <li><a href="#section-inputs" class="cyber-a">Inputs</a></li>
+                        <li><a href="#section-buttons" class="cyber-a">Buttons</a></li>
+                        <li><a href="#section-tiles" class="cyber-a">Tiles</a></li>
+                        <li><a href="#section-source-code" class="cyber-a">Source Code</a></li>
+                        <li><a href="#section-fonts" class="cyber-a">Fonts</a></li>
+                        <li><a href="#section-headings" class="cyber-a">Headings</a></li>
+                        <li><a href="#section-tables" class="cyber-a">Tables</a></li>
+                        <li><a href="#section-glitch-effects" class="cyber-a">Glitch effects</a></li>
+                        <li><a href="#section-razors" class="cyber-a">Razors</a></li>
+                        <li><a href="#section-banners" class="cyber-a">Banners</a></li>
+                    </ul>
+
+                    <!-- #region Colors -->
+                    <h1 id="section-colors" id="section-colors" class="cyber-h">Colors</h1>
+                    <p>
+                        Use the <code>.bg-*</code> class for background colors and <code>.fg-*</code> for text colors. <code>.ac-*</code> is for the accent color of specific elements such as <code>.cyber-input</code> or <code>.cyber-check</code><br>
+                        Most of the following elements are designed to work with these two classes (buttons for example).
+                    </p>
+                    <p>
+                        Predefined colors from the Cyberpunk 2077 color palette, as well as some standard colors:
+                    </p>
+                    <div id="colors" class="container mt-2">
+                        <div class="row">
+                            <div class="col p-4 bg-yellow"><code>-yellow</code></div>
+                            <div class="col p-4 bg-cyan"><code>-cyan</code></div>
+                            <div class="col p-4 bg-red"><code>-red</code></div>
+                            <div class="col p-4 bg-purple"><code>-purple</code></div>
+                            <div class="col p-4 bg-blue"><code>-blue</code></div>
+                            <div class="col p-4 bg-green"><code>-green</code></div>
+                            <div class="col p-4 bg-white"><code>-white</code></div>
+                            <div class="col p-4 bg-black"><code>-black</code></div>
+                            <div class="col p-4 bg-dark"><code>-dark</code></div>
+                        </div>
+                    </div>
+                    <!-- #endregion -->
+
+                    <!-- #region Inputs -->
+                    <h1 id="section-inputs" class="cyber-h">Inputs</h1>
+                    <p>
+                        See code examples below to create custom inputs.<br>
+                        Use for example <code>.cyber-input-long</code> and <code>.cyber-input-full</code> for even bigger input fields. Add the <code>.ac-*</code> classes to change the accent color of the input fields.
+                    </p>
+
+                    <h2 class="cyber-h">Text input</h2>
+
+                    <p>
+                        Works also with other textfield-like input types such as password, number, date,...
+                    </p>
+                    <label for="input-text">Name:</label>
+                    <div class="cyber-input mb-2">
+                        <input id="input-text" name="input-text" type="text" value="" placeholder="Enter name..." />
+                    </div>
+
+                    <label for="input-text2">Gender:</label>
+                    <div class="cyber-input mb-4 ac-purple fg-green">
+                        <input id="input-text2" name="input-text2" type="text" value="" placeholder="Whatever..." />
+                    </div>
+
+                    <h2 class="cyber-h">Select</h2>
+
+                    <label for="select">Color:</label>
+                    <div class="cyber-select mb-4">
+                        <select id="select" name="select">
+                            <option value="red">Red</option>
+                            <option value="cyan">Cyan</option>
+                            <option value="purple">Purple</option>
+                            <option value="yellow">Yellow</option>
+                        </select>
+                    </div>
+
+                    <h2 class="cyber-h">Checkbox</h2>
+
+                    <input type="checkbox" id="checkbox" class="cyber-check ac-blue"/>
+                    <label for="checkbox" class="ml-1">Activte</label>
+
+                    <h2 class="cyber-h">Radio Buttons</h2>
+
+                    <b>System Status</b>
+                    <div class="mb-1 mt-1">
+                        <input type="radio" id="stable" name="radio" class="cyber-radio ac-green" value="0"/>
+                        <label for="stable" class="ml-1">stable</label>
+                    </div>
+
+                    <div class="mb-1">
+                        <input type="radio" id="unstable" name="radio" class="cyber-radio ac-purple" value="1"/>
+                        <label for="unstable" class="ml-1">unstable</label>
+                    </div>
+
+                    <div class="mb-1">
+                        <input type="radio" id="down" name="radio" class="cyber-radio ac-red" value="2"/>
+                        <label for="down" class="ml-1">down</label>
+                    </div>
+
+                    <!-- #endregion -->
+
+                    <!-- #region Buttons -->
+                    <h1 id="section-buttons" class="cyber-h">Buttons</h1>
+                        You can remove the element with the <code>.glitchtext</code> class to remove the hover effect. Use <code>fg-*</code> <code>bg-*</code> for coloring.
+                    </p>
+                    <button class="cyber-button-big bg-purple fg-white m-2 vt-bot">
+                        .cyber-button-big
+                        <span class="glitchtext">throw err;</span>
+                        <span class="tag">R25</span>
+                    </button>
+                    <button class="cyber-button bg-red fg-white m-2 vt-bot">
+                        .cyber-button
+                        <span class="glitchtext">&dollar;_glitch;</span>
+                        <span class="tag">R25</span>
+                    </button>
+                    <button class="cyber-button-small bg-blue fg-white m-2 vt-bot">
+                        .cyber-button-small
+                    </button>
+                    <!-- #endregion -->
+
+                    <!-- #region Tiles -->
+                    <h1 id="section-tiles" class="cyber-h">Tiles</h1>
+                        <p>
+                            General purpose containers for text and/or images.
+                        </p>
+                        <div class="cyber-tile-big fg-white bg-purple mr-4 inline-block vt-bot">
+                            <img src="img/tile2.jpg">
+                            <label>
+                                Use classes <code>.cyber-tile</code> <code>.cyber-tile-big</code> <code>.cyber-tile-small</code> together with <code>.bg-*</code> <code>.fg-*</code> for colors.
+                            </label>
+                        </div>
+
+                        <div class="cyber-tile fg-white bg-red mt-4 mr-4 inline-block vt-bot">
+                            <label><code>.cyber-tile</code><br>Alongside the orange dust of the eastern warehouses, the edgerunners are ready to strike.</label>
+                        </div>
+
+                        <div class="cyber-tile-small fg-dark bg-cyan mt-4 inline-block vt-bot">
+                            <img src="img/tile3.jpg">
+                        </div>
+                    <!-- #endregion -->
+
+                    <!-- #region Source Code -->
+                    <h1 id="section-source-code" class="cyber-h">SourceCode();</h1>
+                    <p>
+                        Use the <code>&lt;code&gt;</code> tags or class <code>.code</code> to show inline code examples like this one here.
+                    </p>
+                    <!-- #endregion -->
+
+                    <!-- #region Fonts -->
+                    <h1 id="section-fonts" class="cyber-h">Fonts</h1>
+
+                    Cyberpunk CSS also provides three fonts which fit the theme:
+
+                    <h3 class="cyber-h">Tomorrow</h3>
+                    Is the default font which is used for the whole page.
+                    <div style="font-size: 42px;">Tomorrow</div> 42px
+                    
+                    <h3 class="cyber-h">Oxanium</h3>
+                    Is the font used in <code>&lt;code&gt;</code> and  <code>.code-blocks</code>. To use this font, you can apply the <code>.oxanium-font</code> class to desired elements.
+                    <div class="oxanium-font" style="font-size: 42px;">Oxanium</div> 42px                     
+                    
+                    <h3 class="cyber-h">Cyberpunk</h3>
+                    Is the well known font used in the Cyberpunk 2077 logo.<br>
+                    You should use the <code>.cyberpunk-font</code> class to apply this font to your elements, because it transforms the text for a better look. Use <code>.cyberpunk-font-og</code> for the destinctive yellow/cyan look which comes close to the original logo.<br>
+                    <br>
+                    <i>Hint: </i>
+                    This font doesnt look good with small font sizes. To recreate the logo you have to do an a few tweaks in CSS. Take a look at the very top of this page for an example
+                    <div class="cyberpunk-font" style="font-size: 42px;">Cyberpunk</div> 42px
+
+                    <h3 class="cyber-h">Attention!</h3>
+                    <p>
+                        Use the <code>.cyber-att</code> and <code>.cyber-att-2</code> classes to get some attention!
+                    </p>
+                    <p>
+                        <span class="cyber-att">Attention! Danger up ahead .cyber-att</span>
+                    </p>
+                    <p>
+                        <span class="cyber-att-2">Attention! Danger up ahead .cyber-att-2</span>
+                    </p>
+                    <!-- #endregion -->
+
+                    <!-- #region Headings -->
+                    <h1 id="section-headings" class="cyber-h">Headings</h1>
+
+                    Use class <code>.cyber-h</code> to apply styles to your headings. 
+                    Can be used with <code>&lt;h*&gt;</code> but also with other elements like <code>&lt;span&gt;</code> or <code>&lt;div&gt;</code>. All elements will be displayed as a block level element.
+                    
+                    <h1 class="cyber-h">Heading h1</h1>
+                    <h2 class="cyber-h">Heading h2</h2>
+                    <h3 class="cyber-h">Heading h3</h3>
+                    <h4 class="cyber-h">Heading h4</h4>
+                    <h5 class="cyber-h">Heading h5</h5>
+                    <h6 class="cyber-h">Heading h6</h6>
+                    <span class="cyber-h">A normal <code>&lt;span&gt;</code></span>
+                    <!-- #endregion -->
+
+                    <!-- #region Tables -->
+                    <h1 id="section-tables" class="cyber-h">Tables</h1>
+                    <p>
+                        Add the <code>.cyber-table</code> class your <code>&lt;table&gt;</code> element. Use the <code>.ac-*</code> class for accent colors.<br>
+                        There are different styles of tables controlled by the <code>.cyber-style-*</code> classes.
+                    </p>
+                    
+                    <p><code>.cyber-table .ac-purple</code></p>
+                    <table class="cyber-table ac-purple">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Module</th>
+                                <th>Enabled</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>mod_rewrite</td>
+                                <td><code>true</code></td>
+                                <td>Provides a rule-based rewriting engine to rewrite requested URLs on the fly</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>mod_cache</td>
+                                <td><code class="fg-red">false</code></td>
+                                <td>RFC 2616 compliant HTTP caching filter. Not to be confused with mod_cache_disk.</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>mod_ssl</td>
+                                <td><code>true</code></td>
+                                <td>Strong cryptography using the Secure Sockets Layer (SSL) and Transport Layer Security (TLS) protocols</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p><code>.cyber-table .cyber-style-1 .ac-cyan</code></p>
+                    <table class="cyber-table cyber-style-1 ac-cyan">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Module</th>
+                                <th>Enabled</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>mod_rewrite</td>
+                                <td><code>true</code></td>
+                                <td>Provides a rule-based rewriting engine to rewrite requested URLs on the fly</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>mod_cache</td>
+                                <td><code class="fg-red">false</code></td>
+                                <td>RFC 2616 compliant HTTP caching filter. Not to be confused with mod_cache_disk.</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>mod_ssl</td>
+                                <td><code>true</code></td>
+                                <td>Strong cryptography using the Secure Sockets Layer (SSL) and Transport Layer Security (TLS) protocols</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p><code>.cyber-table .cyber-style-2</code></p>
+                    <table class="cyber-table cyber-style-2">
+                        <thead>
+                            <tr>
+                                <th>No.</th>
+                                <th>Module</th>
+                                <th>Enabled</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>mod_rewrite</td>
+                                <td><code>true</code></td>
+                                <td>Provides a rule-based rewriting engine to rewrite requested URLs on the fly</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>mod_cache</td>
+                                <td><code class="fg-red">false</code></td>
+                                <td>RFC 2616 compliant HTTP caching filter. Not to be confused with mod_cache_disk.</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>mod_ssl</td>
+                                <td><code>true</code></td>
+                                <td>Strong cryptography using the Secure Sockets Layer (SSL) and Transport Layer Security (TLS) protocols</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <!-- #endregion-->
+
+                    <!-- #region Glitch Effects -->
+                    <h1 id="section-glitch-effects" class="cyber-h">Glitch effects</h1>
+
+                    Cyberpunk CSS provides a set of glitching effects which fit the theme. Use the classes <code>.cyber-glitch-0</code> to <code>.cyber-glitch-4</code><br>
+                    They create an impression of instable tech an small errors/glitches in the matrix. Not all effects work well with every element. Some are good for texts, other are good for images or containers.  
+
+                    <h3 class="cyber-h">.cyber-glitch-0</h3>
+                    <p>
+                        Good for images. Effect of a flickering screen. Sometimes bright, sometimes dark.
+                    </p>
+                    <img src="img/tile4.jpg" class="cyber-glitch-0"> 
+
+                    <h3 class="cyber-h">.cyber-glitch-1</h3>
+                    <p>
+                        Good for images. Little shakes first, then distorting/breaking effect by rotating and inverting colors.
+                    </p>
+                    <img src="img/tile3.jpg" class="cyber-glitch-1">
+
+                    <h3 class="cyber-h">.cyber-glitch-2</h3>
+                    <p>
+                        Good for containers with text. Squeeze effect by removing top an bottom of the element, shake left to right, apply glitchy text-shadow.<br>
+                        If your element uses uses css <code>clip-path</code>, this might not look good. You can try to set the variable <code>--og-clip-path</code> to the clip path of your element, so this animation can revert back to the original state.
+                    </p>
+                    <div class="cyber-tile bg-green fg-white cyber-glitch-2">
+                        <label>
+                            Somehow this will get torn apart.<br>
+                            Take care, never ride the streets of night city alone.
+                        </label>
+                    </div>
+
+                    <h3 class="cyber-h"><span class="cyber-glitch-3">.</span>glitch<span class="cyber-glitch-3">-</span>3</h3>
+                    <p>
+                        Good for text. Especially small parts like dots or underlines. Steady blinking.
+                    </p>
+
+                    <h3 class="cyber-h cyber-glitch-4">.cyber-glitch-4</h3>
+                    <p>
+                        Good for text. Blinking with different pauses in between.
+                    </p>
+                    <!-- #endregion -->
+                    
+                    <!-- #region Razors-->
+                    <h1 id="section-razors" class="cyber-h">Razors</h1>
+                    <p>
+                        Show "razor" shaped borders at the top and bottom of your containers by adding the <code>.cyber-razor-top</code> and <code>.cyber-razor-bottom</code> classes.<br>
+                        Use <bode>bg-*</bode> for coloring. Works well with bigger <code>&lt;div&gt;</code> <code>&lt;section&gt;</code> as well as page headers or footer like here. The razor border takes up <i>30px</i> of space.
+                    </p>
+                    <div class="cyber-razor-top bg-dark fg-white p-3">
+                        This is just a <code>&lt;div&gt;</code> with some sharp edges at the top now.
+                    </div>
+
+                    <div class="cyber-razor-bottom bg-dark fg-white p-3 mt-4">
+                        This is just a <code>&lt;div&gt;</code> with some sharp edges at the bottom.
+                    </div>
+                    <!-- #endregion -->
+
+                    <!-- #region Banners -->
+                    <h1 id="section-banners" class="cyber-h">Banners</h1>
+                    <p>
+                        Colorfull banner for important messages.
+                        Use classes <code>.cyber-banner</code> and <code>cyber-banner-short</code>.<br>
+                        You can use <code>.bg-red</code>, <code>.bg-yellow</code> and <code>.bg-purple</code> to change the primary color of the gradient. Cyan is the default.
+                    </p>
+
+                    <div class="cyber-banner mt-4">
+                        .cyber-banner
+                    </div>
+
+                    <div class="cyber-banner-short bg-purple fg-white mt-4">
+                        .cyber-banner-short .bg-purple
+                    </div>
+                    <!-- #endregion -->
+                </div>
+              </div>
+              <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c">
+                <div class="card-header border-danger">
+                    <h2 class="title">docs</h2>
+                </div>
+                <div class="card-body">
+                  <a href="https://getbootstrap.com" target="_blank" class="btn btn-outline-light btn-sm">Bootstrap</a>
+                  <a href="https://github.com/andersmmg/sciui" target="_blank" class="btn btn-outline-light btn-sm">SciUI</a>
+                  <a href="https://alddesign.github.io/cyberpunk-css/demo/" target="_blank" class="btn btn-outline-light btn-sm">Cyberpunk</a>
+                  <a href="http://augmented-ui.com" target="_blank" class="btn btn-outline-light btn-sm">Augmented UI</a>
+                </div>
+            </div>
+          </div>
+          
+    </div><!--Main Container-->
+<!-- jQuery (v3.6.0) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Popper.js (required for Bootstrap 4) -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<!-- Bootstrap JavaScript (v4.5.2) -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
