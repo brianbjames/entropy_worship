@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIDI Clock Host with BPM Control</title>
+</head>
+<body>
+    <h1>MIDI Clock Example with BPM Control</h1>
+
+    <!-- Device Selection Dropdown -->
+    <label for="midi-device">Select MIDI Output Device:</label>
+    <select id="midi-device">
+        <option value="">--No Devices--</option>
+    </select>
+
+    <br><br>
+
+    <!-- BPM Control -->
+    <label for="bpm">BPM (Beats per Minute):</label>
+    <input type="number" id="bpm" value="120" min="30" max="300" step="1">
+
+    <br><br>
+
+    <!-- Buttons to Control Clock -->
+    <button id="start">Start MIDI Clock</button>
+    <button id="stop">Stop MIDI Clock</button>
+
+    <script>
+        let midiAccess, midiOutput;
+        let clockInterval;
+        let clockIntervalTime;
+        
+        const MIDI_START = 0xFA;
+        const MIDI_STOP = 0xFC;
+        const MIDI_CONTINUE = 0xFB;
+        const MIDI_CLOCK = 0xF8;
+
+        // Initialize MIDI Access and populate devices list
+        if (navigator.requestMIDIAccess) {
+            navigator.requestMIDIAccess().then(
+                (access) => {
+                    midiAccess = access;
+                    populateDeviceList();
+                },
+                (err) => {
+                    console.error('Failed to get MIDI Access', err);
+                }
+            );
+        } else {
+            console.log('Web MIDI API is not supported in this browser.');
+        }
+
+        // Populate the MIDI device dropdown list
+        function populateDeviceList() {
+            const midiDeviceSelect = document.getElementById('midi-device');
+            midiDeviceSelect.innerHTML = ''; // Clear existing options
+
+            const outputs = Array.from(midiAccess.outputs.values());
+            if (outputs.length > 0) {
+                outputs.forEach(output => {
+                    const option = document.createElement('option');
+                    option.value = output.id;
+                    option.textContent = output.name;
+                    midiDeviceSelect.appendChild(option);
+                });
+            } else {
+                const option = document.createElement('option');
+                option.textContent = 'No MIDI output devices found';
+                midiDeviceSelect.appendChild(option);
+            }
+        }
+
+        // Start the MIDI Clock
+        function startClock() {
+            if (!midiOutput) {
+                console.log('No MIDI output selected');
+                return;
+            }
+
+            console.log('Starting MIDI Clock');
+            midiOutput.send([MIDI_START]); // Send MIDI start signal
+
+            // Calculate the interval time based on the selected BPM
+            const bpm = parseInt(document.getElementById('bpm').value);
+            clockIntervalTime = (60 / bpm) / 24 * 1000; // Calculate 24 ticks per beat
+
+            // Send clock signals at regular intervals
+            clockInterval = setInterval(() => {
+                midiOutput.send([MIDI_CLOCK]); // Send MIDI clock signal (24 ticks per beat)
+            }, clockIntervalTime);
+        }
+
+        // Stop the MIDI Clock
+        function stopClock() {
+            if (!midiOutput) {
+                console.log('No MIDI output selected');
+                return;
+            }
+
+            console.log('Stopping MIDI Clock');
+            clearInterval(clockInterval); // Stop sending MIDI clock messages
+            midiOutput.send([MIDI_STOP]); // Send MIDI stop signal
+        }
+
+        // Update MIDI Output based on device selection
+        document.getElementById('midi-device').addEventListener('change', (event) => {
+            const selectedDeviceId = event.target.value;
+            if (selectedDeviceId) {
+                midiOutput = midiAccess.outputs.get(selectedDeviceId);
+                console.log('Selected MIDI Output:', midiOutput.name);
+            } else {
+                midiOutput = null;
+            }
+        });
+
+        // Start/Stop clock event listeners
+        document.getElementById('start').addEventListener('click', startClock);
+        document.getElementById('stop').addEventListener('click', stopClock);
+    </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIDI Clock Host with BPM Control</title>
+</head>
+<body>
+    <h1>MIDI Clock Example with BPM Control</h1>
+
+    <!-- Device Selection Dropdown -->
+    <label for="midi-device">Select MIDI Output Device:</label>
+    <select id="midi-device">
+        <option value="">--No Devices--</option>
+    </select>
+
+    <br><br>
+
+    <!-- BPM Control -->
+    <label for="bpm">BPM (Beats per Minute):</label>
+    <input type="number" id="bpm" value="120" min="30" max="300" step="1">
+
+    <br><br>
+
+    <!-- Buttons to Control Clock -->
+    <button id="start">Start MIDI Clock</button>
+    <button id="stop">Stop MIDI Clock</button>
+
+    <script>
+        let midiAccess, midiOutput;
+        let clockInterval;
+        let clockIntervalTime;
+
+        const MIDI_START = 0xFA;
+        const MIDI_STOP = 0xFC;
+        const MIDI_CONTINUE = 0xFB;
+        const MIDI_CLOCK = 0xF8;
+
+        // Initialize MIDI Access and populate devices list
+        function initializeMIDI() {
+            if (navigator.requestMIDIAccess) {
+                navigator.requestMIDIAccess().then(
+                    (access) => {
+                        midiAccess = access;
+                        populateDeviceList();
+                    },
+                    (err) => {
+                        console.error('MIDI Access failed: ', err);
+                        alert("Failed to access MIDI devices. Please ensure your browser supports the Web MIDI API.");
+                    }
+                );
+            } else {
+                console.error('Web MIDI API is not supported in this browser.');
+                alert("Web MIDI API is not supported in this browser.");
+            }
+        }
+
+        // Populate the MIDI device dropdown list
+        function populateDeviceList() {
+            const midiDeviceSelect = document.getElementById('midi-device');
+            midiDeviceSelect.innerHTML = ''; // Clear existing options
+
+            const outputs = Array.from(midiAccess.outputs.values());
+            if (outputs.length > 0) {
+                outputs.forEach(output => {
+                    const option = document.createElement('option');
+                    option.value = output.id;
+                    option.textContent = output.name;
+                    midiDeviceSelect.appendChild(option);
+                });
+            } else {
+                const option = document.createElement('option');
+                option.textContent = 'No MIDI output devices found';
+                midiDeviceSelect.appendChild(option);
+            }
+        }
+
+        // Start the MIDI Clock
+        function startClock() {
+            if (!midiOutput) {
+                console.log('No MIDI output selected');
+                return;
+            }
+
+            console.log('Starting MIDI Clock');
+            midiOutput.send([MIDI_START]); // Send MIDI start signal
+
+            // Calculate the interval time based on the selected BPM
+            const bpm = parseInt(document.getElementById('bpm').value);
+            clockIntervalTime = (60 / bpm) / 24 * 1000; // Calculate 24 ticks per beat
+
+            // Send clock signals at regular intervals
+            clockInterval = setInterval(() => {
+                midiOutput.send([MIDI_CLOCK]); // Send MIDI clock signal (24 ticks per beat)
+            }, clockIntervalTime);
+        }
+
+        // Stop the MIDI Clock
+        function stopClock() {
+            if (!midiOutput) {
+                console.log('No MIDI output selected');
+                return;
+            }
+
+            console.log('Stopping MIDI Clock');
+            clearInterval(clockInterval); // Stop sending MIDI clock messages
+            midiOutput.send([MIDI_STOP]); // Send MIDI stop signal
+        }
+
+        // Update MIDI Output based on device selection
+        document.getElementById('midi-device').addEventListener('change', (event) => {
+            const selectedDeviceId = event.target.value;
+            if (selectedDeviceId) {
+                midiOutput = midiAccess.outputs.get(selectedDeviceId);
+                console.log('Selected MIDI Output:', midiOutput.name);
+            } else {
+                midiOutput = null;
+            }
+        });
+
+        // Start/Stop clock event listeners
+        document.getElementById('start').addEventListener('click', startClock);
+        document.getElementById('stop').addEventListener('click', stopClock);
+
+        // Initialize MIDI on page load
+        window.addEventListener('load', initializeMIDI);
+    </script>
+</body>
+</html>
