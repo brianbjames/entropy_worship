@@ -3,95 +3,155 @@
             font-size: 1.2rem;
         }
         @font-face {
-        font-family: 'ThirdParty';
-        src: url('thirdpar.ttf') format('truetype'); /* Specify the path to the TTF file */
-        font-weight: normal; /* Adjust as necessary */
-        font-style: normal; /* Adjust as necessary */
+            font-family: 'ThirdParty';
+            src: url('thirdpar.woff2') format('woff2'),
+                 url('thirdpar.woff') format('woff'),
+                 url('thirdpar.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap; /* Ensures fallback font is used until the custom font is loaded */
         }
+        
         @font-face {
             font-family: 'Heiko';
-            src: url('heiko.ttf') format('truetype'); /* Specify the path to the TTF file */
-            font-weight: normal; /* Adjust as necessary */
-            font-style: normal; /* Adjust as necessary */
+            src: url('heiko.woff2') format('woff2'),
+                 url('heiko.woff') format('woff'),
+                 url('heiko.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
         }
+        
         @font-face {
             font-family: 'Tomorrow';
-            src: url('Tomorrow-Regular.ttf') format('truetype'); /* Specify the path to the TTF file */
-            font-weight: normal; /* Adjust as necessary */
-            font-style: normal; /* Adjust as necessary */
+            src: url('Tomorrow-Regular.woff2') format('woff2'),
+                 url('Tomorrow-Regular.woff') format('woff'),
+                 url('Tomorrow-Regular.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
         }
+        
         @font-face {
             font-family: 'Chargen';
-            src: url('fonts/6809-Chargen.otf') format('opentype'),
+            src: url('6809-Chargen.woff2') format('woff2'),
+                 url('6809-Chargen.woff') format('woff'),
+                 url('6809-Chargen.otf') format('opentype');
             font-weight: normal;
             font-style: normal;
-          }
-          @font-face {
+            font-display: swap;
+        }
+        
+        @font-face {
             font-family: 'BERGAN';
-            src: url('fonts/BERGAN.otf') format('opentype'),
+            src: url('BERGAN.woff2') format('woff2'),
+                 url('BERGAN.woff') format('woff'),
+                 url('BERGAN.otf') format('opentype');
             font-weight: normal;
             font-style: normal;
-          }
-          @font-face {
+            font-display: swap;
+        }
+        
+        @font-face {
             font-family: 'BIONICKIDSIMPLESLANTED';
-            src: url('fonts/BIONICKIDSIMPLESLANTED.ttf') format('truetype'),
+            src: url('BIONICKIDSIMPLESLANTED.woff2') format('woff2'),
+                 url('BIONICKIDSIMPLESLANTED.woff') format('woff'),
+                 url('BIONICKIDSIMPLESLANTED.ttf') format('truetype');
             font-weight: normal;
             font-style: normal;
-          }
-          @font-face {
+            font-display: swap;
+        }
+        
+        @font-face {
             font-family: 'KogniGear';
-            src: url('fonts/KogniGear.ttf') format('truetype'),
+            src: url('KogniGear.woff2') format('woff2'),
+                 url('KogniGear.woff') format('woff'),
+                 url('KogniGear.ttf') format('truetype');
             font-weight: normal;
             font-style: normal;
-          }
-          @font-face {
+            font-display: swap;
+        }
+        
+        @font-face {
             font-family: 'Meladiox';
-            src: url('fonts/Meladiox.otf') format('opentype'),
+            src: url('Meladiox.woff2') format('woff2'),
+                 url('Meladiox.woff') format('woff'),
+                 url('Meladiox.otf') format('opentype');
             font-weight: normal;
             font-style: normal;
-          }
-          @font-face {
+            font-display: swap;
+        }
+        
+        @font-face {
             font-family: 'mionta';
-            src: url('fonts/mionta.ttf') format('truetype'),
+            src: url('mionta.woff2') format('woff2'),
+                 url('mionta.woff') format('woff'),
+                 url('mionta.ttf') format('truetype');
             font-weight: normal;
             font-style: normal;
-          }
-          @font-face {
+            font-display: swap;
+        }
+        
+        @font-face {
             font-family: 'NCLBRAYQOSE';
-            src: url('fonts/NCLBRAYQOSE.otf') format('opentype'),
+            src: url('NCLBRAYQOSE.woff2') format('woff2'),
+                 url('NCLBRAYQOSE.woff') format('woff'),
+                 url('NCLBRAYQOSE.otf') format('opentype');
             font-weight: normal;
             font-style: normal;
-          }
-          @font-face {
+            font-display: swap;
+        }
+        
+        @font-face {
             font-family: 'NCLGesrob';
-            src: url('fonts/NCLGesrob.otf') format('opentype'),
+            src: url('NCLGesrob.woff2') format('woff2'),
+                 url('NCLGesrob.woff') format('woff'),
+                 url('NCLGesrob.otf') format('opentype');
             font-weight: normal;
             font-style: normal;
-          }
-          @font-face {
+            font-display: swap;
+        }
+        
+        @font-face {
             font-family: 'sector_034';
-            src: url('fonts/sector_034.ttf') format('truetype'),
+            src: url('sector_034.woff2') format('woff2'),
+                 url('sector_034.woff') format('woff'),
+                 url('sector_034.ttf') format('truetype');
             font-weight: normal;
             font-style: normal;
-          }
-          @font-face {
+            font-display: swap;
+        }
+        
+        @font-face {
             font-family: 'Univox';
-            src: url('fonts/Univox.otf') format('opentype'),
+            src: url('Univox.woff2') format('woff2'),
+                 url('Univox.woff') format('woff'),
+                 url('Univox.otf') format('opentype');
             font-weight: normal;
             font-style: normal;
-          }
-          @font-face {
+            font-display: swap;
+        }
+        
+        @font-face {
             font-family: 'VT323-Regular';
-            src: url('fonts/VT323-Regular.ttf') format('truetype'),
+            src: url('VT323-Regular.woff2') format('woff2'),
+                 url('VT323-Regular.woff') format('woff'),
+                 url('VT323-Regular.ttf') format('truetype');
             font-weight: normal;
             font-style: normal;
-          }
-          @font-face {
+            font-display: swap;
+        }
+        
+        @font-face {
             font-family: 'Xirod';
-            src: url('fonts/Xirod.otf') format('opentype'),
+            src: url('Xirod.woff2') format('woff2'),
+                 url('Xirod.woff') format('woff'),
+                 url('Xirod.otf') format('opentype');
             font-weight: normal;
             font-style: normal;
-          }
+            font-display: swap;
+        }
+        
           
 
         .heading {
