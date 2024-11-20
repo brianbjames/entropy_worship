@@ -1,0 +1,46 @@
+{
+  "name": "crypt-ui",
+  "main": "src/crypt.scss",
+  "style": "src/crypt.scss",
+  "version": "1.1.0",
+  "description": "A library of CSS styles to create sci-fi themed components",
+  "scripts": {
+    "build": "build-storybook -c .storybook -o build",
+    "storybook": "start-storybook",
+    "test": "htmlhint \"src/**/*.html\" && stylelint \"src/**/*.css\" && eslint \"src/**/*.js\""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OfficerHalf/crypt-ui.git"
+  },
+  "keywords": [],
+  "author": "OfficerHalf",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/OfficerHalf/crypt-ui/issues"
+  },
+  "homepage": "https://github.com/OfficerHalf/crypt-ui#readme",
+  "devDependencies": {
+    "@babel/core": "^7.17.9",
+    "@storybook/addon-a11y": "^6.4.22",
+    "@storybook/addon-console": "^1.2.3",
+    "@storybook/addon-design-assets": "^6.2.9",
+    "@storybook/addon-essentials": "^6.4.22",
+    "@storybook/addon-notes": "^5.3.21",
+    "@storybook/addon-postcss": "^2.0.0",
+    "@storybook/addons": "^6.4.22",
+    "@storybook/html": "^8.3.6",
+    "@storybook/theming": "^6.4.22",
+    "babel-loader": "^8.2.4",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "htmlhint": "^0.15.2",
+    "prettier": "^2.6.2",
+    "sass": "^1.50.1",
+    "sass-loader": "^10.2.1",
+    "stylelint": "^13.13.1",
+    "stylelint-config-prettier": "^8.0.2",
+    "stylelint-config-standard": "^22.0.0",
+    "typescript": "^4.6.3"
+  }
+}
