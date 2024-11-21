@@ -1,5 +1,9 @@
-## Ignore All Directories with the followings paths
+#
+# https://git-scm.com/docs/gitignore
+
+## A leading "**" followed by a slash means match in all directories
 **/.DS_Store
 **/node_modules/
 
+## User defined paths
 projects/audio/audioplayers/
