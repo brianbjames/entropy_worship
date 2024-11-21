@@ -1,3 +1,30 @@
+<!-- /-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\ -->
+<!-- |                                                                         | -->
+<!-- \ @@@@@@@@  @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@@@@@   @@@ @@@      / -->
+<!-- - @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@ @@@      - -->
+<!-- / @@!       @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!  @@@  @@! !@@      \ -->
+<!-- | !@!       !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!  @!@  !@! @!!      | -->
+<!-- \ @!!!:!    @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!@@!@!    !@!@!       / -->
+<!-- - !!!!!:    !@!  !!!    !!!    !!@!@!    !@!  !!!  !!@!!!      @!!!       - -->
+<!-- / !!:       !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:         !!:        \ -->
+<!-- | :!:       :!:  !:!    :!:    :!:  !:!  :!:  !:!  :!:         :!:        | -->
+<!-- \  :: ::::   ::   ::     ::    ::   :::  ::::: ::   ::          ::        / -->
+<!-- - : :: ::   ::    :      :      :   : :   : :  :    :           :         - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \ @@@  @@@  @@@   @@@@@@   @@@@@@@    @@@@@@   @@@  @@@  @@@  @@@@@@@     / -->
+<!-- - @@@  @@@  @@@  @@@@@@@@  @@@@@@@@  @@@@@@@   @@@  @@@  @@@  @@@@@@@@    - -->
+<!-- / @@!  @@!  @@!  @@!  @@@  @@!  @@@  !@@       @@!  @@@  @@!  @@!  @@@    \ -->
+<!-- | !@!  !@!  !@!  !@!  @!@  !@!  @!@  !@!       !@!  @!@  !@!  !@!  @!@    | -->
+<!-- \ @!!  !!@  @!@  @!@  !@!  @!@!!@!   !!@@!!    @!@!@!@!  !!@  @!@@!@!     / -->
+<!-- - !@!  !!!  !@!  !@!  !!!  !!@!@!     !!@!!!   !!!@!!!!  !!!  !!@!!!      - -->
+<!-- / !!:  !!:  !!:  !!:  !!!  !!: :!!        !:!  !!:  !!!  !!:  !!:         \ -->
+<!-- | :!:  :!:  :!:  :!:  !:!  :!:  !:!      !:!   :!:  !:!  :!:  :!:         | -->
+<!-- \  :::: :: :::   ::::: ::  ::   :::  :::: ::   ::   :::   ::   ::         / -->
+<!-- -   :: :  : :     : :  :    :   : :  :: : :     :   : :  :     :          - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,15 +52,15 @@
 <meta property="og:image:alt" content="WARNING: Experimental Project"> <!-- Image description -->
 <meta property="article:tag" content="Entropy Worship. WARNING: Experimental Project">
 
-<!-- Processing.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/processing.js/1.4.8/processing.min.js"></script>
 <!-- Bootstrap CSS -->
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://getbootstrap.com/assets/js/color-modes.js"></script>
 <!-- Augmented UI CSS -->
 <link rel="stylesheet" type="text/css" href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css">
 <!-- Sci UI CSS -->
-<link href="styles.css" rel="stylesheet">
+<link href="styles/styles.css" rel="stylesheet">
+
+<link href="styles/style_overrides.css" rel="stylesheet">
         <style>
 
         .sequencer-container {
@@ -83,65 +110,13 @@
     padding: 5px 10px;  /* Adjusts input field size */
     width: 80px;  /* You can adjust the width of the input */
 }
-@font-face {
-    font-family: 'ThirdParty';
-    src: url('thirdpar.ttf') format('truetype'); /* Specify the path to the TTF file */
-    font-weight: normal; /* Adjust as necessary */
-    font-style: normal; /* Adjust as necessary */
-        }
-        @font-face {
-    font-family: 'Heiko';
-    src: url('heiko.ttf') format('truetype'); /* Specify the path to the TTF file */
-    font-weight: normal; /* Adjust as necessary */
-    font-style: normal; /* Adjust as necessary */
-        }
-        @font-face {
-    font-family: 'Tomorrow';
-    src: url('Tomorrow-Regular.ttf') format('truetype'); /* Specify the path to the TTF file */
-    font-weight: normal; /* Adjust as necessary */
-    font-style: normal; /* Adjust as necessary */
-        }
-
         .heading {
             color: #e80f0fcc; 
             text-size-adjust: relative;
-
-        }
-        h1 {
-            text-align: left;
-            margin: 0;
-            padding: 0;
-            font-family: 'ThirdParty', sans-serif; /* Fallback to a generic font */
-        }
-        h2 {
-            text-align: left;
-            margin: 0;
-            padding: 0;
-            font-family: 'Heiko', sans-serif; /* Fallback to a generic font */
-        }
-        h3 {
-            text-align: left;
-            color: #e80f0fcc; 
-            margin: 0;
-            padding: 0;
-            font-family: 'ThirdParty', sans-serif; /* Fallback to a generic font */
-        }
-        h4 {
-            text-align: left;
-            margin: 0;
-            padding: 0;
-            font-family: 'Heiko', sans-serif; /* Fallback to a generic font */
-        }
-        h5 {
-            text-align: left;
-            margin: 0;
-            padding: 0;
-            font-size: 1.0rem;
-            font-family: 'Tomorrow', sans-serif; /* Fallback to a generic font */
         }
         body {
           position: relative;
-          background-image: url('http://www.entropyworship.com/images/EW_Second_Law_Cover_W_Aerotek_Logo.png'); 
+          background-image: url('images/entropyworship-1._Create_a_hyper-realistic_high-definition_image__20e10f5a-2f21-438c-a8b8-d4cfe6f3f7b0.png'); 
           background-size: cover;
           background-position: center;
           color: white;
