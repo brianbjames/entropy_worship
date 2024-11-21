@@ -59,63 +59,10 @@
     <link href="styles/styles.css" rel="stylesheet">
     <!-- Style Overrides CSS -->
     <link href="styles/style_overrides.css" rel="stylesheet">
+    <!-- Cyberpunk CSS -->
+<link href="styles/cyberpunk.css" rel="stylesheet" type="text/css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
     <style>
-        @font-face {
-    font-family: 'ThirdParty';
-    src: url('styles/thirdpar.ttf') format('truetype'); /* Specify the path to the TTF file */
-    font-weight: normal; /* Adjust as necessary */
-    font-style: normal; /* Adjust as necessary */
-        }
-        @font-face {
-    font-family: 'Heiko';
-    src: url('styles/heiko.ttf') format('truetype'); /* Specify the path to the TTF file */
-    font-weight: normal; /* Adjust as necessary */
-    font-style: normal; /* Adjust as necessary */
-        }
-        @font-face {
-    font-family: 'Tomorrow';
-    src: url('styles/Tomorrow-Regular.ttf') format('truetype'); /* Specify the path to the TTF file */
-    font-weight: normal; /* Adjust as necessary */
-    font-style: normal; /* Adjust as necessary */
-        }
-
-        .heading {
-            color: #e80f0fcc; 
-            text-size-adjust: relative;
-
-        }
-        h1 {
-            text-align: left;
-            margin: 0;
-            padding: 0;
-            font-family: 'ThirdParty', sans-serif; /* Fallback to a generic font */
-        }
-        h2 {
-            text-align: left;
-            margin: 0;
-            padding: 0;
-            font-family: 'Heiko', sans-serif; /* Fallback to a generic font */
-        }
-        h3 {
-            text-align: left;
-            color: #e80f0fcc; 
-            margin: 0;
-            padding: 0;
-            font-family: 'ThirdParty', sans-serif; /* Fallback to a generic font */
-        }
-        h4 {
-            text-align: left;
-            margin: 0;
-            padding: 0;
-            font-family: 'Heiko', sans-serif; /* Fallback to a generic font */
-        }
-        h5 {
-            text-align: left;
-            margin: 0;
-            padding: 0;
-            font-size: 1.0rem;
-            font-family: 'Tomorrow', sans-serif; /* Fallback to a generic font */
-        }
         body {
           position: relative;
           background-image: url('images/EW_Second_Law_Cover_W_Aerotek_Logo.png'); 
@@ -127,6 +74,9 @@
           padding: 0;
           font-family: 'Tomorrow', sans-serif; 
           background-attachment: fixed; /* For desktop */
+        }
+        canvas { 
+          display: block; 
         }
         .transparent-bg {
     background-color: transparent !important;
@@ -158,33 +108,24 @@
                 <h1 class="heading display-6" style="font-size: 1.5rem;">ENTROPY WORSHIP</h1>
                 <h2 class="panel info shown" style="font-size: 1.5rem;">build 3.0.11.07.24</h1>
             </div>
-            <div class="card-body">
-                <a href="https://itunes.apple.com/WebObjects/MZStore.woa/wa/viewArtist?id=1110835320&mt=1&ls=1&app=music" target="_blank" class="btn btn-danger btn-sm">Apple Music</a>
-                <a href="https://open.spotify.com/artist/3GpPdNZsECtcabm7mZOwGI" target="_blank" class="btn btn-danger btn-sm">Spotify</a>
-                <a href="https://soundcloud.com/entropy-worship" target="_blank" class="btn btn-danger btn-sm">Soundcloud</a>
-                <a href="https://entropyworship.bandcamp.com" target="_blank" class="btn btn-danger btn-sm">Bandcamp</a>
-                <a href="https://ra.co/dj/entropyworship" target="_blank" class="btn btn-danger btn-sm">Resident Advisor</a>
-                <a href="https://www.facebook.com/entropyworship/" target="_blank" class="btn btn-danger btn-sm">Facebook</a>
-                <a href="https://twitter.com/EntropyWorship" target="_blank" class="btn btn-danger btn-sm">Twitter</a>
-                <a href="https://www.instagram.com/entropyworship/" target="_blank" class="btn btn-danger btn-sm">Instagram</a>
-                <a href="mailto:brian@entropyworship.com" target="_blank" class="btn btn-danger btn-sm">Booking</a>
-                <a href="https://www.entropyworship.com/EW909.html" target="_blank" class="btn btn-danger btn-sm">EW909</a>
-                <a href="https://www.entropyworship.com/EWMIDICALC.html" target="_blank" class="btn btn-danger btn-sm">EWMIDICALC</a>
-            </div>
         </div>
 
         <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c"><!--Release panel-->
             <div class="card-header border-danger">
-                <h2 class="title">Releases</h3>
+              <h1 class="cyber-h">Releases</h1>
             </div>
             <div class="row row-cols-2" data-masonry='{"percentPosition": true }'><!--Masonry panel-->
                 <div class="col">
                     <div class="card transparent-bg border-danger">
                       <!-- First Image Container -->
                       <div class="card-body">
-                        <img class="img-fluid" style="width: 100%; aspect-ratio: 1; object-fit: cover;" src="http://www.entropyworship.com/images/EW_Second_Law_Cover_W_Aerotek_Logo.png" alt="Second Law Cover">
-                        <h5 class="card-title">Second Law</h5>
-                        <a href="https://www.beatport.com/release/second-law/4812389" target="_blank" class="btn btn-danger btn-sm">Pre-Order</a>
+                        <img class="img-fluid cyber-glitch-0" style="width: 100%; aspect-ratio: 1; object-fit: cover;" src="images/EW_Second_Law_Cover_W_Aerotek_Logo.png" alt="Second Law Cover">
+                        <h5 class="card-title">Second Law</h5><span class="cyber-att">New Release</span>
+                        <a href="https://www.beatport.com/release/second-law/4812389" target="_blank" class="btn btn-outline-light btn-sm">Pre-Order</a>
+<!--                         <a href="#" target="_blank" class="btn btn-outline-light btn-sm">Apple</a>
+                        <a href="#" target="_blank" class="btn btn-outline-light btn-sm">Spotify</a>
+                        <a href="#" target="_blank" class="btn btn-outline-light btn-sm">Bandcamp</a>
+ -->                        
                       </div>
                     </div>
                   </div>
@@ -194,8 +135,10 @@
                     <div class="card-body">
                       <img class="img-fluid" style="width: 100%; aspect-ratio: 1; object-fit: cover;" src="http://www.entropyworship.com/images/EntropyWorshipFacticity-CoverForDigitalSmaller.jpg" alt="Facticity Devotion Discipline Cover">
                       <h5 class="card-title">Facticity Devotion Discipline</h5>
-                      <a href="https://www.missionsynths.com/products/entropy-worship-facticity-devotion-discipline-1" target="_blank" class="btn btn-danger btn-sm">Order Vinyl</a>
-                      <a href="https://entropyworship.bandcamp.com/album/facticity-devotion-discipline" target="_blank" class="btn btn-danger btn-sm">Download</a>
+                      <a href="https://www.missionsynths.com/products/entropy-worship-facticity-devotion-discipline-1" target="_blank" class="btn btn-outline-light btn-sm">Order Vinyl</a>
+                      <a href="https://music.apple.com/us/album/facticity-devotion-discipline-ep/1378491884" target="_blank" class="btn btn-outline-light btn-sm">Apple</a>
+                      <a href="https://open.spotify.com/album/4UqiFfR222eSeoPctBP5bF?si=_cyAkVnSQOCrkf4Ia-muFA" target="_blank" class="btn btn-outline-light btn-sm">Spotify</a>
+                      <a href="https://entropyworship.bandcamp.com/album/facticity-devotion-discipline" target="_blank" class="btn btn-outline-light btn-sm">Bandcamp</a>
                     </div>
                   </div>
                 </div>
@@ -205,7 +148,9 @@
                       <div class="card-body">
                         <img class="img-fluid" style="width: 100%; aspect-ratio: 1; object-fit: cover;" src="http://www.entropyworship.com/images/EntropyWorshipDirtyConsecrationCover.jpg" alt="Facticity Devotion Discipline Cover">
                         <h5 class="card-title">Dirty Consecration</h5>
-                        <a href="https://entropyworship.bandcamp.com/album/dirty-consecration" target="_blank" class="btn btn-danger btn-sm">Download</a>
+                        <a href="https://music.apple.com/us/album/dirty-consecration-single/1113364047" target="_blank" class="btn btn-outline-light btn-sm">Apple</a>
+                        <a href="https://open.spotify.com/album/2aGUBW2oieV24apYcK4hZE?si=a9FB1TUNTEC2TEGSP81YrA" target="_blank" class="btn btn-outline-light btn-sm">Spotify</a>
+                        <a href="https://entropyworship.bandcamp.com/album/dirty-consecration" target="_blank" class="btn btn-outline-light btn-sm">Bandcamp</a>
                       </div>
                     </div>
                 </div>
@@ -216,16 +161,66 @@
                         <div class="card-body">
                             <img class="img-fluid" style="width: 100%; aspect-ratio: 1; object-fit: cover;" src="http://www.entropyworship.com/images/EntropyWorshipThamesCover.jpg" alt="Thames and Variations Cover">
                             <h5 class="card-title">Thames and Variations</h5>
-                          <a href="https://entropyworship.bandcamp.com/album/thames-and-variations" target="_blank" class="btn btn-danger btn-sm">Download</a>
+                            <a href="https://music.apple.com/us/album/thames-and-variations-single/1110835303" target="_blank" class="btn btn-outline-light btn-sm">Apple</a>
+                            <a href="https://open.spotify.com/album/2orrfUEKesHEM3VD8DtzZr?si=jQ5HROs8SJefxnn0olwyrg" target="_blank" class="btn btn-outline-light btn-sm">Spotify</a>
+                          <a href="https://entropyworship.bandcamp.com/album/thames-and-variations" target="_blank" class="btn btn-outline-light btn-sm">Bandcamp</a>
                         </div>
                       </div>
                 </div>
               </div><!--Masonry panel close-->
-
         </div><!--Release panel close-->
+
+        <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c">
+          <div class="row row-cols-2" data-masonry='{"percentPosition": true }'><!--Masonry panel-->
+
+            <div class="col">
+                <div class="card transparent-bg">
+                  <!-- Third Image Container -->
+                  <div class="card-body">
+                    <span style="font-family:VT323-Regular; font-size: 30px;" class="cyber-glitch-4">Entropia, in the context of thermodynamics, is the measure of disorder.</span><br>   
+                    <a href="https://www.entropyworship.com/EW909.html" target="_blank" class="btn btn-outline-light btn-sm">EW909</a>
+                    <a href="https://www.entropyworship.com/EWMIDICALC.html" target="_blank" class="btn btn-outline-light btn-sm">EWMIDICALC</a>                     
+                  </div>
+                </div>
+            </div>
+            
+            <div class="col">
+                <div class="card transparent-bg">
+                  <div class="cyber-tile-big fg-white bg-dark mr-4 inline-block vt-bot cyber-glitch-2" id="canvas1">
+                      <!-- The canvas will be inserted here -->              
+                  <script>
+                      let objModel;  // Declare the model variable
+              
+                      function setup() {
+                          const canvas = createCanvas(400, 400, WEBGL);  // Create a 3D canvas
+                          canvas.parent(document.getElementById('canvas1'));  // Attach the canvas to the div with id 'canvas1'
+              
+                          // Load the OBJ model
+                          objModel = loadModel('images/12140_Skull_v3_L2.obj', true); 
+                      }
+              
+                      function draw() {
+                          background(200);
+                          lights();  // Enable lighting
+              
+                          // Rotate the model over time
+                          rotateX(frameCount * 0.01);  
+                          rotateY(frameCount * 0.01);
+              
+                          if (objModel) {
+                              scale(10);  // Scale the model to make it visible
+                              model(objModel);  // Draw the loaded model
+                          }
+                      }
+                  </script>
+                  </div>
+                </div>
+            </div>
+            </div>
+          </div><!--Masonry panel close-->    
         <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c"><!--Performance Schedule panel-->
             <div class="card-header border-danger">
-                <h2 class="title">Schedule</h3>
+              <h1 class="cyber-h">Schedule</h1>
             </div>
             <div class="card-body">
                 <table class="table table-borderless" style="color: white;">
@@ -339,6 +334,19 @@
                   </table>
             </div>
         </div><!--Perf panel close-->
+        <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c">
+          <div class="card-header border-danger">
+              <h1 class="cyber-h">Contact</h1>
+          </div>
+          <div class="card-body">
+            <a href="https://soundcloud.com/entropy-worship" target="_blank" class="btn btn-outline-light btn-sm">Soundcloud</a>
+            <a href="https://ra.co/dj/entropyworship" target="_blank" class="btn btn-outline-light btn-sm">Resident Advisor</a>
+            <a href="https://www.facebook.com/entropyworship/" target="_blank" class="btn btn-outline-light btn-sm">Facebook</a>
+            <a href="https://twitter.com/EntropyWorship" target="_blank" class="btn btn-outline-light btn-sm">Twitter</a>
+            <a href="https://www.instagram.com/entropyworship/" target="_blank" class="btn btn-outline-light btn-sm">Instagram</a>
+            <a href="mailto:brian@entropyworship.com" target="_blank" class="btn btn-outline-light btn-sm">Booking</a>
+          </div>
+        </div>
     </div><!--close of main container-->
 </body>
 <!-- Bootstrap JS and dependencies -->

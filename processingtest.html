@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>p5.js OBJ Loader</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        body { margin: 0; padding: 0; overflow: hidden; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+
+    <script>
+        let objModel;  // Declare the model variable
+
+        function setup() {
+            createCanvas(windowWidth, windowHeight, WEBGL);  // Create a 3D canvas
+            // Make sure you serve the .obj file from the same directory or a server with CORS enabled
+            objModel = loadModel('images/12140_Skull_v3_L2.obj', true);  // Load the OBJ model
+        }
+
+        function draw() {
+            background(200);
+            lights();  // Enable lighting
+
+            // Rotate the model over time
+            rotateX(frameCount * 0.01);  
+            rotateY(frameCount * 0.01);
+
+            if (objModel) {
+                scale(10);  // Scale the model to make it visible
+                model(objModel);  // Draw the loaded model
+            }
+        }
+    </script>
+
+</body>
+</html>
