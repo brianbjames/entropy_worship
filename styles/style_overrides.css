@@ -179,6 +179,16 @@
     font-display: swap;
 }
 
+@font-face {
+    font-family: 'Oxanium';
+    src: url('Oxanium.woff2') format('woff2'),
+            url('Oxanium.woff') format('woff'),
+            url('Oxanium.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
     
 
 .heading {
