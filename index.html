@@ -78,6 +78,12 @@
         canvas { 
           display: block; 
         }
+        #canvas1 {
+            width: 100%;  /* or a specific width like '500px' */
+            height: 400px; /* or dynamic based on the parent container or viewport */
+            max-width: 100%; /* Optional: ensure the canvas fits inside the parent */
+            position: relative; /* Ensure canvas scales correctly */
+        }
         .transparent-bg {
     background-color: transparent !important;
 }
@@ -106,7 +112,7 @@
         <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c;"><!--Header panel-->
             <div class="card-header border-danger">
                 <h1 class="heading display-6" style="font-size: 1.5rem;">ENTROPY WORSHIP</h1>
-                <h2 class="panel info shown" style="font-size: 1.5rem;">build 3.0.11.07.24</h1>
+                <h2 class="panel info shown" style="font-size: 1.5rem;">build 3.0.11.21.24</h1>
             </div>
         </div>
 
@@ -120,7 +126,7 @@
                       <!-- First Image Container -->
                       <div class="card-body">
                         <img class="img-fluid cyber-glitch-0" style="width: 100%; aspect-ratio: 1; object-fit: cover;" src="images/EW_Second_Law_Cover_W_Aerotek_Logo.png" alt="Second Law Cover">
-                        <h5 class="card-title">Second Law</h5><span class="cyber-att">New Release</span>
+                        <h5 class="card-title">Second Law</h5><span class="cyber-att">New</span>
                         <a href="https://www.beatport.com/release/second-law/4812389" target="_blank" class="btn btn-outline-light btn-sm">Pre-Order</a>
 <!--                         <a href="#" target="_blank" class="btn btn-outline-light btn-sm">Apple</a>
                         <a href="#" target="_blank" class="btn btn-outline-light btn-sm">Spotify</a>
@@ -177,7 +183,16 @@
                 <div class="card transparent-bg">
                   <!-- Third Image Container -->
                   <div class="card-body">
-                    <span style="font-family:VT323-Regular; font-size: 30px;" class="cyber-glitch-4">Entropia, in the context of thermodynamics, is the measure of disorder.</span><br>   
+                    <span style="font-family:VT323-Regular; font-size: 15px;" class="cyber-glitch-4">Measures disorder or randomness; it tends to increase in isolated systems.
+                      Measured in joules per kelvin (J/K).
+                      Increases in irreversible processes.
+                      Scales with system size.
+                      Phase Transitions: Entropy changes discontinuously during phase changes (e.g., melting, boiling).
+                      Proportional to the area of its event horizon (Bekenstein-Hawking formula).
+                      Increases over time, contributing to the heat death theory.
+                      Masures uncertainty in quantum states.
+                      Life decreases local entropy by increasing entropy in surroundings.
+                      Negative entropy (negentropy) refers to the creation of order in systems, but overall entropy still increases.</span><br>   
                     <a href="https://www.entropyworship.com/EW909.html" target="_blank" class="btn btn-outline-light btn-sm">EW909</a>
                     <a href="https://www.entropyworship.com/EWMIDICALC.html" target="_blank" class="btn btn-outline-light btn-sm">EWMIDICALC</a>                     
                   </div>
@@ -186,36 +201,64 @@
             
             <div class="col">
                 <div class="card transparent-bg">
-                  <div class="cyber-tile-big fg-white bg-dark mr-4 inline-block vt-bot cyber-glitch-2" id="canvas1">
-                      <!-- The canvas will be inserted here -->              
-                  <script>
-                      let objModel;  // Declare the model variable
-              
-                      function setup() {
-                          const canvas = createCanvas(400, 400, WEBGL);  // Create a 3D canvas
-                          canvas.parent(document.getElementById('canvas1'));  // Attach the canvas to the div with id 'canvas1'
-              
-                          // Load the OBJ model
-                          objModel = loadModel('images/12140_Skull_v3_L2.obj', true); 
-                      }
-              
-                      function draw() {
-                          background(200);
-                          lights();  // Enable lighting
-              
-                          // Rotate the model over time
-                          rotateX(frameCount * 0.01);  
-                          rotateY(frameCount * 0.01);
-              
-                          if (objModel) {
-                              scale(10);  // Scale the model to make it visible
-                              model(objModel);  // Draw the loaded model
-                          }
-                      }
-                  </script>
+                  <div class="card-body">
+                    <div class="cyber-tile-big fg-white bg-dark mr-4 inline-block vt-bot cyber-glitch-2" id="canvas1">
+                      <!-- The canvas will be inserted here -->
+                    </div>
+                  </div>
+                <script>
+                    let objModel;  // Declare the model variable
+                
+                    function setup() {
+                        // Create the canvas initially with any default size
+                        const canvas = createCanvas(400, 400, WEBGL);
+                        canvas.parent(document.getElementById('canvas1'));  // Attach the canvas to the div with id 'canvas1'
+                
+                        // Load the OBJ model
+                        objModel = loadModel('images/12140_Skull_v3_L2.obj', true);
+                
+                        // Ensure that the canvas size matches the parent container initially
+                        resizeCanvasToParent();
+                    }
+                
+                    function draw() {
+                        background(200);
+                        lights();  // Enable lighting
+                
+                        // Rotate the model over time
+                        rotateX(frameCount * 0.01);
+                        rotateY(frameCount * 0.01);
+                
+                        if (objModel) {
+                            scale(10);  // Scale the model to make it visible
+                            model(objModel);  // Draw the loaded model
+                        }
+                    }
+                
+                    // Resize the canvas to match the parent div's size
+                    function resizeCanvasToParent() {
+                        const div = document.getElementById('canvas1');  // Get the parent div
+                        const divWidth = div.clientWidth;  // Get the width of the parent div
+                        const divHeight = div.clientHeight;  // Get the height of the parent div
+                        resizeCanvas(divWidth, divHeight);  // Resize the canvas to match the div size
+                    }
+                
+                    // Add an event listener to resize the canvas when the window is resized
+                    window.addEventListener('resize', function() {
+                        resizeCanvasToParent();  // Adjust the canvas size when the window is resized
+                    });
+                
+                    // Optional: Add a ResizeObserver to ensure the canvas resizes when the parent div size changes
+                    const resizeObserver = new ResizeObserver(() => {
+                        resizeCanvasToParent();
+                    });
+                
+                    const div = document.getElementById('canvas1');
+                    resizeObserver.observe(div);  // Observe the div and resize the canvas when it changes
+                </script>
+                
                   </div>
                 </div>
-            </div>
             </div>
           </div><!--Masonry panel close-->    
         <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c"><!--Performance Schedule panel-->
