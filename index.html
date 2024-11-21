@@ -177,85 +177,84 @@
         </div><!--Release panel close-->
 
         <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c">
-          <div class="row row-cols-2" data-masonry='{"percentPosition": true }'><!--Masonry panel-->
+          <div class="row row-cols-1" data-masonry='{"percentPosition": true }'><!--Masonry panel-->
 
             <div class="col">
-                <div class="card transparent-bg">
-                  <!-- Third Image Container -->
-                  <div class="card-body">
-                    <span style="font-family:VT323-Regular; font-size: 15px;" class="cyber-glitch-4">Measures disorder or randomness; it tends to increase in isolated systems.
-                      Measured in joules per kelvin (J/K).
-                      Increases in irreversible processes.
-                      Scales with system size.
-                      Phase Transitions: Entropy changes discontinuously during phase changes (e.g., melting, boiling).
-                      Proportional to the area of its event horizon (Bekenstein-Hawking formula).
-                      Increases over time, contributing to the heat death theory.
-                      Masures uncertainty in quantum states.
-                      Life decreases local entropy by increasing entropy in surroundings.
-                      Negative entropy (negentropy) refers to the creation of order in systems, but overall entropy still increases.</span><br>   
-                    <a href="https://www.entropyworship.com/EW909.html" target="_blank" class="btn btn-outline-light btn-sm">EW909</a>
-                    <a href="https://www.entropyworship.com/EWMIDICALC.html" target="_blank" class="btn btn-outline-light btn-sm">EWMIDICALC</a>                     
+              <div class="card transparent-bg">
+                <!-- Third Image Container -->
+                <div class="card-body">
+                  <span style="font-family:VT323-Regular; font-size: 30px;" class="cyber-glitch-4">
+                    >tends to increase in isolated systems<br>
+                    >increases in irreversible processes<br>
+                    >scales with system size<br>
+                    >changes discontinuously<br>
+                    >increases over time<br>
+                    >measures uncertainty<br></span>
+                  <a href="https://www.entropyworship.com/EW909.html" target="_blank" class="btn btn-outline-light btn-sm">EW909</a>
+                  <a href="https://www.entropyworship.com/EWMIDICALC.html" target="_blank" class="btn btn-outline-light btn-sm">EWMIDICALC</a>                     
+                </div>
+              </div>
+              <div class="card transparent-bg">
+                <div class="card-body">
+                  <div class="cyber-tile-big fg-white bg-dark mr-4 inline-block vt-bot cyber-glitch-2" id="canvas1">
+                    <!-- The canvas will be inserted here -->
                   </div>
                 </div>
+              <script>
+                  let objModel;  // Declare the model variable
+              
+                  function setup() {
+                      // Create the canvas initially with any default size
+                      const canvas = createCanvas(10, 10, WEBGL);
+                      canvas.parent(document.getElementById('canvas1'));  // Attach the canvas to the div with id 'canvas1'
+              
+                      // Load the OBJ model
+                      objModel = loadModel('images/12140_Skull_v3_L2.obj', true);
+              
+                      // Ensure that the canvas size matches the parent container initially
+                      resizeCanvasToParent();
+                  }
+              
+                  function draw() {
+                      background(200);
+                      lights();  // Enable lighting
+              
+                      // Rotate the model over time
+                      rotateX(frameCount * 0.01);
+                      rotateY(frameCount * 0.01);
+              
+                      if (objModel) {
+                          scale(10);  // Scale the model to make it visible
+                          model(objModel);  // Draw the loaded model
+                      }
+                  }
+              
+                  // Resize the canvas to match the parent div's size
+                  function resizeCanvasToParent() {
+                      const div = document.getElementById('canvas1');  // Get the parent div
+                      const divWidth = div.clientWidth;  // Get the width of the parent div
+                      const divHeight = div.clientHeight;  // Get the height of the parent div
+                      resizeCanvas(divWidth, divHeight);  // Resize the canvas to match the div size
+                  }
+              
+                  // Add an event listener to resize the canvas when the window is resized
+                  window.addEventListener('resize', function() {
+                      resizeCanvasToParent();  // Adjust the canvas size when the window is resized
+                  });
+              
+                  // Optional: Add a ResizeObserver to ensure the canvas resizes when the parent div size changes
+                  const resizeObserver = new ResizeObserver(() => {
+                      resizeCanvasToParent();
+                  });
+              
+                  const div = document.getElementById('canvas1');
+                  resizeObserver.observe(div);  // Observe the div and resize the canvas when it changes
+              </script>
+
             </div>
             
             <div class="col">
-                <div class="card transparent-bg">
-                  <div class="card-body">
-                    <div class="cyber-tile-big fg-white bg-dark mr-4 inline-block vt-bot cyber-glitch-2" id="canvas1">
-                      <!-- The canvas will be inserted here -->
-                    </div>
-                  </div>
-                <script>
-                    let objModel;  // Declare the model variable
-                
-                    function setup() {
-                        // Create the canvas initially with any default size
-                        const canvas = createCanvas(400, 400, WEBGL);
-                        canvas.parent(document.getElementById('canvas1'));  // Attach the canvas to the div with id 'canvas1'
-                
-                        // Load the OBJ model
-                        objModel = loadModel('images/12140_Skull_v3_L2.obj', true);
-                
-                        // Ensure that the canvas size matches the parent container initially
-                        resizeCanvasToParent();
-                    }
-                
-                    function draw() {
-                        background(200);
-                        lights();  // Enable lighting
-                
-                        // Rotate the model over time
-                        rotateX(frameCount * 0.01);
-                        rotateY(frameCount * 0.01);
-                
-                        if (objModel) {
-                            scale(10);  // Scale the model to make it visible
-                            model(objModel);  // Draw the loaded model
-                        }
-                    }
-                
-                    // Resize the canvas to match the parent div's size
-                    function resizeCanvasToParent() {
-                        const div = document.getElementById('canvas1');  // Get the parent div
-                        const divWidth = div.clientWidth;  // Get the width of the parent div
-                        const divHeight = div.clientHeight;  // Get the height of the parent div
-                        resizeCanvas(divWidth, divHeight);  // Resize the canvas to match the div size
-                    }
-                
-                    // Add an event listener to resize the canvas when the window is resized
-                    window.addEventListener('resize', function() {
-                        resizeCanvasToParent();  // Adjust the canvas size when the window is resized
-                    });
-                
-                    // Optional: Add a ResizeObserver to ensure the canvas resizes when the parent div size changes
-                    const resizeObserver = new ResizeObserver(() => {
-                        resizeCanvasToParent();
-                    });
-                
-                    const div = document.getElementById('canvas1');
-                    resizeObserver.observe(div);  // Observe the div and resize the canvas when it changes
-                </script>
+ 
                 
                   </div>
                 </div>
