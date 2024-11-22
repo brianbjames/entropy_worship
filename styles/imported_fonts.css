@@ -1,0 +1,127 @@
+@font-face {
+    font-family: "ThirdParty";
+    src: url("fonts/thirdpar.ttf") format("truetype"); /* Specify the path to the TTF file */
+    font-weight: normal; /* Adjust as necessary */
+    font-style: normal; /* Adjust as necessary */
+    font-display: swap; /* Ensures fallback font is used until the custom font is loaded */
+}
+
+@font-face {
+    font-family: "Heiko";
+    src: url("fonts/heiko.ttf") format("truetype"); /* Specify the path to the TTF file */
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Tomorrow";
+    src: url("fonts/Tomorrow-Regular.ttf") format("truetype"); /* Specify the path to the TTF file */
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Chargen";
+    src: url("fonts/6809-Chargen.otf") format("opentype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "BERGAN";
+    src: url("fonts/BERGAN.otf") format("opentype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "BIONICKIDSIMPLESLANTED";
+    src: url("fonts/BIONICKIDSIMPLESLANTED.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "KogniGear";
+    src: url("fonts/KogniGear.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Meladiox";
+    src: url("fonts/Meladiox.otf") format("opentype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "mionta";
+    src: url("fonts/mionta.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "NCLBRAYQOSE";
+    src: url("fonts/NCLBRAYQOSE.otf") format("opentype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "NCLGesrob";
+    src: url("fonts/NCLGesrob.otf") format("opentype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "sector_034";
+    src: url("fonts/sector_034.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Univox";
+    src: url("fonts/Univox.otf") format("opentype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "VT323-Regular";
+    src: url("fonts/VT323-Regular.ttf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Xirod";
+    src: url("fonts/Xirod.otf") format("opentype");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Oxanium";
+    src: url("fonts/Oxanium.woff2") format("woff2");
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}

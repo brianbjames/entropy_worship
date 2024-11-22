@@ -1,21 +1,4 @@
-@font-face {
-    font-family: "ThirdParty";
-    src: url("../fonts/thirdpar.ttf") format("truetype"); /* Specify the path to the TTF file */
-    font-weight: normal; /* Adjust as necessary */
-    font-style: normal; /* Adjust as necessary */
-}
-@font-face {
-    font-family: "Heiko";
-    src: url("../fonts/heiko.ttf") format("truetype"); /* Specify the path to the TTF file */
-    font-weight: normal; /* Adjust as necessary */
-    font-style: normal; /* Adjust as necessary */
-}
-@font-face {
-    font-family: "Tomorrow";
-    src: url("../fonts/Tomorrow-Regular.ttf") format("truetype"); /* Specify the path to the TTF file */
-    font-weight: normal; /* Adjust as necessary */
-    font-style: normal; /* Adjust as necessary */
-}
+@@import url('imported_fonts.css');
 
 button {
     font-family: "Tomorrow", sans-serif;
