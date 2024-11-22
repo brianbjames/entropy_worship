@@ -200,16 +200,25 @@
                     <!-- The canvas will be inserted here -->
                   </div>
                 </div>
-              <script>
+                <script>
                   let objModel;  // Declare the model variable
+              
+                  // Array of possible OBJ file paths
+                  const objFiles = [
+                      'images/12140_Skull_v3_L2.obj'
+                  ];
               
                   function setup() {
                       // Create the canvas initially with any default size
                       const canvas = createCanvas(10, 10, WEBGL);
                       canvas.parent(document.getElementById('canvas1'));  // Attach the canvas to the div with id 'canvas1'
               
-                      // Load the OBJ model
-                      objModel = loadModel('images/12140_Skull_v3_L2.obj', true);
+                      // Randomly choose an OBJ file from the array
+                      const randomIndex = Math.floor(Math.random() * objFiles.length);
+                      const selectedObjFile = objFiles[randomIndex];
+              
+                      // Load the randomly chosen OBJ model
+                      objModel = loadModel(selectedObjFile, true);
               
                       // Ensure that the canvas size matches the parent container initially
                       resizeCanvasToParent();
