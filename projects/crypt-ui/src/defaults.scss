@@ -1,0 +1,18 @@
+html {
+  box-sizing: border-box;
+  font-family: var(--font-primary);
+  background-color: var(--neutral);
+  color: var(--primary);
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+input,
+label,
+button {
+  font-family: inherit;
+}

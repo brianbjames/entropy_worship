@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css">
+  <title>EW909</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: left;
+      margin: 0;
+      padding: 0;
+    }
+    .sequencer-container {
+      margin: 0px;
+      
+    }
+    .step {
+display: inline-block;
+width: 10px; /* Set width (adjust as needed) */
+height: 10px; /* Set height (adjust as needed) */
+background-color: #ccc;
+cursor: pointer;
+position: relative;
+color: #cccccc;
+padding: 10px;
+margin: 0.25rem auto;
+font-size: 1.75rem;
+background: #f0f0f0;
+border: 1px solid #000; /* Correct border definition */
+box-shadow: inset 0 0 0 var(--aug-inlay-all) var(--aug-inlay-bg),
+    1px 1px 4px rgba(0, 0, 0, 0.2);
+transition: box-shadow 0.3s ease;
+
+	
+    }
+    
+    .step.active {
+      background-color: #4caf50; /* Green when active (enabled) */
+    }
+    .step.triggered {
+      background-color: red; /* Red when triggered */
+    }
+    .step.flashing {
+      background-color: yellow !important; /* Flash yellow */
+      animation: flash 0.1s ease-in-out; /* Faster flashing */
+    }
+    @keyframes flash {
+      0% { background-color: yellow; }
+      50% { background-color: #ccc; }
+      100% { background-color: yellow; }
+    }
+    .slider-container {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      align-items: center;
+      margin-top: 20px;
+    }
+    .slider-container input[type="range"] {
+      width: 100px;
+      height: 15px;
+    }
+    .slider-container label {
+      text-align: center;
+      display: block;
+      width: 100px;
+    }
+    .control-container {
+      margin-top: 20px;
+    }
+    .sequencer-header {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .sequencer-header input,
+    .sequencer-header button {
+      margin: 0 10px;
+    }
+    select {
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>
+
+  <div>EW909 <input type="number" id="tempo" value="120" min="1" max="500">
+  <button id="start-stop">Start</button></div>
+  
+</h1>
+
+
+
+
+<!-- Sequencer Box -->
+<div>
+<!-- Sequencer Steps for Oscillator -->
+<div class="sequencer-container" id="oscillator-sequencer"></div>
+
+<!-- Sequencer Steps for Kick Drum -->
+<div class="sequencer-container" id="kick-sequencer"></div>
+
+<!-- Sequencer Steps for Snare Drum -->
+<div class="sequencer-container" id="snare-sequencer"></div>
+
+<!-- Sequencer Steps for Tom-L -->
+<div class="sequencer-container" id="tom-l-sequencer"></div>
+
+<!-- Sequencer Steps for Tom-H -->
+<div class="sequencer-container" id="tom-h-sequencer"></div>
+
+<!-- Sequencer Steps for Clap -->
+<div class="sequencer-container" id="clap-sequencer"></div>
+
+<!-- Sequencer Steps for HiHat Open -->
+<div class="sequencer-container" id="hihat-open-sequencer"></div>
+
+<!-- Sequencer Steps for HiHat Close -->
+<div class="sequencer-container" id="hihat-close-sequencer"></div>
+
+<!-- Sequencer Steps for Cymbal -->
+<div class="sequencer-container" id="cymbal-sequencer"></div>
+
+<!-- Sequencer Steps for Rim -->
+<div class="sequencer-container" id="rim-sequencer"></div>
+
+<!-- Sequencer Steps for Ride -->
+<div class="sequencer-container" id="ride-sequencer"></div>
+</div>
+
+<script>
+  const tempoInput = document.getElementById('tempo');
+  const startStopButton = document.getElementById('start-stop');
+  const oscillatorSequencerContainer = document.getElementById('oscillator-sequencer');
+  const kickSequencerContainer = document.getElementById('kick-sequencer');
+  const snareSequencerContainer = document.getElementById('snare-sequencer');
+  const tomLSequencerContainer = document.getElementById('tom-l-sequencer');
+  const tomHSequencerContainer = document.getElementById('tom-h-sequencer');
+  const clapSequencerContainer = document.getElementById('clap-sequencer');
+  const hihatOpenSequencerContainer = document.getElementById('hihat-open-sequencer');
+  const hihatCloseSequencerContainer = document.getElementById('hihat-close-sequencer');
+  const cymbalSequencerContainer = document.getElementById('cymbal-sequencer');
+  const rimSequencerContainer = document.getElementById('rim-sequencer');
+  const rideSequencerContainer = document.getElementById('ride-sequencer');
+
+  let audioContext;
+  let intervalId;
+  let currentStep = 0;
+  let isPlaying = false;
+  let oscillatorSteps = Array(16).fill(false);
+  let kickSteps = Array(16).fill(false);
+  let snareSteps = Array(16).fill(false);
+  let tomLSteps = Array(16).fill(false);
+  let tomHSteps = Array(16).fill(false);
+  let clapSteps = Array(16).fill(false);
+  let hihatOpenSteps = Array(16).fill(false);
+  let hihatCloseSteps = Array(16).fill(false);
+  let cymbalSteps = Array(16).fill(false);
+  let rimSteps = Array(16).fill(false);
+  let rideSteps = Array(16).fill(false);
+  let stepDuration = 60 / parseFloat(tempoInput.value) / 4; // Tempo-based duration
+
+  let kickBuffer = null;
+  let snareBuffer = null;
+  let tomLBuffer = null;
+  let tomHBuffer = null;
+  let clapBuffer = null;
+  let hihatOpenBuffer = null;
+  let hihatCloseBuffer = null;
+  let cymbalBuffer = null;
+  let rimBuffer = null;
+  let rideBuffer = null;
+
+  // Initialize stepSettings for the oscillator
+  let oscillatorStepSettings = new Array(16).fill(null).map(() => ({
+    pitch: Math.floor(Math.random() * (1000 - 100 + 1)) + 100, 
+    attack: Math.random() * 0.2,  
+    decay: Math.random() * 0.3,   
+    sustain: Math.random() * 0.8, 
+    release: Math.random() * 0.3, 
+    waveform: 'sine' 
+  }));
+
+  // Create AudioContext and preload samples
+  function createAudioContext() {
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+    // Preload the kick drum sample
+    const kickRequest = new XMLHttpRequest();
+    kickRequest.open('GET', 'samples/kick.wav', true);
+    kickRequest.responseType = 'arraybuffer';
+    kickRequest.onload = function() {
+      audioContext.decodeAudioData(kickRequest.response, function(buffer) {
+        kickBuffer = buffer;
+      }, function(e) {
+        console.error('Error loading kick sample', e);
+      });
+    };
+    kickRequest.send();
+
+    // Preload the snare drum sample
+    const snareRequest = new XMLHttpRequest();
+    snareRequest.open('GET', 'samples/snare.wav', true);
+    snareRequest.responseType = 'arraybuffer';
+    snareRequest.onload = function() {
+      audioContext.decodeAudioData(snareRequest.response, function(buffer) {
+        snareBuffer = buffer;
+      }, function(e) {
+        console.error('Error loading snare sample', e);
+      });
+    };
+    snareRequest.send();
+
+    // Preload tom-l sample
+    const tomLRequest = new XMLHttpRequest();
+    tomLRequest.open('GET', 'samples/tom-l.wav', true);
+    tomLRequest.responseType = 'arraybuffer';
+    tomLRequest.onload = function() {
+      audioContext.decodeAudioData(tomLRequest.response, function(buffer) {
+        tomLBuffer = buffer;
+      }, function(e) {
+        console.error('Error loading tom-l sample', e);
+      });
+    };
+    tomLRequest.send();
+
+    // Preload tom-h sample
+    const tomHRequest = new XMLHttpRequest();
+    tomHRequest.open('GET', 'samples/tom-h.wav', true);
+    tomHRequest.responseType = 'arraybuffer';
+    tomHRequest.onload = function() {
+      audioContext.decodeAudioData(tomHRequest.response, function(buffer) {
+        tomHBuffer = buffer;
+      }, function(e) {
+        console.error('Error loading tom-h sample', e);
+      });
+    };
+    tomHRequest.send();
+
+    // Preload clap sample
+    const clapRequest = new XMLHttpRequest();
+    clapRequest.open('GET', 'samples/clap.wav', true);
+    clapRequest.responseType = 'arraybuffer';
+    clapRequest.onload = function() {
+      audioContext.decodeAudioData(clapRequest.response, function(buffer) {
+        clapBuffer = buffer;
+      }, function(e) {
+        console.error('Error loading clap sample', e);
+      });
+    };
+    clapRequest.send();
+
+    // Preload hi-hat open sample
+    const hihatOpenRequest = new XMLHttpRequest();
+    hihatOpenRequest.open('GET', 'samples/hihat-open.wav', true);
+    hihatOpenRequest.responseType = 'arraybuffer';
+    hihatOpenRequest.onload = function() {
+      audioContext.decodeAudioData(hihatOpenRequest.response, function(buffer) {
+        hihatOpenBuffer = buffer;
+      }, function(e) {
+        console.error('Error loading hi-hat open sample', e);
+      });
+    };
+    hihatOpenRequest.send();
+
+    // Preload hi-hat close sample
+    const hihatCloseRequest = new XMLHttpRequest();
+    hihatCloseRequest.open('GET', 'samples/hihat-close.wav', true);
+    hihatCloseRequest.responseType = 'arraybuffer';
+    hihatCloseRequest.onload = function() {
+      audioContext.decodeAudioData(hihatCloseRequest.response, function(buffer) {
+        hihatCloseBuffer = buffer;
+      }, function(e) {
+        console.error('Error loading hi-hat close sample', e);
+      });
+    };
+    hihatCloseRequest.send();
+
+    // Preload cymbal sample
+    const cymbalRequest = new XMLHttpRequest();
+    cymbalRequest.open('GET', 'samples/cymbal.wav', true);
+    cymbalRequest.responseType = 'arraybuffer';
+    cymbalRequest.onload = function() {
+      audioContext.decodeAudioData(cymbalRequest.response, function(buffer) {
+        cymbalBuffer = buffer;
+      }, function(e) {
+        console.error('Error loading cymbal sample', e);
+      });
+    };
+    cymbalRequest.send();
+
+    // Preload rim sample
+    const rimRequest = new XMLHttpRequest();
+    rimRequest.open('GET', 'samples/rim.wav', true);
+    rimRequest.responseType = 'arraybuffer';
+    rimRequest.onload = function() {
+      audioContext.decodeAudioData(rimRequest.response, function(buffer) {
+        rimBuffer = buffer;
+      }, function(e) {
+        console.error('Error loading rim sample', e);
+      });
+    };
+    rimRequest.send();
+
+    // Preload ride sample
+    const rideRequest = new XMLHttpRequest();
+    rideRequest.open('GET', 'samples/ride.wav', true);
+    rideRequest.responseType = 'arraybuffer';
+    rideRequest.onload = function() {
+      audioContext.decodeAudioData(rideRequest.response, function(buffer) {
+        rideBuffer = buffer;
+      }, function(e) {
+        console.error('Error loading ride sample', e);
+      });
+    };
+    rideRequest.send();
+  }
+
+  createAudioContext();
+
+  // Render the sequencer grid
+  function renderSequencer() {
+    function renderVoiceSequencer(container, stepsArray) {
+      container.innerHTML = ''; // Clear previous steps
+      stepsArray.forEach((step, index) => {
+        const stepElement = document.createElement('div');
+        stepElement.classList.add('step');
+        if (step) stepElement.classList.add('active'); // Mark active steps
+        stepElement.addEventListener('click', () => toggleStep(index, stepsArray, stepElement));
+        container.appendChild(stepElement);
+      });
+    }
+
+    renderVoiceSequencer(oscillatorSequencerContainer, oscillatorSteps);
+    renderVoiceSequencer(kickSequencerContainer, kickSteps);
+    renderVoiceSequencer(snareSequencerContainer, snareSteps);
+    renderVoiceSequencer(tomLSequencerContainer, tomLSteps);
+    renderVoiceSequencer(tomHSequencerContainer, tomHSteps);
+    renderVoiceSequencer(clapSequencerContainer, clapSteps);
+    renderVoiceSequencer(hihatOpenSequencerContainer, hihatOpenSteps);
+    renderVoiceSequencer(hihatCloseSequencerContainer, hihatCloseSteps);
+    renderVoiceSequencer(cymbalSequencerContainer, cymbalSteps);
+    renderVoiceSequencer(rimSequencerContainer, rimSteps);
+    renderVoiceSequencer(rideSequencerContainer, rideSteps);
+  }
+
+  renderSequencer();
+
+  // Toggle step on click
+  function toggleStep(stepIndex, stepsArray, stepElement) {
+    stepsArray[stepIndex] = !stepsArray[stepIndex];
+    if (stepsArray[stepIndex]) {
+      stepElement.classList.add('active');
+    } else {
+      stepElement.classList.remove('active');
+    }
+  }
+
+  // Update the UI to flash the current step and trigger active sounds
+  function updateStepUI() {
+    // Remove the 'triggered' and 'flashing' classes from all steps
+    document.querySelectorAll('.step').forEach(stepElement => {
+      stepElement.classList.remove('triggered', 'flashing');
+    });
+
+    // Add flashing effect on the current step for each voice
+    const allVoiceContainers = [
+      oscillatorSequencerContainer,
+      kickSequencerContainer,
+      snareSequencerContainer,
+      tomLSequencerContainer,
+      tomHSequencerContainer,
+      clapSequencerContainer,
+      hihatOpenSequencerContainer,
+      hihatCloseSequencerContainer,
+      cymbalSequencerContainer,
+      rimSequencerContainer,
+      rideSequencerContainer
+    ];
+
+    allVoiceContainers.forEach(container => {
+      const currentStepElement = container.children[currentStep];
+      currentStepElement.classList.add('flashing');
+
+      // Remove flashing class after a brief delay (100ms)
+      setTimeout(() => {
+        currentStepElement.classList.remove('flashing');
+      }, 15); // Flash for 15ms (faster flashing)
+    });
+
+    // Trigger sounds for the active steps
+    if (oscillatorSteps[currentStep]) {
+      playOscillatorSound();
+    }
+    if (kickSteps[currentStep]) {
+      playSound(kickBuffer);
+    }
+    if (snareSteps[currentStep]) {
+      playSound(snareBuffer);
+    }
+    if (tomLSteps[currentStep]) {
+      playSound(tomLBuffer);
+    }
+    if (tomHSteps[currentStep]) {
+      playSound(tomHBuffer);
+    }
+    if (clapSteps[currentStep]) {
+      playSound(clapBuffer);
+    }
+    if (hihatOpenSteps[currentStep]) {
+      playSound(hihatOpenBuffer);
+    }
+    if (hihatCloseSteps[currentStep]) {
+      playSound(hihatCloseBuffer);
+    }
+    if (cymbalSteps[currentStep]) {
+      playSound(cymbalBuffer);
+    }
+    if (rimSteps[currentStep]) {
+      playSound(rimBuffer);
+    }
+    if (rideSteps[currentStep]) {
+      playSound(rideBuffer);
+    }
+
+    // Add the triggered effect to the active step
+    if (oscillatorSteps[currentStep]) {
+      oscillatorSequencerContainer.children[currentStep].classList.add('triggered');
+    }
+    if (kickSteps[currentStep]) {
+      kickSequencerContainer.children[currentStep].classList.add('triggered');
+    }
+    if (snareSteps[currentStep]) {
+      snareSequencerContainer.children[currentStep].classList.add('triggered');
+    }
+    if (tomLSteps[currentStep]) {
+      tomLSequencerContainer.children[currentStep].classList.add('triggered');
+    }
+    if (tomHSteps[currentStep]) {
+      tomHSequencerContainer.children[currentStep].classList.add('triggered');
+    }
+    if (clapSteps[currentStep]) {
+      clapSequencerContainer.children[currentStep].classList.add('triggered');
+    }
+    if (hihatOpenSteps[currentStep]) {
+      hihatOpenSequencerContainer.children[currentStep].classList.add('triggered');
+    }
+    if (hihatCloseSteps[currentStep]) {
+      hihatCloseSequencerContainer.children[currentStep].classList.add('triggered');
+    }
+    if (cymbalSteps[currentStep]) {
+      cymbalSequencerContainer.children[currentStep].classList.add('triggered');
+    }
+    if (rimSteps[currentStep]) {
+      rimSequencerContainer.children[currentStep].classList.add('triggered');
+    }
+    if (rideSteps[currentStep]) {
+      rideSequencerContainer.children[currentStep].classList.add('triggered');
+    }
+  }
+
+  // Function to play the oscillator sound asynchronously
+  function playOscillatorSound() {
+    const oscillator = audioContext.createOscillator();
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(oscillatorStepSettings[currentStep].pitch, audioContext.currentTime);
+    oscillator.connect(audioContext.destination);
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + 0.2); // Short duration for each oscillator sound
+  }
+
+  // Function to play a sound (kick, snare, etc.)
+  function playSound(buffer) {
+    if (buffer) {
+      const source = audioContext.createBufferSource();
+      source.buffer = buffer;
+      source.connect(audioContext.destination);
+      source.start();
+    }
+  }
+
+  // Handle start/stop button functionality
+  startStopButton.addEventListener('click', () => {
+    if (isPlaying) {
+      clearInterval(intervalId);
+      startStopButton.textContent = 'Start';
+    } else {
+      intervalId = setInterval(() => {
+        updateStepUI();
+        currentStep = (currentStep + 1) % 16; // Loop through steps
+      }, stepDuration * 1000);
+      startStopButton.textContent = 'Stop';
+    }
+    isPlaying = !isPlaying;
+  });
+</script>
+</body>
+</html>
