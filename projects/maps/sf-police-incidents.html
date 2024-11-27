@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>San Francisco Recent Crimes</title>
+    <title>San Francisco Police Report Map</title>
     <!-- Leaflet.js CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <!-- Bootstrap CSS -->
@@ -11,7 +11,7 @@
     <!-- Augmented UI CSS -->
     <link rel="stylesheet" type="text/css" href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css">
     <!-- SciUI CSS -->
-    <link href="..styles/styles.css" type="text/css" rel="stylesheet">
+    <link href="styles/styles.css" type="text/css" rel="stylesheet">
     <!-- Cyberpunk CSS -->
     <link href="styles/cyberpunk.css" rel="stylesheet" type="text/css">
     <!-- Override CSS -->
@@ -71,7 +71,7 @@
 
                         // Create a circle marker with white outline and transparent fill
                         const marker = L.circleMarker([crime.latitude, crime.longitude], {
-                            radius: 8, // Size of the circle
+                            radius: 6, // Size of the circle
                             color: 'red', // Outline color
                             weight: 2, // Outline thickness
                             fillColor: 'transparent', // Fill color (can also be 'transparent')
@@ -85,15 +85,18 @@
 
 
                 // OPTIONAL: Add a legend to describe map categories
-                const legend = L.control({ position: 'bottomright' });
+                const legend = L.control({ position: 'topright' });
                 legend.onAdd = function () {
                     const div = L.DomUtil.create('div', 'info legend');
                     div.innerHTML = `
-                        <h1 style="color: white">Recent Crimes in San Francisco</h1>
-                        <h4 style="color: white">The 1000 most recently filed incidents. Data is fetched from <a style="color: white" href="https://datasf.org/opendata/" target="_blank">DataSF</a>.</h4>
-                        </ul>
+                        <div style="text-align: right;">
+                            <h4 style="color: white">SF Police Report Map</h4>
+                            <h5 style="color: white">1000 most recent from <a style="color: white" href="https://datasf.org/opendata/" target="_blank">DataSF</a></h5>
+                            <br>
+                        </div>
                     `;
                     return div;
+
                 };
                 legend.addTo(map);
     </script>
