@@ -3,9 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>San Francisco Recent Crimes</title>
+    <title>San Francisco Police Report Map</title>
     <!-- Leaflet.js CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Augmented UI CSS -->
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css">
+    <!-- SciUI CSS -->
+    <link href="styles/styles.css" type="text/css" rel="stylesheet">
+    <!-- Cyberpunk CSS -->
+    <link href="styles/cyberpunk.css" rel="stylesheet" type="text/css">
+    <!-- Override CSS -->
+    <link href="styles/style_overrides.css" rel="stylesheet">
     <style>
         #map {
             height: 100vh;
@@ -14,7 +24,6 @@
     </style>
 </head>
 <body>
-    <h1 style="text-align: center;">San Francisco Recent Crimes</h1>
     <div id="map"></div>
 
     <!-- Leaflet.js Script -->
@@ -31,7 +40,7 @@
         }).addTo(map);
 
         // Fetch live data from SF OpenData API
-        fetch("https://data.sfgov.org/resource/wg3w-h783.json?$limit=100&$order=incident_date DESC")
+        fetch("https://data.sfgov.org/resource/wg3w-h783.json?$limit=1000&$order=incident_date DESC")
             .then(response => response.json())
             .then(data => {
                 data.forEach(crime => {
@@ -48,24 +57,22 @@
                             <b>Category:</b> ${crime.incident_category || 'Unknown'}<br>
                             <b>Subcategory:</b> ${crime.incident_subcategory || 'Unknown'}<br>
                             <b>Description:</b> ${crime.incident_description || 'No Description'}<br>
-                            <b>Date:</b> ${crime.incident_date ? crime.incident_date.split('T')[0] : 'Unknown'}<br>
                             <b>Time:</b> ${crime.incident_time || 'Unknown'}<br>
                             <b>Day of Week:</b> ${crime.incident_day_of_week || 'Unknown'}<br>
-                            <b>Year:</b> ${crime.incident_year || 'Unknown'}<br>
+                            <b>Report Date:</b> ${formattedReportDate}<br>
                             <b>Incident ID:</b> ${crime.incident_id || 'Unknown'}<br>
                             <b>Incident Number:</b> ${crime.incident_number || 'Unknown'}<br>
                             <b>Report Type:</b> ${crime.report_type_description || 'Unknown'}<br>
                             <b>Filed Online:</b> ${crime.filed_online ? 'Yes' : 'No'}<br>
                             <b>Incident Code:</b> ${crime.incident_code || 'Unknown'}<br>
                             <b>Resolution:</b> ${crime.resolution || 'Unknown'}<br>
-                            <b>Police District:</b> ${crime.police_district || 'Unknown'}<br>
-                            <b>Report Date/Time:</b> ${formattedReportDate}
+                            <b>Police District:</b> ${crime.police_district || 'Unknown'}
                         `;
 
                         // Create a circle marker with white outline and transparent fill
                         const marker = L.circleMarker([crime.latitude, crime.longitude], {
-                            radius: 8, // Size of the circle
-                            color: 'white', // Outline color
+                            radius: 6, // Size of the circle
+                            color: 'red', // Outline color
                             weight: 2, // Outline thickness
                             fillColor: 'transparent', // Fill color (can also be 'transparent')
                             fillOpacity: 0.1 // Transparency of the fill
@@ -78,18 +85,18 @@
 
 
                 // OPTIONAL: Add a legend to describe map categories
-                const legend = L.control({ position: 'bottomright' });
+                const legend = L.control({ position: 'topright' });
                 legend.onAdd = function () {
                     const div = L.DomUtil.create('div', 'info legend');
                     div.innerHTML = `
-                        <h4>Crime Categories</h4>
-                        <ul>
-                            <li>Markers show recent crime reports.</li>
-                            <li>Click a marker to view details.</li>
-                            <li>Data is fetched from <a href="https://datasf.org/opendata/" target="_blank">DataSF</a>.</li>
-                        </ul>
+                        <div style="text-align: right;">
+                            <h4 style="color: white">SF Police Report Map</h4>
+                            <h5 style="color: white">1000 most recent from <a style="color: white" href="https://datasf.org/opendata/" target="_blank">DataSF</a></h5>
+                            <br>
+                        </div>
                     `;
                     return div;
+
                 };
                 legend.addTo(map);
     </script>
