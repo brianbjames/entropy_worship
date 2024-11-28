@@ -1,72 +1,88 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Babylon.js FPS Example</title>
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.min.js"></script>
+</head>
+<body>
+    <canvas id="renderCanvas" touch-action="none"></canvas>
+    <script>
+        // Get the canvas element
+        const canvas = document.getElementById("renderCanvas");
 
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-        <title>Babylon Template</title>
+        // Create the Babylon.js engine
+        const engine = new BABYLON.Engine(canvas, true);
 
-        <style>
-            html, body {
-                overflow: hidden;
-                width: 100%;
-                height: 100%;
-                margin: 0;
-                padding: 0;
-            }
-            #renderCanvas {
-                width: 100%;
-                height: 100%;
-                touch-action: none;
-            }
-        </style>
-
-        <script src="https://cdn.babylonjs.com/babylon.js"></script>
-
-    </head>
-
-   <body>
-
-	<canvas id="renderCanvas"></canvas>
-
-	<script>
-        const canvas = document.getElementById("renderCanvas"); // Get the canvas element
-        const engine = new BABYLON.Engine(canvas, true); // Generate the BABYLON 3D engine
-        const createScene = function () {
-            // Creates a basic Babylon Scene object
+        // Create the scene
+        const createScene = () => {
             const scene = new BABYLON.Scene(engine);
-            // Creates and positions a free camera
-            const camera = new BABYLON.FreeCamera("camera1", 
-                new BABYLON.Vector3(0, 5, -10), scene);
-            // Targets the camera to scene origin
-            camera.setTarget(BABYLON.Vector3.Zero());
-            // This attaches the camera to the canvas
+
+            // Create a basic light
+            const light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 1, 0), scene);
+            light.intensity = 0.8;
+
+            // Create a ground
+            const ground = BABYLON.MeshBuilder.CreateGround("ground", { width: 50, height: 50 }, scene);
+
+            // Create some boxes as obstacles
+            for (let i = 0; i < 10; i++) {
+                const box = BABYLON.MeshBuilder.CreateBox(`box${i}`, { size: 2 }, scene);
+                box.position = new BABYLON.Vector3(Math.random() * 40 - 20, 1, Math.random() * 40 - 20);
+            }
+
+            // Create a first-person camera
+            const camera = new BABYLON.UniversalCamera("camera", new BABYLON.Vector3(0, 2, 0), scene);
             camera.attachControl(canvas, true);
-            // Creates a light, aiming 0,1,0 - to the sky
-            const light = new BABYLON.HemisphericLight("light", 
-                new BABYLON.Vector3(0, 1, 0), scene);
-            // Dim the light a small amount - 0 to 1
-            light.intensity = 0.7;
-            // Built-in 'sphere' shape.
-            const sphere = BABYLON.MeshBuilder.CreateSphere("sphere", 
-                {diameter: 2, segments: 32}, scene);
-            // Move the sphere upward 1/2 its height
-            sphere.position.y = 1;
-            // Built-in 'ground' shape.
-            const ground = BABYLON.MeshBuilder.CreateGround("ground", 
-                {width: 6, height: 6}, scene);
+            camera.speed = 0.5;
+            camera.angularSensibility = 2000;
+
+            // Enable collisions
+            scene.gravity = new BABYLON.Vector3(0, -0.2, 0);
+            camera.applyGravity = true;
+            scene.collisionsEnabled = true;
+            camera.checkCollisions = true;
+            ground.checkCollisions = true;
+
+            scene.meshes.forEach(mesh => mesh.checkCollisions = true);
+
+            // Create a basic shooting mechanism
+            const shootBullet = () => {
+                const bullet = BABYLON.MeshBuilder.CreateSphere("bullet", { diameter: 0.2 }, scene);
+                bullet.position = camera.position.clone();
+                bullet.physicsImpostor = new BABYLON.PhysicsImpostor(
+                    bullet,
+                    BABYLON.PhysicsImpostor.SphereImpostor,
+                    { mass: 1, restitution: 0.1 },
+                    scene
+                );
+
+                const forward = camera.getForwardRay().direction.scale(5);
+                bullet.physicsImpostor.setLinearVelocity(forward);
+
+                setTimeout(() => bullet.dispose(), 3000); // Dispose of the bullet after 3 seconds
+            };
+
+            window.addEventListener("click", shootBullet);
+
+            // Return the scene
             return scene;
         };
-        const scene = createScene(); //Call the createScene function
-        // Register a render loop to repeatedly render the scene
-        engine.runRenderLoop(function () {
-                scene.render();
-        });
-        // Watch for browser/canvas resize events
-        window.addEventListener("resize", function () {
-                engine.resize();
-        });
-	</script>
 
-   </body>
+        // Create the scene
+        const scene = createScene();
 
+        // Run the render loop
+        engine.runRenderLoop(() => {
+            scene.render();
+        });
+
+        // Resize the engine on window resize
+        window.addEventListener("resize", () => {
+            engine.resize();
+        });
+    </script>
+</body>
 </html>
