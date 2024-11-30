@@ -21,17 +21,16 @@
 					"three/addons/": "./jsm/"
 				}
 			}
-		</script>
-
-		<script type="module">
-
-		import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js';
-		import Stats from 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/libs/stats.module.js';
-		import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/loaders/GLTFLoader.js';
-		import { Octree } from 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/math/Octree.js';
-		import { OctreeHelper } from 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/helpers/OctreeHelper.js';
-		import { Capsule } from 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/math/Capsule.js';
-		import { GUI } from 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/libs/lil-gui.module.min.js';
+			</script>
+			
+			<script type="module">
+			import * as THREE from 'three';
+			import Stats from 'three/addons/libs/stats.module.js';
+			import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+			import { Octree } from 'three/addons/math/Octree.js';
+			import { OctreeHelper } from 'three/addons/helpers/OctreeHelper.js';
+			import { Capsule } from 'three/addons/math/Capsule.js';
+			import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 
 
 			const clock = new THREE.Clock();
