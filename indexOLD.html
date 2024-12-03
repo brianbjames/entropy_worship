@@ -1,0 +1,411 @@
+<!-- /-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\ -->
+<!-- |                                                                         | -->
+<!-- \ @@@@@@@@  @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@@@@@   @@@ @@@      / -->
+<!-- - @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@ @@@      - -->
+<!-- / @@!       @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!  @@@  @@! !@@      \ -->
+<!-- | !@!       !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!  @!@  !@! @!!      | -->
+<!-- \ @!!!:!    @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!@@!@!    !@!@!       / -->
+<!-- - !!!!!:    !@!  !!!    !!!    !!@!@!    !@!  !!!  !!@!!!      @!!!       - -->
+<!-- / !!:       !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:         !!:        \ -->
+<!-- | :!:       :!:  !:!    :!:    :!:  !:!  :!:  !:!  :!:         :!:        | -->
+<!-- \  :: ::::   ::   ::     ::    ::   :::  ::::: ::   ::          ::        / -->
+<!-- - : :: ::   ::    :      :      :   : :   : :  :    :           :         - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \ @@@  @@@  @@@   @@@@@@   @@@@@@@    @@@@@@   @@@  @@@  @@@  @@@@@@@     / -->
+<!-- - @@@  @@@  @@@  @@@@@@@@  @@@@@@@@  @@@@@@@   @@@  @@@  @@@  @@@@@@@@    - -->
+<!-- / @@!  @@!  @@!  @@!  @@@  @@!  @@@  !@@       @@!  @@@  @@!  @@!  @@@    \ -->
+<!-- | !@!  !@!  !@!  !@!  @!@  !@!  @!@  !@!       !@!  @!@  !@!  !@!  @!@    | -->
+<!-- \ @!!  !!@  @!@  @!@  !@!  @!@!!@!   !!@@!!    @!@!@!@!  !!@  @!@@!@!     / -->
+<!-- - !@!  !!!  !@!  !@!  !!!  !!@!@!     !!@!!!   !!!@!!!!  !!!  !!@!!!      - -->
+<!-- / !!:  !!:  !!:  !!:  !!!  !!: :!!        !:!  !!:  !!!  !!:  !!:         \ -->
+<!-- | :!:  :!:  :!:  :!:  !:!  :!:  !:!      !:!   :!:  !:!  :!:  :!:         | -->
+<!-- \  :::: :: :::   ::::: ::  ::   :::  :::: ::   ::   :::   ::   ::         / -->
+<!-- -   :: :  : :     : :  :    :   : :  :: : :     :   : :  :     :          - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENTROPY WORSHIP</title>
+    <!-- General Meta Tags for SEO -->
+    <meta name="description" content="WARNING: Experimental Project">
+    <meta name="keywords" content="Dark, Techno, Electronic, Industrial, Ambient, Noise, Avant-Garde, Experimental, Doom, Music, God, Deity, Worship, Death, Philosophy, Religion, Spiritual, Gospel, Electronic Music, Experimental Music">
+    <!-- Schema.org markup for Google -->
+    <meta itemprop="name" content="Entropy Worship">
+    <meta itemprop="description" content="WARNING: Experimental Project">
+    <!-- Twitter Card Data -->
+    <meta name="twitter:url" content="http://www.entropyworship.com">
+    <meta name="twitter:site" content="@EntropyWorship">
+    <meta name="twitter:title" content="Entropy Worship">
+    <meta name="twitter:description" content="WARNING: Experimental Project">
+    <meta name="twitter:creator" content="@EntropyWorship">
+    <meta name="twitter:image" content="http://www.entropyworship.com/images/EW_Second_Law_Cover_W_Aerotek_Logo.png">
+    <!-- Open Graph Data for Facebook, LinkedIn, and others -->
+    <meta property="og:title" content="Entropy Worship" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="http://www.entropyworship.com" />
+    <meta property="og:description" content="WARNING: Experimental Project" />
+    <meta property="og:site_name" content="Entropy Worship" />
+    <meta property="og:image" content="http://www.entropyworship.com/images/EW_Second_Law_Cover_W_Aerotek_Logo.png">
+    <meta property="og:image:alt" content="WARNING: Experimental Project">
+    <meta property="article:tag" content="Entropy Worship. WARNING: Experimental Project">
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Sci UI CSS -->
+    <link href="styles/styles.css" rel="stylesheet">
+    <!-- Style Overrides CSS -->
+    <link href="styles/style_overrides.css" rel="stylesheet">
+    <!-- Cyberpunk CSS -->
+    <link href="styles/cyberpunk.css" rel="stylesheet" type="text/css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <style>
+        body {
+          position: relative;
+          background-image: url('images/EW_Second_Law_Cover_W_Aerotek_Logo.png'); 
+          background-size: cover;
+          background-position: center;
+          color: white;
+          text-align: left;
+          margin: 0;
+          padding: 0;
+          font-family: 'Tomorrow', sans-serif; 
+          background-attachment: fixed; /* For desktop */
+        }
+        canvas { 
+          display: block; 
+        }
+        #canvas1 {
+            width: 100%;  /* or a specific width like '500px' */
+            height: 400px; /* or dynamic based on the parent container or viewport */
+            max-width: 100%; /* Optional: ensure the canvas fits inside the parent */
+            position: relative; /* Ensure canvas scales correctly */
+        }
+        .transparent-bg {
+    background-color: transparent !important;
+}
+        /* Landscape prompt styles */
+        .landscape-prompt {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            display: none; /* Hidden by default */
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 1000; /* Ensures it sits above other elements */
+        }
+    </style>
+</head>
+<body>
+    <div class="container" style="width: 100%;"><!--Main container-->
+        <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c;"><!--Header panel-->
+            <div class="card-header border-danger">
+                <h1 class="heading display-6" style="font-size: 1.5rem;">ENTROPY WORSHIP</h1>
+                <h2 class="panel info shown" style="font-size: 1.5rem;">build 3.0.11.21.24</h1>
+            </div>
+        </div>
+
+        <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c"><!--Release panel-->
+            <div class="card-header border-danger">
+              <h1 class="cyber-h">Releases</h1>
+            </div>
+            <div class="row row-cols-2" data-masonry='{"percentPosition": true }'><!--Masonry panel-->
+                <div class="col">
+                    <div class="card transparent-bg border-danger">
+                      <!-- First Image Container -->
+                      <div class="card-body">
+                        <img class="img-fluid cyber-glitch-0" style="width: 100%; aspect-ratio: 1; object-fit: cover;" src="images/EW_Second_Law_Cover_W_Aerotek_Logo.png" alt="Second Law Cover">
+                        <h5 class="card-title">Second Law</h5><span class="cyber-att">New</span>
+                        <a href="https://www.beatport.com/release/second-law/4812389" target="_blank" class="btn btn-outline-light btn-sm">Beatport</a>
+                        <a href="https://music.apple.com/us/album/second-law/1778509857" target="_blank" class="btn btn-outline-light btn-sm">Apple</a>
+                        <a href="https://open.spotify.com/album/7D9HZJbX3SXttmz2jSxI23?si=_CfuUAtnRuuS_wK_xWorTQ" target="_blank" class="btn btn-outline-light btn-sm">Spotify</a>
+                        <a href= "https://aerotekrecordings.bandcamp.com/album/entropy-worship-second-law-aero108" target="_blank" class="btn btn-outline-light btn-sm">Bandcamp</a>                    
+                      </div>
+                    </div>
+                  </div>
+                <div class="col">
+                  <div class="card transparent-bg border-danger">
+                    <!-- Second Image Container -->
+                    <div class="card-body">
+                      <img class="img-fluid" style="width: 100%; aspect-ratio: 1; object-fit: cover;" src="http://www.entropyworship.com/images/EntropyWorshipFacticity-CoverForDigitalSmaller.jpg" alt="Facticity Devotion Discipline Cover">
+                      <h5 class="card-title">Facticity Devotion Discipline</h5>
+                      <a href="https://www.missionsynths.com/products/entropy-worship-facticity-devotion-discipline-1" target="_blank" class="btn btn-outline-light btn-sm">Order Vinyl</a>
+                      <a href="https://music.apple.com/us/album/facticity-devotion-discipline-ep/1378491884" target="_blank" class="btn btn-outline-light btn-sm">Apple</a>
+                      <a href="https://open.spotify.com/album/4UqiFfR222eSeoPctBP5bF?si=_cyAkVnSQOCrkf4Ia-muFA" target="_blank" class="btn btn-outline-light btn-sm">Spotify</a>
+                      <a href="https://entropyworship.bandcamp.com/album/facticity-devotion-discipline" target="_blank" class="btn btn-outline-light btn-sm">Bandcamp</a>
+                    </div>
+                  </div>
+                </div>
+                <div class="col">
+                    <div class="card transparent-bg border-danger">
+                      <!-- Third Image Container -->
+                      <div class="card-body">
+                        <img class="img-fluid" style="width: 100%; aspect-ratio: 1; object-fit: cover;" src="http://www.entropyworship.com/images/EntropyWorshipDirtyConsecrationCover.jpg" alt="Facticity Devotion Discipline Cover">
+                        <h5 class="card-title">Dirty Consecration</h5>
+                        <a href="https://music.apple.com/us/album/dirty-consecration-single/1113364047" target="_blank" class="btn btn-outline-light btn-sm">Apple</a>
+                        <a href="https://open.spotify.com/album/2aGUBW2oieV24apYcK4hZE?si=a9FB1TUNTEC2TEGSP81YrA" target="_blank" class="btn btn-outline-light btn-sm">Spotify</a>
+                        <a href="https://entropyworship.bandcamp.com/album/dirty-consecration" target="_blank" class="btn btn-outline-light btn-sm">Bandcamp</a>
+                      </div>
+                    </div>
+                </div>
+                
+                <div class="col">
+                    <div class="card transparent-bg border-danger">
+                        <!-- Forth Image Container -->
+                        <div class="card-body">
+                            <img class="img-fluid" style="width: 100%; aspect-ratio: 1; object-fit: cover;" src="http://www.entropyworship.com/images/EntropyWorshipThamesCover.jpg" alt="Thames and Variations Cover">
+                            <h5 class="card-title">Thames and Variations</h5>
+                            <a href="https://music.apple.com/us/album/thames-and-variations-single/1110835303" target="_blank" class="btn btn-outline-light btn-sm">Apple</a>
+                            <a href="https://open.spotify.com/album/2orrfUEKesHEM3VD8DtzZr?si=jQ5HROs8SJefxnn0olwyrg" target="_blank" class="btn btn-outline-light btn-sm">Spotify</a>
+                          <a href="https://entropyworship.bandcamp.com/album/thames-and-variations" target="_blank" class="btn btn-outline-light btn-sm">Bandcamp</a>
+                        </div>
+                      </div>
+                </div>
+              </div><!--Masonry panel close-->
+        </div><!--Release panel close-->
+
+        <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c">
+          <div class="row row-cols-1" data-masonry='{"percentPosition": true }'><!--Masonry panel-->
+
+            <div class="col">
+              <div class="card transparent-bg">
+                <div class="card-body">
+                  <span style="font-family:VT323-Regular; font-size: 30px;" class="cyber-glitch-4">
+                    >tends to increase in isolated systems<br>
+                    >increases in irreversible processes<br>
+                    >scales with system size<br>
+                    >changes discontinuously<br>
+                    >increases over time<br>
+                    >measures uncertainty<br></span>
+                  <a href="EW909.html" target="_blank" class="btn btn-outline-light btn-sm">EW909</a>
+                  <a href="EWMIDICALC.html" target="_blank" class="btn btn-outline-light btn-sm">EWMIDICALC</a>                     
+                </div>
+              </div>
+              <div class="card transparent-bg">
+                <div class="card-body">
+                  <div class="cyber-tile-big fg-white bg-dark mr-4 inline-block vt-bot cyber-glitch-2" id="canvas1">
+                    <!-- The canvas will be inserted here -->
+                  </div>
+                </div>
+                <script>
+                  let objModel;  // Declare the model variable
+              
+                  // Array of possible OBJ file paths
+                  const objFiles = [
+                      'images/12140_Skull_v3_L2.obj'
+                  ];
+              
+                  function setup() {
+                      // Create the canvas initially with any default size
+                      const canvas = createCanvas(10, 10, WEBGL);
+                      canvas.parent(document.getElementById('canvas1'));  // Attach the canvas to the div with id 'canvas1'
+              
+                      // Randomly choose an OBJ file from the array
+                      const randomIndex = Math.floor(Math.random() * objFiles.length);
+                      const selectedObjFile = objFiles[randomIndex];
+              
+                      // Load the randomly chosen OBJ model
+                      objModel = loadModel(selectedObjFile, true);
+              
+                      // Ensure that the canvas size matches the parent container initially
+                      resizeCanvasToParent();
+                  }
+              
+                  function draw() {
+                      background(200);
+                      lights();  // Enable lighting
+              
+                      // Rotate the model over time
+                      rotateX(frameCount * 0.01);
+                      rotateY(frameCount * 0.01);
+              
+                      if (objModel) {
+                          scale(10);  // Scale the model to make it visible
+                          model(objModel);  // Draw the loaded model
+                      }
+                  }
+              
+                  // Resize the canvas to match the parent div's size
+                  function resizeCanvasToParent() {
+                      const div = document.getElementById('canvas1');  // Get the parent div
+                      const divWidth = div.clientWidth;  // Get the width of the parent div
+                      const divHeight = div.clientHeight;  // Get the height of the parent div
+                      resizeCanvas(divWidth, divHeight);  // Resize the canvas to match the div size
+                  }
+              
+                  // Add an event listener to resize the canvas when the window is resized
+                  window.addEventListener('resize', function() {
+                      resizeCanvasToParent();  // Adjust the canvas size when the window is resized
+                  });
+              
+                  // Optional: Add a ResizeObserver to ensure the canvas resizes when the parent div size changes
+                  const resizeObserver = new ResizeObserver(() => {
+                      resizeCanvasToParent();
+                  });
+              
+                  const div = document.getElementById('canvas1');
+                  resizeObserver.observe(div);  // Observe the div and resize the canvas when it changes
+              </script>
+
+            </div>
+            </div>
+          </div>
+        </div><!--Masonry panel close-->    
+
+        <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c"><!--Performance Schedule panel-->
+            <div class="card-header border-danger">
+              <h1 class="cyber-h">Schedule</h1>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless" style="color: white;">
+                    <tbody>
+                      <tr>
+                        <th scope="row">081724</th>
+                        <td><a href="https://www.ra.co/events/1964938" target="_blank" class="btn btn-outline-light btn-sm">DOMAIN</a></td>
+                        <td>F8, 1192 Folsom, SF</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">052724</th>
+                        <td><a href="http://www.haggardsolutions.com" target="_blank" class="btn btn-outline-light btn-sm">Broom & Board 4.0</a></td>
+                        <td>Undislosed Location</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">032224</th>
+                        <td><a href="https://www.facebook.com/events/2441349452715891" target="_blank" class="btn btn-outline-light btn-sm">PreMovement</a></td>
+                        <td>Underground SF, 424 Haight St. SF</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">011124</th>
+                        <td><a href="https://www.facebook.com/events/1033807594362929" target="_blank" class="btn btn-outline-light btn-sm">Proximity</a></td>
+                        <td>Underground SF, 424 Haight St. SF</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">102523</th>
+                        <td><a href="https://www.facebook.com/events/702368038168013/" target="_blank" class="btn btn-outline-light btn-sm">Future Fatigue</a></td>
+                        <td>Spire, 285 Athens Ave, Oakland</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">090923</th>
+                        <td>909</td>
+                        <td>Edinburgh Castle, 950 Geary, SF</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">021123</th>
+                        <td>Subliminal Content</td>
+                        <td>Undislosed Bunker, SF</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">010320</th>
+                        <td><a href="https://www.facebook.com/events/454130828849367/" target="_blank" class="btn btn-outline-light btn-sm">Mirror Room Edits</a></td>
+                        <td>F8, 1192 Folsom, SF</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">120619</th>
+                        <td><a href="https://www.facebook.com/events/433231917301460/" target="_blank" class="btn btn-outline-light btn-sm">Asterisk 018</a></td>
+                        <td>F8, 1192 Folsom, SF</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">092719</th>
+                        <td><a href="http://www.haggardsolutions.com" target="_blank" class="btn btn-outline-light btn-sm">Broom & Board 2.0</a></td>
+                        <td>Undislosed Location</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">033019</th>
+                        <td><a href="https://www.facebook.com/events/286743858685698/" target="_blank" class="btn btn-outline-light btn-sm">Direct To Earth</a></td>
+                        <td>Club 6, SF</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">022519</th>
+                        <td><a href="https://www.facebook.com/events/307939623248208/" target="_blank" class="btn btn-outline-light btn-sm">Visions of a New World</a></td>
+                        <td>Underground SF, 424 Haight, SF</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">020919</th>
+                        <td><a href="http://kzsu.stanford.edu/dayofnoise/2019/" target="_blank" class="btn btn-outline-light btn-sm">Day of Noise</a></td>
+                        <td>KZSU Stanford, 90.1 FM, 12am PST</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">051218</th>
+                        <td><a href="https://www.facebook.com/events/375195919629612/" target="_blank" class="btn btn-outline-light btn-sm">In Too Deep</a></td>
+                        <td>Studio Grand, 3234 Grand, Oakland</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">050218</th>
+                        <td><a href="https://www.facebook.com/events/183711188930280/" target="_blank" class="btn btn-outline-light btn-sm">IDP 019</a></td>
+                        <td>Hyde Street Studios, 245 Hyde, SF</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">040518</th>
+                        <td><a href="https://www.facebook.com/events/1724155357642488/" target="_blank" class="btn btn-outline-light btn-sm">Asterisk 007</a></td>
+                        <td>F8, 1192 Folsom, SF</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">021018</th>
+                        <td><a href="http://kzsu.stanford.edu/dayofnoise/2018/" target="_blank" class="btn btn-outline-light btn-sm">Day of Noise</a></td>
+                        <td>KZSU Stanford, 90.1 FM, midnight PST</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">122217</th>
+                        <td><a href="https://www.facebook.com/events/384903235301201/" target="_blank" class="btn btn-outline-light btn-sm">Surface Tension</a></td>
+                        <td>F8, 1192 Folsom, SF</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">122017</th>
+                        <td><a href="http://kzsu.stanford.edu/~wnl/" target="_blank" class="btn btn-outline-light btn-sm">Wednesday Night Live</a></td>
+                        <td>KZSU Stanford, 90.1 FM, 9pm PST</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">070817</th>
+                        <td><a href="https://www.facebook.com/events/136732650216294/" target="_blank" class="btn btn-outline-light btn-sm">IDP 015</a></td>
+                        <td>Hyde Street Studios, 245 Hyde, SF</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">013117</th>
+                        <td><a href="http://kzsu.stanford.edu/dayofnoise/2017/" target="_blank" class="btn btn-outline-light btn-sm">Day of Noise</a></td>
+                        <td>KZSU Stanford, 90.1 FM, 12am PST</td>
+                      </tr>
+                    </tbody>
+                  </table>
+            </div>
+        </div><!--Perf panel close-->  
+        
+        <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c">
+          <div class="card-body">
+            <iframe src="https://embed.beatport.com/?id=4812389&type=release" 
+            width="100%" 
+            height="300px" 
+            frameborder="1" 
+            scrolling="yes" 
+            style="opacity: 0.6;"></iframe>          
+          </div>
+        </div>
+      
+        <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c">
+          <div class="card-header border-danger">
+              <h1 class="cyber-h">Contact</h1>
+          </div>
+          <div class="card-body">
+            <a href="https://soundcloud.com/entropy-worship" target="_blank" class="btn btn-outline-light btn-sm">Soundcloud</a>
+            <a href="https://ra.co/dj/entropyworship" target="_blank" class="btn btn-outline-light btn-sm">Resident Advisor</a>
+            <a href="https://www.facebook.com/entropyworship/" target="_blank" class="btn btn-outline-light btn-sm">Facebook</a>
+            <a href="https://twitter.com/EntropyWorship" target="_blank" class="btn btn-outline-light btn-sm">Twitter</a>
+            <a href="https://www.instagram.com/entropyworship/" target="_blank" class="btn btn-outline-light btn-sm">Instagram</a>
+            <a href="mailto:brian@entropyworship.com" target="_blank" class="btn btn-outline-light btn-sm">Booking</a>
+          </div>
+        </div>
+
+    </div><!--close of main container-->
+</body>
+<!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</html>
