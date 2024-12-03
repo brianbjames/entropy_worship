@@ -1,0 +1,120 @@
+<!-- /-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\ -->
+<!-- |                                                                         | -->
+<!-- \ @@@@@@@@  @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@@@@@   @@@ @@@      / -->
+<!-- - @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@ @@@      - -->
+<!-- / @@!       @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!  @@@  @@! !@@      \ -->
+<!-- | !@!       !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!  @!@  !@! @!!      | -->
+<!-- \ @!!!:!    @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!@@!@!    !@!@!       / -->
+<!-- - !!!!!:    !@!  !!!    !!!    !!@!@!    !@!  !!!  !!@!!!      @!!!       - -->
+<!-- / !!:       !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:         !!:        \ -->
+<!-- | :!:       :!:  !:!    :!:    :!:  !:!  :!:  !:!  :!:         :!:        | -->
+<!-- \  :: ::::   ::   ::     ::    ::   :::  ::::: ::   ::          ::        / -->
+<!-- - : :: ::   ::    :      :      :   : :   : :  :    :           :         - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \ @@@  @@@  @@@   @@@@@@   @@@@@@@    @@@@@@   @@@  @@@  @@@  @@@@@@@     / -->
+<!-- - @@@  @@@  @@@  @@@@@@@@  @@@@@@@@  @@@@@@@   @@@  @@@  @@@  @@@@@@@@    - -->
+<!-- / @@!  @@!  @@!  @@!  @@@  @@!  @@@  !@@       @@!  @@@  @@!  @@!  @@@    \ -->
+<!-- | !@!  !@!  !@!  !@!  @!@  !@!  @!@  !@!       !@!  @!@  !@!  !@!  @!@    | -->
+<!-- \ @!!  !!@  @!@  @!@  !@!  @!@!!@!   !!@@!!    @!@!@!@!  !!@  @!@@!@!     / -->
+<!-- - !@!  !!!  !@!  !@!  !!!  !!@!@!     !!@!!!   !!!@!!!!  !!!  !!@!!!      - -->
+<!-- / !!:  !!:  !!:  !!:  !!!  !!: :!!        !:!  !!:  !!!  !!:  !!:         \ -->
+<!-- | :!:  :!:  :!:  :!:  !:!  :!:  !:!      !:!   :!:  !:!  :!:  :!:         | -->
+<!-- \  :::: :: :::   ::::: ::  ::   :::  :::: ::   ::   :::   ::   ::         / -->
+<!-- -   :: :  : :     : :  :    :   : :  :: : :     :   : :  :     :          - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EW BPM Calculator</title>
+<!-- Bootstrap CSS -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<!-- Augmented UI CSS -->
+<link rel="stylesheet" type="text/css" href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css">
+<!-- SciUI CSS -->
+<link href="styles/styles.css" type="text/css" rel="stylesheet">
+<!-- Cyberpunk CSS -->
+<link href="styles/cyberpunk.css" rel="stylesheet" type="text/css">
+<!-- Override CSS -->
+<link href="styles/style_overrides.css" rel="stylesheet">
+<style>
+        body {
+          background-image: url('images/entropyworship._broken_shards_of_glass_each_reflecting_cyber_cy_d427c782-b9e4-418f-8738-96934cf8f239.png'); 
+        }
+</style>
+</head>
+<body>
+    <div class="container"><!--Main Container-->
+        <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c"><!--Header card-->
+            <div class="card-header border-danger">
+                <a href="https://www.entropyworship.com"><h1 class="heading display-6" style="font-size: 1.5rem;">ENTROPY WORSHIP</h1></a>
+                <h2 class="panel info shown" style="font-size: 1.5rem;">build 3.0.12.02.24</h1>
+            </div>
+
+              <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c">
+                <div class="card-body">
+                    <div class="bpm"><strong style="font-family: 'sector_034'; font-size: 50px; color: #333;">BPM:</strong> <span id="bpmDisplay" style="font-family: 'sector_034'; font-size: 50px; color: #333;">0</span></div>
+                    <button id="resetButton" class="button warning round">Reset</button>
+                    <button id="tapButton" class="button success round">Tap</button>
+                </div>
+                <script>
+                  const tapButton = document.getElementById("tapButton");
+                  const resetButton = document.getElementById("resetButton");
+                  const bpmDisplay = document.getElementById("bpmDisplay");
+            
+                  let tapTimes = [];
+            
+                  tapButton.addEventListener("click", () => {
+                    const now = Date.now();
+            
+                    // Add timestamp of this tap
+                    tapTimes.push(now);
+            
+                    // Keep only the last 10 taps for calculation
+                    if (tapTimes.length > 10) {
+                      tapTimes.shift();
+                    }
+            
+                    calculateBPM();
+                  });
+            
+                  resetButton.addEventListener("click", () => {
+                    tapTimes = [];
+                    bpmDisplay.textContent = "0";
+                  });
+            
+                  function calculateBPM() {
+                    if (tapTimes.length < 2) {
+                      bpmDisplay.textContent = "0";
+                      return;
+                    }
+            
+                    const intervals = [];
+                    for (let i = 1; i < tapTimes.length; i++) {
+                      intervals.push(tapTimes[i] - tapTimes[i - 1]);
+                    }
+            
+                    const averageInterval =
+                      intervals.reduce((sum, interval) => sum + interval, 0) /
+                      intervals.length;
+                    const bpm = Math.round(60000 / averageInterval);
+            
+                    bpmDisplay.textContent = bpm;
+                  }
+                </script>
+              </div>
+          </div>
+          
+    </div><!--Main Container-->
+<!-- jQuery (v3.6.0) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Popper.js (required for Bootstrap 4) -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<!-- Bootstrap JavaScript (v4.5.2) -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

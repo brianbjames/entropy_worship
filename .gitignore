@@ -3,14 +3,3 @@
 
 ## A leading "**" followed by a slash means match in all directories
 
-**/node_modules/
-**.DS_Store
-
-.cache/
-downloads/harmGran.amxd.zip
-downloads/MetaEffects.zip
-downloads/qwerty.zip
-downloads/seqENV.zip
-downloads/stereoDetuner.pat.zip
-downloads/SuperFlange.amxd.zip
-images/eatElectronics.gif

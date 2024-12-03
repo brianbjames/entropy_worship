@@ -1,0 +1,123 @@
+<!-- /-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\ -->
+<!-- |                                                                         | -->
+<!-- \ @@@@@@@@  @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@@@@@   @@@ @@@      / -->
+<!-- - @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@ @@@      - -->
+<!-- / @@!       @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!  @@@  @@! !@@      \ -->
+<!-- | !@!       !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!  @!@  !@! @!!      | -->
+<!-- \ @!!!:!    @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!@@!@!    !@!@!       / -->
+<!-- - !!!!!:    !@!  !!!    !!!    !!@!@!    !@!  !!!  !!@!!!      @!!!       - -->
+<!-- / !!:       !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:         !!:        \ -->
+<!-- | :!:       :!:  !:!    :!:    :!:  !:!  :!:  !:!  :!:         :!:        | -->
+<!-- \  :: ::::   ::   ::     ::    ::   :::  ::::: ::   ::          ::        / -->
+<!-- - : :: ::   ::    :      :      :   : :   : :  :    :           :         - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \ @@@  @@@  @@@   @@@@@@   @@@@@@@    @@@@@@   @@@  @@@  @@@  @@@@@@@     / -->
+<!-- - @@@  @@@  @@@  @@@@@@@@  @@@@@@@@  @@@@@@@   @@@  @@@  @@@  @@@@@@@@    - -->
+<!-- / @@!  @@!  @@!  @@!  @@@  @@!  @@@  !@@       @@!  @@@  @@!  @@!  @@@    \ -->
+<!-- | !@!  !@!  !@!  !@!  @!@  !@!  @!@  !@!       !@!  @!@  !@!  !@!  @!@    | -->
+<!-- \ @!!  !!@  @!@  @!@  !@!  @!@!!@!   !!@@!!    @!@!@!@!  !!@  @!@@!@!     / -->
+<!-- - !@!  !!!  !@!  !@!  !!!  !!@!@!     !!@!!!   !!!@!!!!  !!!  !!@!!!      - -->
+<!-- / !!:  !!:  !!:  !!:  !!!  !!: :!!        !:!  !!:  !!!  !!:  !!:         \ -->
+<!-- | :!:  :!:  :!:  :!:  !:!  :!:  !:!      !:!   :!:  !:!  :!:  :!:         | -->
+<!-- \  :::: :: :::   ::::: ::  ::   :::  :::: ::   ::   :::   ::   ::         / -->
+<!-- -   :: :  : :     : :  :    :   : :  :: : :     :   : :  :     :          - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ENTROPY WORSHIP DB Level Reader</title>
+<!-- Bootstrap CSS -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<!-- Augmented UI CSS -->
+<link rel="stylesheet" type="text/css" href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css">
+<!-- SciUI CSS -->
+<link href="styles/styles.css" type="text/css" rel="stylesheet">
+<!-- Cyberpunk CSS -->
+<link href="styles/cyberpunk.css" rel="stylesheet" type="text/css">
+<!-- Override CSS -->
+<link href="styles/style_overrides.css" rel="stylesheet">
+<style>
+    body {
+    background-image: url('images/entropyworship._broken_shards_of_glass_each_reflecting_cyber_cy_d427c782-b9e4-418f-8738-96934cf8f239.png'); 
+    text-align: center;
+    }
+    #meter {
+        font-family: 'sector_034';
+        font-size: 50px;
+        color: #333;
+    }
+</style>
+</head>
+<body>
+    <div class="container"><!--Main Container-->
+        <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c"><!--Header card-->
+            <div class="card-header border-danger">
+              <a href="https://www.entropyworship.com"><h1 class="heading display-6" style="font-size: 1.5rem;">ENTROPY WORSHIP</h1></a>
+                <h2 class="panel info shown" style="font-size: 1.5rem;">build 3.0.11.19.24</h1>
+        </div><!--Header panel-->
+              <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c">
+                <div class="card-header border-danger">
+                    <h5 class="panel shown">EWDBLEVL</h5>
+                </div>
+                <div class="card-body">
+                    <div id="meter"></div>
+<!--                     <button id="startBtn" class="cyber-button-small bg-blue fg-white m-2 vt-bot">Start</button>
+ -->                    <button id="startBtn" class="button success round">Start</button>
+                </div>
+
+              </div>
+          </div>
+          
+    </div><!--Main Container-->
+    <script>
+        document.getElementById("startBtn").addEventListener("click", async () => {
+          const meterDisplay = document.getElementById("meter");
+          
+          try {
+            // Request access to the microphone
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const analyser = audioContext.createAnalyser();
+            const microphone = audioContext.createMediaStreamSource(stream);
+            const dataArray = new Uint8Array(analyser.frequencyBinCount);
+    
+            analyser.fftSize = 256;
+            microphone.connect(analyser);
+    
+            function getDecibelLevel() {
+              analyser.getByteFrequencyData(dataArray);
+              
+              // Calculate average volume
+              const sum = dataArray.reduce((a, b) => a + b, 0);
+              const average = sum / dataArray.length;
+    
+              // Convert to decibels
+              const dB = Math.round(20 * Math.log10(average));
+    
+              // Display decibel level
+              meterDisplay.textContent = dB > 0 ? `${dB} dB` : "0 dB";
+    
+              requestAnimationFrame(getDecibelLevel);
+            }
+    
+            getDecibelLevel();
+            document.getElementById("startBtn").style.display = "none";
+          } catch (err) {
+            meterDisplay.textContent = "denied mic access";
+            console.error("Error accessing microphone:", err);
+          }
+        });
+      </script>    
+<!-- jQuery (v3.6.0) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Popper.js (required for Bootstrap 4) -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<!-- Bootstrap JavaScript (v4.5.2) -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
