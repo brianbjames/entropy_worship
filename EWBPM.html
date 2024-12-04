@@ -107,7 +107,7 @@
 
               <div class="card text-bg-danger border-danger mb-3" style="background-color: #83a0b830">
                 <div class="card-body">
-                  <div class="bpm" style="display: flex; justify-content: center; align-items: center; height: 100%; font-family: 'sector_034'; font-size: 30px; color: #e0cccc;">
+                  <div class="bpm" style="display: flex; justify-content: center; align-items: center; height: 100%; font-family: 'sector_034'; font-size: 30px; color: #cb0e0edc;">
                     <span id="bpmDisplay">Skull Tap</span>
                 </div><!--                     <button id="resetButton" class="button warning round">Reset</button>
                     <button id="tapButton" class="button success round">Tap</button>
@@ -157,7 +157,24 @@
     BABYLON.SceneLoader.ImportMesh("", "scenes/", "skull.babylon", scene, function (meshes) {
         skullMesh = meshes[0]; // Assuming the first mesh is the skull
         scene.createDefaultCameraOrLight(true, true, true);
-        scene.createDefaultEnvironment();
+        //scene.createDefaultEnvironment();
+            // This targets the camera to scene origin
+            camera.setTarget(BABYLON.Vector3.Zero());
+
+            // This attaches the camera to the canvas
+            camera.attachControl(canvas, true);
+
+            // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
+            var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
+
+            // Default intensity is 1. Let's dim the light a small amount
+            light.intensity = 0.7;
+
+            // Built-in 'ground' shape. Params: name, width, depth, subdivs, scene
+            var groundMaterial = new BABYLON.StandardMaterial("ground", scene);
+
+            var hdrTexture = new BABYLON.CubeTexture("textures/SpecularHDR.dds", scene);
+            scene.createDefaultSkybox(hdrTexture, true, 10000);
 
         // Set up click action on the skull
         skullMesh.actionManager = new BABYLON.ActionManager(scene);
@@ -194,8 +211,62 @@
         }
     });
 
+    // This creates and positions a free camera (non-mesh)
+    var camera = new BABYLON.ArcRotateCamera("camera1", Math.PI / 2, Math.PI / 2, 2, new BABYLON.Vector3(0, 0, 0), scene);
+
+    // Attach the camera to the canvas
+    camera.attachControl(canvas, true);
+
+    // Default grid material for general objects
+/*     var defaultGridMaterial = new BABYLON.GridMaterial("default", scene);
+    defaultGridMaterial.majorUnitFrequency = 4; // Fewer lines, larger grid
+    defaultGridMaterial.gridRatio = 8; // Larger spacing between lines
+    defaultGridMaterial.lineColor = new BABYLON.Color3(1, 0, 0); // Optional: Make grid lines more visible */
+
+    // Ground grid material
+/*     var groundMaterial = new BABYLON.GridMaterial("groundMaterial", scene);
+    groundMaterial.majorUnitFrequency = 2; // Fewer major grid lines
+    groundMaterial.minorUnitVisibility = 0.7; // Minor grid lines more visible
+    groundMaterial.gridRatio = 4; // Larger ground grid
+    groundMaterial.mainColor = new BABYLON.Color3(1, 1, 1); // White grid
+    groundMaterial.lineColor = new BABYLON.Color3(0, 1, 0); // Green grid lines for visibility
+    groundMaterial.opacity = 0.98; */
+
+    // Apply ground material to a height-mapped ground
+/*     var ground = BABYLON.Mesh.CreateGroundFromHeightMap(
+        "ground",
+        "textures/heightMap.png",
+        200, // Increase size for larger ground
+        200,
+        100,
+        0,
+        10,
+        scene,
+        false
+    );
+    ground.material = groundMaterial; */
+
+    // Sky grid material
+/*     var skyMaterial = new BABYLON.GridMaterial("skyMaterial", scene);
+    skyMaterial.majorUnitFrequency = 16; // Larger sky grid
+    skyMaterial.minorUnitVisibility = 0.5;
+    skyMaterial.gridRatio = 3; // Larger spacing between sky grid lines
+    skyMaterial.mainColor = new BABYLON.Color3(0, 0.05, 0.2); // Subtle blue background
+    skyMaterial.lineColor = new BABYLON.Color3(0, 1, 1); // Bright cyan grid lines
+    skyMaterial.backFaceCulling = false; */
+
+    // Sky sphere mesh
+/*     var skySphere = BABYLON.Mesh.CreateSphere("skySphere", 300, 500, scene); // Larger diameter for sky sphere
+    skySphere.material = skyMaterial; */
+
+    // Adjust sphere position if needed
+/*     skySphere.position = new BABYLON.Vector3(0, 0, 0); */
+
+    camera.radius = 500;
+
+
     return scene;
-    };
+  };
 
   function calculateBPM() {
     if (tapTimes.length < 2) {
@@ -297,7 +368,7 @@
   });
 
   // Handle BPM calculation and skull animation on tap
-  tapButton.addEventListener("click", () => {
+/*   tapButton.addEventListener("click", () => {
     const now = Date.now();
 
     // Add timestamp of this tap
@@ -309,15 +380,15 @@
     }
 
     calculateBPM();
-  });
+  }); */
 
   // Reset BPM and clear taps
-  resetButton.addEventListener("click", () => {
+/*   resetButton.addEventListener("click", () => {
     tapTimes = [];
     bpm = 0;
     bpmDisplay.textContent = bpm;
     stopAnimation();
-  });
+  }); */
 </script>
 
 
