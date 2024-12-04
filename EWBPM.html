@@ -157,24 +157,51 @@
     BABYLON.SceneLoader.ImportMesh("", "scenes/", "skull.babylon", scene, function (meshes) {
         skullMesh = meshes[0]; // Assuming the first mesh is the skull
         scene.createDefaultCameraOrLight(true, true, true);
-        //scene.createDefaultEnvironment();
-            // This targets the camera to scene origin
-            camera.setTarget(BABYLON.Vector3.Zero());
 
-            // This attaches the camera to the canvas
-            camera.attachControl(canvas, true);
+        // Fur material
+        let furMaterial = new BABYLON.FurMaterial("furMaterial", scene);
+        furMaterial.highLevelFur = false; // Basic fur effect
+        furMaterial.furLength = 0.03; // Length of the fur
+        furMaterial.furAngle = Math.PI / 6; // Angle the fur lies on the mesh
+        furMaterial.diffuseTexture = new BABYLON.Texture("textures/shardcreature.png", scene);
+        furMaterial.heightTexture = new BABYLON.Texture("textures/shardcreature.png", scene);
 
-            // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
-            var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
+        // Attach fur material to the skull mesh
+        skullMesh.material = furMaterial;
 
-            // Default intensity is 1. Let's dim the light a small amount
-            light.intensity = 0.7;
+        // Add fur layers for depth
+        let furLayers = BABYLON.FurMaterial.FurifyMesh(skullMesh, 10); // Generate 30 fur layers
+        for (let i = 0; i < furLayers.length; i++) {
+            let layer = furLayers[i];
+            layer.material.furLength = furMaterial.furLength - (i * 0.005); // Decrease length with each layer
+            layer.material.furAngle = furMaterial.furAngle; // Consistent fur angle
+            layer.material.diffuseTexture = furMaterial.diffuseTexture; // Use same texture
+        }
 
-            // Built-in 'ground' shape. Params: name, width, depth, subdivs, scene
-            var groundMaterial = new BABYLON.StandardMaterial("ground", scene);
+        if (!skullMesh.isVerticesDataPresent(BABYLON.VertexBuffer.UVKind)) {
+    console.log("UV data is missing in skullMesh.");
+} else {
+    console.log("UV data exists in skullMesh.");
+}
 
-            var hdrTexture = new BABYLON.CubeTexture("textures/SpecularHDR.dds", scene);
-            scene.createDefaultSkybox(hdrTexture, true, 10000);
+
+        // This targets the camera to scene origin
+        camera.setTarget(BABYLON.Vector3.Zero());
+
+        // This attaches the camera to the canvas
+        camera.attachControl(canvas, true);
+
+        // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
+        var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
+
+        // Default intensity is 1. Let's dim the light a small amount
+        light.intensity = 0.7;
+
+        // Built-in 'ground' shape. Params: name, width, depth, subdivs, scene
+        var groundMaterial = new BABYLON.StandardMaterial("ground", scene);
+
+        var hdrTexture = new BABYLON.CubeTexture("textures/forest.dds", scene);
+        scene.createDefaultSkybox(hdrTexture, true, 10000);
 
         // Set up click action on the skull
         skullMesh.actionManager = new BABYLON.ActionManager(scene);
