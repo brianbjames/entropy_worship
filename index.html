@@ -433,7 +433,7 @@
     var camera = new BABYLON.ArcRotateCamera(
       "camera1",
       -Math.PI / 3,
-      (5 * Math.PI) / 12,
+      (5 * Math.PI) / 20,
       50,
       new BABYLON.Vector3(0, 5, 0),
       scene
@@ -453,6 +453,7 @@
       false
     );
     ground.material = new BABYLON.GridMaterial("groundMaterial", scene);
+    ground.material.lineColor = new BABYLON.Color3(1, 0, 0, 0.95);
 
     // Rotate camera
     engine.runRenderLoop(function () {
