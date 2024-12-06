@@ -44,15 +44,15 @@ ew/
 │ ├─ crypt-ui/
 | ├─ ew_arwes/
 | ├─ games/
+├─ public/
 ├─ samples/
 │ ├─ all the samples
 ├─ scripts/
 │ ├─ all the scripts
 ├─ styles/
 │ ├─ all the styles
-│ ├─ all the fonts
 │ ├─ fonts/
-│ ├─ ├─ currently empty
+│ ├─ ├─ all the fonts
 ├─ textures/
 │ ├─ all the Babylon textures
 ├─ README.md
