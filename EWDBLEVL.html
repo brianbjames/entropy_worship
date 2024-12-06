@@ -221,7 +221,7 @@
     
                 const sum = dataArray.reduce((a, b) => a + b, 0);
                 const average = sum / dataArray.length;
-                const dB = Math.max(0, Math.round(20 * Math.log10(average)));
+                const dB = Math.max(0, Math.round(100 * Math.log10(average)));
     
                 dBLevel = dB; // Update the global dB level
                 meterDisplay.textContent = dB > 0 ? `${dB} dB` : "0 dB";
