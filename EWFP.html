@@ -44,7 +44,12 @@
     margin: 0;
     overflow: hidden; /* Prevent scrollbars */
   }
-
+  body, #container {
+    -webkit-user-select: none; /* Chrome, Safari, Edge */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Standard syntax */
+  }
   canvas {
     position: fixed;
     top: 0;
@@ -58,6 +63,21 @@
     position: relative;
     z-index: 1; /* Ensure container content is above the canvas */
   }
+  #left-joystick, #right-touch {
+    border-radius: 50%;
+    touch-action: none; /* Prevent default scrolling on touch */
+    z-index: 10;
+}
+#jump-button {
+    background-color: transparent; /* Transparent background */
+    color: white; /* Keep the text color white */
+    border: 2px solid rgba(73, 67, 67, 0.747); /* Black border with a thickness of 2px */
+    border-radius: 10px; /* Rounded corners */
+    touch-action: none; /* Disable default scrolling behavior on touch */
+    z-index: 10; /* Ensure it appears above other elements */
+}
+
+
 </style>
 <script type="importmap">
   {
@@ -81,6 +101,8 @@
     }
   }
 </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/nipplejs/0.9.0/nipplejs.min.js"></script>
+
 <div id="container"></div>
 <script type="module">
 
@@ -94,7 +116,7 @@
 
   const clock = new THREE.Clock();
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color( 0x88ccee );
+  scene.background = new THREE.Color( 0x330000 );
   scene.fog = new THREE.Fog( 0x88ccee, 0, 50 );
 
   const camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, 1000 );
@@ -133,7 +155,7 @@
   const stats = new Stats();
   stats.domElement.style.position = 'absolute';
   stats.domElement.style.top = '0px';
-  container.appendChild( stats.domElement );
+  //container.appendChild( stats.domElement );
 
   const GRAVITY = 30;
 
@@ -224,7 +246,7 @@ document.body.addEventListener('mousemove', (event) => {
 });
 
 
-//Mobile contols 
+
 
 
 
@@ -379,41 +401,54 @@ document.body.addEventListener('mousemove', (event) => {
 
   }
 
-  function updateSpheres( deltaTime ) {
+  function updateSpheres(deltaTime) {
+    spheres.forEach((sphere, index) => {
+        sphere.collider.center.addScaledVector(sphere.velocity, deltaTime);
 
-    spheres.forEach( sphere => {
+        const result = worldOctree.sphereIntersect(sphere.collider);
 
-      sphere.collider.center.addScaledVector( sphere.velocity, deltaTime );
+        if (result) {
+            // Trigger explosion at the point of collision
+            createExplosion(sphere.collider.center);
 
-      const result = worldOctree.sphereIntersect( sphere.collider );
+            // Remove the ball by hiding it and resetting its position
+            sphere.mesh.visible = false;
+            sphere.collider.center.set(0, -100, 0); // Move it off-screen
 
-      if ( result ) {
+            sphere.velocity.set(0, 0, 0); // Reset velocity
+        } else {
+            sphere.velocity.y -= GRAVITY * deltaTime;
+        }
 
-        sphere.velocity.addScaledVector( result.normal, - result.normal.dot( sphere.velocity ) * 1.5 );
-        sphere.collider.center.add( result.normal.multiplyScalar( result.depth ) );
+        const damping = Math.exp(-1.5 * deltaTime) - 1;
+        sphere.velocity.addScaledVector(sphere.velocity, damping);
 
-      } else {
-
-        sphere.velocity.y -= GRAVITY * deltaTime;
-
-      }
-
-      const damping = Math.exp( - 1.5 * deltaTime ) - 1;
-      sphere.velocity.addScaledVector( sphere.velocity, damping );
-
-      playerSphereCollision( sphere );
-
-    } );
+        playerSphereCollision(sphere);
+    });
 
     spheresCollisions();
 
-    for ( const sphere of spheres ) {
+    spheres.forEach((sphere) => {
+        sphere.mesh.position.copy(sphere.collider.center);
+    });
+}
 
-      sphere.mesh.position.copy( sphere.collider.center );
+// Create explosion effect
+function createExplosion(position) {
+    const explosionGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+    const explosionMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.8 });
+    const explosion = new THREE.Mesh(explosionGeometry, explosionMaterial);
+    
+    explosion.position.copy(position);
+    scene.add(explosion);
 
-    }
+    // Animate explosion and remove it after a short duration
+    const duration = 100; // Explosion duration in milliseconds
+    setTimeout(() => {
+        scene.remove(explosion);
+    }, duration);
+}
 
-  }
 
   function getForwardVector() {
 
@@ -469,7 +504,7 @@ document.body.addEventListener('mousemove', (event) => {
 
       if ( keyStates[ 'Space' ] ) {
 
-        playerVelocity.y = 15;
+        playerVelocity.y = 14;
 
       }
 
@@ -479,7 +514,7 @@ document.body.addEventListener('mousemove', (event) => {
 
   const loader = new GLTFLoader().setPath( './models/' );
 
-  loader.load( 'collision-world.glb', ( gltf ) => {
+  loader.load( 'maze.glb', ( gltf ) => {
 
     scene.add( gltf.scene );
 
@@ -502,19 +537,16 @@ document.body.addEventListener('mousemove', (event) => {
 
     } );
 
+    // Controls and debuger
     const helper = new OctreeHelper( worldOctree );
     helper.visible = false;
     scene.add( helper );
-
-    const gui = new GUI( { width: 200 } );
+    //const gui = new GUI( { width: 200 } );
     gui.add( { debug: false }, 'debug' )
       .onChange( function ( value ) {
-
         helper.visible = value;
-
       } );
-  
-  } );
+    });
 
   function teleportPlayerIfOob() {
 
@@ -539,22 +571,180 @@ document.body.addEventListener('mousemove', (event) => {
     // an object traversing another too quickly for detection.
 
     for ( let i = 0; i < STEPS_PER_FRAME; i ++ ) {
-
       controls( deltaTime );
-
       updatePlayer( deltaTime );
-
       updateSpheres( deltaTime );
-
       teleportPlayerIfOob();
-
     }
 
     renderer.render( scene, camera );
-
     stats.update();
 
   }
+
+  
+  const leftJoystick = nipplejs.create({
+    zone: document.getElementById('left-joystick'),
+    mode: 'static',
+    position: { left: '70px', bottom: '70px' },
+    color: 'black',
+  });
+
+  const rightTouch = nipplejs.create({
+      zone: document.getElementById('right-touch'),
+      mode: 'static',
+      position: { right: '70px', bottom: '70px' },
+      color: 'black',
+  });
+
+  leftJoystick.on('move', (evt, data) => {
+    if (data.direction) {
+        const speedMultiplier = 0.11; // Slow down joystick movement
+        const speed = 4.5 * speedMultiplier; // Adjust speed as needed
+        switch (data.direction.angle) {
+            case 'up':
+                playerVelocity.add(getForwardVector().multiplyScalar(speed));
+                break;
+            case 'down':
+                playerVelocity.add(getForwardVector().multiplyScalar(-speed));
+                break;
+            case 'left':
+                playerVelocity.add(getSideVector().multiplyScalar(-speed));
+                break;
+            case 'right':
+                playerVelocity.add(getSideVector().multiplyScalar(speed));
+                break;
+        }
+    }
+  });
+
+
+  rightTouch.on('move', (evt, data) => {
+    if (data.vector) {
+        const cameraSensitivity = 3.5; // Increase this value for more sensitivity
+        camera.rotation.y -= (data.vector.x / 100) * cameraSensitivity;
+        camera.rotation.x -= (data.vector.y / 100) * cameraSensitivity;
+
+        // Clamp vertical rotation
+        camera.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, camera.rotation.x));
+    }
+  });
+
+
+  document.getElementById('jump-button').addEventListener('click', () => {
+    event.stopPropagation(); // Prevent the event from propagating
+      if (playerOnFloor) {
+          playerVelocity.y = 14; // Jump strength
+      }
+  });
+
+  // Prevent 'mouseup' or 'touchend' on the jump button from triggering the ball throw
+document.getElementById('jump-button').addEventListener('mouseup', (event) => {
+    event.stopPropagation(); // Prevent the event from propagating
+});
+document.getElementById('jump-button').addEventListener('touchend', (event) => {
+    event.stopPropagation(); // Prevent the event from propagating
+});
+
+  container.addEventListener('touchend', () => {
+      throwBall();
+  });
+
+  let lastMove = Date.now();
+  leftJoystick.on('move', (evt, data) => {
+      if (Date.now() - lastMove < 16) return; // Throttle to ~60 FPS
+      lastMove = Date.now();
+      // Handle movement...
+  });
+
+  if (/Mobi|Android/i.test(navigator.userAgent)) {
+      console.log('Mobile device detected: disabling pointer lock.');
+      // Disable pointer lock for mobile or handle touch controls instead
+  } else {
+      container.addEventListener('mousedown', () => {
+          document.body.requestPointerLock();
+      });
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+
+    // Select joystick and jump button elements
+    const leftJoystick = document.getElementById("left-joystick");
+    const rightTouch = document.getElementById("right-touch");
+    const jumpButton = document.getElementById("jump-button");
+
+    if (!isMobile) {
+        // Hide elements on non-mobile devices
+        if (leftJoystick) leftJoystick.style.display = "none";
+        if (rightTouch) rightTouch.style.display = "none";
+        if (jumpButton) jumpButton.style.display = "none";
+    } else {
+        console.log("Mobile device detected: Showing touch controls.");
+    }
+  });
+
+
+  // Prompt to rotate device
+  // Function to detect if the device is a mobile device
+function isMobileDevice() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+}
+
+// Function to show a popup
+function showRotatePopup() {
+    // Create the popup container
+    const popup = document.createElement('div');
+    popup.id = 'rotate-popup';
+    popup.style.position = 'fixed';
+    popup.style.top = '0';
+    popup.style.left = '0';
+    popup.style.width = '100%';
+    popup.style.height = '100%';
+    popup.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+    popup.style.color = '#fff';
+    popup.style.display = 'flex';
+    popup.style.flexDirection = 'column';
+    popup.style.justifyContent = 'center';
+    popup.style.alignItems = 'center';
+    popup.style.zIndex = '9999';
+
+    // Add message to the popup
+    const message = document.createElement('p');
+    message.textContent = 'Please rotate your device to landscape mode.';
+    message.style.fontSize = '28px';
+    message.style.textAlign = 'center';
+    message.style.margin = '0 20px';
+    popup.appendChild(message);
+
+    // Append the popup to the body
+    document.body.appendChild(popup);
+}
+
+// Function to check orientation and handle popup
+function handleOrientationChange() {
+    const popup = document.getElementById('rotate-popup');
+
+    if (window.innerWidth < window.innerHeight) {
+        // Portrait mode
+        if (!popup) {
+            showRotatePopup();
+        }
+    } else {
+        // Landscape mode
+        if (popup) {
+            popup.remove();
+        }
+    }
+}
+
+// Run on load if the device is mobile
+if (isMobileDevice()) {
+    window.addEventListener('resize', handleOrientationChange);
+    handleOrientationChange();
+}
+
+
 
 </script>
     
@@ -563,9 +753,13 @@ document.body.addEventListener('mousemove', (event) => {
         <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c"><!--Header card-->
             <div class="card-header border-danger">
               <a href="https://www.entropyworship.com"><h1 class="heading display-6" style="font-size: 1.5rem;">ENTROPY WORSHIP</h1></a>
-                <h2 class="panel error shown" style="font-size: 1.5rem;">build 3.0.12.06.24</h1>
+                <h2 class="panel error shown" style="font-size: 1.5rem;">build 3.0.12.26.24</h1>
         </div><!--Header panel-->
     </div><!--Main Container-->   
+    <div id="left-joystick" style="position: fixed; bottom: 1%; left: 1%; width: 100px; height: 100px;"></div>
+    <div id="right-touch" style="position: fixed; bottom: 1%; right: 1%; width: 100px; height: 100px;"></div>
+    <button id="jump-button" style="position: fixed; bottom: 45%; right: 1%; width: 60px; height: 80px; font-size: 16px;"></button>
+    
 <!-- jQuery (v3.6.0) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <!-- Popper.js (required for Bootstrap 4) -->
