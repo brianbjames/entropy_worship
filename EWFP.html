@@ -600,7 +600,7 @@ function createExplosion(position) {
   leftJoystick.on('move', (evt, data) => {
     if (data.direction) {
         const speedMultiplier = 0.11; // Slow down joystick movement
-        const speed = 4.5 * speedMultiplier; // Adjust speed as needed
+        const speed = 4 * speedMultiplier; // Adjust speed as needed
         switch (data.direction.angle) {
             case 'up':
                 playerVelocity.add(getForwardVector().multiplyScalar(speed));
@@ -621,7 +621,7 @@ function createExplosion(position) {
 
   rightTouch.on('move', (evt, data) => {
     if (data.vector) {
-        const cameraSensitivity = 3.5; // Increase this value for more sensitivity
+        const cameraSensitivity = 4; // Increase this value for more sensitivity
         camera.rotation.y -= (data.vector.x / 100) * cameraSensitivity;
         camera.rotation.x -= (data.vector.y / 100) * cameraSensitivity;
 
@@ -743,8 +743,6 @@ if (isMobileDevice()) {
     window.addEventListener('resize', handleOrientationChange);
     handleOrientationChange();
 }
-
-
 
 </script>
     
