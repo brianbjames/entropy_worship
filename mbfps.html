@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+    <title>Babylon.js sample code</title>
+
+    <!-- Babylon.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.2/dat.gui.min.js"></script>
+    <script src="https://assets.babylonjs.com/generated/Assets.js"></script>
+    <script src="https://cdn.babylonjs.com/recast.js"></script>
+    <script src="https://cdn.babylonjs.com/ammo.js"></script>
+    <script src="https://cdn.babylonjs.com/havok/HavokPhysics_umd.js"></script>
+    <script src="https://cdn.babylonjs.com/cannon.js"></script>
+    <script src="https://cdn.babylonjs.com/Oimo.js"></script>
+    <script src="https://cdn.babylonjs.com/earcut.min.js"></script>
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+    <script src="https://cdn.babylonjs.com/proceduralTexturesLibrary/babylonjs.proceduralTextures.min.js"></script>
+    <script src="https://cdn.babylonjs.com/postProcessesLibrary/babylonjs.postProcess.min.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.js"></script>
+    <script src="https://cdn.babylonjs.com/serializers/babylonjs.serializers.min.js"></script>
+    <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
+    <script src="https://cdn.babylonjs.com/addons/babylonjs.addons.min.js"></script>
+    <script src="https://cdn.babylonjs.com/inspector/babylon.inspector.bundle.js"></script>
+
+    <style>
+      html,
+      body {
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      #renderCanvas {
+        width: 100%;
+        height: 100%;
+        touch-action: none;
+      }
+
+      #canvasZone {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="canvasZone"><canvas id="renderCanvas"></canvas></div>
+    <script>
+      var canvas = document.getElementById("renderCanvas");
+
+      var startRenderLoop = function (engine, canvas) {
+        engine.runRenderLoop(function () {
+          if (sceneToRender && sceneToRender.activeCamera) {
+            sceneToRender.render();
+          }
+        });
+      };
+
+      var engine = null;
+      var scene = null;
+      var sceneToRender = null;
+      var createDefaultEngine = function () {
+        return new BABYLON.Engine(canvas, true, {
+          preserveDrawingBuffer: true,
+          stencil: true,
+          disableWebGL2Support: false,
+        });
+      };
+      var createScene = async function () {
+        // This creates a basic Babylon Scene object (non-mesh)
+        var scene = new BABYLON.Scene(engine);
+
+        scene.useRightHandedSystem = false;
+        scene.skipPointerMovePicking = true;
+
+        // This creates and positions a free camera (non-mesh)
+        var camera = new BABYLON.FreeCamera(
+          "camera1",
+          new BABYLON.Vector3(0, 5, -20),
+          scene
+        );
+        camera.setTarget(BABYLON.Vector3.Zero());
+        camera.attachControl(canvas, true);
+
+        const name = "HillValley.babylon";
+
+        await BABYLON.SceneLoader.AppendAsync(
+          "https://www.babylonjs.com/Scenes/hillvalley/",
+          name,
+          scene
+        );
+
+        camera = scene.activeCamera;
+
+        camera.attachControl(canvas, true);
+
+        //camera.speed = 0.5;
+        camera.inputs.attached.touch.touchAngularSensibility = 5000;
+        camera.applyGravity = true;
+        camera.checkCollisions = true;
+
+        for (const mesh of scene.meshes) {
+          mesh.checkCollisions = true;
+        }
+
+        const forceGeometryBuffer = false;
+        const useMSAA = true;
+
+        const ssr = new BABYLON.SSRRenderingPipeline(
+          "ssr",
+          scene,
+          [scene.activeCamera],
+          forceGeometryBuffer,
+          BABYLON.Constants.TEXTURETYPE_UNSIGNED_BYTE
+        );
+
+        window.ssr = ssr;
+
+        const envTexture = scene.getTextureByName("cubmap_hhv");
+
+        ssr.environmentTexture = envTexture;
+        ssr.thickness = 0.1;
+        ssr.selfCollisionNumSkip = 2;
+        ssr.enableAutomaticThicknessComputation = true;
+        ssr.blurDispersionStrength = 0.03;
+        ssr.roughnessFactor = 0.1;
+        if (useMSAA) {
+          if (forceGeometryBuffer) {
+            ssr.samples = 4;
+          } else {
+            new BABYLON.FxaaPostProcess("fxaa", 1, camera);
+          }
+        }
+
+        scene.getMeshByName("Fils001").material.backFaceCulling = false;
+
+        //scene.activeCamera.position.set(-34.077305805902554, 2.7769661153192278, 1.168273355094757);
+        //scene.activeCamera.setTarget(new BABYLON.Vector3(-33.46177220864812, 2.7408393522834884, 0.380991117751469));
+
+        //scene.activeCamera.position.set(-23.728117359735315, 2.9610133240952825, 18.77393572363256);
+        //scene.activeCamera.setTarget(new BABYLON.Vector3(-24.561449332957167, 2.804559887685751, 18.24376574028758));
+
+        scene.activeCamera.position.set(
+          -26.695675321687403,
+          2.7769661153192278,
+          21.145217983348115
+        );
+        scene.activeCamera.setTarget(
+          new BABYLON.Vector3(
+            -27.038161178180832,
+            2.7243780642457263,
+            20.20716786084526
+          )
+        );
+
+        return scene;
+      };
+      window.initFunction = async function () {
+        var asyncEngineCreation = async function () {
+          try {
+            return createDefaultEngine();
+          } catch (e) {
+            console.log(
+              "the available createEngine function failed. Creating the default engine instead"
+            );
+            return createDefaultEngine();
+          }
+        };
+
+        window.engine = await asyncEngineCreation();
+        if (!engine) throw "engine should not be null.";
+        startRenderLoop(engine, canvas);
+        window.scene = createScene();
+      };
+      initFunction().then(() => {
+        scene.then((returnedScene) => {
+          sceneToRender = returnedScene;
+        });
+      });
+
+      // Resize
+      window.addEventListener("resize", function () {
+        engine.resize();
+      });
+    </script>
+  </body>
+</html>
