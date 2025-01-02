@@ -264,10 +264,10 @@ document.addEventListener('pointerlockchange', () => {
   }
 });
 
-document.addEventListener('mouseup', () => {
+/* document.addEventListener('mouseup', () => {
     console.log('Mouse up detected');
     if (document.pointerLockElement !== null) throwBall();
-});
+}); */
 
 document.body.addEventListener('mousemove', (event) => {
   if (document.pointerLockElement === document.body) {
