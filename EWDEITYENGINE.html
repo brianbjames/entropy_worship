@@ -483,20 +483,35 @@ function createExplosion(position) {
     }
   }
 
-  const loader = new GLTFLoader().setPath( './models/' );
+  const loader = new GLTFLoader().setPath('/models/');
 
-  loader.load( 'maze.glb', ( gltf ) => {
-    scene.add( gltf.scene );
-    worldOctree.fromGraphNode( gltf.scene );
-    gltf.scene.traverse( child => {
-      if ( child.isMesh ) {
-        child.castShadow = true;
-        child.receiveShadow = true;
-        if ( child.material.map ) {
-          child.material.map.anisotropy = 4;
-        }
+// Function to process the loaded model
+function processModel(gltf) {
+  scene.add(gltf.scene);
+  worldOctree.fromGraphNode(gltf.scene);
+  gltf.scene.traverse((child) => {
+    if (child.isMesh) {
+      child.castShadow = true;
+      child.receiveShadow = true;
+      if (child.material.map) {
+        child.material.map.anisotropy = 4;
       }
-    } );
+    }
+  });
+}
+
+// Load all models in parallel
+Promise.all([
+  loader.loadAsync('maze.glb'),
+  loader.loadAsync('labywrinth.glb'),
+  loader.loadAsync('tiltedlaby.glb'),
+  loader.loadAsync('sidemaze.glb'),
+]).then(([mazeGLTF, labyrinthGLTF, tiltedlabyGLTF, sidemazeGLTF]) => {
+  // Process each model
+  processModel(mazeGLTF);
+  processModel(labyrinthGLTF);
+  processModel(tiltedlabyGLTF);
+  processModel(sidemazeGLTF);
 
     // Controls and debuger
     const helper = new OctreeHelper( worldOctree );
@@ -507,87 +522,7 @@ function createExplosion(position) {
         //.onChange( function ( value ) {
           //helper.visible = value;
         //} );
-    });
-
-
-  loader.load( 'labywrinth.glb', ( gltf ) => {
-    scene.add( gltf.scene );
-    worldOctree.fromGraphNode( gltf.scene );
-      gltf.scene.traverse( child => {
-        if ( child.isMesh ) {
-          child.castShadow = true;
-          child.receiveShadow = true;
-          if ( child.material.map ) {
-            child.material.map.anisotropy = 4;
-          }
-        }
-      } );
-    });
-    // loader.load( 'shard.glb', ( gltf ) => {
-    // scene.add( gltf.scene );
-    // worldOctree.fromGraphNode( gltf.scene );
-    //   gltf.scene.traverse( child => {
-    //     if ( child.isMesh ) {
-    //       child.castShadow = true;
-    //       child.receiveShadow = true;
-    //       if ( child.material.map ) {
-    //         child.material.map.anisotropy = 4;
-    //       }
-    //     }
-    //   } );
-    // });
-    // loader.load( 'greektheatre.glb', ( gltf ) => {
-    // scene.add( gltf.scene );
-    // worldOctree.fromGraphNode( gltf.scene );
-    //   gltf.scene.traverse( child => {
-    //     if ( child.isMesh ) {
-    //       child.castShadow = true;
-    //       child.receiveShadow = true;
-    //       if ( child.material.map ) {
-    //         child.material.map.anisotropy = 4;
-    //       }
-    //     }
-    //   } );
-    // });
-    loader.load( 'tiltedlaby.glb', ( gltf ) => {
-    scene.add( gltf.scene );
-    worldOctree.fromGraphNode( gltf.scene );
-      gltf.scene.traverse( child => {
-        if ( child.isMesh ) {
-          child.castShadow = true;
-          child.receiveShadow = true;
-          if ( child.material.map ) {
-            child.material.map.anisotropy = 4;
-          }
-        }
-      } );
-    });
-    loader.load( 'sidemaze.glb', ( gltf ) => {
-    scene.add( gltf.scene );
-    worldOctree.fromGraphNode( gltf.scene );
-      gltf.scene.traverse( child => {
-        if ( child.isMesh ) {
-          child.castShadow = true;
-          child.receiveShadow = true;
-          if ( child.material.map ) {
-            child.material.map.anisotropy = 4;
-          }
-        }
-      } );
-    });
-    // loader.load( 'club.glb', ( gltf ) => {
-    // scene.add( gltf.scene );
-    // worldOctree.fromGraphNode( gltf.scene );
-    //   gltf.scene.traverse( child => {
-    //     if ( child.isMesh ) {
-    //       child.castShadow = true;
-    //       child.receiveShadow = true;
-    //       if ( child.material.map ) {
-    //         child.material.map.anisotropy = 4;
-    //       }
-    //     }
-    //   } );
-    // });
+});
 
 // Select the "Falls" counter element
 const fallsElement = document.getElementById("falls");
@@ -599,7 +534,7 @@ function teleportPlayerIfOob() {
     fallCount++;
     fallsElement.textContent = fallCount;
 
-    // Decrease the health meter
+    // Decrease the health meter after a fall
     const healthElement = document.getElementById("health");
     let currentHealth = parseInt(healthElement.textContent, 10);
     if (!isNaN(currentHealth) && currentHealth > 0) {
@@ -877,12 +812,6 @@ initializeSky();
 
     // Start the timer when the game starts
     startTimer();
-
-    // Stop the timer after 30 seconds
-    // setTimeout(() => {
-    //   stopTimer();
-    //   alert("Game Over!");
-    // }, 30000);
     
 // Web Audio API setup
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -890,7 +819,7 @@ const gainNode = audioContext.createGain();
 gainNode.gain.value = 0.25; // Default volume
 
 let audioSource;
-const audioFile = 'samples/cascade-collapse.mp3'; // Replace with the actual path to your audio file
+const audioFile = 'samples/cascade-collapse.mp3';
 
 // Load and play audio sample in a loop
 async function setupAudio() {
@@ -919,7 +848,7 @@ async function setupAudio() {
 
 let throwSoundBuffer; // To store the audio buffer for the throw sound
 
-const throwSoundFile = 'samples/kick.wav'; // Replace with the actual path to your audio file
+const throwSoundFile = 'samples/kick.wav';
 
 // Load the throw sound sample
 async function loadThrowSound() {
@@ -983,6 +912,11 @@ document.addEventListener('DOMContentLoaded', loadThrowSound);
           </a>
         </div>
           <h2 class="panel error shown" style="font-size: 1.5rem;" id="mainpanel">deityengine beta 1.0</h1>
+              <div class="row panel shown" id="preferences">
+                <div id="volume-slider-container">
+                  <input id="volume-slider" class="slider" type="range" min="0" max="1" step="0.01" value="0.25">
+                </div>
+              </div>
               <div class="row panel shown" id="controls">
                 <div class="row">
                   <div class="metric success">
@@ -999,12 +933,6 @@ document.addEventListener('DOMContentLoaded', loadThrowSound);
                   </div>
                 </div>
               </div>
-              <div class="row panel shown" id="preferences">
-                <div id="volume-slider-container">
-                  <label for="volume-slider" style="font-family:Chargen">Volume</label>
-                  <input id="volume-slider" class="slider" type="range" min="0" max="1" step="0.01" value="0.25">
-                </div>
-              </div>
   </div><!--Header panel-->
 </div><!--Main Container-->   
 <div id="left-joystick" style="position: fixed; bottom: 1%; left: 1%; width: 100px; height: 100px;"></div>
@@ -1012,7 +940,7 @@ document.addEventListener('DOMContentLoaded', loadThrowSound);
 <button id="jump-button" style="position: fixed; bottom: 45%; right: 1%; width: 60px; height: 80px; font-size: 16px;"></button>    
 
 <script>
-  // Select elements and hide/display panels
+  // Select elements and hide/display panels. must be placed in code after the HTML elements
   const closebutton = document.getElementById('closebutton');
   const controls = document.getElementById('controls');
   const mainpanel = document.getElementById('mainpanel');
