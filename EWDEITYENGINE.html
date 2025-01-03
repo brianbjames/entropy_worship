@@ -102,6 +102,42 @@
 .hidden {
             display: none;
 }
+.slidecontainer {
+  width: 100%;
+}
+
+.slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 25px;
+  background: #d3d3d30f;
+  outline: none;
+  opacity: 0.7;
+  -webkit-transition: .2s;
+  transition: opacity .2s;
+}
+
+.slider:hover {
+  opacity: 1;
+}
+
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 25px;
+  height: 25px;
+  background: #0462aab4;
+  opacity: 0.7;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 25px;
+  height: 25px;
+  background: #0462aab4;
+  opacity: 0.7;
+  cursor: pointer;
+}
 
 
 </style>
@@ -561,8 +597,22 @@ function teleportPlayerIfOob() {
   if (camera.position.y <= -25) {
     // Increment the fall count
     fallCount++;
-    // Update the "Falls" counter in the UI
     fallsElement.textContent = fallCount;
+
+    // Decrease the health meter
+    const healthElement = document.getElementById("health");
+    let currentHealth = parseInt(healthElement.textContent, 10);
+    if (!isNaN(currentHealth) && currentHealth > 0) {
+      currentHealth -= 1;
+      healthElement.textContent = currentHealth;
+    }
+
+    // Check if health reaches 0
+    if (currentHealth === 0) {
+      showGameOverPopup();
+      return; // Exit function to prevent resetting the player's position
+    }
+
     // Reset player position and rotation
     playerCollider.start.set(0, 0.35, 0);
     playerCollider.end.set(0, 1, 0);
@@ -571,6 +621,65 @@ function teleportPlayerIfOob() {
     camera.rotation.set(0, 0, 0);
   }
 }
+
+function showGameOverPopup() {
+  // Create the popup container
+  const popup = document.createElement('div');
+  popup.id = 'game-over-popup';
+  popup.style.position = 'fixed';
+  popup.style.top = '0';
+  popup.style.left = '0';
+  popup.style.width = '100%';
+  popup.style.height = '100%';
+  popup.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+  popup.style.color = '#fff';
+  popup.style.display = 'flex';
+  popup.style.flexDirection = 'column';
+  popup.style.justifyContent = 'center';
+  popup.style.alignItems = 'center';
+  popup.style.zIndex = '9999';
+
+  // Add message to the popup
+  const message = document.createElement('h1');
+  message.textContent = 'Game Over';
+  message.style.marginBottom = '20px';
+  popup.appendChild(message);
+
+  // Add restart button to the popup
+  const restartButton = document.createElement('button');
+  restartButton.textContent = 'Restart';
+  restartButton.style.padding = '10px 20px';
+  restartButton.style.fontSize = '18px';
+  restartButton.style.cursor = 'pointer';
+  restartButton.addEventListener('click', () => {
+    // Restart game logic
+    popup.remove(); // Remove the popup
+    resetGame(); // Call a resetGame function to reset game state
+  });
+  popup.appendChild(restartButton);
+
+  // Append the popup to the body
+  document.body.appendChild(popup);
+}
+
+function resetGame() {
+  // Reset health, falls, and player position
+  const healthElement = document.getElementById("health");
+  const fallsElement = document.getElementById("falls");
+
+  healthElement.textContent = '100'; // Reset health to full
+  fallsElement.textContent = '0'; // Reset falls to 0
+  fallCount = 0; // Reset fall count
+
+  playerCollider.start.set(0, 0.35, 0);
+  playerCollider.end.set(0, 1, 0);
+  playerCollider.radius = 0.35;
+  camera.position.copy(playerCollider.end);
+  camera.rotation.set(0, 0, 0);
+
+  startTime = Date.now(); // Reset timer
+}
+
 
 
 
@@ -778,7 +887,7 @@ initializeSky();
 // Web Audio API setup
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 const gainNode = audioContext.createGain();
-gainNode.gain.value = 0.5; // Default volume
+gainNode.gain.value = 0.25; // Default volume
 
 let audioSource;
 const audioFile = 'samples/cascade-collapse.mp3'; // Replace with the actual path to your audio file
@@ -880,20 +989,20 @@ document.addEventListener('DOMContentLoaded', loadThrowSound);
                     <div class="value" id="timer">0</div>
                     <div class="label">Time</div>
                   </div>
+                  <div class="metric warning">
+                    <div class="value" id="health">100</div>
+                    <div class="label">Lives</div>
+                  </div>
                   <div class="metric error">
                     <div class="value" id="falls">0</div>
                     <div class="label">Deaths</div>
                   </div>
-<!--                     <div class="metric error">
-                    <div class="value" id="health">100</div>
-                    <div class="label">Health</div>
-                  </div> -->
                 </div>
               </div>
               <div class="row panel shown" id="preferences">
                 <div id="volume-slider-container">
-                  <label for="volume-slider" style="font-family:Chargen">Volume:</label>
-                  <input id="volume-slider" type="range" min="0" max="1" step="0.01" value="0.5">
+                  <label for="volume-slider" style="font-family:Chargen">Volume</label>
+                  <input id="volume-slider" class="slider" type="range" min="0" max="1" step="0.01" value="0.25">
                 </div>
               </div>
   </div><!--Header panel-->
