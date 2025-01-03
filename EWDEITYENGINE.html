@@ -270,6 +270,9 @@ function initializeSky() {
     } );
   }
 
+  // Initialize Sky after setting up scene and renderer
+  initializeSky();
+
   const worldOctree = new Octree();
   const playerCollider = new Capsule( new THREE.Vector3( 0, 0.35, 0 ), new THREE.Vector3( 0, 1, 0 ), 0.35 );
   const playerVelocity = new THREE.Vector3();
@@ -500,29 +503,59 @@ function processModel(gltf) {
   });
 }
 
-// Load all models in parallel
-Promise.all([
-  loader.loadAsync('maze.glb'),
-  loader.loadAsync('labywrinth.glb'),
-  loader.loadAsync('tiltedlaby.glb'),
-  loader.loadAsync('sidemaze.glb'),
-]).then(([mazeGLTF, labyrinthGLTF, tiltedlabyGLTF, sidemazeGLTF]) => {
-  // Process each model
+// Load the ground model first
+loader.loadAsync('ground.glb').then((groundGLTF) => {
+  // Process the ground model
+  processModel(groundGLTF);
+
+  // Load the other models in parallel
+  return Promise.all([
+    loader.loadAsync('maze.glb'),
+    loader.loadAsync('labywrinth.glb'),
+    loader.loadAsync('tiltedlaby.glb'),
+    loader.loadAsync('sidemaze.glb'),
+  ]);
+}).then(([mazeGLTF, labyrinthGLTF, tiltedlabyGLTF, sidemazeGLTF]) => {
+  // Process each of the other models
   processModel(mazeGLTF);
   processModel(labyrinthGLTF);
   processModel(tiltedlabyGLTF);
   processModel(sidemazeGLTF);
 
-    // Controls and debuger
-    const helper = new OctreeHelper( worldOctree );
-    helper.visible = false;
-    scene.add( helper );
-    //const gui = new GUI( { width: 200 } );
-      //gui.add( { debug: false }, 'debug' )
-        //.onChange( function ( value ) {
-          //helper.visible = value;
-        //} );
+  // Controls and debugger
+  const helper = new OctreeHelper(worldOctree);
+  helper.visible = false;
+  scene.add(helper);
+  // const gui = new GUI({ width: 200 });
+  // gui.add({ debug: false }, 'debug')
+  //   .onChange(function (value) {
+  //     helper.visible = value;
+  //   });
+}).catch((error) => {
+  console.error('Error loading models:', error);
 });
+
+
+// Timer setup
+const timerElement = document.getElementById("timer");
+let startTime = Date.now();
+let timerInterval;
+
+// Function to start the timer
+function startTimer() {
+  timerInterval = setInterval(() => {
+    const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+    timerElement.textContent = elapsedTime;
+  }, 1000);
+}
+
+// Function to stop the timer
+function stopTimer() {
+  clearInterval(timerInterval);
+}
+
+// Start the timer when the game starts
+startTimer();
 
 // Select the "Falls" counter element
 const fallsElement = document.getElementById("falls");
@@ -533,7 +566,6 @@ function teleportPlayerIfOob() {
     // Increment the fall count
     fallCount++;
     fallsElement.textContent = fallCount;
-
     // Decrease the health meter after a fall
     const healthElement = document.getElementById("health");
     let currentHealth = parseInt(healthElement.textContent, 10);
@@ -541,13 +573,11 @@ function teleportPlayerIfOob() {
       currentHealth -= 1;
       healthElement.textContent = currentHealth;
     }
-
     // Check if health reaches 0
     if (currentHealth === 0) {
       showGameOverPopup();
       return; // Exit function to prevent resetting the player's position
     }
-
     // Reset player position and rotation
     playerCollider.start.set(0, 0.35, 0);
     playerCollider.end.set(0, 1, 0);
@@ -789,29 +819,9 @@ if (isMobileDevice()) {
     handleOrientationChange();
 }
 
-// Initialize Sky after setting up scene and renderer
-initializeSky();
 
-    // Timer setup
-    const timerElement = document.getElementById("timer");
-    let startTime = Date.now();
-    let timerInterval;
 
-    // Function to start the timer
-    function startTimer() {
-      timerInterval = setInterval(() => {
-        const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
-        timerElement.textContent = elapsedTime;
-      }, 1000);
-    }
 
-    // Function to stop the timer
-    function stopTimer() {
-      clearInterval(timerInterval);
-    }
-
-    // Start the timer when the game starts
-    startTimer();
     
 // Web Audio API setup
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -937,7 +947,7 @@ document.addEventListener('DOMContentLoaded', loadThrowSound);
 </div><!--Main Container-->   
 <div id="left-joystick" style="position: fixed; bottom: 1%; left: 1%; width: 100px; height: 100px;"></div>
 <div id="right-touch" style="position: fixed; bottom: 1%; right: 1%; width: 100px; height: 100px;"></div>
-<button id="jump-button" style="position: fixed; bottom: 45%; right: 1%; width: 60px; height: 80px; font-size: 16px;"></button>    
+<button id="jump-button" class="button error" style="position: fixed; bottom: 45%; right: 1%; width: 60px; height: 80px; font-size: 16px;"></button>    
 
 <script>
   // Select elements and hide/display panels. must be placed in code after the HTML elements
