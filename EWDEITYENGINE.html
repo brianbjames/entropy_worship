@@ -303,10 +303,10 @@ document.addEventListener('pointerlockchange', () => {
     console.log('Pointer lock deactivated.');
   }
 });
-
+//THROWBALL TURNED OFF
 document.addEventListener('mouseup', () => {
     console.log('Mouse up detected');
-    if (document.pointerLockElement !== null) throwBall();
+    //if (document.pointerLockElement !== null) throwBall();
 }); 
 
 document.body.addEventListener('mousemove', (event) => {
@@ -442,7 +442,7 @@ function createExplosion(position) {
     explosion.position.copy(position);
     scene.add(explosion);
     // Animate explosion and remove it after a short duration
-    const duration = 100; // Explosion duration in milliseconds
+    const duration = 50; // Explosion duration in milliseconds
     setTimeout(() => {
         scene.remove(explosion);
     }, duration);
@@ -486,7 +486,7 @@ function createExplosion(position) {
     }
   }
 
-  const loader = new GLTFLoader().setPath('/models/');
+const loader = new GLTFLoader().setPath('/models/');
 
 // Function to process the loaded model
 function processModel(gltf) {
@@ -510,17 +510,23 @@ loader.loadAsync('ground.glb').then((groundGLTF) => {
 
   // Load the other models in parallel
   return Promise.all([
+    loader.loadAsync('warehouse.glb'),
     loader.loadAsync('maze.glb'),
     loader.loadAsync('labywrinth.glb'),
     loader.loadAsync('tiltedlaby.glb'),
     loader.loadAsync('sidemaze.glb'),
+    //loader.loadAsync('shacks.glb'),
+    //loader.loadAsync('fantasyportal.glb'),
   ]);
-}).then(([mazeGLTF, labyrinthGLTF, tiltedlabyGLTF, sidemazeGLTF]) => {
+  }).then(([mazeGLTF, warehouseGLTF, labyrinthGLTF, tiltedlabyGLTF, sidemazeGLTF]) => {//, , , fantasyportalGLTF, shacksGLTF
   // Process each of the other models
+  processModel(warehouseGLTF);
   processModel(mazeGLTF);
   processModel(labyrinthGLTF);
   processModel(tiltedlabyGLTF);
   processModel(sidemazeGLTF);
+  //processModel(shacksGLTF);
+  //processModel(fantasyportalGLTF);
 
   // Controls and debugger
   const helper = new OctreeHelper(worldOctree);
@@ -632,7 +638,7 @@ function resetGame() {
   const healthElement = document.getElementById("health");
   const fallsElement = document.getElementById("falls");
 
-  healthElement.textContent = '100'; // Reset health to full
+  healthElement.textContent = '20'; // Reset health to full
   fallsElement.textContent = '0'; // Reset falls to 0
   fallCount = 0; // Reset fall count
 
@@ -718,15 +724,22 @@ function resetGame() {
   });
 
   // Prevent 'mouseup' or 'touchend' on the jump button from triggering the ball throw
-document.getElementById('jump-button').addEventListener('mouseup', (event) => {
-    event.stopPropagation(); // Prevent the event from propagating
-});
-document.getElementById('jump-button').addEventListener('touchend', (event) => {
-    event.stopPropagation(); // Prevent the event from propagating
-});
-
+  document.getElementById('jump-button').addEventListener('mouseup', (event) => {
+      event.stopPropagation(); // Prevent the event from propagating
+  });
+  document.getElementById('jump-button').addEventListener('touchend', (event) => {
+      event.stopPropagation(); // Prevent the event from propagating
+  });
+    // Prevent 'mouseup' or 'touchend' on the jump button from triggering the ball throw
+    document.getElementById('closebutton').addEventListener('mouseup', (event) => {
+      event.stopPropagation(); // Prevent the event from propagating
+  });
+  document.getElementById('closebutton').addEventListener('touchend', (event) => {
+      event.stopPropagation(); // Prevent the event from propagating
+  });
+//THROWBALL TURNED OFF
   container.addEventListener('touchend', () => {
-      throwBall();
+      //throwBall();
   });
 
   let lastMove = Date.now();
@@ -826,10 +839,10 @@ if (isMobileDevice()) {
 // Web Audio API setup
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 const gainNode = audioContext.createGain();
-gainNode.gain.value = 0.25; // Default volume
+gainNode.gain.value = 0.5; // Default volume
 
 let audioSource;
-const audioFile = 'samples/cascade-collapse.mp3';
+const audioFile = 'samples/cebilaus.mp3';
 
 // Load and play audio sample in a loop
 async function setupAudio() {
@@ -918,23 +931,20 @@ document.addEventListener('DOMContentLoaded', loadThrowSound);
               </h1>
           </a>
           <a class="button error round" id="closebutton" style="padding: 5px 10px; text-align: center;">
-              
           </a>
         </div>
           <h2 class="panel error shown" style="font-size: 1.5rem;" id="mainpanel">deityengine beta 1.0</h1>
-              <div class="row panel shown" id="preferences">
-                <div id="volume-slider-container">
-                  <input id="volume-slider" class="slider" type="range" min="0" max="1" step="0.01" value="0.25">
-                </div>
-              </div>
+            <div id="preferences">
+              <input id="volume-slider" class="slider" type="range" min="0" max="1" step="0.01" value="0.5">
+            </div>
               <div class="row panel shown" id="controls">
-                <div class="row">
+                <div class="row" style="display: flex; justify-content: center; align-items: center; gap: 10px;">
                   <div class="metric success">
                     <div class="value" id="timer">0</div>
                     <div class="label">Time</div>
                   </div>
                   <div class="metric warning">
-                    <div class="value" id="health">100</div>
+                    <div class="value" id="health">20</div>
                     <div class="label">Lives</div>
                   </div>
                   <div class="metric error">
