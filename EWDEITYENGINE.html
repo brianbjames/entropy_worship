@@ -32,28 +32,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ENTROPY WORSHIP DEITY ENGINE</title>
 <!-- General Meta Tags for SEO -->
-<meta name="description" content="Entropy Worship Experimental First-Person Labywrinth">
+<meta name="description" content="Experimental First-Person Labywrinth">
 <meta name="keywords" content="Dark, Techno, Electronic, Industrial, Ambient, Noise, Avant-Garde, Experimental, Doom, Music, God, Deity, Worship, Death, Philosophy, Religion, Spiritual, Gospel, Electronic Music, Experimental Music">
 <!-- Schema.org markup for Google -->
-<meta itemprop="name" content="Entropy Worship Experimental First-Person Labywrinth">
-<meta itemprop="description" content="Entropy Worship Experimental First-Person Labywrinth">
+<meta itemprop="name" content="ENTROPY WORSHIP DEITY ENGINE">
+<meta itemprop="description" content="Experimental First-Person Labywrinth">
 <!-- Twitter Card Data -->
 <meta name="twitter:url" content="https://www.entropyworship.com">
 <meta name="twitter:site" content="@EntropyWorship">
-<meta name="twitter:title" content="Entropy Worship Experimental First-Person Labywrinth">
-<meta name="twitter:description" content="Entropy Worship Experimental First-Person Labywrinth">
+<meta name="twitter:title" content="ENTROPY WORSHIP DEITY ENGINE">
+<meta name="twitter:description" content="Experimental First-Person Labywrinth">
 <meta name="twitter:creator" content="@EntropyWorship">
-<meta name="twitter:image" content="https://www.entropyworship.com/images/EW_Second_Law_Cover_W_Aerotek_Logo.png">
+<meta name="twitter:image" content="https://www.entropyworship.com/images/ewdeityenginegameimage.png">
 <!-- Open Graph Data for Facebook, LinkedIn, and others -->
-<meta property="og:title" content="Entropy Worship Experimental First-Person Labywrinth" />
+<meta property="og:title" content="ENTROPY WORSHIP DEITY ENGINE" />
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://www.entropyworship.com" />
-<meta property="og:description" content="Entropy Worship Experimental First-Person Labywrinth" />
-<meta property="og:site_name" content="Entropy Worship Experimental First-Person Labywrinth" />
-<meta property="og:image" content="https://www.entropyworship.com/images/EW_Second_Law_Cover_W_Aerotek_Logo.png">
-<meta property="og:image:alt" content="Entropy Worship Experimental First-Person Labywrinth">
-<meta property="article:tag" content="Entropy Worship Experimental First-Person Labywrinth">
-
+<meta property="og:description" content="Experimental First-Person Labywrinth" />
+<meta property="og:site_name" content="ENTROPY WORSHIP DEITY ENGINE" />
+<meta property="og:image" content="https://www.entropyworship.com/images/ewdeityenginegameimage.png">
+<meta property="og:image:alt" content="Experimental First-Person Labywrinth">
+<meta property="article:tag" content="Experimental First-Person Labywrinth">
 <!-- Bootstrap CSS -->
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 <!-- SciUI CSS -->
@@ -160,6 +159,8 @@
     }
   }
 </script>
+
+<!--NippleJS for mobile joysticks -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/nipplejs/0.9.0/nipplejs.min.js"></script>
 
 <div id="container"></div>
@@ -507,7 +508,6 @@ function processModel(gltf) {
 loader.loadAsync('ground.glb').then((groundGLTF) => {
   // Process the ground model
   processModel(groundGLTF);
-
   // Load the other models in parallel
   return Promise.all([
     loader.loadAsync('warehouse.glb'),
