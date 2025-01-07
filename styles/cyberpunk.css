@@ -691,27 +691,27 @@ body {
   2% {
     clip-path: polygon(0 40%, 0 100%, 100% 100%, 100% 40%);
     transform: translateX(0);
-    text-shadow: var(--cyan) 1px 1px, var(--yellow) -1px -1px;
+    text-shadow: var(--cyan) 1px 1px, var(--red) -1px -1px;
   }
   4% {
     clip-path: polygon(0 40%, 0 100%, 100% 100%, 100% 40%);
     transform: translateX(-1rem);
-    text-shadow: var(--cyan) 1px 1px, var(--yellow) -1px -1px;
+    text-shadow: var(--cyan) 1px 1px, var(--red) -1px -1px;
   }
   6% {
     clip-path: polygon(0 40%, 0 100%, 100% 100%, 100% 40%);
     transform: translateX(1rem);
-    text-shadow: var(--cyan) 1px 1px, var(--yellow) -1px -1px;
+    text-shadow: var(--cyan) 1px 1px, var(--red) -1px -1px;
   }
   8% {
     clip-path: polygon(0 40%, 0 100%, 100% 100%, 100% 40%);
     transform: translateX(0);
-    text-shadow: var(--cyan) 1px 1px, var(--yellow) -1px -1px;
+    text-shadow: var(--cyan) 1px 1px, var(--red) -1px -1px;
   }
   12% {
     clip-path: polygon(0 10%, 0 40%, 100% 40%, 100% 10%);
     transform: translateX(0);
-    text-shadow: var(--cyan) 1px 1px, var(--yellow) -1px -1px;
+    text-shadow: var(--cyan) 1px 1px, var(--red) -1px -1px;
   }
   14% {
     clip-path: var(--og-clip-path);

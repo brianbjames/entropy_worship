@@ -50,7 +50,7 @@ select:focus {
 }
 .panel {
   --aug-border-all: 0.5px;
-  --aug-border-bg: rgba(171, 221, 255, 0.1);
+  --aug-border-bg: rgba(251, 0, 0, 0.42);
   box-sizing: border-box;
   display: inline-block;
   font-size: 14px;
@@ -81,7 +81,7 @@ select:focus {
   border: 1px solid rgba(18, 108, 220, 0.1);
 }
 .panel.error {
-  color: rgba(120, 200, 255, 0.8);
+  color: rgba(255, 0, 0, 0.8);
   background-color: rgba(120, 0, 0, 0.2);
   border: 1px solid rgba(171, 0, 0, 0.1);
 }
@@ -1033,7 +1033,7 @@ span.loader {
 }
 .table {
   padding: 3px;
-  background-color: rgba(120, 200, 255, 0.05);
+  background-color: rgba(203, 0, 0, 0.05);
   tab-size: 2em;
   border-collapse: collapse;
 }
@@ -1047,7 +1047,7 @@ span.loader {
   border: 1px solid #e80f0fcc;
 }
 .table.stripes tr:nth-child(even) {
-  background-color: rgba(120, 200, 255, 0.1);
+  background-color: rgba(251, 0, 0, 0.42);
 }
 .table.full-width {
   width: 100%;
