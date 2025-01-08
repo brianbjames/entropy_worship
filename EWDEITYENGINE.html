@@ -564,6 +564,7 @@ function stopTimer() {
 startTimer();
 
 // Select the "Falls" counter element
+const startButton = document.getElementById('start-button');
 const fallsElement = document.getElementById("falls");
 let fallCount = 0; // Initialize the fall counter
 function teleportPlayerIfOob() {
@@ -593,6 +594,13 @@ function teleportPlayerIfOob() {
   }
 }
 
+  // Add an event listener for the "Start" button click
+  startButton.addEventListener('click', () => {
+    // Reset the fall count to 0
+    fallsElement.textContent = '0';
+    console.log('Deaths reset to 0');
+  });
+
 function showGameOverPopup() {
   // Create the popup container
   const popup = document.createElement('div');
@@ -619,8 +627,8 @@ function showGameOverPopup() {
   // Add restart button to the popup
   const restartButton = document.createElement('button');
   restartButton.textContent = 'Restart';
+  restartButton.classList.add('button', 'alert');
   restartButton.style.padding = '10px 20px';
-  restartButton.style.fontSize = '18px';
   restartButton.style.cursor = 'pointer';
   restartButton.addEventListener('click', () => {
     // Restart game logic
@@ -765,13 +773,16 @@ function resetGame() {
     const leftJoystick = document.getElementById("left-joystick");
     const rightTouch = document.getElementById("right-touch");
     const jumpButton = document.getElementById("jump-button");
+    const spanElement = document.getElementById("controlsui");
 
     if (!isMobile) {
         // Hide elements on non-mobile devices
         if (leftJoystick) leftJoystick.style.display = "none";
         if (rightTouch) rightTouch.style.display = "none";
         if (jumpButton) jumpButton.style.display = "none";
+        spanElement.style.display = "block";
     } else {
+        spanElement.style.display = "none"; 
         console.log("Mobile device detected: Showing touch controls.");
     }
   });
@@ -802,8 +813,8 @@ function showRotatePopup() {
     popup.style.zIndex = '9999';
     // Add message to the popup
     const message = document.createElement('p');
-    message.textContent = 'Please rotate your device to landscape mode.';
-    message.style.fontSize = '28px';
+    message.textContent = 'rotate device to landscape mode';
+    message.style.fontSize = '20px';
     message.style.textAlign = 'center';
     message.style.margin = '0 20px';
     popup.appendChild(message);
@@ -918,10 +929,43 @@ volumeSlider.addEventListener('input', (event) => {
 // Load the throw sound on page load
 document.addEventListener('DOMContentLoaded', loadThrowSound);
 
+// Starting screen
+// Hide the start screen and initialize the game
+document.getElementById('start-button').addEventListener('click', () => {
+    document.getElementById('start-screen').style.display = 'none';
+    startGame(); // Replace with your game's initialization logic
+});
+
+// Game initialization function
+function startGame() {
+    console.log('Game started!');
+    // Start animations, audio, or gameplay mechanics
+    setupAudio(); // Start background audio if not already running
+}
 
 
 </script>
 <div class="container"><!--Main Container-->
+  <div id="start-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); color: white; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10000;">
+    <div class="card-header">
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <a href="https://www.entropyworship.com" style="text-decoration: none;">
+            <h1 class="heading display-6" style="font-size: 1.5rem; margin: 0;">
+                ENTROPY WORSHIP
+            </h1>
+        </a>
+      </div>
+      <h2 class="panel error shown" style="font-size: 1.5rem;" id="mainpanel">deityengine</h2>
+      <span style="font-family:VT323-Regular; font-size: 20px;" class="cyber-glitch-1 panel error shown" id="controlsui">
+        >>CONTROLS<br>
+        >[WASD] move<br>
+        >[space] jump<br>
+        >[mouse] camera<br></span>
+    </div>
+    <button id="start-button" class="button error rounded" style="cursor: pointer;">
+        Start
+    </button>
+  </div>
   <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c"><!--Header card-->
       <div class="card-header border-danger">
         <div style="display: flex; align-items: center; justify-content: space-between;">
@@ -933,7 +977,7 @@ document.addEventListener('DOMContentLoaded', loadThrowSound);
           <a class="button error round" id="closebutton" style="padding: 5px 10px; text-align: center;">
           </a>
         </div>
-          <h2 class="panel error shown" style="font-size: 1.5rem;" id="mainpanel">deityengine beta 1.0</h1>
+          <h2 class="panel error shown" style="font-size: 1.5rem;" id="mainpanel">deityengine beta 1.0</h2>
             <div id="preferences">
               <input id="volume-slider" class="slider" type="range" min="0" max="1" step="0.01" value="0.5">
             </div>
