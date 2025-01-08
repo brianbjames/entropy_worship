@@ -504,39 +504,41 @@ function processModel(gltf) {
   });
 }
 
-// Load the ground model first
+// // Load the ground model first NOT TEST
+// loader.loadAsync('ground.glb').then((groundGLTF) => {
+//   // Process the ground model
+//   processModel(groundGLTF);
+//   // Load the other models in parallel
+//   return Promise.all([
+//     loader.loadAsync('warehouse.glb'),
+//     //loader.loadAsync('maze.glb'),
+//     loader.loadAsync('labywrinth.glb'),
+//     loader.loadAsync('tiltedlaby.glb'),
+//     loader.loadAsync('sidemaze.glb'),
+//     //loader.loadAsync('shacks.glb'),
+//     //loader.loadAsync('fantasyportal.glb'),
+//   ]);
+//   }).then(([warehouseGLTF, labyrinthGLTF, tiltedlabyGLTF, sidemazeGLTF]) => {//, , , fantasyportalGLTF, shacksGLTF, mazeGLTF
+//   // Process each of the other models
+//   processModel(warehouseGLTF);
+//   //processModel(mazeGLTF);
+//   processModel(labyrinthGLTF);
+//   processModel(tiltedlabyGLTF);
+//   processModel(sidemazeGLTF);
+// }).catch((error) => {
+//   console.error('Error loading models:', error);
+// });
+// TEST
 loader.loadAsync('ground.glb').then((groundGLTF) => {
   // Process the ground model
   processModel(groundGLTF);
   // Load the other models in parallel
   return Promise.all([
-    loader.loadAsync('warehouse.glb'),
-    //loader.loadAsync('maze.glb'),
-    loader.loadAsync('labywrinth.glb'),
-    loader.loadAsync('tiltedlaby.glb'),
-    loader.loadAsync('sidemaze.glb'),
-    //loader.loadAsync('shacks.glb'),
-    //loader.loadAsync('fantasyportal.glb'),
+    loader.loadAsync('maze.glb'),
   ]);
-  }).then(([warehouseGLTF, labyrinthGLTF, tiltedlabyGLTF, sidemazeGLTF]) => {//, , , fantasyportalGLTF, shacksGLTF, mazeGLTF
+  }).then(([mazeGLTF]) => {
   // Process each of the other models
-  processModel(warehouseGLTF);
-  //processModel(mazeGLTF);
-  processModel(labyrinthGLTF);
-  processModel(tiltedlabyGLTF);
-  processModel(sidemazeGLTF);
-  //processModel(shacksGLTF);
-  //processModel(fantasyportalGLTF);
-
-  // Controls and debugger
-  const helper = new OctreeHelper(worldOctree);
-  helper.visible = false;
-  scene.add(helper);
-  // const gui = new GUI({ width: 200 });
-  // gui.add({ debug: false }, 'debug')
-  //   .onChange(function (value) {
-  //     helper.visible = value;
-  //   });
+  processModel(mazeGLTF);
 }).catch((error) => {
   console.error('Error loading models:', error);
 });
