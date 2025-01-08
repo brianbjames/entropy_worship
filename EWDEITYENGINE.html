@@ -511,17 +511,17 @@ loader.loadAsync('ground.glb').then((groundGLTF) => {
   // Load the other models in parallel
   return Promise.all([
     loader.loadAsync('warehouse.glb'),
-    loader.loadAsync('maze.glb'),
+    //loader.loadAsync('maze.glb'),
     loader.loadAsync('labywrinth.glb'),
     loader.loadAsync('tiltedlaby.glb'),
     loader.loadAsync('sidemaze.glb'),
     //loader.loadAsync('shacks.glb'),
     //loader.loadAsync('fantasyportal.glb'),
   ]);
-  }).then(([mazeGLTF, warehouseGLTF, labyrinthGLTF, tiltedlabyGLTF, sidemazeGLTF]) => {//, , , fantasyportalGLTF, shacksGLTF
+  }).then(([warehouseGLTF, labyrinthGLTF, tiltedlabyGLTF, sidemazeGLTF]) => {//, , , fantasyportalGLTF, shacksGLTF, mazeGLTF
   // Process each of the other models
   processModel(warehouseGLTF);
-  processModel(mazeGLTF);
+  //processModel(mazeGLTF);
   processModel(labyrinthGLTF);
   processModel(tiltedlabyGLTF);
   processModel(sidemazeGLTF);

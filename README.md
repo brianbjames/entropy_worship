@@ -38,21 +38,25 @@ ew/
 ├─ images/
 │ ├─ all the images
 ├─ models/
-│ ├─ all the Babylon models
+│ ├─ all the models
 ├─ projects/
 │ ├─ audio_projects/
 │ ├─ crypt-ui/
 | ├─ ew_arwes/
 | ├─ games/
+| ├─ maps/
+| ├─ unity/
 ├─ public/
 ├─ samples/
 │ ├─ all the samples
+├─ scenes/
+│ ├─ all the scenes
 ├─ scripts/
-│ ├─ all the scripts
+│ ├─ all the javascripts
 ├─ styles/
 │ ├─ all the styles
 │ ├─ fonts/
 │ ├─ ├─ all the fonts
 ├─ textures/
-│ ├─ all the Babylon textures
+│ ├─ all the textures
 ├─ README.md
