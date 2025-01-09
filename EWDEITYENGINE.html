@@ -33,7 +33,7 @@
 <title>ENTROPY WORSHIP DEITY ENGINE</title>
 <!-- General Meta Tags for SEO -->
 <meta name="description" content="Experimental First-Person Labywrinth">
-<meta name="keywords" content="Dark, Techno, Electronic, Industrial, Ambient, Noise, Avant-Garde, Experimental, Doom, Music, God, Deity, Worship, Death, Philosophy, Religion, Spiritual, Gospel, Electronic Music, Experimental Music">
+<meta name="keywords" content="Dark, Techno, Electronic, Industrial, Ambient, Noise, Avant-Garde, Experimental, Doom, Music, God, Deity, Worship, Death, Philosophy, Religion, Spiritual, Gospel, Electronic Music, Experimental Music, Labywrinth">
 <!-- Schema.org markup for Google -->
 <meta itemprop="name" content="ENTROPY WORSHIP DEITY ENGINE">
 <meta itemprop="description" content="Experimental First-Person Labywrinth">
@@ -140,6 +140,7 @@
 
 
 </style>
+
 <script type="importmap">
   {
     "imports": {
@@ -148,6 +149,7 @@
     }
   }
 </script>
+
 </head>
 <body>
 
@@ -164,6 +166,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/nipplejs/0.9.0/nipplejs.min.js"></script>
 
 <div id="container"></div>
+
 <script type="module">
 
 import * as THREE from 'three';
@@ -172,7 +175,6 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { Octree } from 'three/addons/math/Octree.js';
 import { OctreeHelper } from 'three/addons/helpers/OctreeHelper.js';
 import { Capsule } from 'three/addons/math/Capsule.js';
-import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
 import { Sky } from 'three/addons/objects/Sky.js';
 
 // Add Sky to the scene
@@ -180,166 +182,133 @@ let sky; // Declare `sky` here to avoid ReferenceError
 const sunPosition = new THREE.Vector3();
 // Initialize the sky after scene and renderer are defined
 function initializeSky() {
-    sky = new Sky();
-    sky.scale.setScalar(450000); // Scale the skybox
-    scene.add(sky);
-    // Define sky settings
-    const effectController = {
-        turbidity: 10,
-        rayleigh: 3,
-        mieCoefficient: 0.005,
-        mieDirectionalG: 0.7,
-        elevation: 2, // Elevation of the sun
-        azimuth: 180, // Position of the sun (angle)
-        exposure: renderer.toneMappingExposure, // Ensure renderer is defined
-    };
-    // Function to update sky parameters
-    function updateSky() {
-        const uniforms = sky.material.uniforms;
-        // Set sky parameters
-        uniforms['turbidity'].value = effectController.turbidity;
-        uniforms['rayleigh'].value = effectController.rayleigh;
-        uniforms['mieCoefficient'].value = effectController.mieCoefficient;
-        uniforms['mieDirectionalG'].value = effectController.mieDirectionalG;
-        // Calculate sun position
-        const phi = THREE.MathUtils.degToRad(90 - effectController.elevation);
-        const theta = THREE.MathUtils.degToRad(effectController.azimuth);
-        sunPosition.setFromSphericalCoords(1, phi, theta);
-        uniforms['sunPosition'].value.copy(sunPosition);
-        // Update renderer exposure
-        renderer.toneMappingExposure = effectController.exposure;
-        renderer.render(scene, camera);
-    }
-    // Call updateSky once to apply initial parameters
-    updateSky();
+  sky = new Sky();
+  sky.scale.setScalar(450000); // Scale the skybox
+  scene.add(sky);
+  // Define sky settings
+  const effectController = {
+      turbidity: 10,
+      rayleigh: 3,
+      mieCoefficient: 0.005,
+      mieDirectionalG: 0.7,
+      elevation: 2, // Elevation of the sun
+      azimuth: 180, // Position of the sun (angle)
+      exposure: renderer.toneMappingExposure, // Ensure renderer is defined
+  };
+  // Function to update sky parameters
+  function updateSky() {
+      const uniforms = sky.material.uniforms;
+      // Set sky parameters
+      uniforms['turbidity'].value = effectController.turbidity;
+      uniforms['rayleigh'].value = effectController.rayleigh;
+      uniforms['mieCoefficient'].value = effectController.mieCoefficient;
+      uniforms['mieDirectionalG'].value = effectController.mieDirectionalG;
+      // Calculate sun position
+      const phi = THREE.MathUtils.degToRad(90 - effectController.elevation);
+      const theta = THREE.MathUtils.degToRad(effectController.azimuth);
+      sunPosition.setFromSphericalCoords(1, phi, theta);
+      uniforms['sunPosition'].value.copy(sunPosition);
+      // Update renderer exposure
+      renderer.toneMappingExposure = effectController.exposure;
+      renderer.render(scene, camera);
+  }
+  // Call updateSky once to apply initial parameters
+  updateSky();
 }
 
-  const clock = new THREE.Clock();
-  const scene = new THREE.Scene();
-  scene.background = new THREE.Color( 0x330000 );
-  scene.fog = new THREE.Fog( 0x88ccee, 0, 50 );
-  const camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, 1000 );
-  camera.rotation.order = 'YXZ';
-  const fillLight1 = new THREE.HemisphereLight( 0x8dc1de, 0x00668d, 1.5 );
-  fillLight1.position.set( 2, 1, 1 );
-  scene.add( fillLight1 );
-  const directionalLight = new THREE.DirectionalLight( 0xffffff, 2.5 );
-  directionalLight.position.set( - 5, 25, - 1 );
-  directionalLight.castShadow = true;
-  directionalLight.shadow.camera.near = 0.01;
-  directionalLight.shadow.camera.far = 500;
-  directionalLight.shadow.camera.right = 30;
-  directionalLight.shadow.camera.left = - 30;
-  directionalLight.shadow.camera.top	= 30;
-  directionalLight.shadow.camera.bottom = - 30;
-  directionalLight.shadow.mapSize.width = 1024;
-  directionalLight.shadow.mapSize.height = 1024;
-  directionalLight.shadow.radius = 4;
-  directionalLight.shadow.bias = - 0.00006;
-  scene.add( directionalLight );
-  const container = document.getElementById( 'container' );
-  const renderer = new THREE.WebGLRenderer( { antialias: true } );
-  renderer.setPixelRatio( window.devicePixelRatio );
-  renderer.setSize( window.innerWidth, window.innerHeight );
-  renderer.setAnimationLoop( animate );
-  renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.VSMShadowMap;
-  renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  container.appendChild( renderer.domElement );
-  const stats = new Stats();
-  stats.domElement.style.position = 'absolute';
-  stats.domElement.style.top = '0px';
-  //container.appendChild( stats.domElement );
-  const GRAVITY = 30;
-  const NUM_SPHERES = 100;
-  const SPHERE_RADIUS = 0.05;
-  const STEPS_PER_FRAME = 5;
-  const sphereGeometry = new THREE.IcosahedronGeometry( SPHERE_RADIUS, 5 );
-  const sphereMaterial = new THREE.MeshLambertMaterial( { color: 0xdede8d } );
-  const spheres = [];
-  let sphereIdx = 0;
+const clock = new THREE.Clock();
+const scene = new THREE.Scene();
+scene.background = new THREE.Color( 0x330000 );
+scene.fog = new THREE.Fog( 0x88ccee, 0, 50 );
+const camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, 1000 );
+camera.rotation.order = 'YXZ';
+const fillLight1 = new THREE.HemisphereLight( 0x8dc1de, 0x00668d, 1.5 );
+fillLight1.position.set( 2, 1, 1 );
+scene.add( fillLight1 );
+const directionalLight = new THREE.DirectionalLight( 0xffffff, 2.5 );
+directionalLight.position.set( - 5, 25, - 1 );
+directionalLight.castShadow = true;
+directionalLight.shadow.camera.near = 0.01;
+directionalLight.shadow.camera.far = 500;
+directionalLight.shadow.camera.right = 30;
+directionalLight.shadow.camera.left = - 30;
+directionalLight.shadow.camera.top	= 30;
+directionalLight.shadow.camera.bottom = - 30;
+directionalLight.shadow.mapSize.width = 1024;
+directionalLight.shadow.mapSize.height = 1024;
+directionalLight.shadow.radius = 4;
+directionalLight.shadow.bias = - 0.00006;
+scene.add( directionalLight );
+const container = document.getElementById( 'container' );
+const renderer = new THREE.WebGLRenderer( { antialias: true } );
+renderer.setPixelRatio( window.devicePixelRatio );
+renderer.setSize( window.innerWidth, window.innerHeight );
+renderer.setAnimationLoop( animate );
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.VSMShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+container.appendChild( renderer.domElement );
+const stats = new Stats();
+stats.domElement.style.position = 'absolute';
+stats.domElement.style.top = '0px';
+const GRAVITY = 30;
+const STEPS_PER_FRAME = 5;
+// Initialize Sky after setting up scene and renderer
+initializeSky();
 
-  for ( let i = 0; i < NUM_SPHERES; i ++ ) {
-    const sphere = new THREE.Mesh( sphereGeometry, sphereMaterial );
-    sphere.castShadow = true;
-    sphere.receiveShadow = true;
-    scene.add( sphere );
-    spheres.push( {
-      mesh: sphere,
-      collider: new THREE.Sphere( new THREE.Vector3( 0, - 100, 0 ), SPHERE_RADIUS ),
-      velocity: new THREE.Vector3()
-    } );
-  }
+const worldOctree = new Octree();
+const playerCollider = new Capsule( new THREE.Vector3( 0, 0.35, 0 ), new THREE.Vector3( 0, 1, 0 ), 0.35 );
+const playerVelocity = new THREE.Vector3();
+const playerDirection = new THREE.Vector3();
+let playerOnFloor = false;
+let mouseTime = 0;
+const keyStates = {};
+const vector1 = new THREE.Vector3();
+const vector2 = new THREE.Vector3();
+const vector3 = new THREE.Vector3();
 
-  // Initialize Sky after setting up scene and renderer
-  initializeSky();
+document.addEventListener( 'keydown', ( event ) => {
+  keyStates[ event.code ] = true;
+} );
 
-  const worldOctree = new Octree();
-  const playerCollider = new Capsule( new THREE.Vector3( 0, 0.35, 0 ), new THREE.Vector3( 0, 1, 0 ), 0.35 );
-  const playerVelocity = new THREE.Vector3();
-  const playerDirection = new THREE.Vector3();
-  let playerOnFloor = false;
-  let mouseTime = 0;
-  const keyStates = {};
-  const vector1 = new THREE.Vector3();
-  const vector2 = new THREE.Vector3();
-  const vector3 = new THREE.Vector3();
-
-  document.addEventListener( 'keydown', ( event ) => {
-    keyStates[ event.code ] = true;
-  } );
-
-  document.addEventListener( 'keyup', ( event ) => {
-    keyStates[ event.code ] = false;
-  } );
-  container.addEventListener('mousedown', () => {
-  console.log('Mouse down detected, requesting pointer lock.');
-  document.body.requestPointerLock();
+document.addEventListener( 'keyup', ( event ) => {
+  keyStates[ event.code ] = false;
+} );
+container.addEventListener('mousedown', () => {
+console.log('Mouse down detected, requesting pointer lock.');
+document.body.requestPointerLock();
 });
 
 document.addEventListener('pointerlockchange', () => {
-  if (document.pointerLockElement === document.body) {
-    console.log('Pointer lock activated.');
-  } else {
-    console.log('Pointer lock deactivated.');
-  }
+if (document.pointerLockElement === document.body) {
+  console.log('Pointer lock activated.');
+} else {
+  console.log('Pointer lock deactivated.');
+}
 });
-//THROWBALL TURNED OFF
+
 document.addEventListener('mouseup', () => {
-    console.log('Mouse up detected');
-    //if (document.pointerLockElement !== null) throwBall();
+  console.log('Mouse up detected');
 }); 
 
 document.body.addEventListener('mousemove', (event) => {
-  if (document.pointerLockElement === document.body) {
-    camera.rotation.y -= event.movementX / 500;
-    camera.rotation.x -= event.movementY / 500;
-    // Clamp vertical rotation
-    camera.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, camera.rotation.x));
-  } else {
-    console.log('Pointer lock not active.');
-  }
+if (document.pointerLockElement === document.body) {
+  camera.rotation.y -= event.movementX / 500;
+  camera.rotation.x -= event.movementY / 500;
+  // Clamp vertical rotation
+  camera.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, camera.rotation.x));
+} else {
+  console.log('Pointer lock not active.');
+}
 });
 
-  window.addEventListener( 'resize', onWindowResize );
-  function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize( window.innerWidth, window.innerHeight );
-  }
+window.addEventListener( 'resize', onWindowResize );
+function onWindowResize() {
+camera.aspect = window.innerWidth / window.innerHeight;
+camera.updateProjectionMatrix();
+renderer.setSize( window.innerWidth, window.innerHeight );
+}
 
-  function throwBall() {
-    const sphere = spheres[ sphereIdx ];
-    camera.getWorldDirection( playerDirection );
-    sphere.collider.center.copy( playerCollider.end ).addScaledVector( playerDirection, playerCollider.radius * 1.5 );
-    // throw the ball with more force if we hold the button longer, and if we move forward
-    const impulse = 15 + 30 * ( 1 - Math.exp( ( mouseTime - performance.now() ) * 0.001 ) );
-    sphere.velocity.copy( playerDirection ).multiplyScalar( impulse );
-    sphere.velocity.addScaledVector( playerVelocity, 2 );
-    sphereIdx = ( sphereIdx + 1 ) % spheres.length;
-    // Play throw sound effect
-    playThrowSound();
-  }
 
   function playerCollisions() {
     const result = worldOctree.capsuleIntersect( playerCollider );
@@ -389,65 +358,28 @@ document.body.addEventListener('mousemove', (event) => {
     }
   }
 
-  function spheresCollisions() {
-    for ( let i = 0, length = spheres.length; i < length; i ++ ) {
-      const s1 = spheres[ i ];
-      for ( let j = i + 1; j < length; j ++ ) {
-        const s2 = spheres[ j ];
-        const d2 = s1.collider.center.distanceToSquared( s2.collider.center );
-        const r = s1.collider.radius + s2.collider.radius;
-        const r2 = r * r;
-        if ( d2 < r2 ) {
-          const normal = vector1.subVectors( s1.collider.center, s2.collider.center ).normalize();
-          const v1 = vector2.copy( normal ).multiplyScalar( normal.dot( s1.velocity ) );
-          const v2 = vector3.copy( normal ).multiplyScalar( normal.dot( s2.velocity ) );
-          s1.velocity.add( v2 ).sub( v1 );
-          s2.velocity.add( v1 ).sub( v2 );
-          const d = ( r - Math.sqrt( d2 ) ) / 2;
-          s1.collider.center.addScaledVector( normal, d );
-          s2.collider.center.addScaledVector( normal, - d );
-        }
-      }
+
+// Ensure shaders are not overly complex and use only necessary calculations
+const material = new THREE.ShaderMaterial({
+  uniforms: {
+    color: { value: new THREE.Color(0xff0000) }
+  },
+  vertexShader: `
+    varying vec3 vPosition;
+    void main() {
+      vPosition = position;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
     }
-  }
+  `,
+  fragmentShader: `
+    varying vec3 vPosition;
+    uniform vec3 color;
+    void main() {
+      gl_FragColor = vec4(color * vPosition, 1.0);
+    }
+  `
+});
 
-  function updateSpheres(deltaTime) {
-    spheres.forEach((sphere, index) => {
-        sphere.collider.center.addScaledVector(sphere.velocity, deltaTime);
-        const result = worldOctree.sphereIntersect(sphere.collider);
-        if (result) {
-            // Trigger explosion at the point of collision
-            createExplosion(sphere.collider.center);
-            // Remove the ball by hiding it and resetting its position
-            sphere.mesh.visible = false;
-            sphere.collider.center.set(0, -100, 0); // Move it off-screen
-            sphere.velocity.set(0, 0, 0); // Reset velocity
-        } else {
-            sphere.velocity.y -= GRAVITY * deltaTime;
-        }
-        const damping = Math.exp(-1.5 * deltaTime) - 1;
-        sphere.velocity.addScaledVector(sphere.velocity, damping);
-        playerSphereCollision(sphere);
-    });
-    spheresCollisions();
-    spheres.forEach((sphere) => {
-        sphere.mesh.position.copy(sphere.collider.center);
-    });
-}
-
-// Create explosion effect
-function createExplosion(position) {
-    const explosionGeometry = new THREE.SphereGeometry(0.5, 32, 32);
-    const explosionMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000, transparent: true, opacity: 0.8 });
-    const explosion = new THREE.Mesh(explosionGeometry, explosionMaterial);
-    explosion.position.copy(position);
-    scene.add(explosion);
-    // Animate explosion and remove it after a short duration
-    const duration = 50; // Explosion duration in milliseconds
-    setTimeout(() => {
-        scene.remove(explosion);
-    }, duration);
-}
 
 
   function getForwardVector() {
@@ -504,32 +436,32 @@ function processModel(gltf) {
   });
 }
 
-// // Load the ground model first NOT TEST
-// loader.loadAsync('ground.glb').then((groundGLTF) => {
-//   // Process the ground model
-//   processModel(groundGLTF);
-//   // Load the other models in parallel
-//   return Promise.all([
-//     loader.loadAsync('warehouse.glb'),
-//     //loader.loadAsync('maze.glb'),
-//     loader.loadAsync('labywrinth.glb'),
-//     loader.loadAsync('tiltedlaby.glb'),
-//     loader.loadAsync('sidemaze.glb'),
-//     //loader.loadAsync('shacks.glb'),
-//     //loader.loadAsync('fantasyportal.glb'),
-//   ]);
-//   }).then(([warehouseGLTF, labyrinthGLTF, tiltedlabyGLTF, sidemazeGLTF]) => {//, , , fantasyportalGLTF, shacksGLTF, mazeGLTF
-//   // Process each of the other models
-//   processModel(warehouseGLTF);
-//   //processModel(mazeGLTF);
-//   processModel(labyrinthGLTF);
-//   processModel(tiltedlabyGLTF);
-//   processModel(sidemazeGLTF);
-// }).catch((error) => {
-//   console.error('Error loading models:', error);
-// });
-// TEST
+// Load the ground model first NOT TEST
 loader.loadAsync('ground.glb').then((groundGLTF) => {
+  // Process the ground model
+  processModel(groundGLTF);
+  // Load the other models in parallel
+  return Promise.all([
+    loader.loadAsync('warehouse.glb'),
+    //loader.loadAsync('maze.glb'),
+    loader.loadAsync('labywrinth.glb'),
+    loader.loadAsync('tiltedlaby.glb'),
+    loader.loadAsync('sidemaze.glb'),
+    //loader.loadAsync('shacks.glb'),
+    //loader.loadAsync('fantasyportal.glb'),
+  ]);
+  }).then(([warehouseGLTF, labyrinthGLTF, tiltedlabyGLTF, sidemazeGLTF]) => {//, , , fantasyportalGLTF, shacksGLTF, mazeGLTF
+  // Process each of the other models
+  processModel(warehouseGLTF);
+  //processModel(mazeGLTF);
+  processModel(labyrinthGLTF);
+  processModel(tiltedlabyGLTF);
+  processModel(sidemazeGLTF);
+}).catch((error) => {
+  console.error('Error loading models:', error);
+});
+// TEST
+/* loader.loadAsync('ground.glb').then((groundGLTF) => {
   // Process the ground model
   processModel(groundGLTF);
   // Load the other models in parallel
@@ -541,8 +473,36 @@ loader.loadAsync('ground.glb').then((groundGLTF) => {
   processModel(mazeGLTF);
 }).catch((error) => {
   console.error('Error loading models:', error);
-});
+}); */
 
+// Create sprite
+// const map = new THREE.TextureLoader().load( 'images/glassshatter.png' );
+// const spriteMaterial = new THREE.SpriteMaterial( { map: map, color: 0xffffff } );
+// const sprite = new THREE.Sprite(spriteMaterial);
+// sprite.position.set(5, 1, 5); // Adjust position to place in your maze
+// sprite.scale.set(1, 1, 1); // Adjust size
+// scene.add(sprite);
+// function checkCollisionWithSprite() {
+//   const distance = playerCollider.end.distanceTo(sprite.position);
+//   if (distance < playerCollider.radius + 0.5) { // Adjust collision threshold
+//     console.log('Collision detected!');
+//     handleSpriteCollision();
+//   }
+// }
+// function handleSpriteCollision() {
+//   if (!sprite.processed) { // Check if the sprite has already been processed
+//     sprite.processed = true; // Mark the sprite as processed
+
+//     // Remove the sprite from the scene
+//     scene.remove(sprite);
+
+//     // Increase the coins unit by 1
+//     // const coinsElement = document.getElementById("coins");
+//     // let currentCoins = parseInt(coinsElement.textContent, 10); // Get the current value as an integer
+//     // currentCoins += 1; // Increment the coins value by 1
+//     // coinsElement.textContent = currentCoins; // Update the displayed value
+//   }
+// }
 
 // Timer setup
 const timerElement = document.getElementById("timer");
@@ -647,10 +607,12 @@ function resetGame() {
   // Reset health, falls, and player position
   const healthElement = document.getElementById("health");
   const fallsElement = document.getElementById("falls");
+  //const coinsElement = document.getElementById("coins");
 
   healthElement.textContent = '20'; // Reset health to full
   fallsElement.textContent = '0'; // Reset falls to 0
   fallCount = 0; // Reset fall count
+  //coinsElement.textContent = '0'; // Reset falls to 0
 
   playerCollider.start.set(0, 0.35, 0);
   playerCollider.end.set(0, 1, 0);
@@ -671,12 +633,22 @@ function resetGame() {
     for ( let i = 0; i < STEPS_PER_FRAME; i ++ ) {
       controls( deltaTime );
       updatePlayer( deltaTime );
-      updateSpheres( deltaTime );
+      //updateSpheres( deltaTime );
       teleportPlayerIfOob();
+      //checkCollisionWithSprite();
     }
     renderer.render( scene, camera );
     stats.update();
   }
+
+  // Automatically cull objects outside the camera’s frustum
+  renderer.localClippingEnabled = true; // Enable clipping
+  scene.traverse((child) => {
+    if (child.isMesh) {
+      child.frustumCulled = true; // Ensure each mesh respects the frustum
+    }
+  });
+
 
   
   const leftJoystick = nipplejs.create({
@@ -747,9 +719,9 @@ function resetGame() {
   document.getElementById('closebutton').addEventListener('touchend', (event) => {
       event.stopPropagation(); // Prevent the event from propagating
   });
-//THROWBALL TURNED OFF
+
   container.addEventListener('touchend', () => {
-      //throwBall();
+      console.log('Touch end detected');
   });
 
   let lastMove = Date.now();
@@ -882,7 +854,7 @@ async function setupAudio() {
   }
 }
 
-let throwSoundBuffer; // To store the audio buffer for the throw sound
+/* let throwSoundBuffer; // To store the audio buffer for the throw sound
 
 const throwSoundFile = 'samples/kick.wav';
 
@@ -899,9 +871,9 @@ async function loadThrowSound() {
   } catch (error) {
     console.error('Error loading throw sound:', error);
   }
-}
+} */
 // Play the throw sound
-function playThrowSound() {
+/* function playThrowSound() {
   if (throwSoundBuffer) {
     const soundSource = audioContext.createBufferSource();
     soundSource.buffer = throwSoundBuffer;
@@ -910,7 +882,7 @@ function playThrowSound() {
   } else {
     console.error('Throw sound not loaded');
   }
-}
+} */
 
 // Ensure audio context is resumed after a user gesture
 document.body.addEventListener('click', () => {
@@ -929,7 +901,7 @@ volumeSlider.addEventListener('input', (event) => {
   gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
 });
 // Load the throw sound on page load
-document.addEventListener('DOMContentLoaded', loadThrowSound);
+//document.addEventListener('DOMContentLoaded', loadThrowSound);
 
 // Starting screen
 // Hide the start screen and initialize the game
@@ -947,6 +919,9 @@ function startGame() {
 
 
 </script>
+
+
+
 <div class="container"><!--Main Container-->
   <div id="start-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); color: white; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10000;">
     <div class="card-header">
@@ -957,13 +932,20 @@ function startGame() {
             </h1>
         </a>
       </div>
-      <h2 class="panel error shown" style="font-size: 1.5rem;" id="mainpanel">deityengine</h2>
+      <h2 class="panel error shown" style="font-size: 1.5rem;" id="mainpanel">deityengine beta 1.0</h2>
       <span style="font-family:VT323-Regular; font-size: 20px;" class="cyber-glitch-1 panel error shown" id="controlsui">
         >>CONTROLS<br>
         >[WASD] move<br>
         >[space] jump<br>
         >[mouse] camera<br></span>
     </div>
+<!--     <div class="cyber-select mb-4 ac-red fg-red">
+      <select id="select" name="select">
+          <option value="0">Select Difficulty</option>
+          <option value="1">None</option>
+          <option value="2">Extreme</option>
+      </select>
+    </div> -->
     <button id="start-button" class="button error rounded" style="cursor: pointer;">
         Start
     </button>
@@ -985,10 +967,14 @@ function startGame() {
             </div>
               <div class="row panel shown" id="controls">
                 <div class="row" style="display: flex; justify-content: center; align-items: center; gap: 10px;">
-                  <div class="metric success">
+                  <div class="metric">
                     <div class="value" id="timer">0</div>
                     <div class="label">Time</div>
                   </div>
+<!--                   <div class="metric success">
+                    <div class="value" id="coins">0</div>
+                    <div class="label">Portals</div>
+                  </div> -->
                   <div class="metric warning">
                     <div class="value" id="health">20</div>
                     <div class="label">Lives</div>
