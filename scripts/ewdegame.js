@@ -264,124 +264,20 @@ function controls(deltaTime) {
   }
 }
 
+//*******************************************
+// LOADER
+//*******************************************
 const loader = new GLTFLoader().setPath("/models/");
 const worldSelector = document.getElementById("worldSelector");
-
-// Load the ground model first
-loader
-  .loadAsync("ground.glb")
-  .then((groundGLTF) => {
-    //Process the ground model
-    processModel(groundGLTF);
-  })
-  .catch((error) => {
-    console.error("Error loading models:", error);
-  });
-// Add event listener to the selector AFTER ground.glb is loaded
-worldSelector.addEventListener("change", (event) => {
-  const selectedValue = event.target.value;
-
-  if (selectedValue === "1") {
-    // User selected 0
-    Promise.all([
-      loader.loadAsync("warehouse.glb"),
-      loader.loadAsync("labywrinth.glb"),
-      loader.loadAsync("tiltedlaby.glb"),
-      loader.loadAsync("sidemaze.glb"),
-    ])
-      .then(([warehouseGLTF, labyrinthGLTF, tiltedlabyGLTF, sidemazeGLTF]) => {
-        // Process each of the other models
-        processModel(warehouseGLTF);
-        processModel(labyrinthGLTF);
-        processModel(tiltedlabyGLTF);
-        processModel(sidemazeGLTF);
-      })
-      .catch((error) => {
-        console.error("Error loading models:", error);
-      });
-  } else {
-    // User selected something else
-    console.log("A different value was selected:", selectedValue);
-    // Perform alternative actions here
-  }
-});
-// Load the ground model first NOT TEST
-// loader
-//   .loadAsync("ground.glb")
-//   .then((groundGLTF) => {
-//     // Process the ground model
-//     processModel(groundGLTF);
-//     // Load the other models in parallel
-//     return Promise.all([
-//       loader.loadAsync("warehouse.glb"),
-//       //loader.loadAsync('maze.glb'),
-//       loader.loadAsync("labywrinth.glb"),
-//       loader.loadAsync("tiltedlaby.glb"),
-//       loader.loadAsync("sidemaze.glb"),
-//       //loader.loadAsync('shacks.glb'),
-//       //loader.loadAsync('fantasyportal.glb'),
-//     ]);
-//   })
-//   .then(([warehouseGLTF, labyrinthGLTF, tiltedlabyGLTF, sidemazeGLTF]) => {
-//     //, , , fantasyportalGLTF, shacksGLTF, mazeGLTF
-//     // Process each of the other models
-//     processModel(warehouseGLTF);
-//     //processModel(mazeGLTF);
-//     processModel(labyrinthGLTF);
-//     processModel(tiltedlabyGLTF);
-//     processModel(sidemazeGLTF);
-//   })
-//   .catch((error) => {
-//     console.error("Error loading models:", error);
-//   });
-// TEST
-/* loader.loadAsync('ground.glb').then((groundGLTF) => {
-  // Process the ground model
-  processModel(groundGLTF);
-  // Load the other models in parallel
-  return Promise.all([
-    loader.loadAsync('maze.glb'),
-  ]);
-  }).then(([mazeGLTF]) => {
-  // Process each of the other models
-  processModel(mazeGLTF);
-}).catch((error) => {
-  console.error('Error loading models:', error);
-}); */
-
-// Create sprite
-// const map = new THREE.TextureLoader().load( 'images/glassshatter.png' );
-// const spriteMaterial = new THREE.SpriteMaterial( { map: map, color: 0xffffff } );
-// const sprite = new THREE.Sprite(spriteMaterial);
-// sprite.position.set(5, 1, 5); // Adjust position to place in your maze
-// sprite.scale.set(1, 1, 1); // Adjust size
-// scene.add(sprite);
-// function checkCollisionWithSprite() {
-//   const distance = playerCollider.end.distanceTo(sprite.position);
-//   if (distance < playerCollider.radius + 0.5) { // Adjust collision threshold
-//     console.log('Collision detected!');
-//     handleSpriteCollision();
-//   }
-// }
-// function handleSpriteCollision() {
-//   if (!sprite.processed) { // Check if the sprite has already been processed
-//     sprite.processed = true; // Mark the sprite as processed
-
-//     // Remove the sprite from the scene
-//     scene.remove(sprite);
-
-//     // Increase the coins unit by 1
-//     // const coinsElement = document.getElementById("coins");
-//     // let currentCoins = parseInt(coinsElement.textContent, 10); // Get the current value as an integer
-//     // currentCoins += 1; // Increment the coins value by 1
-//     // coinsElement.textContent = currentCoins; // Update the displayed value
-//   }
-// }
+// Array to keep track of loaded models
+let loadedModels = [];
 
 // Function to process the loaded model
 function processModel(gltf) {
-  scene.add(gltf.scene);
-  worldOctree.fromGraphNode(gltf.scene);
+  scene.add(gltf.scene); // Add the model to the scene
+  worldOctree.fromGraphNode(gltf.scene); // Add to octree
+  loadedModels.push(gltf); // Keep track of the loaded model
+
   gltf.scene.traverse((child) => {
     if (child.isMesh) {
       child.castShadow = true;
@@ -392,6 +288,95 @@ function processModel(gltf) {
     }
   });
 }
+
+// Function to dispose of loaded models
+function disposeModels(scene) {
+  loadedModels.forEach((model) => {
+    if (model.scene) {
+      model.scene.traverse((child) => {
+        if (child.isMesh) {
+          // Dispose geometry
+          if (child.geometry) child.geometry.dispose();
+
+          // Dispose material and textures
+          if (child.material) {
+            if (Array.isArray(child.material)) {
+              child.material.forEach((mat) => {
+                if (mat.map) mat.map.dispose();
+                mat.dispose();
+              });
+            } else {
+              if (child.material.map) child.material.map.dispose();
+              child.material.dispose();
+            }
+          }
+        }
+      });
+
+      // Remove the model's scene from the main scene
+      scene.remove(model.scene);
+    }
+  });
+
+  // Clear the loadedModels array
+  loadedModels = [];
+  console.log("All models disposed and removed from the scene.");
+}
+
+// Load the primary ground model first
+loader
+  .loadAsync("ground.glb")
+  .then((groundGLTF) => {
+    processModel(groundGLTF);
+  })
+  .catch((error) => {
+    console.error("Error loading models:", error);
+  });
+loader
+  .loadAsync("maze.glb")
+  .then((mazeGLTF) => processModel(mazeGLTF))
+  .catch((error) => console.error("Error loading models:", error));
+
+// Add event listener to the selector AFTER ground.glb is loaded
+worldSelector.addEventListener("change", (event) => {
+  const selectedValue = event.target.value;
+
+  // Dispose of existing models
+  disposeModels(scene);
+
+  if (selectedValue === "1") {
+    // Load models for option 1
+    loader
+      .loadAsync("ground.glb")
+      .then((groundGLTF) => processModel(groundGLTF))
+      .catch((error) => console.error("Error loading models:", error));
+
+    Promise.all([
+      loader.loadAsync("warehouse.glb"),
+      loader.loadAsync("labywrinth.glb"),
+      loader.loadAsync("tiltedlaby.glb"),
+      loader.loadAsync("sidemaze.glb"),
+    ])
+      .then(([warehouseGLTF, labyrinthGLTF, tiltedlabyGLTF, sidemazeGLTF]) => {
+        processModel(warehouseGLTF);
+        processModel(labyrinthGLTF);
+        processModel(tiltedlabyGLTF);
+        processModel(sidemazeGLTF);
+      })
+      .catch((error) => console.error("Error loading models:", error));
+  } else if (selectedValue === "0") {
+    // Load models for option 0
+    loader
+      .loadAsync("ground.glb")
+      .then((groundGLTF) => processModel(groundGLTF))
+      .catch((error) => console.error("Error loading models:", error));
+
+    loader
+      .loadAsync("maze.glb")
+      .then((mazeGLTF) => processModel(mazeGLTF))
+      .catch((error) => console.error("Error loading models:", error));
+  }
+});
 
 // Timer setup
 const timerElement = document.getElementById("timer");
