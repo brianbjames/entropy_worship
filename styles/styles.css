@@ -149,7 +149,7 @@ select:focus {
 .input textarea {
   font-size: 1em;
   font-weight: 100;
-  background-color: #152a3b;
+  background-color: #3b1515;
   border: 1px solid rgba(34, 69, 97, 0.4);
   box-sizing: border-box;
   padding: 0.3em 0.8em;
@@ -159,8 +159,8 @@ select:focus {
   transition: background-color 0.2s;
 }
 .input textarea:focus {
-  background-color: #224561;
-  border: 1px solid #2f6087;
+  background-color: #aa0000;
+  border: 1px solid #980000;
   outline: none;
 }
 .input textarea::-webkit-input-placeholder {
@@ -169,15 +169,15 @@ select:focus {
   font-weight: 100;
 }
 .input textarea:-moz-placeholder {
-  color: rgba(120, 200, 255, 0.5);
+  color: rgba(191, 0, 0, 0.769);
   font-size: 1em;
   font-weight: 100;
 }
 .input input[type="text"] {
   font-size: 1em;
   font-weight: 100;
-  background-color: #152a3b;
-  border: 1px solid rgba(34, 69, 97, 0.4);
+  background-color: #b00000;
+  border: 1px solid rgba(155, 0, 0, 0.729);
   height: 2.4em;
   box-sizing: border-box;
   padding: 0 0.8em;
@@ -186,25 +186,25 @@ select:focus {
   transition: background-color 0.2s;
 }
 .input input[type="text"]:focus {
-  background-color: #224561;
-  border: 1px solid #2f6087;
+  background-color: #ba0000;
+  border: 1px solid #7e0000;
   outline: none;
 }
 .input input[type="text"]::-webkit-input-placeholder {
-  color: rgba(120, 200, 255, 0.5);
+  color: rgba(173, 0, 0, 0.711);
   font-size: 1em;
   font-weight: 100;
 }
 .input input[type="text"]:-moz-placeholder {
-  color: rgba(120, 200, 255, 0.5);
+  color: rgba(181, 0, 0, 0.761);
   font-size: 1em;
   font-weight: 100;
 }
 .input input[type="password"] {
   font-size: 1em;
   font-weight: 100;
-  background-color: #152a3b;
-  border: 1px solid rgba(34, 69, 97, 0.4);
+  background-color: #8c0000;
+  border: 1px solid rgba(173, 0, 0, 0.644);
   height: 2.4em;
   box-sizing: border-box;
   padding: 0 0.8em;
@@ -231,7 +231,7 @@ select:focus {
 }
 .input input[type="text"][disabled]::-webkit-input-placeholder,
 .input input[type="password"][disabled]::-webkit-input-placeholder {
-  color: rgba(120, 200, 255, 0.3);
+  color: rgba(176, 0, 0, 0.875);
 }
 .input input[type="text"][disabled]:-moz-placeholder,
 .input input[type="password"][disabled]:-moz-placeholder {
@@ -240,8 +240,8 @@ select:focus {
 .input select {
   font-size: 1em;
   font-weight: 100;
-  background-color: #152a3b;
-  border: 1px solid rgba(34, 69, 97, 0.4);
+  background-color: #9f00007a;
+  border: 1px solid rgba(191, 0, 0, 0.875);
   height: 2.4em;
   box-sizing: border-box;
   padding: 0 0.8em;
@@ -251,14 +251,14 @@ select:focus {
   appearance: button;
 }
 .input select option {
-  background-color: #224561;
+  background-color: #980000;
 }
 .input .help {
   display: block;
   font-size: 0.8em;
   font-weight: 100;
   padding: 0.6em 0;
-  color: rgba(120, 200, 255, 0.5);
+  color: rgba(169, 0, 0, 0.755);
 }
 .input .error {
   display: block;
@@ -309,7 +309,7 @@ select:focus {
   content: "";
   width: 1.5em;
   height: 100%;
-  background-color: #224561;
+  background-color: #b60000;
   border: 1px solid rgba(34, 69, 97, 0.4);
   position: absolute;
   z-index: 1;

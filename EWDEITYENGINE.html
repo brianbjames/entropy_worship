@@ -90,14 +90,6 @@
     touch-action: none; /* Prevent default scrolling on touch */
     z-index: 10;
 }
-#jump-button {
-    background-color: transparent; /* Transparent background */
-    color: white; /* Keep the text color white */
-    border: 2px solid rgba(73, 67, 67, 0.747); /* Black border with a thickness of 2px */
-    border-radius: 10px; /* Rounded corners */
-    touch-action: none; /* Disable default scrolling behavior on touch */
-    z-index: 10; /* Ensure it appears above other elements */
-}
 .hidden {
             display: none;
 }
@@ -183,24 +175,29 @@
         </a>
       </div>
       <h2 class="panel error shown" style="font-size: 1.5rem;">deityengine beta 1.0</h2>
+      <span style="font-family:VT323-Regular; font-size: 20px;" class="cyber-glitch-0 panel error shown">
+        >>An experimental first-person environment</span>
       <span style="font-family:VT323-Regular; font-size: 20px;" class="cyber-glitch-1 panel error shown" id="controlsui">
-        >>CONTROLS<br>
-        >[WASD] move<br>
+        >>PC CONTROLS:<br>
+        >[WASD keys] move: W forward, A left, D right, S backward<br>
+        >[mouse] camera view<br>
         >[space] jump<br>
-        >[mouse] camera<br></span>
-        <span class="cyber-glitch-2 panel error shown">
-        <div class="cyber-select mb-4 ac-red fg-red">
-          <select id="worldSelector" name="select" style="font-family:VT323-Regular; font-size: 20px;" >
-              <option value="0" selected>MAZE</option>
-              <option value="1">LABYRINTH</option>
-          </select>
-        </div>
+      </span>
+      <span class="panel error shown">
+      <div class="input mb-4 ac-red fg-red">
+        <select id="worldSelector" name="select" style="font-family:VT323-Regular; font-size: 20px; color: white; width: auto; height: auto;" >
+            <option value="0" selected>SIMPLE MAZE</option>
+            <option value="1">LABYRINTH</option>
+        </select>
+      </div>
+      </span>
+      <span class="panel error shown">
+        <button id="start-button" class="button alert rounded" style="cursor: pointer;">
+            Start
+        </button>
         </span>
     </div>
 
-    <button id="start-button" class="button alert rounded" style="cursor: pointer;">
-        Start
-    </button>
   </div>
   <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c"><!--Header card-->
       <div class="card-header border-danger">
@@ -237,11 +234,23 @@
                   </div>
                 </div>
               </div>
+<!--               <span style="font-family:VT323-Regular; font-size: 20px;" class="panel shown">
+                <span class="cyber-glitch-0" id="objectivetext">
+                  >>OBJECTIVE: explore the controls and environment without falling to death. the main interface contains a volume slider, player stats, and the objective. it can be collapsed and expanded using the button in the upper right.<br><br>
+                  >>PC CONTROLS:<br>
+                  >[WASD keys] move: W forward, A left, D right, S backward<br>
+                  >[mouse] click into the screen to control the camera view [esc] to exit<br>
+                  >[space] jump<br><br>
+                  >>MOBILE CONTROLS:<br>
+                  >[left joystick] move<br>
+                  >[right joystick] camera view<br>
+                  >[tap screen] jump<br>
+                </span>
+              </span> -->
   </div><!--Header panel-->
 </div><!--Main Container-->   
 <div id="left-joystick" style="position: fixed; bottom: 1%; left: 1%; width: 100px; height: 100px;"></div>
 <div id="right-touch" style="position: fixed; bottom: 1%; right: 1%; width: 100px; height: 100px;"></div>
-<button id="jump-button" class="button error" style="position: fixed; bottom: 45%; right: 1%; width: 60px; height: 80px; font-size: 16px;"></button>    
 
 <script>
   // Select elements and hide/display panels. must be placed in code after the HTML elements

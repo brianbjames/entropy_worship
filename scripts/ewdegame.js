@@ -116,6 +116,18 @@ container.addEventListener("mousedown", () => {
   document.body.requestPointerLock();
 });
 
+// Add touchstart event to the canvas to handle jumping on mobile devices
+container.addEventListener("touchstart", (event) => {
+  // Prevent the default behavior (optional, depending on your use case)
+  event.preventDefault();
+
+  // Check if the player is on the floor before allowing the jump
+  if (playerOnFloor) {
+    playerVelocity.y = 15; // Jump strength
+    console.log("Player jumped via canvas tap");
+  }
+});
+
 document.addEventListener("pointerlockchange", () => {
   if (document.pointerLockElement === document.body) {
     console.log("Pointer lock activated.");
@@ -296,18 +308,29 @@ function disposeModels(scene) {
       model.scene.traverse((child) => {
         if (child.isMesh) {
           // Dispose geometry
-          if (child.geometry) child.geometry.dispose();
+          if (child.geometry) {
+            child.geometry.dispose();
+            console.log("Geometry disposed");
+          }
 
           // Dispose material and textures
           if (child.material) {
             if (Array.isArray(child.material)) {
               child.material.forEach((mat) => {
-                if (mat.map) mat.map.dispose();
+                if (mat.map) {
+                  mat.map.dispose();
+                  console.log("Texture disposed");
+                }
                 mat.dispose();
+                console.log("Material disposed");
               });
             } else {
-              if (child.material.map) child.material.map.dispose();
+              if (child.material.map) {
+                child.material.map.dispose();
+                console.log("Texture disposed");
+              }
               child.material.dispose();
+              console.log("Material disposed");
             }
           }
         }
@@ -321,11 +344,12 @@ function disposeModels(scene) {
   // Clear the loadedModels array
   loadedModels = [];
   console.log("All models disposed and removed from the scene.");
+  console.log("Renderer info after disposal:", renderer.info);
 }
 
 // Load the primary ground model first
 loader
-  .loadAsync("ground.glb")
+  .loadAsync("basicground.glb")
   .then((groundGLTF) => {
     processModel(groundGLTF);
   })
@@ -334,9 +358,12 @@ loader
   });
 loader
   .loadAsync("maze.glb")
-  .then((mazeGLTF) => processModel(mazeGLTF))
-  .catch((error) => console.error("Error loading models:", error));
-
+  .then((groundGLTF) => {
+    processModel(groundGLTF);
+  })
+  .catch((error) => {
+    console.error("Error loading models:", error);
+  });
 // Add event listener to the selector AFTER ground.glb is loaded
 worldSelector.addEventListener("change", (event) => {
   const selectedValue = event.target.value;
@@ -367,7 +394,7 @@ worldSelector.addEventListener("change", (event) => {
   } else if (selectedValue === "0") {
     // Load models for option 0
     loader
-      .loadAsync("ground.glb")
+      .loadAsync("basicground.glb")
       .then((groundGLTF) => processModel(groundGLTF))
       .catch((error) => console.error("Error loading models:", error));
 
@@ -568,21 +595,7 @@ rightTouch.on("move", (evt, data) => {
   }
 });
 
-document.getElementById("jump-button").addEventListener("click", () => {
-  event.stopPropagation(); // Prevent the event from propagating
-  if (playerOnFloor) {
-    playerVelocity.y = 15; // Jump strength
-  }
-});
-
-// Prevent 'mouseup' or 'touchend' on the jump button from triggering the ball throw
-document.getElementById("jump-button").addEventListener("mouseup", (event) => {
-  event.stopPropagation(); // Prevent the event from propagating
-});
-document.getElementById("jump-button").addEventListener("touchend", (event) => {
-  event.stopPropagation(); // Prevent the event from propagating
-});
-// Prevent 'mouseup' or 'touchend' on the jump button from triggering the ball throw
+// Prevent 'mouseup' or 'touchend' on the UI from triggering actions in the canvas
 document.getElementById("closebutton").addEventListener("mouseup", (event) => {
   event.stopPropagation(); // Prevent the event from propagating
 });
@@ -616,14 +629,12 @@ document.addEventListener("DOMContentLoaded", () => {
   // Select joystick and jump button elements
   const leftJoystick = document.getElementById("left-joystick");
   const rightTouch = document.getElementById("right-touch");
-  const jumpButton = document.getElementById("jump-button");
   const spanElement = document.getElementById("controlsui");
 
   if (!isMobile) {
     // Hide elements on non-mobile devices
     if (leftJoystick) leftJoystick.style.display = "none";
     if (rightTouch) rightTouch.style.display = "none";
-    if (jumpButton) jumpButton.style.display = "none";
     spanElement.style.display = "block";
   } else {
     spanElement.style.display = "none";
