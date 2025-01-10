@@ -267,35 +267,73 @@ function controls(deltaTime) {
 const loader = new GLTFLoader().setPath("/models/");
 const worldSelector = document.getElementById("worldSelector");
 
-// Load the ground model first NOT TEST
+// Load the ground model first
 loader
   .loadAsync("ground.glb")
   .then((groundGLTF) => {
-    // Process the ground model
+    //Process the ground model
     processModel(groundGLTF);
-    // Load the other models in parallel
-    return Promise.all([
-      loader.loadAsync("warehouse.glb"),
-      //loader.loadAsync('maze.glb'),
-      loader.loadAsync("labywrinth.glb"),
-      loader.loadAsync("tiltedlaby.glb"),
-      loader.loadAsync("sidemaze.glb"),
-      //loader.loadAsync('shacks.glb'),
-      //loader.loadAsync('fantasyportal.glb'),
-    ]);
-  })
-  .then(([warehouseGLTF, labyrinthGLTF, tiltedlabyGLTF, sidemazeGLTF]) => {
-    //, , , fantasyportalGLTF, shacksGLTF, mazeGLTF
-    // Process each of the other models
-    processModel(warehouseGLTF);
-    //processModel(mazeGLTF);
-    processModel(labyrinthGLTF);
-    processModel(tiltedlabyGLTF);
-    processModel(sidemazeGLTF);
   })
   .catch((error) => {
     console.error("Error loading models:", error);
   });
+// Add event listener to the selector AFTER ground.glb is loaded
+worldSelector.addEventListener("change", (event) => {
+  const selectedValue = event.target.value;
+
+  if (selectedValue === "1") {
+    // User selected 0
+    Promise.all([
+      loader.loadAsync("warehouse.glb"),
+      loader.loadAsync("labywrinth.glb"),
+      loader.loadAsync("tiltedlaby.glb"),
+      loader.loadAsync("sidemaze.glb"),
+    ])
+      .then(([warehouseGLTF, labyrinthGLTF, tiltedlabyGLTF, sidemazeGLTF]) => {
+        // Process each of the other models
+        processModel(warehouseGLTF);
+        processModel(labyrinthGLTF);
+        processModel(tiltedlabyGLTF);
+        processModel(sidemazeGLTF);
+      })
+      .catch((error) => {
+        console.error("Error loading models:", error);
+      });
+  } else {
+    // User selected something else
+    console.log("A different value was selected:", selectedValue);
+    // Perform alternative actions here
+  }
+});
+// Load the ground model first NOT TEST
+// loader
+//   .loadAsync("ground.glb")
+//   .then((groundGLTF) => {
+//     // Process the ground model
+//     processModel(groundGLTF);
+//     // Load the other models in parallel
+//     return Promise.all([
+//       loader.loadAsync("warehouse.glb"),
+//       //loader.loadAsync('maze.glb'),
+//       loader.loadAsync("labywrinth.glb"),
+//       loader.loadAsync("tiltedlaby.glb"),
+//       loader.loadAsync("sidemaze.glb"),
+//       //loader.loadAsync('shacks.glb'),
+//       //loader.loadAsync('fantasyportal.glb'),
+//     ]);
+//   })
+//   .then(([warehouseGLTF, labyrinthGLTF, tiltedlabyGLTF, sidemazeGLTF]) => {
+//     //, , , fantasyportalGLTF, shacksGLTF, mazeGLTF
+//     // Process each of the other models
+//     processModel(warehouseGLTF);
+//     //processModel(mazeGLTF);
+//     processModel(labyrinthGLTF);
+//     processModel(tiltedlabyGLTF);
+//     processModel(sidemazeGLTF);
+//   })
+//   .catch((error) => {
+//     console.error("Error loading models:", error);
+//   });
 // TEST
 /* loader.loadAsync('ground.glb').then((groundGLTF) => {
   // Process the ground model
