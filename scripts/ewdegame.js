@@ -289,7 +289,6 @@ function processModel(gltf) {
   scene.add(gltf.scene); // Add the model to the scene
   worldOctree.fromGraphNode(gltf.scene); // Add to octree
   loadedModels.push(gltf); // Keep track of the loaded model
-
   gltf.scene.traverse((child) => {
     if (child.isMesh) {
       child.castShadow = true;
@@ -300,7 +299,6 @@ function processModel(gltf) {
     }
   });
 }
-
 // Function to dispose of loaded models
 function disposeModels(scene) {
   loadedModels.forEach((model) => {
@@ -312,7 +310,6 @@ function disposeModels(scene) {
             child.geometry.dispose();
             console.log("Geometry disposed");
           }
-
           // Dispose material and textures
           if (child.material) {
             if (Array.isArray(child.material)) {
@@ -340,7 +337,6 @@ function disposeModels(scene) {
       scene.remove(model.scene);
     }
   });
-
   // Clear the loadedModels array
   loadedModels = [];
   console.log("All models disposed and removed from the scene.");
@@ -400,6 +396,17 @@ worldSelector.addEventListener("change", (event) => {
 
     loader
       .loadAsync("maze.glb")
+      .then((mazeGLTF) => processModel(mazeGLTF))
+      .catch((error) => console.error("Error loading models:", error));
+  } else if (selectedValue === "2") {
+    // Load models for option 0
+    loader
+      .loadAsync("ground.glb")
+      .then((groundGLTF) => processModel(groundGLTF))
+      .catch((error) => console.error("Error loading models:", error));
+
+    loader
+      .loadAsync("club.glb")
       .then((mazeGLTF) => processModel(mazeGLTF))
       .catch((error) => console.error("Error loading models:", error));
   }
