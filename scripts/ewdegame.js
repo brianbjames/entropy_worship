@@ -103,7 +103,30 @@ const keyStates = {};
 const vector1 = new THREE.Vector3();
 const vector2 = new THREE.Vector3();
 const vector3 = new THREE.Vector3();
+// Ensure shaders are not overly complex and use only necessary calculations
+const material = new THREE.ShaderMaterial({
+  uniforms: {
+    color: { value: new THREE.Color(0xff0000) },
+  },
+  vertexShader: `
+      varying vec3 vPosition;
+      void main() {
+        vPosition = position;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+  fragmentShader: `
+      varying vec3 vPosition;
+      uniform vec3 color;
+      void main() {
+        gl_FragColor = vec4(color * vPosition, 1.0);
+      }
+    `,
+});
 
+//*******************************************
+// CONTROLS
+//*******************************************
 document.addEventListener("keydown", (event) => {
   keyStates[event.code] = true;
 });
@@ -115,15 +138,13 @@ container.addEventListener("mousedown", () => {
   console.log("Mouse down detected, requesting pointer lock.");
   document.body.requestPointerLock();
 });
-
 // Add touchstart event to the canvas to handle jumping on mobile devices
 container.addEventListener("touchstart", (event) => {
   // Prevent the default behavior (optional, depending on your use case)
   event.preventDefault();
-
   // Check if the player is on the floor before allowing the jump
   if (playerOnFloor) {
-    playerVelocity.y = 15; // Jump strength
+    playerVelocity.y = 14; // Jump strength
     console.log("Player jumped via canvas tap");
   }
 });
@@ -192,53 +213,6 @@ function updatePlayer(deltaTime) {
   camera.position.copy(playerCollider.end);
 }
 
-function playerSphereCollision(sphere) {
-  const center = vector1
-    .addVectors(playerCollider.start, playerCollider.end)
-    .multiplyScalar(0.5);
-  const sphere_center = sphere.collider.center;
-  const r = playerCollider.radius + sphere.collider.radius;
-  const r2 = r * r;
-  // approximation: player = 3 spheres
-  for (const point of [playerCollider.start, playerCollider.end, center]) {
-    const d2 = point.distanceToSquared(sphere_center);
-    if (d2 < r2) {
-      const normal = vector1.subVectors(point, sphere_center).normalize();
-      const v1 = vector2
-        .copy(normal)
-        .multiplyScalar(normal.dot(playerVelocity));
-      const v2 = vector3
-        .copy(normal)
-        .multiplyScalar(normal.dot(sphere.velocity));
-      playerVelocity.add(v2).sub(v1);
-      sphere.velocity.add(v1).sub(v2);
-      const d = (r - Math.sqrt(d2)) / 2;
-      sphere_center.addScaledVector(normal, -d);
-    }
-  }
-}
-
-// Ensure shaders are not overly complex and use only necessary calculations
-const material = new THREE.ShaderMaterial({
-  uniforms: {
-    color: { value: new THREE.Color(0xff0000) },
-  },
-  vertexShader: `
-    varying vec3 vPosition;
-    void main() {
-      vPosition = position;
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-    }
-  `,
-  fragmentShader: `
-    varying vec3 vPosition;
-    uniform vec3 color;
-    void main() {
-      gl_FragColor = vec4(color * vPosition, 1.0);
-    }
-  `,
-});
-
 function getForwardVector() {
   camera.getWorldDirection(playerDirection);
   playerDirection.y = 0;
@@ -299,9 +273,17 @@ function processModel(gltf) {
     }
   });
 }
-// Function to dispose of loaded models
-function disposeModels(scene) {
+// Function to dispose other models
+/* function disposeModels(scene, collisionObjects) {
   loadedModels.forEach((model) => {
+    // Remove physics body from the physics world
+    if (model.physicsBody && physicsWorld) {
+      physicsWorld.remove(model.physicsBody);
+      model.physicsBody = null; // Clear reference to physics body
+      console.log("Physics body removed");
+    }
+
+    // Dispose the model's scene and its children
     if (model.scene) {
       model.scene.traverse((child) => {
         if (child.isMesh) {
@@ -310,25 +292,59 @@ function disposeModels(scene) {
             child.geometry.dispose();
             console.log("Geometry disposed");
           }
-          // Dispose material and textures
+
+          // Dispose materials and associated textures
           if (child.material) {
             if (Array.isArray(child.material)) {
               child.material.forEach((mat) => {
                 if (mat.map) {
+                  if (mat.map.image instanceof ImageBitmap) {
+                    mat.map.image.close(); // Close ImageBitmap
+                    console.log("ImageBitmap closed");
+                  }
                   mat.map.dispose();
-                  console.log("Texture disposed");
+                }
+                if (mat.normalMap) {
+                  if (mat.normalMap.image instanceof ImageBitmap) {
+                    mat.normalMap.image.close(); // Close ImageBitmap
+                    console.log("NormalMap ImageBitmap closed");
+                  }
+                  mat.normalMap.dispose();
+                }
+                if (mat.roughnessMap) {
+                  if (mat.roughnessMap.image instanceof ImageBitmap) {
+                    mat.roughnessMap.image.close(); // Close ImageBitmap
+                    console.log("RoughnessMap ImageBitmap closed");
+                  }
+                  mat.roughnessMap.dispose();
                 }
                 mat.dispose();
-                console.log("Material disposed");
               });
             } else {
               if (child.material.map) {
+                if (child.material.map.image instanceof ImageBitmap) {
+                  child.material.map.image.close(); // Close ImageBitmap
+                  console.log("ImageBitmap closed");
+                }
                 child.material.map.dispose();
-                console.log("Texture disposed");
+              }
+              if (child.material.normalMap) {
+                if (child.material.normalMap.image instanceof ImageBitmap) {
+                  child.material.normalMap.image.close(); // Close ImageBitmap
+                  console.log("NormalMap ImageBitmap closed");
+                }
+                child.material.normalMap.dispose();
+              }
+              if (child.material.roughnessMap) {
+                if (child.material.roughnessMap.image instanceof ImageBitmap) {
+                  child.material.roughnessMap.image.close(); // Close ImageBitmap
+                  console.log("RoughnessMap ImageBitmap closed");
+                }
+                child.material.roughnessMap.dispose();
               }
               child.material.dispose();
-              console.log("Material disposed");
             }
+            console.log("Material disposed");
           }
         }
       });
@@ -337,11 +353,46 @@ function disposeModels(scene) {
       scene.remove(model.scene);
     }
   });
+
+  // Dispose of collision objects if provided
+  if (collisionObjects && Array.isArray(collisionObjects)) {
+    collisionObjects.forEach((obj) => {
+      // Remove collision object from physics world
+      if (obj.physicsBody && physicsWorld) {
+        physicsWorld.remove(obj.physicsBody);
+        console.log("Collision physics body removed");
+      }
+
+      // Dispose geometry and material
+      if (obj.geometry) {
+        obj.geometry.dispose();
+        console.log("Collision geometry disposed");
+      }
+      if (obj.material) {
+        if (obj.material.map && obj.material.map.image instanceof ImageBitmap) {
+          obj.material.map.image.close(); // Close ImageBitmap
+          console.log("Collision object ImageBitmap closed");
+        }
+        obj.material.dispose();
+        console.log("Collision material disposed");
+      }
+
+      // Remove from scene
+      scene.remove(obj);
+      console.log("Collision object removed from scene");
+    });
+  }
+
   // Clear the loadedModels array
   loadedModels = [];
   console.log("All models disposed and removed from the scene.");
-  console.log("Renderer info after disposal:", renderer.info);
-}
+
+  // Check renderer memory usage and clear render lists
+  if (renderer) {
+    console.log("Renderer info after disposal:", renderer.info);
+    renderer.renderLists?.dispose();
+  }
+} */
 
 // Load the primary ground model first
 loader
@@ -360,51 +411,65 @@ loader
   .catch((error) => {
     console.error("Error loading models:", error);
   });
-// Add event listener to the selector AFTER ground.glb is loaded
+
+//*******************************************
+// WORLD SELECTOR
+//*******************************************
+// Add event listener to the selector after basicground.glb is loaded
 worldSelector.addEventListener("change", (event) => {
+  playButtonClickSound();
   const selectedValue = event.target.value;
 
-  // Dispose of existing models
-  disposeModels(scene);
-
-  if (selectedValue === "1") {
-    // Load models for option 1
-    loader
-      .loadAsync("ground.glb")
-      .then((groundGLTF) => processModel(groundGLTF))
-      .catch((error) => console.error("Error loading models:", error));
-
-    Promise.all([
-      loader.loadAsync("warehouse.glb"),
-      loader.loadAsync("labywrinth.glb"),
-      loader.loadAsync("tiltedlaby.glb"),
-      loader.loadAsync("sidemaze.glb"),
-    ])
-      .then(([warehouseGLTF, labyrinthGLTF, tiltedlabyGLTF, sidemazeGLTF]) => {
-        processModel(warehouseGLTF);
-        processModel(labyrinthGLTF);
-        processModel(tiltedlabyGLTF);
-        processModel(sidemazeGLTF);
-      })
-      .catch((error) => console.error("Error loading models:", error));
-  } else if (selectedValue === "0") {
-    // Load models for option 0
+  if (selectedValue === "0") {
     loader
       .loadAsync("basicground.glb")
       .then((groundGLTF) => processModel(groundGLTF))
       .catch((error) => console.error("Error loading models:", error));
-
     loader
       .loadAsync("maze.glb")
       .then((mazeGLTF) => processModel(mazeGLTF))
       .catch((error) => console.error("Error loading models:", error));
+  } else if (selectedValue === "1") {
+    // loader
+    //   .loadAsync("ground.glb")
+    //   .then((groundGLTF) => processModel(groundGLTF))
+    //   .catch((error) => console.error("Error loading models:", error));
+    loader
+      .loadAsync("warehouse.glb")
+      .then((mazeGLTF) => processModel(mazeGLTF))
+      .catch((error) => console.error("Error loading models:", error));
   } else if (selectedValue === "2") {
-    // Load models for option 0
     loader
       .loadAsync("ground.glb")
       .then((groundGLTF) => processModel(groundGLTF))
       .catch((error) => console.error("Error loading models:", error));
-
+    loader
+      .loadAsync("labywrinth.glb")
+      .then((mazeGLTF) => processModel(mazeGLTF))
+      .catch((error) => console.error("Error loading models:", error));
+  } else if (selectedValue === "3") {
+    // loader
+    //   .loadAsync("basicground.glb")
+    //   .then((groundGLTF) => processModel(groundGLTF))
+    //   .catch((error) => console.error("Error loading models:", error));
+    loader
+      .loadAsync("sidemaze.glb")
+      .then((mazeGLTF) => processModel(mazeGLTF))
+      .catch((error) => console.error("Error loading models:", error));
+  } else if (selectedValue === "4") {
+    // loader
+    //   .loadAsync("ground.glb")
+    //   .then((groundGLTF) => processModel(groundGLTF))
+    //   .catch((error) => console.error("Error loading models:", error));
+    loader
+      .loadAsync("tiltedlaby.glb")
+      .then((mazeGLTF) => processModel(mazeGLTF))
+      .catch((error) => console.error("Error loading models:", error));
+  } else if (selectedValue === "5") {
+    // loader
+    //   .loadAsync("ground.glb")
+    //   .then((groundGLTF) => processModel(groundGLTF))
+    //   .catch((error) => console.error("Error loading models:", error));
     loader
       .loadAsync("club.glb")
       .then((mazeGLTF) => processModel(mazeGLTF))
@@ -466,6 +531,7 @@ function teleportPlayerIfOob() {
 
 // Add an event listener for the "Start" button click
 startButton.addEventListener("click", () => {
+  playButtonClickSound();
   // Reset the fall count to 0
   fallsElement.textContent = "0";
   console.log("Deaths reset to 0");
@@ -604,9 +670,11 @@ rightTouch.on("move", (evt, data) => {
 
 // Prevent 'mouseup' or 'touchend' on the UI from triggering actions in the canvas
 document.getElementById("closebutton").addEventListener("mouseup", (event) => {
+  playButtonClickSound();
   event.stopPropagation(); // Prevent the event from propagating
 });
 document.getElementById("closebutton").addEventListener("touchend", (event) => {
+  playButtonClickSound();
   event.stopPropagation(); // Prevent the event from propagating
 });
 
@@ -706,14 +774,15 @@ if (isMobileDevice()) {
   handleOrientationChange();
 }
 
-// Web Audio API setup
+//*******************************************
+// AUDIO SETUP
+//*******************************************
 const audioContext = new (window.AudioContext || window.webkitAudioContext)();
 const gainNode = audioContext.createGain();
 gainNode.gain.value = 0.5; // Default volume
-
 let audioSource;
-const audioFile = "samples/cebilaus.mp3";
-
+// Default start game audio
+const audioFile = "samples/sticks.mp3";
 // Load and play audio sample in a loop
 async function setupAudio() {
   try {
@@ -738,36 +807,27 @@ async function setupAudio() {
     console.error("Error setting up audio:", error);
   }
 }
-
-/* let throwSoundBuffer; // To store the audio buffer for the throw sound
-
-const throwSoundFile = 'samples/kick.wav';
-
-// Load the throw sound sample
-async function loadThrowSound() {
+// UI button click audio
+const buttonClick = "samples/button.mp3";
+// Function to play button click sound through the main audio context
+async function playButtonClickSound() {
   try {
-    const response = await fetch(throwSoundFile);
+    const response = await fetch(buttonClick);
     if (!response.ok) {
-      throw new Error(`Failed to load audio file: ${throwSoundFile}`);
+      throw new Error(`Failed to load audio file: ${buttonClick}`);
     }
     const arrayBuffer = await response.arrayBuffer();
-    throwSoundBuffer = await audioContext.decodeAudioData(arrayBuffer);
-    console.log('Throw sound loaded');
+    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+    // Create a new audio source for the button sound
+    const buttonAudioSource = audioContext.createBufferSource();
+    buttonAudioSource.buffer = audioBuffer;
+    buttonAudioSource.connect(gainNode).connect(audioContext.destination);
+    buttonAudioSource.start(0); // Play the sound
   } catch (error) {
-    console.error('Error loading throw sound:', error);
+    console.error("Error playing button click sound:", error);
   }
-} */
-// Play the throw sound
-/* function playThrowSound() {
-  if (throwSoundBuffer) {
-    const soundSource = audioContext.createBufferSource();
-    soundSource.buffer = throwSoundBuffer;
-    soundSource.connect(gainNode).connect(audioContext.destination);
-    soundSource.start(0);
-  } else {
-    console.error('Throw sound not loaded');
-  }
-} */
+}
 
 // Ensure audio context is resumed after a user gesture
 document.body.addEventListener("click", () => {

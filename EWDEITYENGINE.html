@@ -174,7 +174,7 @@
             </h1>
         </a>
       </div>
-      <h2 class="panel error shown" style="font-size: 1.5rem;">deityengine beta 1.0</h2>
+      <h2 class="panel error shown" style="font-size: 1.5rem;">deityengine beta 1.1</h2>
       <span style="font-family:VT323-Regular; font-size: 20px;" class="cyber-glitch-0 panel error shown">
         >>An experimental first-person environment</span>
       <span style="font-family:VT323-Regular; font-size: 20px;" class="cyber-glitch-1 panel error shown" id="controlsui">
@@ -186,9 +186,12 @@
       <span class="panel error shown">
       <div class="input mb-4 ac-red fg-red">
         <select id="worldSelector" name="select" style="font-family:VT323-Regular; font-size: 20px; color: white; width: auto; height: auto;" >
-            <option value="0" selected>SIMPLEMAZE</option>
-            <option value="1">LABYRINTH</option>
-            <option value="2">NICHTKLUB</option>
+            <option value="0" selected>MAZE</option>
+            <option value="1">ICETOMB</option>
+            <option value="2">LABYRINTH</option>
+            <option value="3">VERTMAZE</option>
+            <option value="4">TILTED</option>
+            <option value="5">NICHTKLUB</option>
         </select>
       </div>
       </span>
@@ -203,21 +206,21 @@
   <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c"><!--Header card-->
       <div class="card-header border-danger">
         <div style="display: flex; align-items: center; justify-content: space-between;">
-          <a href="https://www.entropyworship.com" style="text-decoration: none;">
+          <a href="EWDEITYENGINE.html" style="text-decoration: none;">
               <h1 class="heading display-6" style="font-size: 1.5rem; margin: 0;" id="mainlogo">
                   ENTROPY WORSHIP
               </h1>
           </a>
-          <a class="button error round" id="closebutton" style="padding: 5px 10px; text-align: center;">
+          <a class="button alert round" id="closebutton" style="padding: 5px 10px; text-align: center;">
           </a>
         </div>
-          <h2 class="panel error shown" style="font-size: 1.5rem;" id="mainpanel">deityengine beta 1.0</h2>
+          <h2 class="panel error shown" style="font-size: 1.5rem;" id="mainpanel">deityengine beta 1.1</h2>
             <div id="preferences">
               <input id="volume-slider" class="slider" type="range" min="0" max="1" step="0.01" value="0.5">
             </div>
               <div class="row panel shown" id="controls">
                 <div class="row" style="display: flex; justify-content: center; align-items: center; gap: 10px;">
-                  <div class="metric">
+                  <div class="metric warning">
                     <div class="value" id="timer">0</div>
                     <div class="label">Time</div>
                   </div>
@@ -225,7 +228,7 @@
                     <div class="value" id="coins">0</div>
                     <div class="label">Portals</div>
                   </div> -->
-                  <div class="metric warning">
+                  <div class="metric success">
                     <div class="value" id="health">20</div>
                     <div class="label">Lives</div>
                   </div>
