@@ -273,144 +273,112 @@ function processModel(gltf) {
     }
   });
 }
-// Function to dispose other models
-/* function disposeModels(scene, collisionObjects) {
-  loadedModels.forEach((model) => {
-    // Remove physics body from the physics world
-    if (model.physicsBody && physicsWorld) {
-      physicsWorld.remove(model.physicsBody);
-      model.physicsBody = null; // Clear reference to physics body
-      console.log("Physics body removed");
-    }
 
-    // Dispose the model's scene and its children
-    if (model.scene) {
-      model.scene.traverse((child) => {
-        if (child.isMesh) {
-          // Dispose geometry
-          if (child.geometry) {
-            child.geometry.dispose();
-            console.log("Geometry disposed");
-          }
-
-          // Dispose materials and associated textures
-          if (child.material) {
-            if (Array.isArray(child.material)) {
-              child.material.forEach((mat) => {
-                if (mat.map) {
-                  if (mat.map.image instanceof ImageBitmap) {
-                    mat.map.image.close(); // Close ImageBitmap
-                    console.log("ImageBitmap closed");
-                  }
-                  mat.map.dispose();
-                }
-                if (mat.normalMap) {
-                  if (mat.normalMap.image instanceof ImageBitmap) {
-                    mat.normalMap.image.close(); // Close ImageBitmap
-                    console.log("NormalMap ImageBitmap closed");
-                  }
-                  mat.normalMap.dispose();
-                }
-                if (mat.roughnessMap) {
-                  if (mat.roughnessMap.image instanceof ImageBitmap) {
-                    mat.roughnessMap.image.close(); // Close ImageBitmap
-                    console.log("RoughnessMap ImageBitmap closed");
-                  }
-                  mat.roughnessMap.dispose();
-                }
-                mat.dispose();
-              });
-            } else {
-              if (child.material.map) {
-                if (child.material.map.image instanceof ImageBitmap) {
-                  child.material.map.image.close(); // Close ImageBitmap
-                  console.log("ImageBitmap closed");
-                }
-                child.material.map.dispose();
-              }
-              if (child.material.normalMap) {
-                if (child.material.normalMap.image instanceof ImageBitmap) {
-                  child.material.normalMap.image.close(); // Close ImageBitmap
-                  console.log("NormalMap ImageBitmap closed");
-                }
-                child.material.normalMap.dispose();
-              }
-              if (child.material.roughnessMap) {
-                if (child.material.roughnessMap.image instanceof ImageBitmap) {
-                  child.material.roughnessMap.image.close(); // Close ImageBitmap
-                  console.log("RoughnessMap ImageBitmap closed");
-                }
-                child.material.roughnessMap.dispose();
-              }
-              child.material.dispose();
-            }
-            console.log("Material disposed");
-          }
-        }
-      });
-
-      // Remove the model's scene from the main scene
-      scene.remove(model.scene);
-    }
-  });
-
-  // Dispose of collision objects if provided
-  if (collisionObjects && Array.isArray(collisionObjects)) {
-    collisionObjects.forEach((obj) => {
-      // Remove collision object from physics world
-      if (obj.physicsBody && physicsWorld) {
-        physicsWorld.remove(obj.physicsBody);
-        console.log("Collision physics body removed");
-      }
-
-      // Dispose geometry and material
-      if (obj.geometry) {
-        obj.geometry.dispose();
-        console.log("Collision geometry disposed");
-      }
-      if (obj.material) {
-        if (obj.material.map && obj.material.map.image instanceof ImageBitmap) {
-          obj.material.map.image.close(); // Close ImageBitmap
-          console.log("Collision object ImageBitmap closed");
-        }
-        obj.material.dispose();
-        console.log("Collision material disposed");
-      }
-
-      // Remove from scene
-      scene.remove(obj);
-      console.log("Collision object removed from scene");
-    });
-  }
-
-  // Clear the loadedModels array
-  loadedModels = [];
-  console.log("All models disposed and removed from the scene.");
-
-  // Check renderer memory usage and clear render lists
-  if (renderer) {
-    console.log("Renderer info after disposal:", renderer.info);
-    renderer.renderLists?.dispose();
-  }
-} */
-
+//*******************************************
+// WORLD LOADER
+//*******************************************
 // Load the primary ground model first
 loader
   .loadAsync("basicground.glb")
-  .then((groundGLTF) => {
-    processModel(groundGLTF);
+  .then((basicGroundGLTF) => {
+    processModel(basicGroundGLTF);
   })
   .catch((error) => {
     console.error("Error loading models:", error);
   });
 loader
   .loadAsync("maze.glb")
-  .then((groundGLTF) => {
-    processModel(groundGLTF);
+  .then((mazeGLTF) => {
+    processModel(mazeGLTF);
   })
   .catch((error) => {
     console.error("Error loading models:", error);
   });
+
+let tiltedlabyModel = null; // Variable to store the loaded tiltedlaby.glb model
+// Function to load ground.glb and store it in memory
+async function loadtiltedlabyModel() {
+  try {
+    tiltedlabyModel = await loader.loadAsync("tiltedlaby.glb");
+    console.log("tiltedlaby.glb loaded and ready for initialization.");
+  } catch (error) {
+    console.error("Error loading tiltedlaby.glb:", error);
+  }
+}
+loadtiltedlabyModel(); // Call the function to load ground.glb in advance
+
+let warehouseModel = null; // Variable to store the loaded warehouse.glb model
+// Function to load ground.glb and store it in memory
+async function loadWarehouseModel() {
+  try {
+    warehouseModel = await loader.loadAsync("warehouse.glb");
+    console.log("warehouse.glb loaded and ready for initialization.");
+  } catch (error) {
+    console.error("Error loading warehouse.glb:", error);
+  }
+}
+loadWarehouseModel(); // Call the function to load warehouse.glb in advance
+
+// Add the first sprite
+const spriteMaterial = new THREE.SpriteMaterial({
+  map: new THREE.TextureLoader().load("images/blackhole.png"),
+  transparent: true,
+});
+const sprite = new THREE.Sprite(spriteMaterial);
+sprite.position.set(0.5, 3.25, -15.5); // Place it above the ground x, y, z
+sprite.scale.set(0.75, 0.75, 0.75); // Scale uniformly
+scene.add(sprite);
+// Function to check collision
+function checkCollisionWithCamera(camera, sprite) {
+  const cameraPosition = camera.position.clone();
+  const spritePosition = sprite.position.clone();
+  // Check the distance between the camera and the sprite
+  const distance = cameraPosition.distanceTo(spritePosition);
+  // Consider a threshold for collision detection
+  const collisionThreshold = 1; // Adjust as needed
+  return distance < collisionThreshold;
+}
+// Animation loop
+function animateSprite1() {
+  requestAnimationFrame(animateSprite1);
+  // Check for collision
+  if (checkCollisionWithCamera(camera, sprite)) {
+    // Remove the sprite
+    scene.remove(sprite);
+    playStartSound();
+    // Initialize tiltedlaby.glb if it hasn't been added yet
+    if (tiltedlabyModel) {
+      console.log("Initializing tiltedlaby.glb...");
+      processModel(tiltedlabyModel); // Add and process the model
+      tiltedlabyModel = null; // Prevent re-initialization
+      // Add a second sprite
+      sprite.position.set(10.5, 3.25, 5.5);
+      //sprite.position.set(10.5, 18.25, -5.5); // Place it above the ground x, y, z
+      sprite.scale.set(1, 1, 1);
+      scene.add(sprite);
+      function animateSprite2() {
+        requestAnimationFrame(animateSprite2);
+        if (checkCollisionWithCamera(camera, sprite)) {
+          scene.remove(sprite);
+          playStartSound();
+          if (warehouseModel) {
+            console.log("Initializing warehouse.glb...");
+            processModel(warehouseModel);
+            warehouseModel = null;
+          }
+        }
+        // Update renderer and controls
+        renderer.render(scene, camera);
+      }
+      // Start animation loop
+      animateSprite2();
+    }
+  }
+  // Update renderer and controls
+  renderer.render(scene, camera);
+}
+// Start animation loop
+animateSprite1();
 
 //*******************************************
 // WORLD SELECTOR
@@ -490,22 +458,19 @@ function startTimer() {
   }, 1000);
 }
 
-// Function to stop the timer
-function stopTimer() {
-  clearInterval(timerInterval);
-}
-
 // Start the timer when the game starts
 startTimer();
 
 // Select the "Falls" counter element
 const startButton = document.getElementById("start-button");
 const fallsElement = document.getElementById("falls");
+const healthElement = document.getElementById("health");
 let fallCount = 0; // Initialize the fall counter
 function teleportPlayerIfOob() {
   // Check if the player is out of bounds
   if (camera.position.y <= -25) {
     // Increment the fall count
+    playDeathSound();
     fallCount++;
     fallsElement.textContent = fallCount;
     // Decrease the health meter after a fall
@@ -531,13 +496,14 @@ function teleportPlayerIfOob() {
 
 // Add an event listener for the "Start" button click
 startButton.addEventListener("click", () => {
-  playButtonClickSound();
-  // Reset the fall count to 0
   fallsElement.textContent = "0";
+  healthElement.textContent = "5";
   console.log("Deaths reset to 0");
 });
 
 function showGameOverPopup() {
+  // First reset the game to avoid a loop
+  resetGame();
   // Create the popup container
   const popup = document.createElement("div");
   popup.id = "game-over-popup";
@@ -553,26 +519,23 @@ function showGameOverPopup() {
   popup.style.justifyContent = "center";
   popup.style.alignItems = "center";
   popup.style.zIndex = "9999";
-
   // Add message to the popup
   const message = document.createElement("h1");
   message.textContent = "Game Over";
   message.style.marginBottom = "20px";
   popup.appendChild(message);
-
   // Add restart button to the popup
   const restartButton = document.createElement("button");
   restartButton.textContent = "Restart";
-  restartButton.classList.add("button", "alert");
+  restartButton.classList.add("button", "alert", "round");
   restartButton.style.padding = "10px 20px";
   restartButton.style.cursor = "pointer";
   restartButton.addEventListener("click", () => {
     // Restart game logic
     popup.remove(); // Remove the popup
-    resetGame(); // Call a resetGame function to reset game state
+    location.reload();
   });
   popup.appendChild(restartButton);
-
   // Append the popup to the body
   document.body.appendChild(popup);
 }
@@ -582,18 +545,15 @@ function resetGame() {
   const healthElement = document.getElementById("health");
   const fallsElement = document.getElementById("falls");
   //const coinsElement = document.getElementById("coins");
-
-  healthElement.textContent = "20"; // Reset health to full
+  healthElement.textContent = "5"; // Reset health to full
   fallsElement.textContent = "0"; // Reset falls to 0
   fallCount = 0; // Reset fall count
   //coinsElement.textContent = '0'; // Reset falls to 0
-
   playerCollider.start.set(0, 0.35, 0);
   playerCollider.end.set(0, 1, 0);
   playerCollider.radius = 0.35;
   camera.position.copy(playerCollider.end);
   camera.rotation.set(0, 0, 0);
-
   startTime = Date.now(); // Reset timer
 }
 
@@ -674,7 +634,6 @@ document.getElementById("closebutton").addEventListener("mouseup", (event) => {
   event.stopPropagation(); // Prevent the event from propagating
 });
 document.getElementById("closebutton").addEventListener("touchend", (event) => {
-  playButtonClickSound();
   event.stopPropagation(); // Prevent the event from propagating
 });
 
@@ -717,6 +676,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
+//*******************************************
+// ROTATE DEVICE PROMPT
+//*******************************************
 // Prompt to rotate device
 // Function to detect if the device is a mobile device
 function isMobileDevice() {
@@ -724,7 +686,6 @@ function isMobileDevice() {
     navigator.userAgent
   );
 }
-
 // Function to show a rotate popup
 function showRotatePopup() {
   // Create the popup container
@@ -735,21 +696,41 @@ function showRotatePopup() {
   popup.style.left = "0";
   popup.style.width = "100%";
   popup.style.height = "100%";
-  popup.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
+  popup.style.backgroundColor = "#000";
   popup.style.color = "#fff";
   popup.style.display = "flex";
   popup.style.flexDirection = "column";
   popup.style.justifyContent = "center";
   popup.style.alignItems = "center";
   popup.style.zIndex = "9999";
+  // Add logo to the popup
+  const ewlogo = document.createElement("h1");
+  ewlogo.textContent = "ENTROPY WORSHIP";
+  ewlogo.style.fontSize = "1.5rem";
+  ewlogo.style.textAlign = "center";
+  ewlogo.className = "heading display-6";
+  ewlogo.style.margin = "0 20px";
+  // Add deityengine to the popup
+  const heading = document.createElement("h2");
+  heading.textContent = "deityengine";
+  heading.style.fontSize = "3rem";
+  heading.style.textAlign = "center";
+  heading.style.margin = "0 20px";
   // Add message to the popup
   const message = document.createElement("p");
-  message.textContent = "rotate device to landscape mode";
+  message.textContent = ">rotate device to landscape mode";
   message.style.fontSize = "20px";
+  message.style.fontFamily = "VT323-Regular";
   message.style.textAlign = "center";
   message.style.margin = "0 20px";
+  message.className = "cyber-glitch-1 panel error shown";
+
+  const space = document.createElement("br");
+  // Append each element to the popup then to the document
+  popup.appendChild(ewlogo);
+  popup.appendChild(heading);
+  popup.appendChild(space);
   popup.appendChild(message);
-  // Append the popup to the body
   document.body.appendChild(popup);
 }
 
@@ -828,6 +809,48 @@ async function playButtonClickSound() {
     console.error("Error playing button click sound:", error);
   }
 }
+// Death sound
+const deathSound = "samples/alienbleep.mp3";
+// Function to play button click sound through the main audio context
+async function playDeathSound() {
+  try {
+    const response = await fetch(deathSound);
+    if (!response.ok) {
+      throw new Error(`Failed to load audio file: ${deathSound}`);
+    }
+    const arrayBuffer = await response.arrayBuffer();
+    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+    // Create a new audio source for the button sound
+    const deathAudioSource = audioContext.createBufferSource();
+    deathAudioSource.buffer = audioBuffer;
+    deathAudioSource.connect(gainNode).connect(audioContext.destination);
+    deathAudioSource.start(0); // Play the sound
+  } catch (error) {
+    console.error("Error playing death sound:", error);
+  }
+}
+// Start sound
+const startSound = "samples/mechaglitch.mp3";
+// Function to play button click sound through the main audio context
+async function playStartSound() {
+  try {
+    const response = await fetch(startSound);
+    if (!response.ok) {
+      throw new Error(`Failed to load audio file: ${startSound}`);
+    }
+    const arrayBuffer = await response.arrayBuffer();
+    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+
+    // Create a new audio source for the button sound
+    const startAudioSource = audioContext.createBufferSource();
+    startAudioSource.buffer = audioBuffer;
+    startAudioSource.connect(gainNode).connect(audioContext.destination);
+    startAudioSource.start(0); // Play the sound
+  } catch (error) {
+    console.error("Error playing start sound:", error);
+  }
+}
 
 // Ensure audio context is resumed after a user gesture
 document.body.addEventListener("click", () => {
@@ -845,14 +868,13 @@ volumeSlider.addEventListener("input", (event) => {
   const volume = parseFloat(event.target.value);
   gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
 });
-// Load the throw sound on page load
-//document.addEventListener('DOMContentLoaded', loadThrowSound);
 
 // Starting screen
 // Hide the start screen and initialize the game
 document.getElementById("start-button").addEventListener("click", () => {
+  playStartSound();
   document.getElementById("start-screen").style.display = "none";
-  startGame(); // Replace with your game's initialization logic
+  startGame();
 });
 
 // Game initialization function
