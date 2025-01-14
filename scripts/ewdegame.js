@@ -307,8 +307,7 @@ async function loadtiltedlabyModel() {
 }
 loadtiltedlabyModel(); // Call the function to load ground.glb in advance
 
-let warehouseModel = null; // Variable to store the loaded warehouse.glb model
-// Function to load ground.glb and store it in memory
+let warehouseModel = null;
 async function loadWarehouseModel() {
   try {
     warehouseModel = await loader.loadAsync("warehouse.glb");
@@ -317,7 +316,29 @@ async function loadWarehouseModel() {
     console.error("Error loading warehouse.glb:", error);
   }
 }
-loadWarehouseModel(); // Call the function to load warehouse.glb in advance
+loadWarehouseModel();
+
+let sideMazeModel = null;
+async function loadSideMazeModel() {
+  try {
+    sideMazeModel = await loader.loadAsync("sidemaze.glb");
+    console.log("sidemaze.glb loaded and ready for initialization.");
+  } catch (error) {
+    console.error("Error loading sidemaze.glb:", error);
+  }
+}
+loadSideMazeModel();
+
+let clubModel = null;
+async function loadClubModel() {
+  try {
+    clubModel = await loader.loadAsync("club.glb");
+    console.log("club.glb loaded and ready for initialization.");
+  } catch (error) {
+    console.error("Error loading club.glb:", error);
+  }
+}
+loadClubModel();
 
 // Add the first sprite
 const spriteMaterial = new THREE.SpriteMaterial({
@@ -326,7 +347,7 @@ const spriteMaterial = new THREE.SpriteMaterial({
 });
 const sprite = new THREE.Sprite(spriteMaterial);
 sprite.position.set(0.5, 3.25, -15.5); // Place it above the ground x, y, z
-sprite.scale.set(0.75, 0.75, 0.75); // Scale uniformly
+sprite.scale.set(1.5, 1.5, 1.5); // Scale uniformly
 scene.add(sprite);
 // Function to check collision
 function checkCollisionWithCamera(camera, sprite) {
@@ -353,8 +374,6 @@ function animateSprite1() {
       tiltedlabyModel = null; // Prevent re-initialization
       // Add a second sprite
       sprite.position.set(10.5, 3.25, 5.5);
-      //sprite.position.set(10.5, 18.25, -5.5); // Place it above the ground x, y, z
-      sprite.scale.set(1, 1, 1);
       scene.add(sprite);
       function animateSprite2() {
         requestAnimationFrame(animateSprite2);
@@ -365,6 +384,44 @@ function animateSprite1() {
             console.log("Initializing warehouse.glb...");
             processModel(warehouseModel);
             warehouseModel = null;
+            // Add a third sprite
+            sprite.position.set(9.5, 3.25, 4.5);
+            scene.add(sprite);
+            function animateSprite3() {
+              requestAnimationFrame(animateSprite3);
+              if (checkCollisionWithCamera(camera, sprite)) {
+                scene.remove(sprite);
+                playStartSound();
+                if (sideMazeModel) {
+                  console.log("Initializing sidemaze.glb...");
+                  processModel(sideMazeModel);
+                  sideMazeModel = null;
+                  // Add a forth sprite
+                  sprite.position.set(7.5, 3.25, 4.5);
+                  scene.add(sprite);
+                  function animateSprite4() {
+                    requestAnimationFrame(animateSprite4);
+                    if (checkCollisionWithCamera(camera, sprite)) {
+                      scene.remove(sprite);
+                      playStartSound();
+                      if (clubModel) {
+                        console.log("Initializing club.glb...");
+                        processModel(clubModel);
+                        clubModel = null;
+                      }
+                    }
+                    // Update renderer and controls
+                    renderer.render(scene, camera);
+                  }
+                  // Start animation loop
+                  animateSprite4();
+                }
+              }
+              // Update renderer and controls
+              renderer.render(scene, camera);
+            }
+            // Start animation loop
+            animateSprite3();
           }
         }
         // Update renderer and controls
