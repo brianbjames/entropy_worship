@@ -254,7 +254,7 @@ function controls(deltaTime) {
 // LOADER
 //*******************************************
 const loader = new GLTFLoader().setPath("/models/");
-const worldSelector = document.getElementById("worldSelector");
+//const worldSelector = document.getElementById("worldSelector");
 // Array to keep track of loaded models
 let loadedModels = [];
 
@@ -465,70 +465,70 @@ function animateSprite1() {
 // Start animation loop
 animateSprite1();
 
-//*******************************************
-// WORLD SELECTOR
-//*******************************************
-// Add event listener to the selector after basicground.glb is loaded
-worldSelector.addEventListener("change", (event) => {
-  playButtonClickSound();
-  const selectedValue = event.target.value;
+// //*******************************************
+// // WORLD SELECTOR
+// //*******************************************
+// // Add event listener to the selector after basicground.glb is loaded
+// worldSelector.addEventListener("change", (event) => {
+//   playButtonClickSound();
+//   const selectedValue = event.target.value;
 
-  if (selectedValue === "0") {
-    loader
-      .loadAsync("basicground.glb")
-      .then((groundGLTF) => processModel(groundGLTF))
-      .catch((error) => console.error("Error loading models:", error));
-    loader
-      .loadAsync("maze.glb")
-      .then((mazeGLTF) => processModel(mazeGLTF))
-      .catch((error) => console.error("Error loading models:", error));
-  } else if (selectedValue === "1") {
-    // loader
-    //   .loadAsync("ground.glb")
-    //   .then((groundGLTF) => processModel(groundGLTF))
-    //   .catch((error) => console.error("Error loading models:", error));
-    loader
-      .loadAsync("warehouse.glb")
-      .then((mazeGLTF) => processModel(mazeGLTF))
-      .catch((error) => console.error("Error loading models:", error));
-  } else if (selectedValue === "2") {
-    loader
-      .loadAsync("ground.glb")
-      .then((groundGLTF) => processModel(groundGLTF))
-      .catch((error) => console.error("Error loading models:", error));
-    loader
-      .loadAsync("labywrinth.glb")
-      .then((mazeGLTF) => processModel(mazeGLTF))
-      .catch((error) => console.error("Error loading models:", error));
-  } else if (selectedValue === "3") {
-    // loader
-    //   .loadAsync("basicground.glb")
-    //   .then((groundGLTF) => processModel(groundGLTF))
-    //   .catch((error) => console.error("Error loading models:", error));
-    loader
-      .loadAsync("sidemaze.glb")
-      .then((mazeGLTF) => processModel(mazeGLTF))
-      .catch((error) => console.error("Error loading models:", error));
-  } else if (selectedValue === "4") {
-    // loader
-    //   .loadAsync("ground.glb")
-    //   .then((groundGLTF) => processModel(groundGLTF))
-    //   .catch((error) => console.error("Error loading models:", error));
-    loader
-      .loadAsync("tiltedlaby.glb")
-      .then((mazeGLTF) => processModel(mazeGLTF))
-      .catch((error) => console.error("Error loading models:", error));
-  } else if (selectedValue === "5") {
-    // loader
-    //   .loadAsync("ground.glb")
-    //   .then((groundGLTF) => processModel(groundGLTF))
-    //   .catch((error) => console.error("Error loading models:", error));
-    loader
-      .loadAsync("club.glb")
-      .then((mazeGLTF) => processModel(mazeGLTF))
-      .catch((error) => console.error("Error loading models:", error));
-  }
-});
+//   if (selectedValue === "0") {
+//     loader
+//       .loadAsync("basicground.glb")
+//       .then((groundGLTF) => processModel(groundGLTF))
+//       .catch((error) => console.error("Error loading models:", error));
+//     loader
+//       .loadAsync("maze.glb")
+//       .then((mazeGLTF) => processModel(mazeGLTF))
+//       .catch((error) => console.error("Error loading models:", error));
+//   } else if (selectedValue === "1") {
+//     // loader
+//     //   .loadAsync("ground.glb")
+//     //   .then((groundGLTF) => processModel(groundGLTF))
+//     //   .catch((error) => console.error("Error loading models:", error));
+//     loader
+//       .loadAsync("warehouse.glb")
+//       .then((mazeGLTF) => processModel(mazeGLTF))
+//       .catch((error) => console.error("Error loading models:", error));
+//   } else if (selectedValue === "2") {
+//     loader
+//       .loadAsync("ground.glb")
+//       .then((groundGLTF) => processModel(groundGLTF))
+//       .catch((error) => console.error("Error loading models:", error));
+//     loader
+//       .loadAsync("labywrinth.glb")
+//       .then((mazeGLTF) => processModel(mazeGLTF))
+//       .catch((error) => console.error("Error loading models:", error));
+//   } else if (selectedValue === "3") {
+//     // loader
+//     //   .loadAsync("basicground.glb")
+//     //   .then((groundGLTF) => processModel(groundGLTF))
+//     //   .catch((error) => console.error("Error loading models:", error));
+//     loader
+//       .loadAsync("sidemaze.glb")
+//       .then((mazeGLTF) => processModel(mazeGLTF))
+//       .catch((error) => console.error("Error loading models:", error));
+//   } else if (selectedValue === "4") {
+//     // loader
+//     //   .loadAsync("ground.glb")
+//     //   .then((groundGLTF) => processModel(groundGLTF))
+//     //   .catch((error) => console.error("Error loading models:", error));
+//     loader
+//       .loadAsync("tiltedlaby.glb")
+//       .then((mazeGLTF) => processModel(mazeGLTF))
+//       .catch((error) => console.error("Error loading models:", error));
+//   } else if (selectedValue === "5") {
+//     // loader
+//     //   .loadAsync("ground.glb")
+//     //   .then((groundGLTF) => processModel(groundGLTF))
+//     //   .catch((error) => console.error("Error loading models:", error));
+//     loader
+//       .loadAsync("club.glb")
+//       .then((mazeGLTF) => processModel(mazeGLTF))
+//       .catch((error) => console.error("Error loading models:", error));
+//   }
+// });
 
 // Timer setup
 const timerElement = document.getElementById("timer");
