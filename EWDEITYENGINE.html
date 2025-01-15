@@ -222,34 +222,34 @@
                 <div class="row" style="display: flex; justify-content: left; align-items: left; gap: 10px;">
                   <div class="info">
                     <div class="label">Time</div>
-                    <div class="value" id="timer">0</div>
+                    <div class="value warning" id="timer">0</div>
                   </div>
                   <div class="info">
                     <div class="label">Lives</div>
-                    <div class="value" id="health">100</div>
+                    <div class="value success" id="health">100</div>
                   </div>
                   <div class="info">
                     <div class="label">Deaths</div>
-                    <div class="value" id="falls">0</div>
+                    <div class="value error" id="falls">0</div>
                   </div>
                   <div class="info">
                     <div class="label">Complexity</div>
                     <div class="value" id="world">1</div>
                   </div>
+                </div>
+              </div>
+              <div class="row cyber-glitch-1 panel shown" id="coordinates" style="font-family:VT323-Regular; font-size: 20px;">
+                <div class="row" style="display: flex; justify-content: left; align-items: left; gap: 10px;">
                   <div class="info">
-                    <div class="label">Artifacts</div>
-                    <div class="value" id="artifacts">0</div>
-                  </div>
-                  <div class="info">
-                    <div class="label">X</div>
+                    <!-- <div class="label">X</div> -->
                     <div class="value" id="x">0.0</div>
                   </div>
                   <div class="info">
-                    <div class="label">Y</div>
+                    <!-- <div class="label">Y</div> -->
                     <div class="value" id="y">0.0</div>
                   </div>
                   <div class="info">
-                    <div class="label">Z</div>
+                    <!-- <div class="label">Z</div> -->
                     <div class="value" id="z">0.0</div>
                   </div>
                 </div>
@@ -276,14 +276,12 @@
   // Select elements and hide/display panels. must be placed in code after the HTML elements
   const closebutton = document.getElementById('closebutton');
   const controls = document.getElementById('controls');
-  //const mainpanel = document.getElementById('mainpanel');
-  //const mainlogo = document.getElementById('mainlogo');
+  const coordinates = document.getElementById('coordinates');
   const preferences = document.getElementById('preferences');
   // Add click/tap event listener to toggle the hidden class
   closebutton.addEventListener('click', () => {
       controls.classList.toggle('hidden');
-      //mainpanel.classList.toggle('hidden');
-      //mainlogo.classList.toggle('hidden');
+      coordinates.classList.toggle('hidden');
       preferences.classList.toggle('hidden');
   });
 </script>
