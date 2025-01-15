@@ -5,6 +5,9 @@ import { Octree } from "three/addons/math/Octree.js";
 import { Capsule } from "three/addons/math/Capsule.js";
 import { Sky } from "three/addons/objects/Sky.js";
 
+//*******************************************
+// ENVIRONMENT SETUP
+//*******************************************
 // Add Sky to the scene
 let sky; // Declare `sky` here to avoid ReferenceError
 const sunPosition = new THREE.Vector3();
@@ -88,6 +91,13 @@ const GRAVITY = 30;
 const STEPS_PER_FRAME = 5;
 // Initialize Sky after setting up scene and renderer
 initializeSky();
+// Automatically cull objects outside the camera’s frustum
+renderer.localClippingEnabled = true;
+scene.traverse((child) => {
+  if (child.isMesh) {
+    child.frustumCulled = true; // Ensure each mesh respects the frustum
+  }
+});
 
 const worldOctree = new Octree();
 const playerCollider = new Capsule(
@@ -103,7 +113,6 @@ const keyStates = {};
 const vector1 = new THREE.Vector3();
 const vector2 = new THREE.Vector3();
 const vector3 = new THREE.Vector3();
-// Ensure shaders are not overly complex and use only necessary calculations
 const material = new THREE.ShaderMaterial({
   uniforms: {
     color: { value: new THREE.Color(0xff0000) },
@@ -130,7 +139,6 @@ const material = new THREE.ShaderMaterial({
 document.addEventListener("keydown", (event) => {
   keyStates[event.code] = true;
 });
-
 document.addEventListener("keyup", (event) => {
   keyStates[event.code] = false;
 });
@@ -148,7 +156,6 @@ container.addEventListener("touchstart", (event) => {
     console.log("Player jumped via canvas tap");
   }
 });
-
 document.addEventListener("pointerlockchange", () => {
   if (document.pointerLockElement === document.body) {
     console.log("Pointer lock activated.");
@@ -156,11 +163,9 @@ document.addEventListener("pointerlockchange", () => {
     console.log("Pointer lock deactivated.");
   }
 });
-
 document.addEventListener("mouseup", () => {
   console.log("Mouse up detected");
 });
-
 document.body.addEventListener("mousemove", (event) => {
   if (document.pointerLockElement === document.body) {
     camera.rotation.y -= event.movementX / 500;
@@ -174,7 +179,6 @@ document.body.addEventListener("mousemove", (event) => {
     console.log("Pointer lock not active.");
   }
 });
-
 window.addEventListener("resize", onWindowResize);
 function onWindowResize() {
   camera.aspect = window.innerWidth / window.innerHeight;
@@ -249,15 +253,110 @@ function controls(deltaTime) {
     }
   }
 }
+const leftJoystick = nipplejs.create({
+  zone: document.getElementById("left-joystick"),
+  mode: "static",
+  position: { left: "70px", bottom: "70px" },
+  color: "black",
+});
+
+const rightTouch = nipplejs.create({
+  zone: document.getElementById("right-touch"),
+  mode: "static",
+  position: { right: "70px", bottom: "70px" },
+  color: "black",
+});
+
+leftJoystick.on("move", (evt, data) => {
+  if (data.direction) {
+    const speedMultiplier = 0.11; // Slow down joystick movement
+    const speed = 3 * speedMultiplier; // Adjust speed as needed
+    switch (data.direction.angle) {
+      case "up":
+        playerVelocity.add(getForwardVector().multiplyScalar(speed));
+        break;
+      case "down":
+        playerVelocity.add(getForwardVector().multiplyScalar(-speed));
+        break;
+      case "left":
+        playerVelocity.add(getSideVector().multiplyScalar(-speed));
+        break;
+      case "right":
+        playerVelocity.add(getSideVector().multiplyScalar(speed));
+        break;
+    }
+  }
+});
+
+rightTouch.on("move", (evt, data) => {
+  if (data.vector) {
+    const cameraSensitivity = 3.5; // Increase this value for more sensitivity
+    camera.rotation.y -= (data.vector.x / 100) * cameraSensitivity;
+    camera.rotation.x -= (data.vector.y / 100) * cameraSensitivity;
+    // Clamp vertical rotation
+    camera.rotation.x = Math.max(
+      -Math.PI / 2,
+      Math.min(Math.PI / 2, camera.rotation.x)
+    );
+  }
+});
+
+// Prevent 'mouseup' or 'touchend' on the UI from triggering actions in the canvas
+document.getElementById("closebutton").addEventListener("mouseup", (event) => {
+  playButtonClickSound();
+  event.stopPropagation(); // Prevent the event from propagating
+});
+document.getElementById("closebutton").addEventListener("touchend", (event) => {
+  event.stopPropagation(); // Prevent the event from propagating
+});
+
+container.addEventListener("touchend", () => {
+  console.log("Touch end detected");
+});
+
+let lastMove = Date.now();
+leftJoystick.on("move", (evt, data) => {
+  if (Date.now() - lastMove < 16) return; // Throttle to ~60 FPS
+  lastMove = Date.now();
+  // Handle movement...
+});
+
+if (isMobileDevice()) {
+  console.log(
+    "Mobile or touch-capable device detected: disabling pointer lock."
+  );
+} else {
+  container.addEventListener("mousedown", () => {
+    document.body.requestPointerLock();
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+
+  // Select joystick and jump button elements
+  const leftJoystick = document.getElementById("left-joystick");
+  const rightTouch = document.getElementById("right-touch");
+  const spanElement = document.getElementById("controlsui");
+
+  if (!isMobile) {
+    // Hide elements on non-mobile devices
+    if (leftJoystick) leftJoystick.style.display = "none";
+    if (rightTouch) rightTouch.style.display = "none";
+    spanElement.style.display = "block";
+  } else {
+    spanElement.style.display = "none";
+    console.log("Mobile device detected: Showing touch controls.");
+  }
+});
 
 //*******************************************
-// LOADER
+// WORLD LOADER
 //*******************************************
 const loader = new GLTFLoader().setPath("/models/");
 //const worldSelector = document.getElementById("worldSelector");
 // Array to keep track of loaded models
 let loadedModels = [];
-
 // Function to process the loaded model
 function processModel(gltf) {
   scene.add(gltf.scene); // Add the model to the scene
@@ -274,20 +373,30 @@ function processModel(gltf) {
   });
 }
 
-//*******************************************
-// WORLD LOADER
-//*******************************************
-// Load the primary ground model first
-loader
-  .loadAsync("basicground.glb")
-  .then((basicGroundGLTF) => {
-    processModel(basicGroundGLTF);
-  })
-  .catch((error) => {
-    console.error("Error loading models:", error);
-  });
+document.addEventListener("DOMContentLoaded", async () => {
+  const loaderElement = document.getElementById("loader");
+  const startButtonPanel = document.getElementById("start-button-panel");
 
-let model1 = null; // Variable to store the loaded tiltedlaby.glb model
+  try {
+    // Load the primary ground model first to avoid a fall loop
+    loader
+      .loadAsync("basicground.glb")
+      .then((basicGroundGLTF) => {
+        processModel(basicGroundGLTF);
+        // Hide loader and show button once the model is processed
+        loaderElement.style.display = "none";
+        startButtonPanel.style.display = "block";
+      })
+      .catch((error) => {
+        console.error("Error loading models:", error);
+      });
+  } catch (error) {
+    console.error("Error loading models:", error);
+  }
+});
+
+// Pre-Load the next set of models
+let model1 = null; // Variable to store the loaded glb model
 // Function to load glb and store it in memory
 async function loadModel1() {
   try {
@@ -297,23 +406,23 @@ async function loadModel1() {
     console.error("Error loading model1:", error);
   }
 }
-loadModel1(); // Call the function to load maze.glb in advance
+loadModel1(); // Call the function to load glb in advance
 
 let model2 = null; // Variable to store the loaded tiltedlaby.glb model
 async function loadModel2() {
   try {
-    model2 = await loader.loadAsync("tiltedlaby.glb");
+    model2 = await loader.loadAsync("warehouse.glb");
     console.log("model2 loaded and ready for initialization.");
   } catch (error) {
     console.error("Error loading model2:", error);
   }
 }
-loadModel2(); // Call the function to load tiltedlaby.glb in advance
+loadModel2();
 
 let model3 = null;
 async function loadModel3() {
   try {
-    model3 = await loader.loadAsync("warehouse.glb");
+    model3 = await loader.loadAsync("tiltedlaby.glb");
     console.log("model3 loaded and ready for initialization.");
   } catch (error) {
     console.error("Error loading model3:", error);
@@ -325,7 +434,7 @@ let model4 = null;
 async function loadModel4() {
   try {
     model4 = await loader.loadAsync("sidemaze.glb");
-    console.log("model3 loaded and ready for initialization.");
+    console.log("model4 loaded and ready for initialization.");
   } catch (error) {
     console.error("Error loading model4:", error);
   }
@@ -343,10 +452,13 @@ async function loadModel5() {
 }
 loadModel5();
 
-// Add the first sprite
+//*******************************************
+// SPRITE LOADER - GAME PROGRESSION LOGIC
+//*******************************************
 const spriteMaterial = new THREE.SpriteMaterial({
   map: new THREE.TextureLoader().load("images/blackhole.png"),
   transparent: true,
+  //opacity: 0.5, // Adjust this value (0.0 is fully transparent, 1.0 is fully opaque)
 });
 const sprite = new THREE.Sprite(spriteMaterial);
 sprite.position.set(0.5, 1.25, -13.5); // Place it above the ground x, y, z
@@ -367,15 +479,15 @@ function animateSprite1() {
   requestAnimationFrame(animateSprite1);
   // Check for collision
   if (checkCollisionWithCamera(camera, sprite)) {
-    // Remove the sprite
-    scene.remove(sprite);
+    scene.remove(sprite); // Remove the sprite
     playStartSound();
-    // Initialize maze.glb if it hasn't been added yet
+    // Initialize glb if it hasn't been added yet
     if (model1) {
-      console.log("Initializing maze.glb...");
+      console.log("Initializing model1...");
       processModel(model1); // Add and process the model
       model1 = null; // Prevent re-initialization
-      incrementValue();
+      incrementValue(); // Update World Level
+      increaseHealth(); // Update Health Level
       // Add a second sprite
       sprite.position.set(7, 1, 1.3);
       scene.add(sprite);
@@ -385,12 +497,13 @@ function animateSprite1() {
           scene.remove(sprite);
           playStartSound();
           if (model2) {
-            console.log("Initializing tiltedlaby.glb...");
+            console.log("Initializing model2...");
             processModel(model2);
             model2 = null;
             incrementValue();
+            increaseHealth();
             // Add a third sprite
-            sprite.position.set(2.56, -2.38, -36.32);
+            sprite.position.set(-16.75, 1.04, 41.65);
             scene.add(sprite);
             function animateSprite3() {
               requestAnimationFrame(animateSprite3);
@@ -398,12 +511,13 @@ function animateSprite1() {
                 scene.remove(sprite);
                 playStartSound();
                 if (model3) {
-                  console.log("Initializing warehouse.glb...");
+                  console.log("Initializing model3...");
                   processModel(model3);
                   model3 = null;
                   incrementValue();
+                  increaseHealth();
                   // Add a forth sprite
-                  sprite.position.set(-16.75, 1.04, 41.65);
+                  sprite.position.set(2.56, -2.38, -36.32);
                   scene.add(sprite);
                   function animateSprite4() {
                     requestAnimationFrame(animateSprite4);
@@ -411,10 +525,11 @@ function animateSprite1() {
                       scene.remove(sprite);
                       playStartSound();
                       if (model4) {
-                        console.log("Initializing sidemaze.glb...");
+                        console.log("Initializing model4...");
                         processModel(model4);
                         model4 = null;
                         incrementValue();
+                        increaseHealth();
                         // Add a fifth sprite
                         //sprite.position.set(0.5, 3.25, 5.5);
                         sprite.position.set(10.5, 13.25, 15.5);
@@ -425,10 +540,11 @@ function animateSprite1() {
                             scene.remove(sprite);
                             playStartSound();
                             if (model5) {
-                              console.log("Initializing club.glb...");
+                              console.log("Initializing model5...");
                               processModel(model5);
                               model5 = null;
                               incrementValue();
+                              increaseHealth();
                             }
                           }
                           // Update renderer and controls
@@ -530,6 +646,9 @@ animateSprite1();
 //   }
 // });
 
+//*******************************************
+// STATS UI LOGIC
+//*******************************************
 // Timer setup
 const timerElement = document.getElementById("timer");
 let startTime = Date.now();
@@ -542,14 +661,11 @@ function startTimer() {
     timerElement.textContent = elapsedTime;
   }, 1000);
 }
-
-// Start the timer when the game starts
-startTimer();
-
-// Select the "Falls" counter element
+startTimer(); // Start the timer when the game starts
 const startButton = document.getElementById("start-button");
 const fallsElement = document.getElementById("falls");
 const healthElement = document.getElementById("health");
+const worldElement = document.getElementById("world");
 let fallCount = 0; // Initialize the fall counter
 function teleportPlayerIfOob() {
   // Check if the player is out of bounds
@@ -565,8 +681,8 @@ function teleportPlayerIfOob() {
       currentHealth -= 1;
       healthElement.textContent = currentHealth;
     }
-    // Check if health reaches 0
     if (currentHealth === 0) {
+      // Check if health reaches 0
       showGameOverPopup();
       return; // Exit function to prevent resetting the player's position
     }
@@ -578,29 +694,67 @@ function teleportPlayerIfOob() {
     camera.rotation.set(0, 0, 0);
   }
 }
-
+// Increase the level each time this function is called
 function incrementValue() {
-  // Select the div by its ID
   const div = document.getElementById("world");
-
-  // Get the current value inside the div
   const currentValue = parseInt(div.textContent, 10);
-
-  // Increase the value by 1
   if (!isNaN(currentValue)) {
     div.textContent = currentValue + 1;
   } else {
     console.error("The value inside the div is not a valid number.");
   }
 }
+function increaseHealth() {
+  const healthElement = document.getElementById("health");
+  let currentHealth = parseInt(healthElement.textContent, 10);
+  if (!isNaN(currentHealth)) {
+    healthElement.textContent = currentHealth + 1;
+  } else {
+    console.error("The health value is not a valid number.");
+  }
+}
+function logCameraPosition() {
+  const { x, y, z } = camera.position;
+  console.log(
+    `Camera Position: x=${x.toFixed(2)}, y=${y.toFixed(2)}, z=${z.toFixed(2)}`
+  );
+  document.getElementById("x").textContent = x.toFixed(2);
+  document.getElementById("y").textContent = y.toFixed(2);
+  document.getElementById("z").textContent = z.toFixed(2);
+}
+setInterval(logCameraPosition, 1000); // logCameraPosition periodically
 
 // Add an event listener for the "Start" button click
 startButton.addEventListener("click", () => {
   fallsElement.textContent = "0";
-  healthElement.textContent = "5";
+  healthElement.textContent = "1";
+  worldElement.textContent = "1";
   console.log("Deaths reset to 0");
 });
+// Volume slider functionality
+const volumeSlider = document.getElementById("volume-slider");
+volumeSlider.addEventListener("input", (event) => {
+  const volume = parseFloat(event.target.value);
+  gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+});
+// Starting screen
+// Hide the start screen and initialize the game
+document.getElementById("start-button").addEventListener("click", () => {
+  playStartSound();
+  document.getElementById("start-screen").style.display = "none";
+  startGame();
+});
 
+// Game initialization function
+function startGame() {
+  console.log("Game started!");
+  // Start animations, audio, or gameplay mechanics
+  setupAudio(); // Start background audio if not already running
+}
+
+//*******************************************
+// GAME OVER POPUP
+//*******************************************
 function showGameOverPopup() {
   // First reset the game to avoid a loop
   resetGame();
@@ -641,11 +795,12 @@ function showGameOverPopup() {
 }
 
 function resetGame() {
-  // Reset health, falls, and player position
   const healthElement = document.getElementById("health");
   const fallsElement = document.getElementById("falls");
+  const worldElement = document.getElementById("world");
   healthElement.textContent = "5"; // Reset health to full
   fallsElement.textContent = "0"; // Reset falls to 0
+  worldElement.textContent = "1"; // Reset falls to 0
   fallCount = 0; // Reset fall count
   playerCollider.start.set(0, 0.35, 0);
   playerCollider.end.set(0, 1, 0);
@@ -655,152 +810,22 @@ function resetGame() {
   startTime = Date.now(); // Reset timer
 }
 
-function animate() {
-  const deltaTime = Math.min(0.05, clock.getDelta()) / STEPS_PER_FRAME;
-  // we look for collisions in substeps to mitigate the risk of
-  // an object traversing another too quickly for detection.
-  for (let i = 0; i < STEPS_PER_FRAME; i++) {
-    controls(deltaTime);
-    updatePlayer(deltaTime);
-    //updateSpheres( deltaTime );
-    teleportPlayerIfOob();
-    //checkCollisionWithSprite();
-  }
-  renderer.render(scene, camera);
-  stats.update();
-}
-
-function logCameraPosition() {
-  const { x, y, z } = camera.position;
-  // Log to the console
-  console.log(
-    `Camera Position: x=${x.toFixed(2)}, y=${y.toFixed(2)}, z=${z.toFixed(2)}`
-  );
-  // Update the div elements
-  document.getElementById("x").textContent = x.toFixed(2);
-  document.getElementById("y").textContent = y.toFixed(2);
-  document.getElementById("z").textContent = z.toFixed(2);
-}
-// Call logCameraPosition periodically
-setInterval(logCameraPosition, 1000);
-
-// Automatically cull objects outside the camera’s frustum
-renderer.localClippingEnabled = true; // Enable clipping
-scene.traverse((child) => {
-  if (child.isMesh) {
-    child.frustumCulled = true; // Ensure each mesh respects the frustum
-  }
-});
-
-const leftJoystick = nipplejs.create({
-  zone: document.getElementById("left-joystick"),
-  mode: "static",
-  position: { left: "70px", bottom: "70px" },
-  color: "black",
-});
-
-const rightTouch = nipplejs.create({
-  zone: document.getElementById("right-touch"),
-  mode: "static",
-  position: { right: "70px", bottom: "70px" },
-  color: "black",
-});
-
-leftJoystick.on("move", (evt, data) => {
-  if (data.direction) {
-    const speedMultiplier = 0.11; // Slow down joystick movement
-    const speed = 3 * speedMultiplier; // Adjust speed as needed
-    switch (data.direction.angle) {
-      case "up":
-        playerVelocity.add(getForwardVector().multiplyScalar(speed));
-        break;
-      case "down":
-        playerVelocity.add(getForwardVector().multiplyScalar(-speed));
-        break;
-      case "left":
-        playerVelocity.add(getSideVector().multiplyScalar(-speed));
-        break;
-      case "right":
-        playerVelocity.add(getSideVector().multiplyScalar(speed));
-        break;
-    }
-  }
-});
-
-rightTouch.on("move", (evt, data) => {
-  if (data.vector) {
-    const cameraSensitivity = 3.5; // Increase this value for more sensitivity
-    camera.rotation.y -= (data.vector.x / 100) * cameraSensitivity;
-    camera.rotation.x -= (data.vector.y / 100) * cameraSensitivity;
-    // Clamp vertical rotation
-    camera.rotation.x = Math.max(
-      -Math.PI / 2,
-      Math.min(Math.PI / 2, camera.rotation.x)
-    );
-  }
-});
-
-// Prevent 'mouseup' or 'touchend' on the UI from triggering actions in the canvas
-document.getElementById("closebutton").addEventListener("mouseup", (event) => {
-  playButtonClickSound();
-  event.stopPropagation(); // Prevent the event from propagating
-});
-document.getElementById("closebutton").addEventListener("touchend", (event) => {
-  event.stopPropagation(); // Prevent the event from propagating
-});
-
-container.addEventListener("touchend", () => {
-  console.log("Touch end detected");
-});
-
-let lastMove = Date.now();
-leftJoystick.on("move", (evt, data) => {
-  if (Date.now() - lastMove < 16) return; // Throttle to ~60 FPS
-  lastMove = Date.now();
-  // Handle movement...
-});
-
-if (/Mobi|Android/i.test(navigator.userAgent)) {
-  console.log("Mobile device detected: disabling pointer lock.");
-  // Disable pointer lock for mobile or handle touch controls instead
-} else {
-  container.addEventListener("mousedown", () => {
-    document.body.requestPointerLock();
-  });
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-
-  // Select joystick and jump button elements
-  const leftJoystick = document.getElementById("left-joystick");
-  const rightTouch = document.getElementById("right-touch");
-  const spanElement = document.getElementById("controlsui");
-
-  if (!isMobile) {
-    // Hide elements on non-mobile devices
-    if (leftJoystick) leftJoystick.style.display = "none";
-    if (rightTouch) rightTouch.style.display = "none";
-    spanElement.style.display = "block";
-  } else {
-    spanElement.style.display = "none";
-    console.log("Mobile device detected: Showing touch controls.");
-  }
-});
-
 //*******************************************
 // ROTATE DEVICE PROMPT
 //*******************************************
 // Prompt to rotate device
 // Function to detect if the device is a mobile device
 function isMobileDevice() {
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(
-    navigator.userAgent
+  return (
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(
+      navigator.userAgent
+    ) ||
+    (navigator.maxTouchPoints > 1 && /Macintosh/i.test(navigator.userAgent))
   );
 }
+
 // Function to show a rotate popup
 function showRotatePopup() {
-  // Create the popup container
   const popup = document.createElement("div");
   popup.id = "rotate-popup";
   popup.style.position = "fixed";
@@ -815,20 +840,17 @@ function showRotatePopup() {
   popup.style.justifyContent = "center";
   popup.style.alignItems = "center";
   popup.style.zIndex = "9999";
-  // Add logo to the popup
   const ewlogo = document.createElement("h1");
   ewlogo.textContent = "ENTROPY WORSHIP";
   ewlogo.style.fontSize = "1.5rem";
   ewlogo.style.textAlign = "center";
   ewlogo.className = "heading display-6";
   ewlogo.style.margin = "0 20px";
-  // Add deityengine to the popup
   const heading = document.createElement("h2");
   heading.textContent = "deityengine";
   heading.style.fontSize = "3rem";
   heading.style.textAlign = "center";
   heading.style.margin = "0 20px";
-  // Add message to the popup
   const message = document.createElement("p");
   message.textContent = ">rotate device to landscape mode";
   message.style.fontSize = "20px";
@@ -836,16 +858,13 @@ function showRotatePopup() {
   message.style.textAlign = "center";
   message.style.margin = "0 20px";
   message.className = "cyber-glitch-1 panel error shown";
-
   const space = document.createElement("br");
-  // Append each element to the popup then to the document
   popup.appendChild(ewlogo);
   popup.appendChild(heading);
   popup.appendChild(space);
   popup.appendChild(message);
   document.body.appendChild(popup);
 }
-
 // Function to check screen orientation and handle popup
 function handleOrientationChange() {
   const popup = document.getElementById("rotate-popup");
@@ -922,7 +941,7 @@ async function playButtonClickSound() {
   }
 }
 // Death sound
-const deathSound = "samples/alienbleep.mp3";
+const deathSound = "samples/mechaglitch.mp3";
 // Function to play button click sound through the main audio context
 async function playDeathSound() {
   try {
@@ -943,7 +962,7 @@ async function playDeathSound() {
   }
 }
 // Start sound
-const startSound = "samples/mechaglitch.mp3";
+const startSound = "samples/alienbleep.mp3";
 // Function to play button click sound through the main audio context
 async function playStartSound() {
   try {
@@ -953,7 +972,6 @@ async function playStartSound() {
     }
     const arrayBuffer = await response.arrayBuffer();
     const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-
     // Create a new audio source for the button sound
     const startAudioSource = audioContext.createBufferSource();
     startAudioSource.buffer = audioBuffer;
@@ -963,7 +981,6 @@ async function playStartSound() {
     console.error("Error playing start sound:", error);
   }
 }
-
 // Ensure audio context is resumed after a user gesture
 document.body.addEventListener("click", () => {
   if (audioContext.state === "suspended") {
@@ -974,24 +991,20 @@ document.body.addEventListener("click", () => {
   }
 });
 
-// Volume slider functionality
-const volumeSlider = document.getElementById("volume-slider");
-volumeSlider.addEventListener("input", (event) => {
-  const volume = parseFloat(event.target.value);
-  gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
-});
-
-// Starting screen
-// Hide the start screen and initialize the game
-document.getElementById("start-button").addEventListener("click", () => {
-  playStartSound();
-  document.getElementById("start-screen").style.display = "none";
-  startGame();
-});
-
-// Game initialization function
-function startGame() {
-  console.log("Game started!");
-  // Start animations, audio, or gameplay mechanics
-  setupAudio(); // Start background audio if not already running
+//*******************************************
+// ANIMATE
+//*******************************************
+function animate() {
+  const deltaTime = Math.min(0.05, clock.getDelta()) / STEPS_PER_FRAME;
+  // look for collisions in substeps to mitigate the risk of
+  // an object traversing another too quickly for detection.
+  for (let i = 0; i < STEPS_PER_FRAME; i++) {
+    controls(deltaTime);
+    updatePlayer(deltaTime);
+    //updateSpheres( deltaTime );
+    teleportPlayerIfOob();
+    //checkCollisionWithSprite();
+  }
+  renderer.render(scene, camera);
+  stats.update();
 }
