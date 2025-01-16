@@ -332,14 +332,12 @@ if (isMobileDevice()) {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-
   // Select joystick and jump button elements
   const leftJoystick = document.getElementById("left-joystick");
   const rightTouch = document.getElementById("right-touch");
   const spanElement = document.getElementById("controlsui");
 
-  if (!isMobile) {
+  if (!isMobileDevice()) {
     // Hide elements on non-mobile devices
     if (leftJoystick) leftJoystick.style.display = "none";
     if (rightTouch) rightTouch.style.display = "none";
@@ -377,6 +375,22 @@ document.addEventListener("DOMContentLoaded", async () => {
   const loaderElement = document.getElementById("loader");
   const startButtonPanel = document.getElementById("start-button-panel");
 
+  try {
+    loader
+      .loadAsync("stargate.glb")
+      .then((stargateGLTF) => {
+        stargate = stargateGLTF.scene; // Assign to the outer variable
+        // Set the model's position and scale to match the sprite
+        stargate.position.copy(sprite.position); // Match sprite position
+
+        scene.add(stargate);
+      })
+      .catch((error) => {
+        console.error("Error loading models:", error);
+      });
+  } catch (error) {
+    console.error("Error loading models:", error);
+  }
   try {
     // Load the primary ground model first to avoid a fall loop
     loader
@@ -453,17 +467,19 @@ async function loadModel5() {
 loadModel5();
 
 //*******************************************
-// SPRITE LOADER - GAME PROGRESSION LOGIC
+// STARGATE AND SPRITE LOADER - GAME PROGRESSION LOGIC
 //*******************************************
 const spriteMaterial = new THREE.SpriteMaterial({
   map: new THREE.TextureLoader().load("images/blackhole.png"),
   transparent: true,
-  //opacity: 0.5, // Adjust this value (0.0 is fully transparent, 1.0 is fully opaque)
+  opacity: 1.0,
 });
 const sprite = new THREE.Sprite(spriteMaterial);
-sprite.position.set(0.5, 1.25, -13.5); // Place it above the ground x, y, z
-sprite.scale.set(4, 4, 4); // Scale uniformly
+sprite.position.set(0.5, 1.25, -13.5); // Same position as the model
+sprite.scale.set(3, 3, 3); // Uniform scale
 scene.add(sprite);
+let stargate; // Declare the stargate variable in the outer scope
+
 // Function to check collision
 function checkCollisionWithCamera(camera, sprite) {
   const cameraPosition = camera.position.clone();
@@ -480,6 +496,9 @@ function animateSprite1() {
   // Check for collision
   if (checkCollisionWithCamera(camera, sprite)) {
     scene.remove(sprite); // Remove the sprite
+    if (stargate) {
+      scene.remove(stargate); // Remove the stargate model
+    }
     playStartSound();
     // Initialize glb if it hasn't been added yet
     if (model1) {
@@ -491,10 +510,31 @@ function animateSprite1() {
       // Add a second sprite
       sprite.position.set(7, 1, 1.3);
       scene.add(sprite);
+      // Stargate
+      try {
+        loader
+          .loadAsync("stargate.glb")
+          .then((stargateGLTF) => {
+            stargate = stargateGLTF.scene; // Assign to the outer variable
+
+            // Set the model's position and scale to match the sprite
+            stargate.position.copy(sprite.position); // Match sprite position
+
+            scene.add(stargate);
+          })
+          .catch((error) => {
+            console.error("Error loading models:", error);
+          });
+      } catch (error) {
+        console.error("Error loading models:", error);
+      }
       function animateSprite2() {
         requestAnimationFrame(animateSprite2);
         if (checkCollisionWithCamera(camera, sprite)) {
           scene.remove(sprite);
+          if (stargate) {
+            scene.remove(stargate); // Remove the stargate model
+          }
           playStartSound();
           if (model2) {
             console.log("Initializing model2...");
@@ -505,10 +545,31 @@ function animateSprite1() {
             // Add a third sprite
             sprite.position.set(-16.75, 1.04, 41.65);
             scene.add(sprite);
+            // Stargate
+            try {
+              loader
+                .loadAsync("stargate.glb")
+                .then((stargateGLTF) => {
+                  stargate = stargateGLTF.scene; // Assign to the outer variable
+
+                  // Set the model's position and scale to match the sprite
+                  stargate.position.copy(sprite.position); // Match sprite position
+
+                  scene.add(stargate);
+                })
+                .catch((error) => {
+                  console.error("Error loading models:", error);
+                });
+            } catch (error) {
+              console.error("Error loading models:", error);
+            }
             function animateSprite3() {
               requestAnimationFrame(animateSprite3);
               if (checkCollisionWithCamera(camera, sprite)) {
                 scene.remove(sprite);
+                if (stargate) {
+                  scene.remove(stargate); // Remove the stargate model
+                }
                 playStartSound();
                 if (model3) {
                   console.log("Initializing model3...");
@@ -519,10 +580,31 @@ function animateSprite1() {
                   // Add a forth sprite
                   sprite.position.set(2.56, -2.38, -36.32);
                   scene.add(sprite);
+                  // Stargate
+                  try {
+                    loader
+                      .loadAsync("stargate.glb")
+                      .then((stargateGLTF) => {
+                        stargate = stargateGLTF.scene; // Assign to the outer variable
+
+                        // Set the model's position and scale to match the sprite
+                        stargate.position.copy(sprite.position); // Match sprite position
+
+                        scene.add(stargate);
+                      })
+                      .catch((error) => {
+                        console.error("Error loading models:", error);
+                      });
+                  } catch (error) {
+                    console.error("Error loading models:", error);
+                  }
                   function animateSprite4() {
                     requestAnimationFrame(animateSprite4);
                     if (checkCollisionWithCamera(camera, sprite)) {
                       scene.remove(sprite);
+                      if (stargate) {
+                        scene.remove(stargate); // Remove the stargate model
+                      }
                       playStartSound();
                       if (model4) {
                         console.log("Initializing model4...");
@@ -534,10 +616,31 @@ function animateSprite1() {
                         //sprite.position.set(0.5, 3.25, 5.5);
                         sprite.position.set(10.5, 13.25, 15.5);
                         scene.add(sprite);
+                        // Stargate
+                        try {
+                          loader
+                            .loadAsync("stargate.glb")
+                            .then((stargateGLTF) => {
+                              stargate = stargateGLTF.scene; // Assign to the outer variable
+
+                              // Set the model's position and scale to match the sprite
+                              stargate.position.copy(sprite.position); // Match sprite position
+
+                              scene.add(stargate);
+                            })
+                            .catch((error) => {
+                              console.error("Error loading models:", error);
+                            });
+                        } catch (error) {
+                          console.error("Error loading models:", error);
+                        }
                         function animateSprite5() {
                           requestAnimationFrame(animateSprite5);
                           if (checkCollisionWithCamera(camera, sprite)) {
                             scene.remove(sprite);
+                            if (stargate) {
+                              scene.remove(stargate); // Remove the stargate model
+                            }
                             playStartSound();
                             if (model5) {
                               console.log("Initializing model5...");
@@ -848,7 +951,7 @@ function showRotatePopup() {
   ewlogo.style.margin = "0 20px";
   const heading = document.createElement("h2");
   heading.textContent = "deityengine";
-  heading.style.fontSize = "3rem";
+  heading.style.fontSize = "1.5rem";
   heading.style.textAlign = "center";
   heading.style.margin = "0 20px";
   const message = document.createElement("p");
