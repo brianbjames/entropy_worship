@@ -551,6 +551,17 @@ async function loadLevelModel10() {
 }
 loadLevelModel10();
 
+// let stargate2 = null;
+// async function loadStarGate2() {
+//   try {
+//     stargate2 = await loader.loadAsync("stargate2.glb");
+//     console.log("stargate2 loaded and ready for initialization.");
+//   } catch (error) {
+//     console.error("Error loading stargate2:", error);
+//   }
+// }
+// loadStarGate2();
+
 //*******************************************
 // STARGATE AND SPRITE LOADER - GAME PROGRESSION LOGIC
 //*******************************************
@@ -744,7 +755,7 @@ if ((worldLevel = 7)) {
     requestAnimationFrame(animateSprite6);
     if (checkCollisionWithCamera(camera, sprite)) {
       scene.remove(sprite);
-      stargate.position.set(7, 1, 1.3);
+      stargate.position.set(-13.8, -19.75, -8.64);
       playStartSound();
       if (levelmodel7) {
         console.log("Initializing levelmodel7...");
@@ -770,7 +781,7 @@ if ((worldLevel = 8)) {
     requestAnimationFrame(animateSprite7);
     if (checkCollisionWithCamera(camera, sprite)) {
       scene.remove(sprite);
-      stargate.position.set(7, 1, 4.3);
+      stargate.position.set(1.89, 0.32, -32.03);
       playStartSound();
       if (levelmodel8) {
         console.log("Initializing levelmodel8...");
