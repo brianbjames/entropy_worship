@@ -1,0 +1,1090 @@
+<!-- /-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\ -->
+<!-- |                                                                         | -->
+<!-- \ @@@@@@@@  @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@@@@@   @@@ @@@      / -->
+<!-- - @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@ @@@      - -->
+<!-- / @@!       @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!  @@@  @@! !@@      \ -->
+<!-- | !@!       !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!  @!@  !@! @!!      | -->
+<!-- \ @!!!:!    @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!@@!@!    !@!@!       / -->
+<!-- - !!!!!:    !@!  !!!    !!!    !!@!@!    !@!  !!!  !!@!!!      @!!!       - -->
+<!-- / !!:       !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:         !!:        \ -->
+<!-- | :!:       :!:  !:!    :!:    :!:  !:!  :!:  !:!  :!:         :!:        | -->
+<!-- \  :: ::::   ::   ::     ::    ::   :::  ::::: ::   ::          ::        / -->
+<!-- - : :: ::   ::    :      :      :   : :   : :  :    :           :         - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \ @@@  @@@  @@@   @@@@@@   @@@@@@@    @@@@@@   @@@  @@@  @@@  @@@@@@@     / -->
+<!-- - @@@  @@@  @@@  @@@@@@@@  @@@@@@@@  @@@@@@@   @@@  @@@  @@@  @@@@@@@@    - -->
+<!-- / @@!  @@!  @@!  @@!  @@@  @@!  @@@  !@@       @@!  @@@  @@!  @@!  @@@    \ -->
+<!-- | !@!  !@!  !@!  !@!  @!@  !@!  @!@  !@!       !@!  @!@  !@!  !@!  @!@    | -->
+<!-- \ @!!  !!@  @!@  @!@  !@!  @!@!!@!   !!@@!!    @!@!@!@!  !!@  @!@@!@!     / -->
+<!-- - !@!  !!!  !@!  !@!  !!!  !!@!@!     !!@!!!   !!!@!!!!  !!!  !!@!!!      - -->
+<!-- / !!:  !!:  !!:  !!:  !!!  !!: :!!        !:!  !!:  !!!  !!:  !!:         \ -->
+<!-- | :!:  :!:  :!:  :!:  !:!  :!:  !:!      !:!   :!:  !:!  :!:  :!:         | -->
+<!-- \  :::: :: :::   ::::: ::  ::   :::  :::: ::   ::   :::   ::   ::         / -->
+<!-- -   :: :  : :     : :  :    :   : :  :: : :     :   : :  :     :          - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>three.js vr - handinput - press button</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
+    />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@v0.171.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@v0.171.0/examples/jsm/"
+        }
+      }
+    </script>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- SciUI CSS -->
+    <link href="styles/styles.css" type="text/css" rel="stylesheet" />
+    <!-- Cyberpunk CSS -->
+    <link href="styles/cyberpunk.css" rel="stylesheet" type="text/css" />
+    <!-- Override CSS -->
+    <link href="styles/style_overrides.css" rel="stylesheet" />
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden; /* Prevent scrollbars */
+      }
+      canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1; /* Push canvas to the background */
+        pointer-events: none; /* Allow clicks to pass through */
+      }
+      .container {
+        position: relative;
+        z-index: 1; /* Ensure container content is above the canvas */
+      }
+      .sequencer-container {
+            margin: 0px;
+        width: 100%;                /* Set the width of the container */
+        max-width: 800px;
+        display: flex;             /* Use flexbox for layout */
+        justify-content: flex-start; /* Align items to the start of the container */
+        align-items: flex-start;   /* Vertically align items to the start (top) */
+        flex-wrap: nowrap;         /* Prevent wrapping, force all items to stay on one line */
+        overflow-x: auto;  
+        }
+        .step {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 5%;
+            cursor: pointer;
+            position: relative;
+            padding: 1px;
+            margin: 1px;
+            font-size: 1.75rem;
+            transition: background-color 0.3s ease, box-shadow 0.1s ease;
+        }
+        .step.active {
+            background-color: rgb(51, 1, 1) !important; /* Green when active */
+        }
+        .step.triggered {
+            background-color: yellow !important; /* Yellow when triggered */
+        }
+        .step.flashing {
+            background-color: red !important;
+            animation: flash 0.1s ease-in-out;
+        }
+        @keyframes flash {
+            0% { background-color: red; }
+            50% { background-color: blue; }
+            100% { background-color: red; }
+        }
+.controls-container {
+    display: flex;
+    align-items: center;  /* Vertically aligns the items */
+    gap: 10px;  /* Adds some space between the button and the input */
+}
+
+#tempo {
+    padding: 5px 10px;  /* Adjusts input field size */
+    width: 80px;  /* You can adjust the width of the input */
+}
+        .heading {
+            color: #e80f0fcc; 
+            text-size-adjust: relative;
+        }
+        body {
+          position: relative;
+          /* background-image: url('images/entropyworship-1._Create_a_hyper-realistic_high-definition_image__20e10f5a-2f21-438c-a8b8-d4cfe6f3f7b0.png');  */
+          background-size: cover;
+          background-position: center;
+          color: white;
+          text-align: left;
+          margin: 0;
+          padding: 0;
+          font-family: 'Tomorrow', sans-serif; 
+          background-attachment: fixed; /* For desktop */
+        }
+        .transparent-bg {
+    background-color: transparent !important;
+}
+        /* Landscape prompt styles */
+        .landscape-prompt {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            display: none; /* Hidden by default */
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 1000; /* Ensures it sits above other elements */
+        }
+    </style>
+  </head>
+
+  <body>
+    <div class="container"><!--Main Container-->
+      <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c"><!--Header card-->
+          <div class="card-header border-danger">
+            <a href="https://www.entropyworship.com"><h1 class="heading display-6" style="font-size: 1.5rem;">ENTROPY WORSHIP</h1></a>
+              <h2 class="panel error shown" style="font-size: 1.5rem;">build 3.0.02.15.25</h1>
+      </div><!--Header panel-->
+            <!-- <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb71c">
+              <div class="card-body" id="card1">
+              </div>
+            </div> -->
+        </div>
+        
+  </div><!--Main Container-->  
+  <div class="container" style="width: 100%"><!--Main container-->
+
+            <div class="panel info shown"><!--EW909 panel-->
+
+        <div class="body" style="color: white;">
+            </div>
+    <div class="container" style="padding-bottom: 10px;">
+        <!--<h1>EW909 Sequencer</h1>-->
+<button id="start-stop" class="btn btn-outline-light btn">Start</button> <input type="number" id="tempo" value="120" min="1" max="500" style="color: white;" class="input btn btn-outline-light" >
+</div>
+<!-- Sequencer -->
+<!-- Sequencer Steps for Kick Drum -->
+<div class="panel info shown">
+<div class="sequencer-container" id="kick-sequencer"></div>
+    <div class="slider-container">
+        <label for="kick-tuning" style="padding-left: 10px; color: white;">BD Tuning:</label>
+        <input type="range" id="kick-tuning" min="0.5" max="2" step="0.01" value="1"/>
+        <!--<span id="kick-tuning-value">1.00</span>-->
+    </div>
+    </div>
+<!-- Sequencer Steps for Snare Drum -->
+<div class="panel info shown">
+<div class="sequencer-container" id="snare-sequencer"></div>
+<div class="slider-container">
+        <label for="snare-tuning" style="padding-left: 10px; color: white;">SN Tuning:</label>
+        <input type="range" id="snare-tuning" min="0.5" max="2" step="0.01" value="1" />
+        <!--<span id="snare-tuning-value">1.00</span>-->
+    </div>
+    </div>
+
+<!-- Sequencer Steps for Tom-L -->
+<div class="panel info shown">
+<div class="sequencer-container" id="tom-l-sequencer"></div>
+<div class="slider-container">
+        <label for="tom-l-tuning" style="padding-left: 10px; color: white;">LT Tuning:</label>
+        <input type="range" id="tom-l-tuning" min="0.5" max="2" step="0.01" value="1" />
+        <!--<span id="tom-l-tuning-value">1.00</span>-->
+    </div>
+    </div>
+
+<!-- Sequencer Steps for Tom-H -->
+<div class="panel info shown">
+<div class="sequencer-container" id="tom-h-sequencer"></div>
+<div class="slider-container">
+        <label for="tom-h-tuning" style="padding-left: 10px; color: white;">HT Tuning:</label>
+        <input type="range" id="tom-h-tuning" min="0.5" max="2" step="0.01" value="1" />
+        <!--<span id="tom-h-tuning-value">1.00</span>-->
+    </div>
+    </div>
+
+<!-- Sequencer Steps for Clap -->
+<div class="panel info shown">
+<div class="sequencer-container" id="clap-sequencer"></div>
+<div class="slider-container">
+        <label for="clap-tuning" style="padding-left: 10px; color: white;">CP Tuning:</label>
+        <input type="range" id="clap-tuning" min="0.5" max="2" step="0.01" value="1" />
+        <!--<span id="clap-tuning-value">1.00</span>-->
+    </div>
+    </div>
+
+<!-- Sequencer Steps for HiHat Open -->
+<div class="panel info shown">
+<div class="sequencer-container" id="hihat-open-sequencer"></div>
+<div class="slider-container">
+        <label for="hihat-open-tuning" style="padding-left: 10px; color: white;">OH Tuning:</label>
+        <input type="range" id="hihat-open-tuning" min="0.5" max="2" step="0.01" value="1" />
+        <!--<span id="hihat-open-tuning-value">1.00</span>-->
+    </div>
+    </div>
+    
+<!-- Sequencer Steps for HiHat Close -->
+<div class="panel info shown">
+<div class="sequencer-container" id="hihat-close-sequencer"></div>
+    <div class="slider-container">
+        <label for="hihat-close-tuning" style="padding-left: 10px; color: white;">CH Tuning:</label>
+        <input type="range" id="hihat-close-tuning" min="0.5" max="2" step="0.01" value="1" />
+        <!--<span id="hihat-close-tuning-value">1.00</span>-->
+    </div>
+    </div>
+
+<!-- Sequencer Steps for Cymbal -->
+<div class="panel info shown">
+<div class="sequencer-container" id="cymbal-sequencer"></div>
+    <div class="slider-container">
+        <label for="cymbal-tuning" style="padding-left: 10px; color: white;">CY Tuning:</label>
+        <input type="range" id="cymbal-tuning" min="0.5" max="2" step="0.01" value="1" />
+        <!--<span id="cymbal-tuning-value">1.00</span>-->
+    </div>
+    </div>
+    
+<!-- Sequencer Steps for Rim -->
+<div class="panel info shown">
+<div class="sequencer-container" id="rim-sequencer"></div>
+    <div class="slider-container">
+        <label for="rim-tuning" style="padding-left: 10px; color: white;">RM Tuning:</label>
+        <input type="range" id="rim-tuning" min="0.5" max="2" step="0.01" value="1" />
+        <!--<span id="rim-tuning-value">1.00</span>-->
+    </div>
+    </div>
+
+<!-- Sequencer Steps for Ride -->
+<div class="panel info shown">
+<div class="sequencer-container" id="ride-sequencer"></div>
+<div class="slider-container">
+        <label for="ride-tuning" style="padding-left: 10px; color: white;">RD Tuning:</label>
+        <input type="range" id="ride-tuning" min="0.5" max="2" step="0.01" value="1" />
+        <!--<span id="ride-tuning-value">1.00</span>-->
+    </div>
+    </div>
+    </div><!--body close-->
+    </div><!--EW909 panel close-->     
+  </div><!--close of main container-->
+
+    <script type="module">
+      import * as THREE from "three";
+      import { VRButton } from "three/addons/webxr/VRButton.js";
+      import { XRControllerModelFactory } from "three/addons/webxr/XRControllerModelFactory.js";
+      import { OculusHandModel } from "three/addons/webxr/OculusHandModel.js";
+      import { createText } from "three/addons/webxr/Text2D.js";
+
+      import {
+        World,
+        System,
+        Component,
+        TagComponent,
+        Types,
+      } from "three/addons/libs/ecsy.module.js";
+
+      class Object3D extends Component {}
+
+      Object3D.schema = {
+        object: { type: Types.Ref },
+      };
+
+      class Button extends Component {}
+
+      Button.schema = {
+        // button states: [resting, pressed, fully_pressed, recovering]
+        currState: { type: Types.String, default: "resting" },
+        prevState: { type: Types.String, default: "resting" },
+        pressSound: { type: Types.Ref, default: null },
+        releaseSound: { type: Types.Ref, default: null },
+        restingY: { type: Types.Number, default: null },
+        surfaceY: { type: Types.Number, default: null },
+        recoverySpeed: { type: Types.Number, default: 0.4 },
+        fullPressDistance: { type: Types.Number, default: null },
+        action: { type: Types.Ref, default: () => {} },
+      };
+
+      class ButtonSystem extends System {
+        init(attributes) {
+          this.renderer = attributes.renderer;
+          this.soundAdded = false;
+        }
+
+        execute(/*delta, time*/) {
+          let buttonPressSound, buttonReleaseSound;
+          if (this.renderer.xr.getSession() && !this.soundAdded) {
+            const xrCamera = this.renderer.xr.getCamera();
+
+            const listener = new THREE.AudioListener();
+            xrCamera.add(listener);
+
+            // create a global audio source
+            buttonPressSound = new THREE.Audio(listener);
+            buttonReleaseSound = new THREE.Audio(listener);
+
+            // load a sound and set it as the Audio object's buffer
+            const audioLoader = new THREE.AudioLoader();
+            audioLoader.load("sounds/button-press.ogg", function (buffer) {
+              buttonPressSound.setBuffer(buffer);
+            });
+            audioLoader.load("sounds/button-release.ogg", function (buffer) {
+              buttonReleaseSound.setBuffer(buffer);
+            });
+            this.soundAdded = true;
+          }
+
+          this.queries.buttons.results.forEach((entity) => {
+            const button = entity.getMutableComponent(Button);
+            const buttonMesh = entity.getComponent(Object3D).object;
+            // populate restingY
+            if (button.restingY == null) {
+              button.restingY = buttonMesh.position.y;
+            }
+
+            if (buttonPressSound) {
+              button.pressSound = buttonPressSound;
+            }
+
+            if (buttonReleaseSound) {
+              button.releaseSound = buttonReleaseSound;
+            }
+
+            if (
+              button.currState == "fully_pressed" &&
+              button.prevState != "fully_pressed"
+            ) {
+              if (button.pressSound) button.pressSound.play();
+              button.action();
+            }
+
+            if (
+              button.currState == "recovering" &&
+              button.prevState != "recovering"
+            ) {
+              if (button.releaseSound) button.releaseSound.play();
+            }
+
+            // preserve prevState, clear currState
+            // FingerInputSystem will update currState
+            button.prevState = button.currState;
+            button.currState = "resting";
+          });
+        }
+      }
+
+      ButtonSystem.queries = {
+        buttons: {
+          components: [Button],
+        },
+      };
+
+      class Pressable extends TagComponent {}
+
+      class FingerInputSystem extends System {
+        init(attributes) {
+          this.hands = attributes.hands;
+        }
+
+        execute(delta /*, time*/) {
+          this.queries.pressable.results.forEach((entity) => {
+            const button = entity.getMutableComponent(Button);
+            const object = entity.getComponent(Object3D).object;
+            const pressingDistances = [];
+            this.hands.forEach((hand) => {
+              if (hand && hand.intersectBoxObject(object)) {
+                const pressingPosition = hand.getPointerPosition();
+                pressingDistances.push(
+                  button.surfaceY - object.worldToLocal(pressingPosition).y
+                );
+              }
+            });
+            if (pressingDistances.length == 0) {
+              // not pressed this frame
+
+              if (object.position.y < button.restingY) {
+                object.position.y += button.recoverySpeed * delta;
+                button.currState = "recovering";
+              } else {
+                object.position.y = button.restingY;
+                button.currState = "resting";
+              }
+            } else {
+              button.currState = "pressed";
+              const pressingDistance = Math.max(pressingDistances);
+              if (pressingDistance > 0) {
+                object.position.y -= pressingDistance;
+              }
+
+              if (
+                object.position.y <=
+                button.restingY - button.fullPressDistance
+              ) {
+                button.currState = "fully_pressed";
+                object.position.y = button.restingY - button.fullPressDistance;
+              }
+            }
+          });
+        }
+      }
+
+      FingerInputSystem.queries = {
+        pressable: {
+          components: [Pressable],
+        },
+      };
+
+      class Rotating extends TagComponent {}
+
+      class RotatingSystem extends System {
+        execute(delta /*, time*/) {
+          this.queries.rotatingObjects.results.forEach((entity) => {
+            const object = entity.getComponent(Object3D).object;
+            object.rotation.x += 0.4 * delta;
+            object.rotation.y += 0.4 * delta;
+          });
+        }
+      }
+
+      RotatingSystem.queries = {
+        rotatingObjects: {
+          components: [Rotating],
+        },
+      };
+
+      class HandsInstructionText extends TagComponent {}
+
+      class InstructionSystem extends System {
+        init(attributes) {
+          this.controllers = attributes.controllers;
+        }
+
+        execute(/*delta, time*/) {
+          let visible = false;
+          this.controllers.forEach((controller) => {
+            if (controller.visible) {
+              visible = true;
+            }
+          });
+
+          this.queries.instructionTexts.results.forEach((entity) => {
+            const object = entity.getComponent(Object3D).object;
+            object.visible = visible;
+          });
+        }
+      }
+
+      InstructionSystem.queries = {
+        instructionTexts: {
+          components: [HandsInstructionText],
+        },
+      };
+
+      class OffsetFromCamera extends Component {}
+
+      OffsetFromCamera.schema = {
+        x: { type: Types.Number, default: 0 },
+        y: { type: Types.Number, default: 0 },
+        z: { type: Types.Number, default: 0 },
+      };
+
+      class NeedCalibration extends TagComponent {}
+
+      class CalibrationSystem extends System {
+        init(attributes) {
+          this.camera = attributes.camera;
+          this.renderer = attributes.renderer;
+        }
+
+        execute(/*delta, time*/) {
+          this.queries.needCalibration.results.forEach((entity) => {
+            if (this.renderer.xr.getSession()) {
+              const offset = entity.getComponent(OffsetFromCamera);
+              const object = entity.getComponent(Object3D).object;
+              const xrCamera = this.renderer.xr.getCamera();
+              object.position.x = xrCamera.position.x + offset.x;
+              object.position.y = xrCamera.position.y + offset.y;
+              object.position.z = xrCamera.position.z + offset.z;
+              entity.removeComponent(NeedCalibration);
+            }
+          });
+        }
+      }
+
+      CalibrationSystem.queries = {
+        needCalibration: {
+          components: [NeedCalibration],
+        },
+      };
+
+      const world = new World();
+      const clock = new THREE.Clock();
+      let camera, scene, renderer;
+
+      init();
+
+      function makeButtonMesh(x, y, z, color) {
+        const geometry = new THREE.BoxGeometry(x, y, z);
+        const material = new THREE.MeshPhongMaterial({ color: color });
+        const buttonMesh = new THREE.Mesh(geometry, material);
+        buttonMesh.castShadow = true;
+        buttonMesh.receiveShadow = true;
+        return buttonMesh;
+      }
+
+      function init() {
+        const container = document.createElement("div");
+        document.body.appendChild(container);
+
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x444444);
+
+        camera = new THREE.PerspectiveCamera(
+          50,
+          window.innerWidth / window.innerHeight,
+          0.1,
+          10
+        );
+        camera.position.set(0, 1.2, 0.3);
+
+        scene.add(new THREE.HemisphereLight(0xcccccc, 0x999999, 3));
+
+        const light = new THREE.DirectionalLight(0xffffff, 3);
+        light.position.set(0, 6, 0);
+        light.castShadow = true;
+        light.shadow.camera.top = 2;
+        light.shadow.camera.bottom = -2;
+        light.shadow.camera.right = 2;
+        light.shadow.camera.left = -2;
+        light.shadow.mapSize.set(4096, 4096);
+        scene.add(light);
+
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setAnimationLoop(animate);
+        renderer.shadowMap.enabled = true;
+        renderer.xr.enabled = true;
+        renderer.xr.cameraAutoUpdate = false;
+
+        container.appendChild(renderer.domElement);
+
+        const sessionInit = {
+          requiredFeatures: ["hand-tracking"],
+        };
+
+        document.body.appendChild(VRButton.createButton(renderer, sessionInit));
+
+        // controllers
+        const controller1 = renderer.xr.getController(0);
+        scene.add(controller1);
+
+        const controller2 = renderer.xr.getController(1);
+        scene.add(controller2);
+
+        const controllerModelFactory = new XRControllerModelFactory();
+
+        // Hand 1
+        const controllerGrip1 = renderer.xr.getControllerGrip(0);
+        controllerGrip1.add(
+          controllerModelFactory.createControllerModel(controllerGrip1)
+        );
+        scene.add(controllerGrip1);
+
+        const hand1 = renderer.xr.getHand(0);
+        const handModel1 = new OculusHandModel(hand1);
+        hand1.add(handModel1);
+        scene.add(hand1);
+
+        // Hand 2
+        const controllerGrip2 = renderer.xr.getControllerGrip(1);
+        controllerGrip2.add(
+          controllerModelFactory.createControllerModel(controllerGrip2)
+        );
+        scene.add(controllerGrip2);
+
+        const hand2 = renderer.xr.getHand(1);
+        const handModel2 = new OculusHandModel(hand2);
+        hand2.add(handModel2);
+        scene.add(hand2);
+
+        // buttons
+        const floorGeometry = new THREE.PlaneGeometry(4, 4);
+        const floorMaterial = new THREE.MeshPhongMaterial({ color: 0x222222 });
+        const floor = new THREE.Mesh(floorGeometry, floorMaterial);
+        floor.rotation.x = -Math.PI / 2;
+        floor.receiveShadow = true;
+        scene.add(floor);
+
+        const consoleGeometry = new THREE.BoxGeometry(0.5, 0.12, 0.15);
+        const consoleMaterial = new THREE.MeshPhongMaterial({
+          color: 0x595959,
+        });
+        const consoleMesh = new THREE.Mesh(consoleGeometry, consoleMaterial);
+        consoleMesh.position.set(0, 1, -0.3);
+        consoleMesh.castShadow = true;
+        consoleMesh.receiveShadow = true;
+        scene.add(consoleMesh);
+
+        const orangeButton = makeButtonMesh(0.08, 0.1, 0.08, 0xffd3b5);
+        orangeButton.position.set(-0.15, 0.04, 0);
+        consoleMesh.add(orangeButton);
+
+        const pinkButton = makeButtonMesh(0.08, 0.1, 0.08, 0xe84a5f);
+        pinkButton.position.set(-0.05, 0.04, 0);
+        consoleMesh.add(pinkButton);
+
+        const resetButton = makeButtonMesh(0.08, 0.1, 0.08, 0x355c7d);
+        const resetButtonText = createText("reset", 0.03);
+        resetButton.add(resetButtonText);
+        resetButtonText.rotation.x = -Math.PI / 2;
+        resetButtonText.position.set(0, 0.051, 0);
+        resetButton.position.set(0.05, 0.04, 0);
+        consoleMesh.add(resetButton);
+
+        const exitButton = makeButtonMesh(0.08, 0.1, 0.08, 0xff0000);
+        const exitButtonText = createText("exit", 0.03);
+        exitButton.add(exitButtonText);
+        exitButtonText.rotation.x = -Math.PI / 2;
+        exitButtonText.position.set(0, 0.051, 0);
+        exitButton.position.set(0.15, 0.04, 0);
+        consoleMesh.add(exitButton);
+
+        const tkGeometry = new THREE.TorusKnotGeometry(0.5, 0.2, 200, 32);
+        const tkMaterial = new THREE.MeshPhongMaterial({ color: 0xffffff });
+        tkMaterial.metalness = 0.8;
+        const torusKnot = new THREE.Mesh(tkGeometry, tkMaterial);
+        torusKnot.position.set(0, 1, -5);
+        scene.add(torusKnot);
+
+        const instructionText = createText(
+          "This is a WebXR Hands demo, please explore with hands.",
+          0.04
+        );
+        instructionText.position.set(0, 1.6, -0.6);
+        scene.add(instructionText);
+
+        const exitText = createText("Exiting session...", 0.04);
+        exitText.position.set(0, 1.5, -0.6);
+        exitText.visible = false;
+        scene.add(exitText);
+
+        world
+          .registerComponent(Object3D)
+          .registerComponent(Button)
+          .registerComponent(Pressable)
+          .registerComponent(Rotating)
+          .registerComponent(HandsInstructionText)
+          .registerComponent(OffsetFromCamera)
+          .registerComponent(NeedCalibration);
+
+        world
+          .registerSystem(RotatingSystem)
+          .registerSystem(InstructionSystem, {
+            controllers: [controllerGrip1, controllerGrip2],
+          })
+          .registerSystem(CalibrationSystem, {
+            renderer: renderer,
+            camera: camera,
+          })
+          .registerSystem(ButtonSystem, { renderer: renderer, camera: camera })
+          .registerSystem(FingerInputSystem, {
+            hands: [handModel1, handModel2],
+          });
+
+        const csEntity = world.createEntity();
+        csEntity.addComponent(OffsetFromCamera, { x: 0, y: -0.4, z: -0.3 });
+        csEntity.addComponent(NeedCalibration);
+        csEntity.addComponent(Object3D, { object: consoleMesh });
+
+        const obEntity = world.createEntity();
+        obEntity.addComponent(Pressable);
+        obEntity.addComponent(Object3D, { object: orangeButton });
+        const obAction = function () {
+          torusKnot.material.color.setHex(0xffd3b5);
+        };
+
+        obEntity.addComponent(Button, {
+          action: obAction,
+          surfaceY: 0.05,
+          fullPressDistance: 0.02,
+        });
+
+        const pbEntity = world.createEntity();
+        pbEntity.addComponent(Pressable);
+        pbEntity.addComponent(Object3D, { object: pinkButton });
+        const pbAction = function () {
+          torusKnot.material.color.setHex(0xe84a5f);
+        };
+
+        pbEntity.addComponent(Button, {
+          action: pbAction,
+          surfaceY: 0.05,
+          fullPressDistance: 0.02,
+        });
+
+        const rbEntity = world.createEntity();
+        rbEntity.addComponent(Pressable);
+        rbEntity.addComponent(Object3D, { object: resetButton });
+        const rbAction = function () {
+          torusKnot.material.color.setHex(0xffffff);
+        };
+
+        rbEntity.addComponent(Button, {
+          action: rbAction,
+          surfaceY: 0.05,
+          fullPressDistance: 0.02,
+        });
+
+        const ebEntity = world.createEntity();
+        ebEntity.addComponent(Pressable);
+        ebEntity.addComponent(Object3D, { object: exitButton });
+        const ebAction = function () {
+          exitText.visible = true;
+          setTimeout(function () {
+            exitText.visible = false;
+            renderer.xr.getSession().end();
+          }, 2000);
+        };
+
+        ebEntity.addComponent(Button, {
+          action: ebAction,
+          surfaceY: 0.05,
+          recoverySpeed: 0.2,
+          fullPressDistance: 0.03,
+        });
+
+        const tkEntity = world.createEntity();
+        tkEntity.addComponent(Rotating);
+        tkEntity.addComponent(Object3D, { object: torusKnot });
+
+        const itEntity = world.createEntity();
+        itEntity.addComponent(HandsInstructionText);
+        itEntity.addComponent(Object3D, { object: instructionText });
+
+        window.addEventListener("resize", onWindowResize);
+      }
+
+      function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      }
+
+      function animate() {
+        const delta = clock.getDelta();
+        const elapsedTime = clock.elapsedTime;
+        renderer.xr.updateCamera(camera);
+        world.execute(delta, elapsedTime);
+        renderer.render(scene, camera);
+      }
+    </script>
+    <script>
+      const tempoInput = document.getElementById('tempo');
+      const startStopButton = document.getElementById('start-stop');
+      const kickSequencerContainer = document.getElementById('kick-sequencer');
+      const snareSequencerContainer = document.getElementById('snare-sequencer');
+      const tomLSequencerContainer = document.getElementById('tom-l-sequencer');
+      const tomHSequencerContainer = document.getElementById('tom-h-sequencer');
+      const clapSequencerContainer = document.getElementById('clap-sequencer');
+      const hihatOpenSequencerContainer = document.getElementById('hihat-open-sequencer');
+      const hihatCloseSequencerContainer = document.getElementById('hihat-close-sequencer');
+      const cymbalSequencerContainer = document.getElementById('cymbal-sequencer');
+      const rimSequencerContainer = document.getElementById('rim-sequencer');
+      const rideSequencerContainer = document.getElementById('ride-sequencer');
+  
+      let audioContext;
+      let intervalId;
+      let currentStep = 0;
+      let isPlaying = false;
+      let kickSteps = Array(16).fill(false);
+      let snareSteps = Array(16).fill(false);
+      let tomLSteps = Array(16).fill(false);
+      let tomHSteps = Array(16).fill(false);
+      let clapSteps = Array(16).fill(false);
+      let hihatOpenSteps = Array(16).fill(false);
+      let hihatCloseSteps = Array(16).fill(false);
+      let cymbalSteps = Array(16).fill(false);
+      let rimSteps = Array(16).fill(false);
+      let rideSteps = Array(16).fill(false);
+      let stepDuration = 60 / parseFloat(tempoInput.value) / 4;
+  
+      // Buffers for each sound
+      let buffers = {
+          kick: null,
+          'kick-short': null,
+          snare: null,
+          tomL: null,
+          tomH: null,
+          clap: null,
+          hihatOpen: null,
+          hihatClose: null,
+          cymbal: null,
+          rim: null,
+          ride: null
+      };
+  
+      // Create the AudioContext
+      function createAudioContext() {
+          audioContext = new (window.AudioContext || window.webkitAudioContext)();
+          loadAllSamples(); // Load all samples on startup
+      }
+  
+      // Load all samples, including both kick samples
+      function loadAllSamples() {
+          const sampleRequests = [
+              { name: 'kick', url: 'samples/kick.wav' },
+              { name: 'snare', url: 'samples/snare.wav' },
+              { name: 'tomL', url: 'samples/tom-l.wav' },
+              { name: 'tomH', url: 'samples/tom-h.wav' },
+              { name: 'clap', url: 'samples/clap.wav' },
+              { name: 'hihatOpen', url: 'samples/hihat-open.wav' },
+              { name: 'hihatClose', url: 'samples/hihat-close.wav' },
+              { name: 'cymbal', url: 'samples/cymbal.wav' },
+              { name: 'rim', url: 'samples/rim.wav' },
+              { name: 'ride', url: 'samples/ride.wav' }
+          ];
+  
+          // Fetch and decode each sample
+          const promises = sampleRequests.map(request => {
+              return fetch(request.url)
+                  .then(response => {
+                      if (!response.ok) {
+                          throw new Error(`Failed to load ${request.name} from ${request.url}`);
+                      }
+                      return response.arrayBuffer();
+                  })
+                  .then(data => audioContext.decodeAudioData(data))
+                  .then(buffer => {
+                      buffers[request.name] = buffer;
+                      console.log(`Loaded sample: ${request.name}`);
+                  })
+                  .catch(err => {
+                      console.error(`Error loading ${request.name} sample:`, err);
+                  });
+          });
+  
+          // Wait for all promises to resolve
+          Promise.all(promises)
+              .then(() => {
+                  console.log('All samples loaded successfully.');
+              })
+              .catch(error => {
+                  console.error('Error loading some samples:', error);
+              });
+      }
+  
+      // Play a specific sound using the loaded buffer
+      function playSound(name, tuning = 1) {
+          console.log('Playing sound:', name); // Debugging log
+          if (buffers[name]) {
+              const source = audioContext.createBufferSource();
+              source.buffer = buffers[name];
+              
+              // Adjust the playback rate based on the tuning value
+              source.playbackRate.value = tuning; // Apply tuning (playback rate)
+  
+              source.connect(audioContext.destination);
+              source.start();
+          } else {
+              console.error(`Sound buffer not found for: ${name}`);
+          }
+      }
+  
+      // Step through the sequencer and play sounds
+      function stepSequencer() {
+          if (isPlaying) {
+              const steps = [
+                  kickSteps,
+                  snareSteps,
+                  tomLSteps,
+                  tomHSteps,
+                  clapSteps,
+                  hihatOpenSteps,
+                  hihatCloseSteps,
+                  cymbalSteps,
+                  rimSteps,
+                  rideSteps
+              ];
+  
+              const sounds = [
+                  'kick', 
+                  'snare',
+                  'tomL',
+                  'tomH',
+                  'clap',
+                  'hihatOpen',
+                  'hihatClose',
+                  'cymbal',
+                  'rim',
+                  'ride'
+              ];
+  
+              const tunings = [
+                  currentKickTuning, 
+                  currentSnareTuning,
+                  currentTomLTuning, 
+                  currentTomHTuning,
+                  currentClapTuning,
+                  currentHihatOpenTuning,
+                  currentHihatCloseTuning,
+                  currentCymbalTuning,
+                  currentRimTuning,
+                  currentRideTuning
+              ];
+  
+              // Check each step for active hits
+              for (let i = 0; i < steps.length; i++) {
+                  if (steps[i][currentStep]) {
+                      playSound(sounds[i], tunings[i]);
+                  }
+              }
+  
+              // Move to the next step in the sequence
+              currentStep = (currentStep + 1) % 16;
+          }
+      }
+  
+      // Toggle the active state of a step (for the sequencer)
+      function toggleStep(stepIndex, stepsArray, stepElement) {
+          stepsArray[stepIndex] = !stepsArray[stepIndex]; // Toggle the step's active state
+          if (stepsArray[stepIndex]) {
+              stepElement.classList.add('active'); // Add green background for active steps
+          } else {
+              stepElement.classList.remove('active'); // Remove green background for disabled steps
+          }
+      }
+  
+      // Render the sequencer steps
+      function renderSequencer() {
+          const containers = [
+              kickSequencerContainer,
+              snareSequencerContainer,
+              tomLSequencerContainer,
+              tomHSequencerContainer,
+              clapSequencerContainer,
+              hihatOpenSequencerContainer,
+              hihatCloseSequencerContainer,
+              cymbalSequencerContainer,
+              rimSequencerContainer,
+              rideSequencerContainer
+          ];
+  
+          const stepArrays = [
+              kickSteps,
+              snareSteps,
+              tomLSteps,
+              tomHSteps,
+              clapSteps,
+              hihatOpenSteps,
+              hihatCloseSteps,
+              cymbalSteps,
+              rimSteps,
+              rideSteps
+          ];
+  
+          containers.forEach((container, index) => {
+          container.innerHTML = ''; // Clear any previous steps
+          stepArrays[index].forEach((step, stepIndex) => {
+              const stepElement = document.createElement('button'); // Change to 'button' for Bootstrap styling
+              stepElement.classList.add('btn', 'btn-danger', 'btn-lg', 'step'); // Add Bootstrap classes
+              if (step) stepElement.classList.add('active');
+              stepElement.addEventListener('click', () => toggleStep(stepIndex, stepArrays[index], stepElement));
+              container.appendChild(stepElement);
+          });
+      });
+      }
+  
+      // Update step duration based on tempo input
+      tempoInput.addEventListener('input', () => {
+          stepDuration = 60 / parseFloat(tempoInput.value) / 4;
+      });
+  
+      // Start/Stop button logic
+      startStopButton.addEventListener('click', () => {
+          if (!isPlaying) {
+              isPlaying = true;
+              startStopButton.textContent = 'Stop';
+              intervalId = setInterval(stepSequencer, stepDuration * 1000);
+          } else {
+              isPlaying = false;
+              startStopButton.textContent = 'Start';
+              clearInterval(intervalId);
+          }
+      });
+      // Initial setup
+      createAudioContext();
+      renderSequencer();
+      // Store the current tuning values (default is 1)
+      let currentKickTuning = 1.0;
+      let currentSnareTuning = 1.0;
+      let currentTomLTuning = 1.0;
+      let currentTomHTuning = 1.0;
+      let currentClapTuning = 1.0;
+      let currentHihatOpenTuning = 1.0;
+      let currentHihatCloseTuning = 1.0;
+      let currentCymbalTuning = 1.0;
+      let currentRimTuning = 1.0;
+      let currentRideTuning = 1.0;
+      // Event listeners for all the tuning sliders
+      document.getElementById('kick-tuning').addEventListener('input', (event) => {
+          currentKickTuning = parseFloat(event.target.value);
+          document.getElementById('kick-tuning-value').textContent = currentKickTuning.toFixed(2);
+      });
+      document.getElementById('snare-tuning').addEventListener('input', (event) => {
+          currentSnareTuning = parseFloat(event.target.value);
+          document.getElementById('snare-tuning-value').textContent = currentSnareTuning.toFixed(2);
+      });
+      document.getElementById('tom-l-tuning').addEventListener('input', (event) => {
+          currentTomLTuning = parseFloat(event.target.value);
+          document.getElementById('tom-l-tuning-value').textContent = currentTomLTuning.toFixed(2);
+      });
+      document.getElementById('tom-h-tuning').addEventListener('input', (event) => {
+          currentTomHTuning = parseFloat(event.target.value);
+          document.getElementById('tom-h-tuning-value').textContent = currentTomHTuning.toFixed(2);
+      });
+      document.getElementById('clap-tuning').addEventListener('input', (event) => {
+          currentClapTuning = parseFloat(event.target.value);
+          document.getElementById('clap-tuning-value').textContent = currentClapTuning.toFixed(2);
+      });
+      document.getElementById('hihat-open-tuning').addEventListener('input', (event) => {
+          currentHihatOpenTuning = parseFloat(event.target.value);
+          document.getElementById('hihat-open-tuning-value').textContent = currentHihatOpenTuning.toFixed(2);
+      });
+      document.getElementById('hihat-close-tuning').addEventListener('input', (event) => {
+          currentHihatCloseTuning = parseFloat(event.target.value);
+          document.getElementById('hihat-close-tuning-value').textContent = currentHihatCloseTuning.toFixed(2);
+      });
+      document.getElementById('cymbal-tuning').addEventListener('input', (event) => {
+          currentCymbalTuning = parseFloat(event.target.value);
+          document.getElementById('cymbal-tuning-value').textContent = currentCymbalTuning.toFixed(2);
+      });
+      document.getElementById('rim-tuning').addEventListener('input', (event) => {
+          currentRimTuning = parseFloat(event.target.value);
+          document.getElementById('rim-tuning-value').textContent = currentRimTuning.toFixed(2);
+      });
+      document.getElementById('ride-tuning').addEventListener('input', (event) => {
+          currentRideTuning = parseFloat(event.target.value);
+          document.getElementById('ride-tuning-value').textContent = currentRideTuning.toFixed(2);
+      });
+  </script>
+  </body>
+  <!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</html>
