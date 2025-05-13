@@ -50,9 +50,9 @@ function initializeSky() {
     rayleigh: 3,
     mieCoefficient: 0.005,
     mieDirectionalG: 0.7,
-    elevation: 2, // Elevation of the sun
+    elevation: 0, // Elevation of the sun
     azimuth: 180, // Position of the sun (angle)
-    exposure: renderer.toneMappingExposure, // Ensure renderer is defined
+    exposure: 0.2011, // Ensure renderer is defined. was renderer.toneMappingExposure
   };
   // Function to update sky parameters
   function updateSky() {
