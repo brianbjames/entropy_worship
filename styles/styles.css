@@ -66,7 +66,7 @@ select:focus {
   cursor: default;
 }
 .panel.success {
-  color: rgba(120, 200, 255, 0.8);
+  color: rgba(1, 206, 31, 0.8);
   background-color: rgba(0, 120, 31, 0.2);
   border: 1px solid rgba(0, 171, 44, 0.1);
 }
@@ -407,8 +407,8 @@ a.button:focus {
   color: rgba(255, 255, 255, 0.8);
 }
 .button.warning {
-  background-color: #785e00;
-  border: 1px solid #ab8600;
+  background-color: #9f9f00;
+  border: 1px solid #c8c101;
   color: rgba(255, 255, 255, 0.8);
 }
 .button.success {
@@ -641,17 +641,20 @@ a {
   color: rgba(120, 200, 255, 0.85);
 }
 .info {
-  color: #1371e6;
+  color: #00fff2;
 }
 .success {
-  color: #00a12a;
+  color: #00ff44;
 }
 .warning {
-  color: #a17e00;
+  color: #fbff00;
+}
+.dark {
+  color: #121201;
 }
 .error,
 .alert {
-  color: #f80000;
+  color: #ff0000;
 }
 .alert {
   animation: alert-flash-text 0.5s linear infinite;
@@ -681,7 +684,7 @@ a {
   border: 1px solid #126cdc;
 }
 .toast-warning {
-  background-color: #785e00;
+  background-color: #ffc800;
   border: 1px solid #ab8600;
 }
 .toast-error {
@@ -1024,7 +1027,7 @@ progress[value]::-webkit-progress-value {
   animation: spin 1s infinite linear;
   border: 3px solid rgba(120, 200, 255, 0.1);
   border-radius: 50%;
-  border-top-color: rgba(251, 0, 0, 0.907);
+  border-top-color: rgba(186, 5, 5, 0.907);
   height: 2em;
   width: 2em;
 }
@@ -1044,7 +1047,7 @@ span.loader {
   padding: 8px;
 }
 .table.border {
-  border: 1px solid #e80f0fcc;
+  border: 1px solid #c80505cc;
 }
 .table.stripes tr:nth-child(even) {
   background-color: rgba(251, 0, 0, 0.42);
