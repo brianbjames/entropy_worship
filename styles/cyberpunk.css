@@ -10,14 +10,14 @@
 
 /*#region top level elements*/
 :root {
-  --root-font-size: 18px;
+  --root-font-size: 20px;
 
-  --yellow: #f8ef02;
-  --cyan: #00ffd2;
-  --red: #ab0000;
-  --blue: #136377;
-  --green: #446d44;
-  --purple: purple;
+  --yellow: #cec823;
+  --cyan: #05af90;
+  --red: #660c0c;
+  --blue: #0a4351;
+  --green: #294629;
+  --purple: rgb(88, 6, 88);
   --black: #000;
   --white: #fff;
   --dark: #333;
@@ -285,16 +285,16 @@ body {
 .cyber-button,
 .cyber-button-small,
 .cyber-button-big {
-  --button-border: 4px;
-  --button-font-size: 1.4rem;
-  --button-padding-v: 0.9rem;
-  --button-padding-h: 2.5rem;
+  --button-border: 8px;
+  --button-font-size: 1.2rem;
+  --button-padding-v: 0.5rem;
+  --button-padding-h: 1.5rem;
 
   --tag-font-size: 0.55rem;
 
   --button-cutout: 1.1rem;
 
-  --button-shadow-primary: var(--cyan);
+  --button-shadow-primary: var(--red);
   --button-shadow-secondary: var(--yellow);
   --button-shimmy-distance: 5;
 
