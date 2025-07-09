@@ -193,7 +193,7 @@ function positiveEvent() {
     $(".ongoing-events").prepend(
       "At a rest stop, you miraculously find " +
         ranSupplyIncrease +
-        " $80 in an abandoned fanny pack. <br>"
+        " chicken nuggets in an abandoned fanny pack. <br>"
     );
     wagon.money += ranSupplyIncrease;
     $(".wagon-money-remaining").text(wagon.money.toFixed(2));
@@ -215,9 +215,9 @@ function positiveEvent() {
     $(".wagon-food-remaining").text(wagon.food.toFixed(2));
   } else if (num === 4) {
     $(".ongoing-events").prepend(
-      "You run into a micro-festival at a truck stop: free snacks, and the Old-School Head gets to rant about 'real underground' " +
+      "You run into a micro-festival at a truck stop: free snacks, and the old-school head gets to rant about 'real underground'. Then you find " +
         ranSupplyIncrease +
-        " Also a free sheet of acid. <br>"
+        " sheets of acid hidden behind a toilet. Score! <br>"
     );
     wagon.money += ranSupplyIncrease;
     $(".wagon-money-remaining").text(wagon.money.toFixed(2));
@@ -295,7 +295,7 @@ function negativeEvent() {
     $(".wagon-food-remaining").text(wagon.food.toFixed(2));
   } else if (num === 4) {
     $(".ongoing-events").prepend(
-      "Van breaks down outside Toledo. A crowdfunding campaign raises $5. You consider trading the Tech Bro's VR headset for a tow. <br>"
+      "Van breaks down outside Toledo. Aw Snap. A group crowdfunding campaign raises nothing. You consider trading the VR headset for a tow. <br>"
     );
     wagon.days += 5;
     wagon.food -= wagon.characters.length * 5 * 5;
@@ -317,7 +317,7 @@ function negativeEvent() {
     $("#star").delay(5250).fadeIn("puff").fadeOut();
   } else if (num === 5) {
     $(".ongoing-events").prepend(
-      "You realize your phone chargers are both USB-C. Everyone else has Lightning cables. Arguments ensue but nobody gets a charge. " +
+      "You realize your phone chargers are all USB-C. Thats whack. Everyone else has Lightning cables. Arguments ensue but nobody gets a charge. " +
         ranSupplyDecrease +
         " of your food rots because " +
         wagon.characters[index].name +
@@ -401,21 +401,15 @@ Wagon.prototype.buildScore = function () {
 function landmarkEvent() {
   var num = wagon.distance;
   if (num === 100) {
-    buildLandmarkModal(
-      num,
-      "crossRiver",
-      "detourRiver",
-      "Jersey",
-      "Hella scenery"
-    );
+    buildLandmarkModal(num, "crossRiver", "detourRiver", "Jersey", "Scenery");
     $(".button-content").prepend(
-      "You've reached the New Jersey Turnpike. Do you risk cutting through Newark for speed, or take the scenic route? <br>"
+      "You've reached the New Jersey Turnpike. Risk cutting through Newark for speed, or take the scenic route? <br>"
     );
     $("#buttonModal").toggle();
   } else if (num === 200) {
     buildModal("campStore");
     $(".ongoing-events").prepend(
-      "Pop-up Record Shop Detected! Do you stop for rare vinyl, or keep moving? <br>"
+      "Pop-up Record Shop Detected! Whoop! You gotta stop for rare vinyl. Hell yeah. <br>"
     );
     $("#myModal").toggle();
     $("#gameMainScreen").fadeOut(500);
@@ -430,7 +424,7 @@ function landmarkEvent() {
   } else if (num === 400) {
     buildModal("generalStore");
     $(".ongoing-events").prepend(
-      "Abandoned warehouse afterparty ahead. Entry fee: 1 fake wristband, 2 hot dogs, and the ability to act like you belong. <br>"
+      "Abandoned warehouse afterparty ahead. Entry fee: 1 fake wristband, 2 hot dogs, and the ability to act like you belong. Sick AF. <br>"
     );
     $("#myModal").toggle();
     $("#gameMainScreen").fadeOut(500);
@@ -440,7 +434,7 @@ function landmarkEvent() {
     buildEndModal(num, "win", "Play Again!");
     var endScore = wagon.buildScore();
     $(".button-content").prepend(
-      "<h4>WINNER!</h4>You survived the Detroit Techno Trip! But all you have are blurry photos, tinnitus, and a mysterious European phone number. Your score is: " +
+      "<h4>WINNER!</h4>You made it to the rave! That shit was hella tight and hella sick. Super dope that you got some blurry photos tho, tinnitus, a Euro phone number too. Your score is: " +
         endScore
     );
     $("#buttonModal").addClass("confetti");
@@ -471,11 +465,11 @@ function crossRiver() {
     $(".ongoing-events").prepend(
       "Van breaks down after a bold shortcut. " +
         wagon.characters[index].name +
-        " has to negotiate with a band of Phish fans using DJ mixes and DAWless hardware setups. You lose " +
+        " has to negotiate with a group of Phish fans about correctly handling DJ mixes and DAWless hardware setups. They demand some shit for their wasted time so you succumb to giving them " +
         (wagon.food * 0.4).toFixed(0) +
-        " energy drinks and " +
+        " chicken and " +
         (wagon.money * 0.2).toFixed(0) +
-        " dollars. <br>"
+        " crypto tokens. <br>"
     );
     $("#myModal").toggle();
     for (i = 0; i < 4; i++) {
@@ -535,7 +529,7 @@ function deathEvent() {
     buildModal(num);
     $(".ongoing-events").prepend(
       wagon.characters[index].name +
-        " Old-School Head attempts to freestyle park in downtown Detroit, van gets towed. Whack.<br>"
+        " old-school head attempts to freestyle park in downtown Detroit, van gets towed. Whack.<br>"
     );
     $("#myModal").toggle();
     wagon.characters[index].health = 0;
@@ -574,9 +568,9 @@ function deathEvent() {
     buildModal(num);
     $(".ongoing-events").prepend(
       wagon.characters[index].name +
-        " got like stupid stoned the night before and ate a lot of food when their munchies kicked in... then gets into a fight about sync buttons at the afterparty. Security is not amused. You're ejected and left to rant on Instagram before sleeping in a bush " +
+        " got like stupid stoned the night before and ate a lot of food, then gets into a fight about sync buttons at the afterparty. Security is not amused. You're ejected and then rant on Instagram before sleeping in a bush but you managed to find " +
         (wagon.food * 0.5).toFixed(2) +
-        "lbs of food.<br>"
+        " lbs of chicken strips. So thats hella tight. <br>"
     );
     $("#myModal").toggle();
     wagon.food -= wagon.food * 0.5;
@@ -603,7 +597,7 @@ Wagon.prototype.huntingTime = function () {
     document.getElementById("shotgun-dry").play();
     buildModal(num);
     $(".ongoing-events").prepend(
-      "You already raided the gas station. You must drive further for supplies.<br>"
+      "You already been playing too many tracks, noone gives a shit so you must drive further for new listeners.<br>"
     );
     $("#myModal").toggle();
   } else if (this.hunted == 0 && wagon.bullets > 0) {
