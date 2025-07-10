@@ -26,7 +26,7 @@ body {
 ::-webkit-scrollbar {
   width: 12px;
   height: 12px;
-  background-color: rgba(251, 0, 0, 0.42);
+  background-color: rgba(92, 88, 88, 0.761);
 }
 ::-webkit-scrollbar-track {
   border-radius: 0px;
@@ -34,7 +34,7 @@ body {
 }
 ::-webkit-scrollbar-thumb {
   border-radius: 0px;
-  background-color: rgba(251, 0, 0, 0.907);
+  background-color: rgba(13, 13, 13, 0.646);
   border: 1px solid rgba(251, 0, 0, 0.278);
 }
 textarea:focus,

@@ -65,9 +65,9 @@ Character.prototype.illnessGenerator = function () {
   } else if (num === 4 && this.illness.includes("CDJ Rage") == false) {
     this.illness.push("CDJ Rage");
     $(".ongoing-events").prepend(this.name + " is experiencing CDJ Rage <br>");
-  } else if (num === 5 && this.illness.includes("Instagram Fatigue") == false) {
-    this.illness.push("Instagram Fatigue");
-    $(".ongoing-events").prepend(this.name + " got Instagram Fatigue <br>");
+  } else if (num === 5 && this.illness.includes("Insta Fatigue") == false) {
+    this.illness.push("Insta Fatigue");
+    $(".ongoing-events").prepend(this.name + " got Insta Fatigue <br>");
   }
 };
 //food checker
@@ -113,7 +113,7 @@ Wagon.prototype.statusAdjuster = function () {
   });
   if (wagon.characters.length === 0) {
     buildEndModal("dead", "death", "That trip sucked");
-    $(".button-content").prepend("Ah fuck! Yall got too wasted on the way.");
+    $(".button-content").prepend("Yall got too wasted on the way.");
     $("#myModal").toggle();
   }
 };
@@ -199,15 +199,15 @@ function positiveEvent() {
     $(".ongoing-events").prepend(
       "You discover a hidden crate of Red Bull behind the van's busted speaker " +
         ranSupplyIncrease +
-        " Stamina restored. <br>"
+        " stamina restored. <br>"
     );
     wagon.food += ranSupplyIncrease;
     $(".wagon-food-remaining").text(wagon.food.toFixed(2));
   } else if (num === 3) {
     $(".ongoing-events").prepend(
-      "Someone's cousin texts a working discount code for gas " +
+      "Someone's cousin texts a working discount code for gas. You figure out a Raspberry Pi hack that converts the code into Bitcoins. Pumped, you stop at a gas station to buy snacks with the crypto gains, resulting in " +
         ranSupplyIncrease +
-        " tank refilled. <br>"
+        " more chicken nuggets in your bucket. <br>"
     );
     wagon.food += ranSupplyIncrease;
     $(".wagon-food-remaining").text(wagon.food.toFixed(2));
@@ -215,17 +215,17 @@ function positiveEvent() {
     $(".ongoing-events").prepend(
       "You run into a micro-festival at a truck stop: free snacks, and the old-school head gets to rant about 'real underground'. Then you find " +
         ranSupplyIncrease +
-        " sheets of acid hidden behind a toilet. Score! <br>"
+        " chicken nuggets hidden behind a toilet. Whoop! <br>"
     );
     wagon.money += ranSupplyIncrease;
     $(".wagon-money-remaining").text(wagon.money.toFixed(2));
   } else if (num === 5) {
     $(".ongoing-events").prepend(
-      "You barter three hot dogs for a USB full of unreleased tracks. The DJ is suspicious but also intrigued. <br> You got " +
+      "You barter three coney dogs for a USB full of unreleased tracks. The DJ is suspicious but also intrigued. <br> You got " +
         ranSupplyIncrease +
-        " energy drinks and " +
+        " chickens and " +
         ranSupplyIncrease / 2 +
-        " dollars"
+        " crypto tokens. <br>"
     );
     wagon.money += ranSupplyIncrease / 2;
     wagon.food += ranSupplyIncrease;
@@ -237,7 +237,7 @@ function positiveEvent() {
         wagon.characters[index].name +
         "finds a rare Front 242 lazerdisc and" +
         ranSupplyIncrease +
-        " ribs from the day before. Stoked, so stoked. <br>"
+        " ribs from the day before. Tight. <br>"
     );
     wagon.money += ranSupplyIncrease;
     $(".wagon-money-remaining").text(wagon.money.toFixed(2));
@@ -245,14 +245,14 @@ function positiveEvent() {
 }
 //random neutralEvent
 function neutralEvent() {
-  var num = Math.floor(Math.random() * Math.floor(5));
+  var num = Math.floor(Math.random() * Math.floor(6));
   if (num === 1) {
     $(".ongoing-events").prepend(
       "The van's GPS reroutes you through four extra tolls. Nobody notices tho. <br>"
     );
   } else if (num === 2) {
     $(".ongoing-events").prepend(
-      "An Instagram post goes minor-viral. Nobody gains followers, but everyone argues about the hashtags. <br>"
+      "An X post goes minor-viral. Nobody gains followers, and everyone argues about the hashtags. <br>"
     );
   } else if (num === 3) {
     $(".ongoing-events").prepend(
@@ -264,18 +264,22 @@ function neutralEvent() {
     );
   } else if (num === 5) {
     $(".ongoing-events").prepend(
-      "Someone tries to DJ in the van. The result: existential debate about aux cord etiquette and friendship. <br>"
+      "Someone tries to DJ in the van but everyone is trippin too hard. The result: a four hour existential debate about vibe-mix etiquette, timing, and friendship. <br>"
+    );
+  } else if (num === 6) {
+    $(".ongoing-events").prepend(
+      "The van is starting to stank like feet again. <br>"
     );
   }
 }
 //random negativeEvent
 function negativeEvent() {
-  var num = Math.floor(Math.random() * Math.floor(5));
+  var num = Math.floor(Math.random() * Math.floor(6));
   var ranSupplyDecrease = Math.floor(Math.random() * (200 - 100) + 100);
   var index = Math.floor(Math.random() * Math.floor(wagon.characters.length));
   if (num === 1) {
     $(".ongoing-events").prepend(
-      "Flat tire in New Jersey. 12 hours lost debating who's allowed to touch the spare. Nobody wins. <br>" +
+      "Flat tire in New Jersey. 12 hours lost debating who's allowed to touch the spare. <br>" +
         wagon.characters[index].name +
         " is over it. <br>"
     );
@@ -294,9 +298,9 @@ function negativeEvent() {
     wagon.characters[index].illness.push("Wristband Anxiety");
   } else if (num === 3) {
     $(".ongoing-events").prepend(
-      "Ohio: All hope is lost. Stuck at this hipster renegade and the DJ insists on playing their 40-minute modular set. The rest of the crew tries hitchhiking home and a cop takes " +
+      "Ohio. Hope is lost. Stuck at this hipster park renegade and the DJ insists on playing a 40-minute modular set. The rest of the crew tries hitchhiking home and a cop takes " +
         ranSupplyDecrease +
-        " pounds of your stuff. <br>"
+        " pounds of your nuggets. <br>"
     );
     wagon.food -= ranSupplyDecrease;
     wagon.days += index;
@@ -325,11 +329,21 @@ function negativeEvent() {
     $("#star").delay(5250).fadeIn("puff").fadeOut();
   } else if (num === 5) {
     $(".ongoing-events").prepend(
-      "You realize your phone chargers are all USB-C. Thats whack. Everyone else has Lightning cables. Arguments ensue but nobody gets a charge. " +
+      "You realize all your phone chargers are all USB-C. Thats whack. Everyone else has Lightning cables. Arguments ensue but nobody gets a charge. Then a Red Bull gets knocked over into the bucket of chicken. " +
         ranSupplyDecrease +
-        " of your food rots because " +
+        " of the nuggets rot and " +
         wagon.characters[index].name +
-        " wet themselves as they napped on it."
+        " gets super fucken pissed."
+    );
+    wagon.food -= ranSupplyDecrease;
+    $(".wagon-food-remaining").text(wagon.food.toFixed(2));
+  } else if (num === 6) {
+    $(".ongoing-events").prepend(
+      "You realize you left two USB sticks in the CDJs at the last stop. Oh shit! The van comes to a screetching halt as " +
+        ranSupplyDecrease +
+        " chicken nuggets tumble out of the bucket and onto the floor. " +
+        wagon.characters[index].name +
+        " keeps telling eveyone that they are 'tripping balls rn' but everyone keeps quietly to themselves."
     );
     wagon.food -= ranSupplyDecrease;
     $(".wagon-food-remaining").text(wagon.food.toFixed(2));
@@ -411,13 +425,13 @@ function landmarkEvent() {
   if (num === 100) {
     buildLandmarkModal(num, "crossRiver", "detourRiver", "Jersey", "Scenery");
     $(".button-content").prepend(
-      "You've reached the New Jersey Turnpike. Risk cutting through Newark for speed, or take the scenic route? <br>"
+      "You've reached the New Jersey Turnpike. Do you risk cutting through Newark for speed, or take the scenic route? <br>"
     );
     $("#buttonModal").toggle();
   } else if (num === 200) {
     buildModal("campStore");
     $(".ongoing-events").prepend(
-      "Pop-up Record Shop Detected! Whoop! You gotta stop for rare vinyl. Hell yeah. <br>"
+      "Pop-up Record Shop Detected! Whoop! Mandatory stop for rare vinyl. Hell yeah. <br>"
     );
     $("#myModal").toggle();
     $("#gameMainScreen").fadeOut(500);
@@ -432,17 +446,17 @@ function landmarkEvent() {
   } else if (num === 400) {
     buildModal("generalStore");
     $(".ongoing-events").prepend(
-      "Abandoned warehouse afterparty ahead. Entry fee: 1 fake wristband, 2 hot dogs, and the ability to act like you belong. Sick AF. <br>"
+      "Stumbled on this burner store. Entry fee is 1 fake wristband, 2 coney dogs, and the ability to act like you belong. We stop to look for more FLAC files. <br>"
     );
     $("#myModal").toggle();
     $("#gameMainScreen").fadeOut(500);
     $("#store").delay(500).fadeIn(500);
     $("#back-button").hide();
   } else if (num === 500) {
-    buildEndModal(num, "win", "Play Again!");
+    buildEndModal(num, "win", "Play Again");
     var endScore = wagon.buildScore();
     $(".button-content").prepend(
-      "<h4>WINNER!</h4>You made it to the rave! That shit was hella tight and hella sick. Super dope that you got some blurry photos tho, tinnitus, a Euro phone number too. Your score is: " +
+      "<h4>WINNER!</h4>You made it to the rave! That shit was hella tight and hella sick. Super dope you got some blurry photos tho. Your score is: " +
         endScore
     );
     $("#buttonModal").addClass("confetti");
@@ -473,7 +487,7 @@ function crossRiver() {
     $(".ongoing-events").prepend(
       "Van breaks down after a bold shortcut. " +
         wagon.characters[index].name +
-        " has to negotiate with a group of Phish fans about correctly handling DJ mixes and DAWless hardware setups. They demand some shit for their wasted time so you succumb to giving them " +
+        " has to negotiate with some Phish fans about DJ mixes and DAWless setups. You chill with them and set up a sick camp, but they end up demanding shit for wasted time. You give up " +
         (wagon.food * 0.4).toFixed(0) +
         " chicken and " +
         (wagon.money * 0.2).toFixed(0) +
@@ -537,7 +551,7 @@ function deathEvent() {
     buildModal(num);
     $(".ongoing-events").prepend(
       wagon.characters[index].name +
-        " old-school head attempts to freestyle park in downtown Detroit, van gets towed. Whack.<br>"
+        " attempts to freestyle in park, but eveyone is trippin and a modular rig gets stolen from the van. Whack.<br>"
     );
     $("#myModal").toggle();
     wagon.characters[index].health = 0;
@@ -552,7 +566,7 @@ function deathEvent() {
       wagon.characters[index].name +
         " collapses after a catastrophic Caffeine Crash. They hunch over and fall to the ground. " +
         wagon.characters[0].name +
-        " tries to revive them with techno and more acid.<br>" +
+        " tries to revive them with techno and more acid. <br>" +
         wagon.characters[index].name +
         " is out."
     );
@@ -560,7 +574,7 @@ function deathEvent() {
     wagon.characters[index].health = 0;
     wagon.characters[index].status = "Done (Just... Done)";
     wagon.characters[0].health -= 15;
-    wagon.characters[0].illness.push("Instagram Fatigue");
+    wagon.characters[0].illness.push("Insta Fatigue");
   } else if (num === 3 && wagon.characters[index].health < 65) {
     buildModal(num);
     $(".ongoing-events").prepend(
@@ -576,7 +590,7 @@ function deathEvent() {
     buildModal(num);
     $(".ongoing-events").prepend(
       wagon.characters[index].name +
-        " got like stupid stoned the night before and ate a lot of food, then gets into a fight about sync buttons at the afterparty. Security is not amused. You're ejected and then rant on Instagram before sleeping in a bush but you managed to find " +
+        " got stupid high the night before and ate a lot of ice cream, then gets into a fight about sync buttons at the afterparty. Security is not amused. You're ejected and then rant on FB before sleeping in a bush but you managed to find " +
         (wagon.food * 0.5).toFixed(2) +
         " lbs of chicken strips. So thats hella tight. <br>"
     );
@@ -599,32 +613,39 @@ function deathEvent() {
 }
 //Hunting
 Wagon.prototype.huntingTime = function () {
-  var hunt = Math.floor(Math.random() * Math.floor(150));
+  var failChance = 0.2; // 20% chance to fail
+  var hunt;
+
+  if (Math.random() < failChance) {
+    hunt = 0; // fail
+  } else {
+    hunt = Math.floor(Math.random() * 150) + 1; // succeed with 1–150
+  }
+
   if (this.hunted == 1) {
     var num = 1;
     document.getElementById("shotgun-dry").play();
     buildModal(num);
     $(".ongoing-events").prepend(
-      "You already been playing too many tracks, noone gives a shit so you must drive further for new listeners. <br>"
+      "You already played too many tracks at this stop. No one gives a shit so you must drive further for new listeners. <br>"
     );
     $("#myModal").toggle();
   } else if (this.hunted == 0 && wagon.bullets > 0) {
-    this.food += hunt;
+    if (hunt === 0) {
+      buildModal("huntFail");
+      $(".ongoing-events").prepend(
+        "Trippin too hard you only play with three modules on your Eurorack for two hours. Came back with only trail mix. Crew is unimpressed. <br>"
+      );
+      $("#myModal").toggle();
+    } else {
+      this.food += hunt;
+      $(".ongoing-events").prepend("Scored " + hunt + " chicken strips. <br>");
+      document.getElementById("shotgun-fire").play();
+    }
+
     this.bullets -= 1;
     wagon.statusAdjuster();
     this.hunted += 1;
-    $(".ongoing-events").prepend(
-      "Scored some chicken wings for " + hunt + " stamina. <br>"
-    );
-    document.getElementById("shotgun-fire").play();
-  }
-
-  if (hunt === 0) {
-    buildModal("huntFail");
-    $(".ongoing-events").prepend(
-      "Came back with only trail mix. Crew is unimpressed. <br>"
-    );
-    $("#myModal").toggle();
   }
 
   if (wagon.bullets <= 0) {
@@ -632,6 +653,7 @@ Wagon.prototype.huntingTime = function () {
   }
   $("#wagon-bullets-remaining").text(wagon.bullets);
 };
+
 //Profession checker
 Wagon.prototype.profession = function (input) {
   if (input == 1) {
