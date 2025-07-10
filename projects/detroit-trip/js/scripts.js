@@ -112,10 +112,8 @@ Wagon.prototype.statusAdjuster = function () {
     }
   });
   if (wagon.characters.length === 0) {
-    buildEndModal("dead", "death", "Try Again");
-    $(".button-content").prepend(
-      "Game Over! The dream died somewhere in Ohio."
-    );
+    buildEndModal("dead", "death", "That trip sucked");
+    $(".button-content").prepend("Ah fuck! Yall got too wasted on the way.");
     $("#myModal").toggle();
   }
 };
@@ -187,7 +185,7 @@ Wagon.prototype.eventGrabber = function () {
 };
 //random positiveEvent
 function positiveEvent() {
-  var num = Math.floor(Math.random() * Math.floor(5));
+  var num = Math.floor(Math.random() * Math.floor(6));
   var ranSupplyIncrease = Math.floor(Math.random() * (200 - 100) + 100);
   if (num === 1) {
     $(".ongoing-events").prepend(
@@ -233,6 +231,16 @@ function positiveEvent() {
     wagon.food += ranSupplyIncrease;
     $(".wagon-money-remaining").text(wagon.money.toFixed(2));
     $(".wagon-food-remaining").text(wagon.food.toFixed(2));
+  } else if (num === 6) {
+    $(".ongoing-events").prepend(
+      "Under the driver seat, " +
+        wagon.characters[index].name +
+        "finds a rare Front 242 lazerdisc and" +
+        ranSupplyIncrease +
+        " ribs from the day before. Stoked, so stoked. <br>"
+    );
+    wagon.money += ranSupplyIncrease;
+    $(".wagon-money-remaining").text(wagon.money.toFixed(2));
   }
 }
 //random neutralEvent
@@ -240,11 +248,11 @@ function neutralEvent() {
   var num = Math.floor(Math.random() * Math.floor(5));
   if (num === 1) {
     $(".ongoing-events").prepend(
-      "The van's GPS reroutes you through four extra tolls. Nobody notices until your cash is gone. <br>"
+      "The van's GPS reroutes you through four extra tolls. Nobody notices tho. <br>"
     );
   } else if (num === 2) {
     $(".ongoing-events").prepend(
-      "An Instagram post goes minor-viral. Nobody gains followers, but everyone argues about hashtags. <br>"
+      "An Instagram post goes minor-viral. Nobody gains followers, but everyone argues about the hashtags. <br>"
     );
   } else if (num === 3) {
     $(".ongoing-events").prepend(
@@ -277,16 +285,16 @@ function negativeEvent() {
     wagon.characters[index].illness.includes("Wristband Anxiety") == false
   ) {
     $(".ongoing-events").prepend(
-      "Meal break: discover you've eaten only gas station taquitos and Tic Tacs. Someone cries, quietly " +
+      "Meal break: discover you've eaten only gas station taquitos and Tic Tacs. Someone cries. Quietly " +
         wagon.characters[index].name +
-        " is having a moment " +
+        " is having a moment, and " +
         wagon.characters[index].name +
         " has Wristband Anxiety.<br>"
     );
     wagon.characters[index].illness.push("Wristband Anxiety");
   } else if (num === 3) {
     $(".ongoing-events").prepend(
-      "Ohio: All hope is lost. DJ insists on playing their 40-minute modular set. The rest of the crew contemplates hitchhiking home and a cop takes " +
+      "Ohio: All hope is lost. Stuck at this hipster renegade and the DJ insists on playing their 40-minute modular set. The rest of the crew tries hitchhiking home and a cop takes " +
         ranSupplyDecrease +
         " pounds of your stuff. <br>"
     );
@@ -295,7 +303,7 @@ function negativeEvent() {
     $(".wagon-food-remaining").text(wagon.food.toFixed(2));
   } else if (num === 4) {
     $(".ongoing-events").prepend(
-      "Van breaks down outside Toledo. Aw Snap. A group crowdfunding campaign raises nothing. You consider trading the VR headset for a tow. <br>"
+      "Van breaks down outside Toledo. A crowdfunding campaign raises no crypto. You consider trading the VR headset for a tow. <br>"
     );
     wagon.days += 5;
     wagon.food -= wagon.characters.length * 5 * 5;
@@ -544,7 +552,7 @@ function deathEvent() {
       wagon.characters[index].name +
         " collapses after a catastrophic Caffeine Crash. They hunch over and fall to the ground. " +
         wagon.characters[0].name +
-        " tries to revive them with techno and more LSD.<br>" +
+        " tries to revive them with techno and more acid.<br>" +
         wagon.characters[index].name +
         " is out."
     );
@@ -557,7 +565,7 @@ function deathEvent() {
     buildModal(num);
     $(".ongoing-events").prepend(
       wagon.characters[index].name +
-        " spends the last $20 on a rare italo record that no one likes.<br>"
+        " spends the last $20 on a rare italo record that no one likes. <br>"
     );
     $("#myModal").toggle();
     wagon.money -= wagon.money * 0.25;
@@ -582,7 +590,7 @@ function deathEvent() {
     buildModal(num);
     $(".ongoing-events").prepend(
       wagon.characters[index].name +
-        " tries to sneak in as 'the ambient act.' Security is unimpressed.<br>"
+        " tries to sneak in as 'the ambient act.' Security is unimpressed. <br>"
     );
     $("#myModal").toggle();
     wagon.characters[index].health = 0;
@@ -597,7 +605,7 @@ Wagon.prototype.huntingTime = function () {
     document.getElementById("shotgun-dry").play();
     buildModal(num);
     $(".ongoing-events").prepend(
-      "You already been playing too many tracks, noone gives a shit so you must drive further for new listeners.<br>"
+      "You already been playing too many tracks, noone gives a shit so you must drive further for new listeners. <br>"
     );
     $("#myModal").toggle();
   } else if (this.hunted == 0 && wagon.bullets > 0) {
@@ -606,7 +614,7 @@ Wagon.prototype.huntingTime = function () {
     wagon.statusAdjuster();
     this.hunted += 1;
     $(".ongoing-events").prepend(
-      "Scored a 24-pack of Monster for " + hunt + " Stamina.<br>"
+      "Scored some chicken wings for " + hunt + " stamina. <br>"
     );
     document.getElementById("shotgun-fire").play();
   }
@@ -614,7 +622,7 @@ Wagon.prototype.huntingTime = function () {
   if (hunt === 0) {
     buildModal("huntFail");
     $(".ongoing-events").prepend(
-      "Came back with only trail mix. Crew is unimpressed.<br>"
+      "Came back with only trail mix. Crew is unimpressed. <br>"
     );
     $("#myModal").toggle();
   }
