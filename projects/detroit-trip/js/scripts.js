@@ -116,6 +116,7 @@ const stuckDoing = [
   "waiting for your phone to charge at a random outlet",
   "tracking down someone's lost wallet",
   "getting searched by security twice",
+  "getting freaky in the van",
   "babysitting a friend having a meltdown",
   "explaining to the Uber driver where the secret location is",
   "pushing a car out of the mud",
@@ -139,7 +140,7 @@ const stuckDoing = [
   "trying to charge your phone with a dying battery pack",
   "listening to the same song loop during a bad DJ transition",
   "untangling cables behind the booth",
-  "waiting for your friend to stop hugging everyone",
+  "waiting for a friend to stop hugging everyone",
   "driving someone to the ER for dehydration",
   "trying to find the secret entrance",
   "wandering the festival grounds at sunrise",
@@ -352,6 +353,156 @@ const cares = [
   "Someone switched the projector to play Mario Kart instead",
   "Your own video visuals say 'Please stop'",
 ];
+
+const goodVibes = [
+  "Everyone was hyped and gave you energy",
+  "The crowd was totally locked in and vibed out",
+  "People danced so hard the floor bounced",
+  "Your dance moves started a whole new trend",
+  "The promoter grinned ear to ear behind the booth",
+  "The bartender mixed drinks to the beat of your set",
+  "Someone brought their dog and it became the party mascot",
+  "Nobody cared about the rain... they came for the music",
+  "Everyone left to grab friends to join the dancefloor",
+  "The floor was packed and everyone moved as one",
+  "Someone started singing along to your track and it was magic",
+  "A spontaneous cypher broke out during your ambient set",
+  "People livestreamed because it was THAT good",
+  "The subwoofer dropped and the crowd went wild",
+  "Even your mom was up front, losing it to your set",
+  "Phones were in the air capturing epic moments",
+  "The crowd shouted for an encore between tracks",
+  "Applause rolled in from every corner of the room",
+  "Even the raccoon outside grooved to your vibe",
+  "It started as an empty park but you made it a party",
+  "Bongo drums joined in for a perfect jam session",
+  "Someone requested your best track and the place erupted",
+  "You dropped a new tune and everyone noticed",
+  "People told you it was your best set ever",
+  "Couples fell in love right by the booth",
+  "Your cables survived, and the crowd loved your live tweaking",
+  "A birthday party joined in and made it wilder",
+  "Your opening track filled the floor in seconds",
+  "People shouted food orders because they didn't want to leave",
+  "That time the dog barked on beat and everyone lost it",
+  "Glowsticks were everywhere",
+  "The neighbors blasted your mix from their windows",
+  "Your laptop died, but you freestyled an epic outro",
+  "People shouted encore requests for 'Free Bird' as a joke",
+  "Everyone thought you were the headliner and wanted more",
+  "Someone slipped you some more acid because they loved your sound",
+  "People cozied up near the booth to feel closer to the energy",
+  "Someone handed you a mixtape out of respect",
+  "People Venmoed you for track IDs, not to skip you",
+  "A random child danced so hard, it was adorable",
+  "Spotify couldn't match you, you were the real DJ that night",
+  "A drone flew by with a sign saying 'Crushed It!'",
+  "Your mom texted: 'So proud of you!'",
+  "You turned around and the club was still full at 4am",
+  "People thought you were staff because you were THAT approachable",
+  "Even the rat nodded to your beat",
+  "The speakers were so loud the whole block partied",
+  "Someone started beatboxing with your drone... collab vibes",
+  "Everyone nodded and smiled, locked in",
+  "Your USB fell out, but you kept the vibe going live",
+  "A karaoke party joined in to back you up with vocals",
+  "You had a bigger crowd than the street festival outside",
+  "Someone wanted you to DJ their wedding next",
+  "You overheard, 'I hope this set never ends!'",
+  "Clapping was nonstop... you felt the love",
+  "Your visuals blew minds, not screens",
+  "Someone just requested 'More music!'",
+  "Even the baby bounced to your beats",
+  "People shared TikToks about how sick the night was",
+  "The bouncer fist bumped you for raising the energy",
+  "That moment when your power strip caught fire... ",
+  "A cat chilled on the decks, not missing a beat",
+  "Someone brought a guitar and jammed along in sync",
+  "Your FX pedal glitched, but the crowd loved the loop",
+  "You dropped a rare track and people lost their minds",
+  "Someone spilled beer, but you turned it into a water party",
+  "A bird flew in, circled, and landed to watch you play",
+  "The crowd was so hyped they asked for directions to the afterparty",
+  "Someone started knitting rave scarves for everyone",
+  "You blew a fuse, but the singalong kept going",
+  "Your kick drum got remixed by a phone, ringtone... perfect timing",
+  "A drone did a light show as you dropped the bass",
+  "That moment when the projector switched to Mario Kart... crowd went apeshit",
+  "Your visuals flashed 'You're a legend!' in giant letters",
+  "A random grandma started breakdancing and got a standing ovation",
+  "Confetti cannons went off perfectly in sync with your drop",
+  "You played a secret track and the whole room gasped",
+  "Someone handed you a bouquet of glowsticks",
+  "A parade joined in from the street, doubling your crowd",
+  "A lost balloon floated down and everyone cheered for its journey",
+  "The security guard was smiling and bobbing their head",
+  "Your beat matched the heart rate of the crowd",
+  "You got a thank you note on a napkin slid across the booth",
+  "A group brought homemade banners with your name on them",
+  "Someone crowd-surfed on an inflatable unicorn",
+  "Every drink got toasted to your set",
+  "The disco ball dropped right at your build-up",
+  "The fog machine timed it so perfectly it looked like a magic trick",
+  "A mystery fan handed you a cold drink at the perfect moment",
+  "You played a throwback track and everyone sang along word for word",
+  "A laser show started mid-set, surprise style",
+  "You tossed a USB into the crowd and someone caught it like a bouquet",
+  "A couple got engaged right after your best drop",
+  "Your set made the power go out...  people cheered and kept chanting",
+  "An old friend surprised you in the crowd and danced up front",
+  "A record label scout was spotted grooving to your tracks",
+  "A random dog wore sunglasses and danced",
+  "Glow-in-the-dark bubbles filled the air",
+  "You played a meme song and the whole floor went wild",
+  "Someone painted your portrait during your set",
+  "A pizza delivery arrived mid-song... everyone cheered",
+  "Every selfie in the room had you in the background",
+  "A stranger complimented your sneakers over the mic",
+  "You sampled someone's laugh live and it became the drop",
+  "A rainbow appeared right when you hit the euphoric breakdown",
+  "People tossed hats in the air at your last track",
+  "Even the sound techs danced behind the mixer",
+  "You invented a new hand signal and the crowd copied it",
+  "Someone threw flowers and you caught them without missing a beat",
+  "The merch table sold out before you even finished playing",
+  "You made friends with the opening act and now you're tour buddies",
+  "Even the ice in drinks kept clinking perfectly on beat",
+  "You looked up and the moon was shining straight through the window",
+  "Your afterparty invite list filled up in minutes",
+  "You got tagged in every story on Instagram that night",
+  "Someone gave you a friendship bracelet mid-mix",
+  "A couple did a surprise proposal in front of your booth",
+  "You started a conga line that wrapped around the block",
+  "People waved their shoes in the air for the last drop",
+  "The catering staff danced while serving snacks",
+  "A random parade float rolled in and joined the party",
+  "The venue ran out of water because the crowd danced so hard",
+  "Someone remixed your track live on their phone and played it back",
+  "The power flickered and everyone cheered, thinking it was part of the show",
+  "You crowd-surfed all the way back to your booth",
+  "You got invited to an exclusive sunrise set after your show",
+  "People painted their faces to match your visuals",
+  "A fire dancer started spinning during your breakdown",
+  "Someone started a limbo contest with your cables",
+  "The janitor gave you a thumbs up on the way out",
+  "You found your sticker on the bathroom mirror",
+  "A bike gang rolled through and stayed for the whole set",
+  "Someone set off fireworks outside right as your set ended",
+  "The bartender created a drink named after your DJ name",
+  "People started chanting your name between every track",
+  "A drone dropped confetti from above the dancefloor",
+  "You freestyled a whole new genre and everyone followed",
+  "You got a standing ovation before you even finished",
+  "A group in matching outfits did a flashmob to your music",
+  "Your last track got requested three times in a row",
+  "The local news did a story on the party because of you",
+  "People high fived you on the way out, grinning",
+  "Even the moon seemed to pulse with the bass",
+  "Someone called you a legend as they left",
+  "A street artist made a mural inspired by your set",
+  "The sun came up just as your encore ended and people cheered",
+];
+
 const chickenKinds = [
   "fried chicken buckets",
   "honey butter chicken biscuits",
@@ -508,7 +659,7 @@ const thingsNotToDo = [
   "begins reorganizing everyone's bags",
   "tries to fix the lights and kills the power",
   "tries to order food delivery to the forest",
-  "does a loud, off-beat drum circle",
+  "does a loud, off beat drum circle",
   "asks for everyone's attention for a terrible joke",
   "starts filming everyone without asking",
   "tries to get a mosh pit going",
@@ -516,7 +667,7 @@ const thingsNotToDo = [
   "starts cooking something that smells awful",
   "plays with fire toys too close to the group",
   "starts ranting about the meaning of life for an hour",
-  "turns the ambient set into a rave banger set mid-track",
+  "turns the ambient set into a rave banger set mid track",
   "brags about how they could do it better",
   "starts passing around random pills",
   "tries to sell merch from their backpack",
@@ -527,22 +678,22 @@ const thingsNotToDo = [
   "turns the smoke machine on full blast",
   "brings up old drama between people",
   "tries to crowd surf when no one wants to catch them",
-  "tries to out-yell the music with motivational speeches",
+  "tries to out yell the music with motivational speeches",
   "brings out a megaphone to hype the vibe but kills it",
   "starts throwing glow sticks at everyone's faces",
   "tries to teach a dance nobody wants to learn",
   "pulls out a guitar and plays Wonderwall",
   "tries to plug in an air fryer and blows the fuse",
   "asks everyone to quiet down for their acoustic set",
-  "keeps asking, 'what's the Wi-Fi password?'",
-  "brings a karaoke machine and demands a sing-along",
-  "starts calling parents to check in — on speakerphone",
-  "puts on an offensive stand-up comedy set",
+  "keeps asking, 'what's the WiFi password?'",
+  "brings a karaoke machine and demands a singalong",
+  "starts calling parents to check in... on speakerphone",
+  "puts on an offensive standup comedy set",
   "crashes the DJ booth to 'fix the mix'",
   "starts spraying silly string over everyone's drinks",
   "cranks the AC so everyone freezes",
   "starts grilling fish inside the tent",
-  "tries to negotiate the next party venue mid-moment",
+  "tries to negotiate the next party venue midmoment",
   "tries to swap the playlist for their own rap demo",
   "invites random outsiders into a private moment",
   "starts yelling conspiracy theories about aliens",
@@ -551,7 +702,7 @@ const thingsNotToDo = [
   "tries to enforce weird new house rules",
   "asks everyone to help pack up early",
   "starts randomly unplugging lights for no reason",
-  "starts a push-up contest no one asked for",
+  "starts a pushup contest no one asked for",
   "demands a group selfie every 5 minutes",
   "tries to auction off leftover snacks",
 ];
@@ -579,7 +730,7 @@ const awesomeSlang = [
   "Insane",
   "Mad",
   "Wild",
-  "Next-Level",
+  "Next Level",
   "Bangin'",
   "Badass",
   "Fresh",
@@ -635,7 +786,7 @@ const badSlang = [
   "Crusty",
   "Wack",
   "Dogshit",
-  "Half-Assed",
+  "Half Assed",
   "Raggedy",
   "Basic",
   "Cheesy",
@@ -646,7 +797,7 @@ const badSlang = [
   "Junk",
   "Soggy",
   "Nasty",
-  "Busted-Ass",
+  "Busted Ass",
   "Shambles",
   "Fail",
   "Fail",
@@ -666,6 +817,7 @@ let randomTracksMessage = "";
 let randomThingsNotToDoMessage = "";
 let randomAwesomeSlangMessage = "";
 let randomBadSlangMessage = "";
+let randomGoodVibesMessage = "";
 setInterval(() => {
   const townsIndex = Math.floor(Math.random() * towns.length);
   const stuckIndex = Math.floor(Math.random() * stuckDoing.length);
@@ -676,6 +828,7 @@ setInterval(() => {
   const notToDoIndex = Math.floor(Math.random() * thingsNotToDo.length);
   const awesomeSlangIndex = Math.floor(Math.random() * awesomeSlang.length);
   const badSlangIndex = Math.floor(Math.random() * badSlang.length);
+  const goodVibesIndex = Math.floor(Math.random() * goodVibes.length);
   randomTownsMessage = towns[townsIndex];
   randomStuckDoingMessage = stuckDoing[stuckIndex];
   randomScoreSlangMessage = scoredSlang[randomScoreSlang];
@@ -685,6 +838,7 @@ setInterval(() => {
   randomThingsNotToDoMessage = thingsNotToDo[notToDoIndex];
   randomAwesomeSlangMessage = awesomeSlang[awesomeSlangIndex];
   randomBadSlangMessage = badSlang[badSlangIndex];
+  randomGoodVibesMessage = goodVibes[goodVibesIndex];
 }, 1000); // 1000 milliseconds = 1 second
 
 // character constructor
@@ -738,18 +892,16 @@ Character.prototype.healthBar = function () {
 // illness generator
 Character.prototype.illnessGenerator = function () {
   var num = Math.floor(Math.random() * Math.floor(80));
-  if (num === 1 && this.illness.includes("Caffeine Crash") == false) {
-    this.illness.push("Caffeine Crash");
-    $(".ongoing-events").prepend(this.name + " hit a Caffeine Crash <br>");
-  } else if (num === 2 && this.illness.includes("Wristband Anxiety") == false) {
-    this.illness.push("Wristband Anxiety");
+  if (num === 1 && this.illness.includes("Acid Crash") == false) {
+    this.illness.push("Acid Crash");
+    $(".ongoing-events").prepend(this.name + " hit an Acid Crash <br>");
+  } else if (num === 2 && this.illness.includes("Rave Anxiety") == false) {
+    this.illness.push("Rave Anxiety");
+    $(".ongoing-events").prepend(this.name + " is suffering Rave Anxiety <br>");
+  } else if (num === 3 && this.illness.includes("Party Regret") == false) {
+    this.illness.push("Party Regret");
     $(".ongoing-events").prepend(
-      this.name + " is suffering Wristband Anxiety <br>"
-    );
-  } else if (num === 3 && this.illness.includes("Van Regret") == false) {
-    this.illness.push("Van Regret");
-    $(".ongoing-events").prepend(
-      this.name + " is overcome with Van Regret <br>"
+      this.name + " is overcome with Party Regret <br>"
     );
   } else if (num === 4 && this.illness.includes("CDJ Rage") == false) {
     this.illness.push("CDJ Rage");
@@ -977,16 +1129,16 @@ function negativeEvent() {
     wagon.characters[index].health -= 10;
   } else if (
     num === 2 &&
-    wagon.characters[index].illness.includes("Wristband Anxiety") == false
+    wagon.characters[index].illness.includes("Rave Anxiety") == false
   ) {
     $(".ongoing-events").prepend(
       `Meal break in ${randomTownsMessage}: discover you've eaten only gas station taquitos and Tic Tacs. Wasted too much time ${randomStuckDoingMessage}. Quietly, ` +
         wagon.characters[index].name +
         " is having a moment, and " +
         wagon.characters[index + 1].name +
-        " has Wristband Anxiety.<br>"
+        " has Rave Anxiety.<br>"
     );
-    wagon.characters[index].illness.push("Wristband Anxiety");
+    wagon.characters[index].illness.push("Rave Anxiety");
   } else if (num === 3) {
     $(".ongoing-events").prepend(
       `${randomTownsMessage}. Hope is lost. Stuck ${randomStuckDoingMessage} and the DJ insists on playing a 40-minute modular set. The rest of the crew tries hitchhiking home and a cop takes ` +
@@ -1122,7 +1274,7 @@ function landmarkEvent() {
       "Nope"
     );
     $(".button-content").prepend(
-      `While ${randomStuckDoingMessage} we stumbled upon sick AF camp spot in ${randomTownsMessage}. ${randomAwesomeSlangMessage}! Should we stay? <br>`
+      `While ${randomStuckDoingMessage}, we stumbled upon this sick AF camp spot in ${randomTownsMessage}. ${randomAwesomeSlangMessage}. Should we stay? <br>`
     );
     $("#buttonModal").toggle();
   } else if (num === 100) {
@@ -1140,7 +1292,7 @@ function landmarkEvent() {
       "Nope"
     );
     $(".button-content").prepend(
-      `While ${randomStuckDoingMessage} in ${randomTownsMessage} stumbled upon sick AF camp spot. ${randomAwesomeSlangMessage}. Should we stay? <br>`
+      `While ${randomStuckDoingMessage}, we stumbled upon this sick AF camp spot in ${randomTownsMessage}. ${randomAwesomeSlangMessage}. Should we stay? <br>`
     );
     $("#buttonModal").toggle();
   } else if (num === 200) {
@@ -1161,13 +1313,19 @@ function landmarkEvent() {
       "Nope"
     );
     $(".button-content").prepend(
-      `While ${randomStuckDoingMessage} in ${randomTownsMessage} stumbled upon sick AF camp spot. ${randomAwesomeSlangMessage}. Should we stay? <br>`
+      `While ${randomStuckDoingMessage}, we stumbled upon this sick AF camp spot in ${randomTownsMessage}. ${randomAwesomeSlangMessage}. Should we stay? <br>`
     );
     $("#buttonModal").toggle();
   } else if (num === 300) {
-    buildLandmarkModal(num, "sacrifice", "flee", "Cross Ohio", "Back to Route");
+    buildLandmarkModal(
+      num,
+      "sacrifice",
+      "flee",
+      "Trip and listen to house",
+      "Bail"
+    );
     $(".button-content").prepend(
-      "Ohio Border: Cell service drops. Hope and navigation skills tested. DJ insists on listening to Detroit classics only. <br>"
+      `${randomTownsMessage}: Cell service drops and we ${randomStuckDoingMessage}. ${randomBadSlangMessage}. The DJ insists on listening to Chicago house classics, but they been trippin all day complaining about seeing fractals so WTF do we do? <br>`
     );
     $("#buttonModal").toggle();
   } else if (num === 350) {
@@ -1179,7 +1337,7 @@ function landmarkEvent() {
       "Nope"
     );
     $(".button-content").prepend(
-      `While ${randomStuckDoingMessage} in ${randomTownsMessage} stumbled upon sick AF camp spot. ${randomAwesomeSlangMessage}. Should we stay? <br>`
+      `While ${randomStuckDoingMessage} in ${randomTownsMessage} we stumbled upon this sick AF camp spot. ${randomAwesomeSlangMessage}. Should we stay? <br>`
     );
     $("#buttonModal").toggle();
   } else if (num === 400) {
@@ -1308,12 +1466,12 @@ function deathEvent() {
     wagon.characters[index].status = "Done (Just... Done)";
   } else if (
     num === 1 &&
-    wagon.characters[index].illness.includes("Caffeine Crash")
+    wagon.characters[index].illness.includes("Acid Crash")
   ) {
     buildModal(num);
     $(".ongoing-events").prepend(
       wagon.characters[index].name +
-        " collapses after a catastrophic Caffeine Crash. They hunch over and fall to the ground. " +
+        " collapses after a catastrophic Acid Crash. They hunch over and fall to the ground. " +
         wagon.characters[0].name +
         " tries to revive them with techno and more acid. <br>" +
         wagon.characters[index].name +
@@ -1390,7 +1548,7 @@ Wagon.prototype.huntingTime = function () {
     } else {
       this.food += hunt;
       $(".ongoing-events").prepend(
-        `${randomScoreSlangMessage} ${hunt} ${randomChickenMessage}. <br>`
+        `${randomScoreSlangMessage} ${hunt} ${randomChickenMessage}. <br>${randomGoodVibesMessage}. ${randomAwesomeSlangMessage}. <br>`
       );
       document.getElementById("shotgun-fire").play();
     }
