@@ -68,22 +68,15 @@ const towns = [
   "Medina",
   "Brunswick",
   "Strongsville",
-  "Elyria",
-  "Lorain",
   "Amherst",
   "Vermilion",
   "Huron",
   "Port Clinton",
-  "Toledo",
   "Maumee",
-  "Bowling Green",
   "Findlay",
   "Fostoria",
-  "Tiffin",
   "Fremont",
-  "Sandusky",
   "Bellevue",
-  "Norwalk",
   "Monroe",
   "Temperance",
   "Ann Arbor",
@@ -92,9 +85,155 @@ const towns = [
   "Westland",
   "Livonia",
   "Dearborn",
+  "Secaucus",
+  "Newark",
+  "Elizabeth",
+  "Summit",
+  "Hackettstown",
+  "Phillipsburg",
+  "Quakertown",
+  "Pottsville",
+  "Mechanicsburg",
+  "Shippensburg",
+  "Waynesboro",
+  "Martinsburg",
+  "Everett",
+  "Ligonier",
+  "Greensburg",
+  "Punxsutawney",
+  "St. Marys",
+  "Warren",
+  "Titusville",
+  "Willoughby",
+  "Painesville",
+  "Chardon",
+  "Maple Heights",
+  "Lakewood",
+  "Brook Park",
+  "North Ridgeville",
+  "Sheffield Lake",
+  "Oberlin",
+  "Castalia",
+  "Marblehead",
+  "Perrysburg",
+  "Sylvania",
+  "Ottawa",
+  "Wauseon",
+  "Swanton",
+  "Bellefontaine",
+  "Upper Sandusky",
+  "Carey",
+  "Wickliffe",
+  "Southgate",
+  "Taylor",
+  "Romulus",
+  "Plymouth",
+  "Garden City",
+  "Lincoln Park",
+  "Allen Park",
+  "Melvindale",
+  "Wyandotte",
+  "Flat Rock",
+  "Grosse Ile",
+  "Bayonne",
+  "Union City",
+  "Hoboken",
+  "Rutherford",
+  "Passaic",
+  "Montclair",
+  "Denville",
+  "Rockaway",
+  "Mount Arlington",
+  "Blairstown",
+  "Bangor",
+  "Coopersburg",
+  "Fleetwood",
+  "Shamokin Dam",
+  "Selinsgrove",
+  "Lewisburg",
+  "Mifflinburg",
+  "Lewistown",
+  "Huntingdon",
+  "Tyrone",
+  "Ebensburg",
+  "Blairsville",
+  "Kittanning",
+  "Leechburg",
+  "Butler",
+  "Grove City",
+  "Mercer",
+  "New Castle",
+  "Sharon",
+  "Hermitage",
+  "Conneaut Lake",
+  "North East",
+  "Girard",
+  "Ashtabula Harbor",
+  "Madison",
+  "Painesville Township",
+  "Mayfield Heights",
+  "Solon",
+  "Brooklyn",
+  "Strongsville Heights",
+  "Rocky River",
+  "Avon Lake",
+  "Sheffield",
+  "Norwalk Heights",
+  "Willard",
+  "Bucyrus",
+  "Galion",
+  "Lexington",
+  "Loudonville",
+  "Rittman",
+  "Barberton",
+  "Tallmadge",
+  "Hudson",
+  "Twinsburg",
+  "Northfield",
+  "Richfield",
+  "Fairlawn",
+  "Wadsworth",
+  "Medina Township",
+  "Chippewa Lake",
+  "Wellington",
+  "Columbus Grove",
+  "Columbus",
+  "Whitehouse",
+  "Rossford",
+  "Northwood",
+  "Waterville",
+  "Grand Rapids",
+  "Liberty Center",
+  "Delta",
+  "Archbold",
+  "Bryan",
+  "Montpelier",
+  "Edgerton",
+  "Edon",
+  "Pioneer",
+  "Tecumseh",
+  "Saline",
+  "Belleville",
+  "Wayne",
+  "Westland Heights",
+  "Farmington",
+  "Farmington Hills",
+  "Redford",
+  "Southfield",
+  "Oak Park",
+  "Royal Oak",
+  "Ferndale",
+  "Hazel Park",
+  "Highland Park",
+  "Hamtramck",
+  "Harper Woods",
+  "Eastpointe",
+  "St. Clair Shores",
+  "Warren",
 ];
+
 const stuckDoing = [
-  "waiting in the bathroom line",
+  "waiting in a bathroom line",
   "looking for your lost friend",
   "trippin in a sketchy gas station bathroom",
   "changing a flat tire in the rain",
@@ -129,7 +268,6 @@ const stuckDoing = [
   "getting wristbands for everyone at will call",
   "being the designated driver for the fifth time",
   "waiting for the headliner who's two hours late",
-  "done trapped under a giant inflatable prop",
   "guarding the gear while everyone else dances",
   "waiting in the coat check line that never moves",
   "calming down a neighbor complaining about noise",
@@ -156,6 +294,54 @@ const stuckDoing = [
   "herding everyone to the next spot",
   "collecting bottles to get the deposit back",
   "waiting for the sun to come up to find your way out",
+  "getting locked out of the Airbnb",
+  "trying to get the aux cable back from someone playing country",
+  "waiting for a friend who swears they're 'five minutes away' for an hour",
+  "hunting for someone's missing LED hoop in a field of mud",
+  "standing in a merch line that barely moves",
+  "listening to someone explain DMT for the sixth time",
+  "watching someone try to cook ramen with a glow stick",
+  "getting dragged into a group photo with strangers in costumes",
+  "fishing glow sticks out of a porta-potty",
+  "searching for lost sunglasses",
+  "untangling a knotted string of kandi bracelets and patch cables",
+  "waiting for someone to finish their intricate face paint",
+  "standing outside arguing over which afterparty to hit",
+  "trying to sneak snacks past a super intense security check",
+  "charging four phones off a single power strip",
+  "listening to someone rant about how 'vinyl sounds warmer'",
+  "helping someone find their ride-share in the dark",
+  "waiting for the pop-up barista to finally serve coffee",
+  "tracking down someone who ran off chasing a drone",
+  "getting caught in the middle of a hippie fire-spinning jam",
+  "watching the sunrise with a random group you just met",
+  "waiting for the car to cool down after overheating",
+  "trying to connect a Bluetooth speaker that won't pair",
+  "hiking across a massive parking lot looking for your crew",
+  "babysitting a tent that won't stay up in the wind",
+  "untangling a chain of car keys, patch cables, USB sticks, and lanyards",
+  "helping someone find their lost vape in the grass",
+  "standing guard for the 'secret bathroom'",
+  "waiting for the friend who had to 'say bye to everyone'",
+  "hunting for your jacket after someone took the wrong one",
+  "waiting for the shuttle driver to return from their smoke break",
+  "debating the best set of the night with a group of strangers",
+  "sitting through a lecture about the history of acid house",
+  "watching someone try to barter for pizza with stickers",
+  "waiting for a generator to get fixed",
+  "helping someone find their lost contact lens mid-rave",
+  "waiting in line for a selfie with the headliner",
+  "cleaning up a spilled cooler in the middle of the dancefloor",
+  "trying to trade glow sticks for water bottles",
+  "waiting for your friend's set to finally start",
+  "navigating a maze of tents in total darkness",
+  "listening to someone tune their modular synth for 40 minutes",
+  "getting caught in a surprise rainstorm",
+  "searching for somewhere quiet to have a real conversation",
+  "babysitting your three drum machines",
+  "peeping on a group text that won't stop buzzing",
+  "trying to nap in a hammock",
+  "helping someone charge their vape",
 ];
 const tracks = [
   "house tracks",
@@ -165,6 +351,9 @@ const tracks = [
   "sounds of whales breeding",
   "some sick AF breaks",
   "Detroit techno bangers",
+  "emo tear jerkers",
+  "Berghain techno bangers",
+  "Panarama Bar house grooves",
   "Berlin warehouse cuts",
   "acid house squelches",
   "deep dub techno journeys",
@@ -180,7 +369,7 @@ const tracks = [
   "goth club classics",
   "trance build-ups that never drop",
   "recordings of the Beatles",
-  "lo-fi hip hop beats for sketchy basements",
+  "lo-fi hip hop beats",
   "free jazz freakouts",
   "power electronics blasts",
   "synthwave outrun anthems",
@@ -200,7 +389,6 @@ const tracks = [
   "ritual drone mantras",
   "psytrance full-on spirals",
   "bad karaoke versions of classics",
-  "night bus melancholy bangers",
   "emo synthpop power ballads",
   "post-industrial metal stabs",
   "witch house hexes",
@@ -361,29 +549,26 @@ const goodVibes = [
   "Your dance moves started a whole new trend",
   "The promoter grinned ear to ear behind the booth",
   "The bartender mixed drinks to the beat of your set",
-  "Someone brought their dog and it became the party mascot",
   "Nobody cared about the rain... they came for the music",
   "Everyone left to grab friends to join the dancefloor",
   "The floor was packed and everyone moved as one",
   "Someone started singing along to your track and it was magic",
-  "A spontaneous cypher broke out during your ambient set",
   "People livestreamed because it was THAT good",
   "The subwoofer dropped and the crowd went wild",
   "Even your mom was up front, losing it to your set",
   "Phones were in the air capturing epic moments",
   "The crowd shouted for an encore between tracks",
   "Applause rolled in from every corner of the room",
-  "Even the raccoon outside grooved to your vibe",
+  "Even the cops outside grooved to your vibe",
   "It started as an empty park but you made it a party",
   "Bongo drums joined in for a perfect jam session",
   "Someone requested your best track and the place erupted",
   "You dropped a new tune and everyone noticed",
   "People told you it was your best set ever",
   "Couples fell in love right by the booth",
-  "Your cables survived, and the crowd loved your live tweaking",
+  "Your cables survived, and the crowd loved your live knob tweaking",
   "A birthday party joined in and made it wilder",
-  "Your opening track filled the floor in seconds",
-  "People shouted food orders because they didn't want to leave",
+  "Your opening track filled the floor within seconds",
   "That time the dog barked on beat and everyone lost it",
   "Glowsticks were everywhere",
   "The neighbors blasted your mix from their windows",
@@ -398,9 +583,8 @@ const goodVibes = [
   "Spotify couldn't match you, you were the real DJ that night",
   "A drone flew by with a sign saying 'Crushed It!'",
   "Your mom texted: 'So proud of you!'",
-  "You turned around and the club was still full at 4am",
+  "You finally looked up from all that mixing and the club was still full at 4am",
   "People thought you were staff because you were THAT approachable",
-  "Even the rat nodded to your beat",
   "The speakers were so loud the whole block partied",
   "Someone started beatboxing with your drone... collab vibes",
   "Everyone nodded and smiled, locked in",
@@ -408,15 +592,16 @@ const goodVibes = [
   "A karaoke party joined in to back you up with vocals",
   "You had a bigger crowd than the street festival outside",
   "Someone wanted you to DJ their wedding next",
+  "That moment you pulled that dance move you pull",
   "You overheard, 'I hope this set never ends!'",
   "Clapping was nonstop... you felt the love",
   "Your visuals blew minds, not screens",
-  "Someone just requested 'More music!'",
+  "Those lazers",
+  "That bass",
   "Even the baby bounced to your beats",
   "People shared TikToks about how sick the night was",
   "The bouncer fist bumped you for raising the energy",
   "That moment when your power strip caught fire... ",
-  "A cat chilled on the decks, not missing a beat",
   "Someone brought a guitar and jammed along in sync",
   "Your FX pedal glitched, but the crowd loved the loop",
   "You dropped a rare track and people lost their minds",
@@ -429,15 +614,15 @@ const goodVibes = [
   "A drone did a light show as you dropped the bass",
   "That moment when the projector switched to Mario Kart... crowd went apeshit",
   "Your visuals flashed 'You're a legend!' in giant letters",
-  "A random grandma started breakdancing and got a standing ovation",
-  "Confetti cannons went off perfectly in sync with your drop",
+  "OMG that grandma started breakdancing and got a standing ovation",
+  "Them confetti cannons went off perfectly in sync with your drop",
   "You played a secret track and the whole room gasped",
   "Someone handed you a bouquet of glowsticks",
   "A parade joined in from the street, doubling your crowd",
   "A lost balloon floated down and everyone cheered for its journey",
   "The security guard was smiling and bobbing their head",
   "Your beat matched the heart rate of the crowd",
-  "You got a thank you note on a napkin slid across the booth",
+  "You got a thank you note and a lipstick kiss on a napkin slid across the booth to you",
   "A group brought homemade banners with your name on them",
   "Someone crowd-surfed on an inflatable unicorn",
   "Every drink got toasted to your set",
@@ -447,17 +632,14 @@ const goodVibes = [
   "You played a throwback track and everyone sang along word for word",
   "A laser show started mid-set, surprise style",
   "You tossed a USB into the crowd and someone caught it like a bouquet",
-  "A couple got engaged right after your best drop",
   "Your set made the power go out...  people cheered and kept chanting",
   "An old friend surprised you in the crowd and danced up front",
   "A record label scout was spotted grooving to your tracks",
-  "A random dog wore sunglasses and danced",
   "Glow-in-the-dark bubbles filled the air",
   "You played a meme song and the whole floor went wild",
-  "Someone painted your portrait during your set",
   "A pizza delivery arrived mid-song... everyone cheered",
   "Every selfie in the room had you in the background",
-  "A stranger complimented your sneakers over the mic",
+  "A stranger complimented your acid over the mic",
   "You sampled someone's laugh live and it became the drop",
   "A rainbow appeared right when you hit the euphoric breakdown",
   "People tossed hats in the air at your last track",
@@ -474,30 +656,34 @@ const goodVibes = [
   "A couple did a surprise proposal in front of your booth",
   "You started a conga line that wrapped around the block",
   "People waved their shoes in the air for the last drop",
-  "The catering staff danced while serving snacks",
-  "A random parade float rolled in and joined the party",
+  "The catering staff even danced while serving the chicken strips",
+  "A random parade float rolled by then joined the party",
   "The venue ran out of water because the crowd danced so hard",
   "Someone remixed your track live on their phone and played it back",
   "The power flickered and everyone cheered, thinking it was part of the show",
   "You crowd-surfed all the way back to your booth",
   "You got invited to an exclusive sunrise set after your show",
-  "People painted their faces to match your visuals",
+  "People painted their faces with chicken strip emojis to match your visuals",
   "A fire dancer started spinning during your breakdown",
-  "Someone started a limbo contest with your cables",
+  "You had the crowd in your hands during your modular solo! Crew knew you were trippin tho and it was just the CDJs still spinnin. LOL",
+  "Someone started a limbo contest with your cables LOL",
   "The janitor gave you a thumbs up on the way out",
-  "You found your sticker on the bathroom mirror",
+  "You even found your band sticker on the bathroom mirror",
   "A bike gang rolled through and stayed for the whole set",
   "Someone set off fireworks outside right as your set ended",
   "The bartender created a drink named after your DJ name",
   "People started chanting your name between every track",
+  "Those Ohio hardcore fans slamming them windmills and cherry-pick moves",
   "A drone dropped confetti from above the dancefloor",
-  "You freestyled a whole new genre and everyone followed",
+  "You freestyled a whole new genre",
   "You got a standing ovation before you even finished",
-  "A group in matching outfits did a flashmob to your music",
+  "A group in matching outfits did a flashmob to your music. Crowd went bananas",
   "Your last track got requested three times in a row",
   "The local news did a story on the party because of you",
   "People high fived you on the way out, grinning",
-  "Even the moon seemed to pulse with the bass",
+  "That conga line that went for an hour",
+  "Hella retweets",
+  "Those lazers during the transitions",
   "Someone called you a legend as they left",
   "A street artist made a mural inspired by your set",
   "The sun came up just as your encore ended and people cheered",
@@ -539,7 +725,7 @@ const chickenKinds = [
   "orange chicken bites",
   "General Tso's chickens",
   "cajun fried chicken wings",
-  "chicken gizzards fried",
+  "Nashville fried chicken gizzards",
   "chicken croquettes",
   "crispy chicken skin chips",
   "chicken mini sandwiches",
@@ -585,6 +771,88 @@ const chickenKinds = [
   "chicken tenders and fries",
   "double battered fried chickens",
   "hot honey chicken bites",
+  "maple sriracha chicken drumettes",
+  "chicken cordon bleu bites",
+  "crispy Thai basil chickens",
+  "jalapeno cheddar chicken poppers",
+  "buffalo ranch chicken sliders",
+  "piri piri grilled chickens",
+  "chicken croissant sandwiches",
+  "smoked paprika chicken wings",
+  "rosemary roasted chicken thighs",
+  "chicken parmesan bites",
+  "spicy peanut chicken satays",
+  "sticky orange chicken wings",
+  "chicken gyro wraps with french fries",
+  "chimichurri chicken skewers",
+  "chicken pot pie bites",
+  "cheesy chicken taquitos",
+  "crispy mango habanero chickens",
+  "carolina gold chicken nuggets",
+  "chicken banh mi sliders",
+  "sesame ginger chicken fingers",
+  "spicy BBQ chicken bites",
+  "jalapeno honey chicken tenders",
+  "coconut curry chicken strips",
+  "crispy butter chicken wings",
+  "balsamic glazed chicken skewers",
+  "harissa spiced chicken thighs",
+  "chicken tikka masala bites",
+  "parmesan garlic chicken wings",
+  "ranch battered chicken strips",
+  "spicy szechuan chicken chunks",
+  "herb roasted chicken legs",
+  "Nashville glazed chicken wings",
+  "sour cream & onion chicken nuggets",
+  "chicken florentine poppers",
+  "chipotle lime chicken tenders",
+  "chicken Philly cheesesteak bites",
+  "crunchy chicken tacos",
+  "miso glazed chicken bites",
+  "sweet and spicy popcorn chickens",
+  "butter chicken empanadas",
+  "chicken chili cheese fries",
+  "chicken Caesar wrap strips",
+  "honey garlic chicken wings",
+  "tandoori chicken skewers",
+  "buffalo chicken puffs",
+  "chicken Philly rolls",
+  "feta spinach chicken balls",
+  "smoky BBQ chicken strips",
+  "Katsu chicken sliders",
+  "pineapple teriyaki chicken bites",
+  "sriracha honey chicken lollipops",
+  "crispy ranch chicken patties",
+  "cheddar bacon chicken nuggets",
+  "five spice crispy chicken wings",
+  "ginger soy chicken meatballs",
+  "wasabi sesame chicken bites",
+  "creamy garlic chicken croquettes",
+  "southern hot chicken tenders",
+  "jalapeno popper chicken strips",
+  "lemongrass chicken skewers",
+  "chicken pesto panini sliders",
+  "cornflake crusted chicken strips",
+  "bourbon glazed chicken drumsticks",
+  "za'atar roasted chicken thighs",
+  "buffalo blue cheese chicken wraps",
+  "cheesy chicken enchilada bites",
+  "crispy buttermilk chicken sliders",
+  "chicken parmesan egg rolls",
+  "chicken buffalo mac and cheese bites",
+  "mustard herb chicken nuggets",
+  "sweet teriyaki chicken wraps",
+  "spicy Korean BBQ chickens",
+  "Thai coconut chicken skewers",
+  "crispy cheddar chicken tenders",
+  "panko parmesan chicken cutlets",
+  "chipotle honey chicken wings",
+  "jalapeno lime chicken tacos",
+  "pepperjack chicken sandwiches",
+  "garlic herb chicken skewers",
+  "mozzarella stuffed chicken balls",
+  "spicy Cajun chicken bites",
+  "sticky bourbon chicken wings",
 ];
 const scoredSlang = [
   "Bagged",
@@ -682,7 +950,6 @@ const thingsNotToDo = [
   "brings out a megaphone to hype the vibe but kills it",
   "starts throwing glow sticks at everyone's faces",
   "tries to teach a dance nobody wants to learn",
-  "pulls out a guitar and plays Wonderwall",
   "tries to plug in an air fryer and blows the fuse",
   "asks everyone to quiet down for their acoustic set",
   "keeps asking, 'what's the WiFi password?'",
@@ -692,7 +959,7 @@ const thingsNotToDo = [
   "crashes the DJ booth to 'fix the mix'",
   "starts spraying silly string over everyone's drinks",
   "cranks the AC so everyone freezes",
-  "starts grilling fish inside the tent",
+  "starts grilling fish inside the van",
   "tries to negotiate the next party venue midmoment",
   "tries to swap the playlist for their own rap demo",
   "invites random outsiders into a private moment",
@@ -704,7 +971,61 @@ const thingsNotToDo = [
   "starts randomly unplugging lights for no reason",
   "starts a pushup contest no one asked for",
   "demands a group selfie every 5 minutes",
-  "tries to auction off leftover snacks",
+  "tries to auction off leftover chicken strips",
+  "shows up with a foghorn and tests it during every breakdown",
+  "starts trying to manifest the weather by chanting outside the tent",
+  "puts on a four-hour podcast about blockchain at peak hour",
+  "asks everyone to stop the music for a TED Talk they prepared",
+  "insists on a trust circle when everyone's trying to dance",
+  "starts singing Disney songs over the DJ set",
+  "wants everyone to listen to their 10-minute poem about light",
+  "starts a FaceTime with their entire extended family",
+  "starts cleaning up and throwing away half-eaten food midmeal",
+  "tries to remix the DJ's set using a phone speaker",
+  "keeps offering unsolicited back massages to strangers",
+  "tries to lead a group prayer just as the drop hits",
+  "refuses to dance unless everyone forms a conga line",
+  "tries to convert everyone to raw veganism",
+  "starts shaming people for not recycling perfectly",
+  "sets off a car alarm and walks away like nothing happened",
+  "tries to charge money for letting people use the bathroom",
+  "brings out a slide projector to show vacation photos",
+  "critiques the lighting in every single selfie",
+  "brings a typewriter to 'document the moment' loudly",
+  "starts playing soccer in the middle of the dance floor",
+  "plays voicemail messages on speaker for the group",
+  "tries to schedule a meditation app check-in every hour",
+  "starts singing opera at sunrise",
+  "insists on explaining the plot of every song in detail",
+  "brings a whiteboard for 'group brainstorming'",
+  "keeps reminding everyone about their allergies",
+  "tries to collect everyone's email for a newsletter",
+  "wants to host a PowerPoint presentation about rave safety",
+  "goes around with a clipboard asking for feedback",
+  "tries to sell you their mixtape on a USB stick",
+  "demands a strict curfew mid-party",
+  "walks around with a flashlight blinding people",
+  "refuses to let anyone use glowsticks for 'environmental reasons'",
+  "tries to teach financial literacy between sets",
+  "randomly hands out pop quizzes on dance music history",
+  "wants everyone to participate in their TikTok dance challenge",
+  "keeps loudly reciting their astrology chart",
+  "offers to hypnotize people for fun",
+  "tries to make everyone play charades at 4am",
+  "starts an argument about which decade had the best music",
+  "tries to tune the PA system during a DJ set",
+  "refuses to leave until everyone signs their guestbook",
+  "turns off the music to take a group phone call",
+  "tries to make everyone practice mindful breathing mid-dance",
+  "starts painting faces without asking",
+  "goes around unplugging anything they think is 'not safe for tripping'",
+  "tries to teach everyone Morse code using the strobe lights",
+  "keeps offering people homemade kombucha nobody wants",
+  "starts juggling glowsticks in crowded areas",
+  "brings a didgeridoo and plays along with every track",
+  "complains loudly about the lack of WiFi",
+  "demands silence to read their dream journal",
+  "tries to lead a nature walk at 2am",
 ];
 
 const awesomeSlang = [
@@ -767,8 +1088,9 @@ const badSlang = [
   "Whack",
   "Whack",
   "Whack",
-  "Whack",
-  "Whack",
+  "Wack",
+  "Wack",
+  "Wack",
   "Bunk",
   "Fucked",
   "Shitty",
@@ -839,7 +1161,7 @@ setInterval(() => {
   randomAwesomeSlangMessage = awesomeSlang[awesomeSlangIndex];
   randomBadSlangMessage = badSlang[badSlangIndex];
   randomGoodVibesMessage = goodVibes[goodVibesIndex];
-}, 1000); // 1000 milliseconds = 1 second
+}, 100); // refresh every 100 milliseconds
 
 // character constructor
 function Character(name) {
@@ -905,7 +1227,7 @@ Character.prototype.illnessGenerator = function () {
     );
   } else if (num === 4 && this.illness.includes("CDJ Rage") == false) {
     this.illness.push("CDJ Rage");
-    $(".ongoing-events").prepend(this.name + " is experiencing CDJ Rage <br>");
+    $(".ongoing-events").prepend(this.name + " is having CDJ Rage <br>");
   } else if (num === 5 && this.illness.includes("Insta Fatigue") == false) {
     this.illness.push("Insta Fatigue");
     $(".ongoing-events").prepend(this.name + " got Insta Fatigue <br>");
@@ -1028,7 +1350,7 @@ Wagon.prototype.eventGrabber = function () {
 
 //random positiveEvent
 function positiveEvent() {
-  var num = Math.floor(Math.random() * Math.floor(6));
+  var num = Math.floor(Math.random() * Math.floor(13));
   var ranSupplyIncrease = Math.floor(Math.random() * (200 - 100) + 100);
   if (num === 1) {
     $(".ongoing-events").prepend(
@@ -1036,8 +1358,8 @@ function positiveEvent() {
         ranSupplyIncrease +
         ` ${randomChickenMessage} in an abandoned fanny pack. ${randomAwesomeSlangMessage}. <br>`
     );
-    wagon.money += ranSupplyIncrease;
-    $(".wagon-money-remaining").text(wagon.money.toFixed(2));
+    wagon.food += ranSupplyIncrease;
+    $(".wagon-food-remaining").text(wagon.money.toFixed(2));
   } else if (num === 2) {
     $(".ongoing-events").prepend(
       `You discover a hidden crate of ${randomChickenMessage} behind the van's busted speaker, ` +
@@ -1060,8 +1382,8 @@ function positiveEvent() {
         ranSupplyIncrease +
         ` ${randomChickenMessage} hidden behind a toilet. ${randomAwesomeSlangMessage}! <br>`
     );
-    wagon.money += ranSupplyIncrease;
-    $(".wagon-money-remaining").text(wagon.money.toFixed(2));
+    wagon.food += ranSupplyIncrease;
+    $(".wagon-food-remaining").text(wagon.money.toFixed(2));
   } else if (num === 5) {
     $(".ongoing-events").prepend(
       "You barter three coney dogs for a USB full of unreleased tracks along with some nuggets. The DJ is suspicious but also intrigued. <br> You got " +
@@ -1082,13 +1404,62 @@ function positiveEvent() {
         ranSupplyIncrease +
         ` ${randomChickenMessage} from the day before. ${randomAwesomeSlangMessage}. <br>`
     );
+    wagon.food += ranSupplyIncrease;
+    $(".wagon-food-remaining").text(wagon.money.toFixed(2));
+  } else if (num === 7) {
+    $(".ongoing-events").prepend(
+      "Crew stumbles onto a renegade at a scenic overlook. Free grilled cheese, and " +
+        ranSupplyIncrease +
+        ` ${randomChickenMessage}. ${randomAwesomeSlangMessage}. <br>`
+    );
+    wagon.food += ranSupplyIncrease;
+    $(".wagon-food-remaining").text(wagon.money.toFixed(2));
+  } else if (num === 8) {
+    $(".ongoing-events").prepend(
+      `The afters location gets revealed early, you bust ass to get there and when you do your crew finds ` +
+        ranSupplyIncrease +
+        ` ${randomChickenMessage} in the green room. ${randomAwesomeSlangMessage}. <br>`
+    );
+    wagon.food += ranSupplyIncrease;
+    $(".wagon-food-remaining").text(wagon.food.toFixed(2));
+  } else if (num === 9) {
+    $(".ongoing-events").prepend(
+      "A local college radio station hosts a dance-off in a parking lot. You destroy the competition and walk away with " +
+        ranSupplyIncrease +
+        ` ${randomChickenMessage}. ${randomAwesomeSlangMessage}. <br>`
+    );
+    wagon.food += ranSupplyIncrease;
+    $(".wagon-food-remaining").text(wagon.food.toFixed(2));
+  } else if (num === 10) {
+    $(".ongoing-events").prepend(
+      "We find some glowsticks and a fanny pack next to a tent. Inside the pack is a wallet which contains a napkin with someone's Bitcoin credentials written on it. Pumped, we hustle to a Bitcoin ATM and transfer " +
+        ranSupplyIncrease +
+        ` Bitcoins to your wallet. ${randomAwesomeSlangMessage}. <br>`
+    );
     wagon.money += ranSupplyIncrease;
     $(".wagon-money-remaining").text(wagon.money.toFixed(2));
+  } else if (num === 11) {
+    $(".ongoing-events").prepend(
+      "A vendor mistakes you for headliners and gives you VIP wristbands loaded up with drink tickets and " +
+        ranSupplyIncrease +
+        ` ${randomChickenMessage}. ${randomAwesomeSlangMessage}. <br>`
+    );
+    wagon.food += ranSupplyIncrease;
+    $(".wagon-food-remaining").text(wagon.food.toFixed(2));
+  } else if (num === 12) {
+    $(".ongoing-events").prepend(
+      wagon.characters[index].name +
+        "A rogue sound system sets up next to your camp, offering sunrise pancakes and " +
+        ranSupplyIncrease +
+        ` ${randomChickenMessage}. ${randomAwesomeSlangMessage}. <br>`
+    );
+    wagon.food += ranSupplyIncrease;
+    $(".wagon-food-remaining").text(wagon.money.toFixed(2));
   }
 }
 //random neutralEvent
 function neutralEvent() {
-  var num = Math.floor(Math.random() * Math.floor(6));
+  var num = Math.floor(Math.random() * Math.floor(12));
   if (num === 0) {
     $(".ongoing-events").prepend(
       `The van's GPS reroutes you through four extra tolls in ${randomTownsMessage}. Nobody notices tho. <br>`
@@ -1113,11 +1484,35 @@ function neutralEvent() {
     $(".ongoing-events").prepend(
       "The van is starting to stank like feet again. <br>"
     );
+  } else if (num === 6) {
+    $(".ongoing-events").prepend(
+      `Missed an exit in ${randomTownsMessage} and looped back. No one seems to mind. <br>`
+    );
+  } else if (num === 7) {
+    $(".ongoing-events").prepend(
+      "Someone suggests switching playlists, but nobody can agree on the next genre. The van rides on in silence. <br>"
+    );
+  } else if (num === 8) {
+    $(".ongoing-events").prepend(
+      `Stopped at a gas station in ${randomTownsMessage}. Half the crew gets snacks, the rest just scroll. <br>`
+    );
+  } else if (num === 9) {
+    $(".ongoing-events").prepend(
+      `Tried to organize a group photo at a ${randomTownsMessage} rest area. Only three people show up in time. <br>`
+    );
+  } else if (num === 10) {
+    $(".ongoing-events").prepend(
+      `Someone starts telling a long story about their last festival, but nobody can remember who they're talking about. <br>`
+    );
+  } else if (num === 11) {
+    $(".ongoing-events").prepend(
+      "There's a heated debate over which water bottle actually belongs to whom. <br>"
+    );
   }
 }
 //random negativeEvent
 function negativeEvent() {
-  var num = Math.floor(Math.random() * Math.floor(6));
+  var num = Math.floor(Math.random() * Math.floor(12));
   var ranSupplyDecrease = Math.floor(Math.random() * (200 - 100) + 100);
   var index = Math.floor(Math.random() * Math.floor(wagon.characters.length));
   if (num === 1) {
@@ -1135,7 +1530,7 @@ function negativeEvent() {
       `Meal break in ${randomTownsMessage}: discover you've eaten only gas station taquitos and Tic Tacs. Wasted too much time ${randomStuckDoingMessage}. Quietly, ` +
         wagon.characters[index].name +
         " is having a moment, and " +
-        wagon.characters[index + 1].name +
+        wagon.characters[(index + 1) % wagon.characters.length].name +
         " has Rave Anxiety.<br>"
     );
     wagon.characters[index].illness.push("Rave Anxiety");
@@ -1154,25 +1549,9 @@ function negativeEvent() {
     );
     wagon.days += 5;
     wagon.food -= wagon.characters.length * 5 * 5;
-    document.getElementById("jesusSnatch").play();
-    $("#wheel-1").fadeIn(500);
-    $("#wheel-2").delay(300).fadeIn(500);
-    $("#wheel-1").fadeOut(500);
-    $("#wheel-3").delay(400).fadeIn(500);
-    $("#wheel-2").fadeOut(500);
-    $("#wheel-4").delay(500).fadeIn(500);
-    $("#wheel-3").fadeOut(500);
-    $("#wheel-5").delay(600).fadeIn(500);
-    $("#wheel-4").fadeOut(500);
-    $("#wheel-6").delay(700).fadeIn(500);
-    $("#wheel-5").fadeOut(500);
-    $("#jesus").delay(1100).fadeIn(100);
-    $("#wheel-6").slideUp(5000).fadeOut(500);
-    $("#jesus").slideUp(5000).fadeOut(500);
-    $("#star").delay(5250).fadeIn("puff").fadeOut();
   } else if (num === 5) {
     $(".ongoing-events").prepend(
-      `Passing thru ${randomTownsMessage} you realize all your chargers are USB-C. Thats whack cuz everyone else has Lightning ones. Arguments ensue. Then a Red Bull gets knocked over into the bucket of chicken. ` +
+      `Passing thru ${randomTownsMessage} you realize all your chargers are USB-C. Arguments ensue. Then a Red Bull gets knocked over into the bucket of chicken. ` +
         ranSupplyDecrease +
         " of the nuggets rot and " +
         wagon.characters[index].name +
@@ -1187,6 +1566,52 @@ function negativeEvent() {
         ` nuggets tumble out of the bucket and onto the floor. ` +
         wagon.characters[index].name +
         ` keeps repeating they are 'tripping balls rn' but everyone keeps quietly to themselves. ${randomBadSlangMessage}. <br>`
+    );
+    wagon.food -= ranSupplyDecrease;
+    $(".wagon-food-remaining").text(wagon.food.toFixed(2));
+  } else if (num === 7) {
+    $(".ongoing-events").prepend(
+      `Stuck behind a 16-car pileup near ${randomTownsMessage}. You miss your set time, and ${wagon.characters[index].name} explains they will never trip and drive with you again, ever. ${randomBadSlangMessage}. <br>`
+    );
+    wagon.characters[index].health -= 10;
+  } else if (
+    num === 2 &&
+    wagon.characters[index].illness.includes("CDJ Rage") == false
+  ) {
+    $(".ongoing-events").prepend(
+      `Gas station sushi stop at ${randomTownsMessage} goes wrong. Half the crew gets the munchies and ${wagon.characters[0].name} starts puking up some salmon chunks. Now ${wagon.characters[index].name} is super fucken pissed and ` +
+        wagon.characters[(index + 1) % wagon.characters.length].name +
+        " has to hold a puke bucket. <br>"
+    );
+    wagon.characters[index].illness.push("CDJ Rage");
+  } else if (num === 8) {
+    $(".ongoing-events").prepend(
+      `Random pop-up checkpoint near ${randomTownsMessage}. While stuck ${randomStuckDoingMessage}, the cops confiscate ` +
+        ranSupplyDecrease +
+        ` ${randomChickenMessage}, claiming it's for 'evidence.' ` +
+        wagon.characters[index].name +
+        " tries to talk them down and gets a lecture about responsible partying. <br>"
+    );
+    wagon.food -= ranSupplyDecrease;
+    wagon.days += index;
+    $(".wagon-food-remaining").text(wagon.food.toFixed(2));
+  } else if (num === 9) {
+    $(".ongoing-events").prepend(
+      `Sound system blows out just as you pull into ${randomTownsMessage}. No one wants to hear the acoustic jam that follows. Crew debates if it's worth trading the last USB stick for a Bluetooth speaker. ${randomStuckDoingMessage} eats up 9 hours. Spirits: demolished.<br>`
+    );
+    wagon.days += 5;
+    wagon.food -= wagon.characters.length * 5 * 5;
+  } else if (num === 10) {
+    $(".ongoing-events").prepend(
+      `In ${randomTownsMessage}, you find out the party is actually tomorrow. ${wagon.characters[index].name} sits in the van with a face full of glitter and despair. To make it worse, someone spilled kombucha all over the remaining nuggets. ` +
+        ranSupplyDecrease +
+        ` gone from the bucket. ${randomBadSlangMessage}. <br>`
+    );
+    wagon.food -= ranSupplyDecrease;
+    $(".wagon-food-remaining").text(wagon.food.toFixed(2));
+  } else if (num === 11) {
+    $(".ongoing-events").prepend(
+      `Lost in a cornfield detour outside ${randomTownsMessage}. The GPS dies, ${wagon.characters[index].name} starts communicating with imaginary cave spirits, and ${ranSupplyDecrease} chicken nuggets disappear in the panic. ${randomBadSlangMessage}. <br>`
     );
     wagon.food -= ranSupplyDecrease;
     $(".wagon-food-remaining").text(wagon.food.toFixed(2));
