@@ -257,7 +257,6 @@ const towns = [
   "Sharon",
   "Hermitage",
   "Conneaut Lake",
-  "North East",
   "Girard",
   "Ashtabula Harbor",
   "Madison",
@@ -425,7 +424,7 @@ const stuckDoing = [
   "trying to trade glow sticks for water bottles",
   "waiting for your friend's set to finally start",
   "navigating a maze of tents in total darkness",
-  "listening to someone tune their modular synth for 40 minutes",
+  "listening to someone tune their modular synth endlessly",
   "getting caught in a surprise rainstorm",
   "searching for somewhere quiet to have a real conversation",
   "babysitting your three drum machines",
@@ -1417,10 +1416,16 @@ Wagon.prototype.rest = function () {
 Wagon.prototype.eventGrabber = function () {
   var num = Math.floor(Math.random() * Math.floor(100));
   if (
+    // If the wagon is at one of these milestone distances, eventGrabber does nothing (because other functions like landmarkEvent() will handle those milestone events).
+    this.distance === 50 ||
     this.distance === 100 ||
+    this.distance === 150 ||
     this.distance === 200 ||
+    this.distance === 250 ||
     this.distance === 300 ||
+    this.distance === 350 ||
     this.distance === 400 ||
+    this.distance === 450 ||
     this.distance === 500
   ) {
   } else if (num >= 80) {
@@ -1452,7 +1457,7 @@ function positiveEvent() {
     $(".wagon-food-remaining").text(wagon.money.toFixed(2));
   } else if (num === 2) {
     $(".ongoing-events").prepend(
-      `You discover a hidden crate of ${randomChickenMessage} behind the van's busted speaker, ` +
+      `You discover a hidden crate of ${randomChickenMessage} stashed behind the van's busted speaker, ` +
         ranSupplyIncrease +
         ` nuggets restored. ${randomAwesomeSlangMessage}. <br>`
     );
@@ -1617,7 +1622,7 @@ function negativeEvent() {
     wagon.characters[index].illness.includes("Rave Anxiety") == false
   ) {
     $(".ongoing-events").prepend(
-      `Meal break in ${randomTownsMessage}: discover you've eaten only gas station taquitos and Tic Tacs. Wasted too much time ${randomStuckDoingMessage}. Quietly, ` +
+      `Meal break in ${randomTownsMessage}: discover you've eaten only small pieces of paper. Wasted too much time ${randomStuckDoingMessage}. Quietly, ` +
         wagon.characters[index].name +
         " is having a moment, and " +
         wagon.characters[(index + 1) % wagon.characters.length].name +
