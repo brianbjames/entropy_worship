@@ -26,6 +26,97 @@
 /* |                                                                         | */
 /* \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ */
 
+const imagesToPreload = [
+  "img/1.jpg",
+  "img/2.jpg",
+  "img/3.jpg",
+  "img/4.jpg",
+  "img/5.jpg",
+  "img/50.jpg",
+  "img/100.jpg",
+  "img/150.jpg",
+  "img/250.jpg",
+  "img/300.jpg",
+  "img/350.jpg",
+  "img/450.jpg",
+  "img/500.jpg",
+  "img/ableton.jpg",
+  "img/beans.png",
+  "img/boots.png",
+  "img/bullet.png",
+  "img/camp1.jpg",
+  "img/camp2.jpg",
+  "img/camp3.jpg",
+  "img/camp4.jpg",
+  "img/camp5.jpg",
+  "img/camp6.jpg",
+  "img/camp7.jpg",
+  "img/camp8.jpg",
+  "img/camp9.jpg",
+  "img/camp10.jpg",
+  "img/camp11.jpg",
+  "img/camp12.jpg",
+  "img/camp13.jpg",
+  "img/camp14.jpg",
+  "img/camp15.jpg",
+  "img/camp16.jpg",
+  "img/camp17.jpg",
+  "img/camp18.jpg",
+  "img/camp19.jpg",
+  "img/camp20.jpg",
+  "img/campStore.jpg",
+  "img/cart.png",
+  "img/cobra.png",
+  "img/confetti.gif",
+  "img/dead.jpg",
+  "img/faq.png",
+  "img/fireworks.gif",
+  "img/fleeFail.jpg",
+  "img/generalStore.jpg",
+  "img/gun.png",
+  "img/hand.jpg",
+  "img/highCowboy.jpg",
+  "img/huntFail.jpg",
+  "img/jesus.svg",
+  "img/map.jpg",
+  "img/map.png",
+  "img/merc.png",
+  "img/money-bag.png",
+  "img/mountains.png",
+  "img/nuggets.jpg",
+  "img/ormap.jpg",
+  "img/ox.png",
+  "img/restaurant.png",
+  "img/riverFail.jpg",
+  "img/riverWin.jpg",
+  "img/shining.svg",
+  "img/skull.png",
+  "img/skull.svg",
+  "img/sky.jpg",
+  "img/start-cover.jpg",
+  "img/topography.png",
+  "img/wagon-tipping.gif",
+  "img/wagon.png",
+  "img/wheel.svg",
+  "img/whisky.png",
+];
+
+function preloadImages(urls, done) {
+  let loaded = 0,
+    imgs = [];
+  for (let i = 0; i < urls.length; i++) {
+    imgs[i] = new Image();
+    imgs[i].src = urls[i];
+    imgs[i].onload = imgs[i].onerror = () => {
+      loaded++;
+      if (loaded === urls.length && done) done(imgs);
+    };
+  }
+}
+preloadImages(imagesToPreload, function () {
+  // All images loaded and cached!
+});
+
 const towns = [
   "Jersey City",
   "Paterson",
@@ -255,7 +346,6 @@ const stuckDoing = [
   "waiting for your phone to charge at a random outlet",
   "tracking down someone's lost wallet",
   "getting searched by security twice",
-  "getting freaky in the van",
   "babysitting a friend having a meltdown",
   "explaining to the Uber driver where the secret location is",
   "pushing a car out of the mud",
@@ -1561,7 +1651,7 @@ function negativeEvent() {
     $(".wagon-food-remaining").text(wagon.food.toFixed(2));
   } else if (num === 6) {
     $(".ongoing-events").prepend(
-      `You realize you left two USB sticks in the CDJs at the last stop. ${randomBadSlangMessage}! The van comes to a screetching halt as ` +
+      `You realize you left two USB sticks in the CDJs at the last stop. The van comes to a screetching halt as ` +
         ranSupplyDecrease +
         ` nuggets tumble out of the bucket and onto the floor. ` +
         wagon.characters[index].name +
@@ -1597,7 +1687,7 @@ function negativeEvent() {
     $(".wagon-food-remaining").text(wagon.food.toFixed(2));
   } else if (num === 9) {
     $(".ongoing-events").prepend(
-      `Sound system blows out just as you pull into ${randomTownsMessage}. No one wants to hear the acoustic jam that follows. Crew debates if it's worth trading the last USB stick for a Bluetooth speaker. ${randomStuckDoingMessage} eats up 9 hours. Spirits: demolished.<br>`
+      `Sound system blows out just as you pull into ${randomTownsMessage}. No one wants to hear the acoustic jam that follows. Crew debates if it's worth trading the last USB stick for a Bluetooth speaker, ${randomStuckDoingMessage} eats up 9 hours. Spirits: demolished.<br>`
     );
     wagon.days += 5;
     wagon.food -= wagon.characters.length * 5 * 5;
