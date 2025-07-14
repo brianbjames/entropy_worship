@@ -54,7 +54,7 @@ span {
 #wagon-3,
 #wagon-2 {
   display: none;
-  margin-top: 36px;
+  margin-top: 6px;
   position: absolute;
   z-index: 1;
 }
@@ -193,7 +193,7 @@ span {
     left: 5%;
     bottom: 45%;
     transform: rotate(0deg);
-    background-image: url(../img/boots.png);
+    background-image: url(../img/gun.png);
   }
   30% {
     left: 90%;
@@ -205,7 +205,7 @@ span {
     left: 5%;
     bottom: 55%;
     transform: rotate(0deg);
-    background-image: url(../img/gun.png);
+    background-image: url(../img/bullet.png);
   }
   50% {
     left: 90%;
@@ -263,7 +263,7 @@ span {
     left: 5%;
     bottom: 45%;
     transform: rotate(0deg);
-    background-image: url(../img/boots.png);
+    background-image: url(../img/gun.png);
   }
   30% {
     left: 90%;
@@ -275,7 +275,7 @@ span {
     left: 5%;
     bottom: 55%;
     transform: rotate(0deg);
-    background-image: url(../img/gun.png);
+    background-image: url(../img/bullet.png);
   }
   50% {
     left: 90%;
@@ -756,8 +756,8 @@ img {
 }
 
 .ui-widget-header {
-  border: 1px solid #28a745;
-  background: #28a745;
+  border: 1px solid #062343;
+  background: #fc4614;
 }
 
 #progress-title {

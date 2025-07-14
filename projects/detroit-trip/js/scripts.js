@@ -26,7 +26,58 @@
 /* |                                                                         | */
 /* \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ */
 
+let playlist = [
+  "sounds/1-Entropy-Worship.mp3",
+  "sounds/2-Entropy-Worship.mp3",
+  "sounds/3-Entropy-Worship.mp3",
+  "sounds/4-Entropy-Worship.mp3",
+  "sounds/5-Entropy-Worship.mp3",
+  "sounds/6-Entropy-Worship.mp3",
+  "sounds/7-Entropy-Worship.mp3",
+  "sounds/8-Entropy-Worship.mp3",
+];
+let currentTrack = 0;
+let audio = null; // assign later
+
+function playCurrentTrack() {
+  if (!audio) return;
+  audio.src = playlist[currentTrack];
+
+  // Play after a user gesture (button click or similar)
+  let playPromise = audio.play();
+
+  if (playPromise !== undefined) {
+    playPromise.catch(function (error) {
+      // Optional: handle error gracefully
+      console.log("Audio play() failed:", error);
+      // You can show a UI message to the user if you want
+    });
+  }
+}
+
+$(document).ready(function () {
+  audio = document.getElementById("gamePlaylist");
+
+  // Only attach this if audio element was found
+  if (audio) {
+    audio.addEventListener("ended", function () {
+      currentTrack++;
+      if (currentTrack >= playlist.length) currentTrack = 0; // Loop to start
+      playCurrentTrack();
+    });
+  }
+
+  // ...rest of your code that uses playCurrentTrack, eg. button click...
+  $("#startBTN").click(function () {
+    currentTrack = 0;
+    playCurrentTrack();
+    $("#start").fadeOut(500);
+    $("#characterInput").delay(500).fadeIn(500);
+  });
+});
+
 const imagesToPreload = [
+  "img/gun.png",
   "img/1.jpg",
   "img/2.jpg",
   "img/3.jpg",
@@ -73,7 +124,6 @@ const imagesToPreload = [
   "img/fireworks.gif",
   "img/fleeFail.jpg",
   "img/generalStore.jpg",
-  "img/gun.png",
   "img/hand.jpg",
   "img/highCowboy.jpg",
   "img/huntFail.jpg",
@@ -368,7 +418,6 @@ const stuckDoing = [
   "listening to the same song loop during a bad DJ transition",
   "untangling cables behind the booth",
   "waiting for a friend to stop hugging everyone",
-  "driving someone to the ER for dehydration",
   "trying to find the secret entrance",
   "wandering the festival grounds at sunrise",
   "sharing a tent with a couple arguing",
@@ -1133,9 +1182,7 @@ const awesomeSlang = [
   "Ill",
   "Fire",
   "Lit",
-  "Rad",
   "Wicked",
-  "Killer",
   "Gnarly",
   "Insane",
   "Mad",
@@ -1166,7 +1213,6 @@ const awesomeSlang = [
   "Savage",
   "Ripping",
   "Mega",
-  "Monster",
   "Ridiculous",
   "Boss",
   "Unreal",
@@ -1273,9 +1319,9 @@ function Wagon() {
 
 Character.prototype.healthBar = function () {
   var pairs = {
-    Chillin: "#28a745",
-    Lagging: "#f0ad4e",
-    "Running on Fumes": "#d9534f",
+    Chillin: "#062343",
+    Lagging: "#FC4614",
+    "Running on Fumes": "#C8102E",
     "Done (Just... Done)": "black",
   };
   $("#char1-health-bar").progressbar({ value: char1.health });
@@ -1698,7 +1744,7 @@ function negativeEvent() {
     wagon.food -= wagon.characters.length * 5 * 5;
   } else if (num === 10) {
     $(".ongoing-events").prepend(
-      `In ${randomTownsMessage}, you find out the party is actually tomorrow. ${wagon.characters[index].name} sits in the van with a face full of glitter and despair. To make it worse, someone spilled kombucha all over the remaining nuggets. ` +
+      `In ${randomTownsMessage}, you find out the party is actually tomorrow. ${wagon.characters[index].name} sits in the van with a face full of glitter and despair. To make it worse, kombucha spilled into the bucket of nuggets. ` +
         ranSupplyDecrease +
         ` gone from the bucket. ${randomBadSlangMessage}. <br>`
     );
@@ -1885,7 +1931,7 @@ function landmarkEvent() {
     buildEndModal(num, "win", "Play Again");
     var endScore = wagon.buildScore();
     $(".button-content").prepend(
-      "<h4>DETROIT</h4>You made it to the rave! That shit was hella tight and hella sick. Your score is: " +
+      `<h4>DETROIT</h4>You made it to the rave!<br>${randomAwesomeSlangMessage}.<br> Your score is: ` +
         endScore
     );
     $("#buttonModal").addClass("confetti");
@@ -1958,7 +2004,8 @@ function flee() {
     wagon.characters[index].health = 0;
     buildModal("fleeFail");
     $(".ongoing-events").prepend(
-      wagon.characters[index].name + ` bailed. ${randomBadSlangMessage}. <br>`
+      wagon.characters[index].name +
+        ` had a meltdown and bailed. ${randomBadSlangMessage}. <br>`
     );
     $("#myModal").toggle();
     wagon.statusAdjuster();
@@ -2185,14 +2232,14 @@ function enableSubmit(ele) {
   if (ele == "#continue-button") {
     $(ele).css({
       "pointer-events": "auto",
-      "background-color": "#28a745",
-      "border-color": "#28a745",
+      // "background-color": "#28a745",
+      // "border-color": "#28a745",
     });
   } else if (ele == "#rest-button") {
     $(ele).css({
       "pointer-events": "auto",
-      "background-color": "#17a2b8",
-      "border-color": "#17a2b8",
+      // "background-color": "#17a2b8",
+      // "border-color": "#17a2b8",
     });
   }
 }
@@ -2209,7 +2256,8 @@ $(document).ready(function () {
   };
 
   $("#startBTN").click(function () {
-    document.getElementById("openingSong").play();
+    currentTrack = 0;
+    playCurrentTrack();
     $("#start").fadeOut(500);
     $("#characterInput").delay(500).fadeIn(500);
   });
@@ -2255,7 +2303,7 @@ $(document).ready(function () {
     $("#wagon-food-remaining").text(wagon.food);
     $(".wagon-money-remaining").text(wagon.money.toFixed(2));
     $("#wagon-bullets-remaining").text(wagon.bullets);
-    document.getElementById("openingSong").pause();
+    //document.getElementById("openingSong").pause();
   });
 
   $("#preCheckout").click(function () {
@@ -2271,8 +2319,8 @@ $(document).ready(function () {
   $("#continue-button").click(function () {
     $("#continue-button").css({
       "pointer-events": "none",
-      "background-color": "lightgreen",
-      "border-color": "lightgreen",
+      // "background-color": "lightgreen",
+      // "border-color": "lightgreen",
     });
     setTimeout(function () {
       enableSubmit("#continue-button");
@@ -2299,8 +2347,8 @@ $(document).ready(function () {
   $("#rest-button").click(function () {
     $("#rest-button").css({
       "pointer-events": "none",
-      "background-color": "lightblue",
-      "border-color": "lightblue",
+      // "background-color": "lightblue",
+      // "border-color": "lightblue",
     });
     setTimeout(function () {
       enableSubmit("#rest-button");
