@@ -259,57 +259,112 @@
                     <div class="row row-cols-4" data-masonry='{"percentPosition": true }'><!--Masonry panel-->
                         <div class="col">
                             <div class="card transparent-bg">
-                            <!-- First Image Container -->
-                            <div class="card-body">
-                                <img class="img-fluid cyber-glitch-0" style="width: 100%; aspect-ratio: 1; object-fit: cover;" src="images/EW_Second_Law_Cover_W_Aerotek_Logo.png" alt="Second Law Cover">
-                                <h5 class="card-title">Second Law</h5>
-                                <!-- <span class="cyber-att cyber-glitch-3">New</span> -->
-                                <a href="https://www.beatport.com/release/second-law/4812389" target="_blank" class="button error round">Beatport</a>
-                                <a href="https://music.apple.com/us/album/second-law/1778509857" target="_blank" class="button error round">Apple</a>
-                                <a href="https://open.spotify.com/album/7D9HZJbX3SXttmz2jSxI23?si=_CfuUAtnRuuS_wK_xWorTQ" target="_blank" class="button error round">Spotify</a>
-                                <a href= "https://aerotekrecordings.bandcamp.com/album/entropy-worship-second-law-aero108" target="_blank" class="button error round">Bandcamp</a>                    
+                            <div class="card-body p-1">
+                                <img class="release-trigger img-fluid cyber-glitch-0" style="width: 100%; aspect-ratio: 1; object-fit: cover; cursor: pointer;" src="images/EW_Second_Law_Cover_W_Aerotek_Logo.png" alt="Second Law Cover" data-toggle="modal" data-target="#modal-second-law">
                             </div>
                             </div>
-                        </div>
-                        <div class="col">
-                        <div class="card transparent-bg">
-                            <!-- Second Image Container -->
-                            <div class="card-body">
-                            <img class="img-fluid" style="width: 100%; aspect-ratio: 1; object-fit: cover;" src="images/EntropyWorshipFacticity-CoverForDigitalSmaller.jpg" alt="Facticity Devotion Discipline Cover">
-                            <h5 class="card-title">Facticity Devotion Discipline</h5>
-                            <a href="https://www.missionsynths.com/products/entropy-worship-facticity-devotion-discipline-1" target="_blank" class="button error round">Vinyl</a>
-                            <a href="https://music.apple.com/us/album/facticity-devotion-discipline-ep/1378491884" target="_blank" class="button error round">Apple</a>
-                            <a href="https://open.spotify.com/album/4UqiFfR222eSeoPctBP5bF?si=_cyAkVnSQOCrkf4Ia-muFA" target="_blank" class="button error round">Spotify</a>
-                            <a href="https://entropyworship.bandcamp.com/album/facticity-devotion-discipline" target="_blank" class="button error round">Bandcamp</a>
-                            </div>
-                        </div>
                         </div>
                         <div class="col">
                             <div class="card transparent-bg">
-                            <!-- Third Image Container -->
-                            <div class="card-body">
-                                <img class="img-fluid" style="width: 100%; aspect-ratio: 1; object-fit: cover;" src="images/EntropyWorshipDirtyConsecrationCover.jpg" alt="Facticity Devotion Discipline Cover">
-                                <h5 class="card-title">Dirty Consecration</h5>
-                                <a href="https://music.apple.com/us/album/dirty-consecration-single/1113364047" target="_blank" class="button error round">Apple</a>
-                                <a href="https://open.spotify.com/album/2aGUBW2oieV24apYcK4hZE?si=a9FB1TUNTEC2TEGSP81YrA" target="_blank" class="button error round">Spotify</a>
-                                <a href="https://entropyworship.bandcamp.com/album/dirty-consecration" target="_blank" class="button error round">Bandcamp</a>
+                            <div class="card-body p-1">
+                                <img class="release-trigger img-fluid" style="width: 100%; aspect-ratio: 1; object-fit: cover; cursor: pointer;" src="images/EntropyWorshipFacticity-CoverForDigitalSmaller.jpg" alt="Facticity Devotion Discipline Cover" data-toggle="modal" data-target="#modal-facticity">
                             </div>
                             </div>
                         </div>
-                        
                         <div class="col">
                             <div class="card transparent-bg">
-                                <!-- Forth Image Container -->
-                                <div class="card-body">
-                                    <img class="img-fluid" style="width: 100%; aspect-ratio: 1; object-fit: cover;" src="images/EntropyWorshipThamesCover.jpg" alt="Thames and Variations Cover">
-                                    <h5 class="card-title">Thames and Variations</h5>
-                                    <a href="https://music.apple.com/us/album/thames-and-variations-single/1110835303" target="_blank" class="button error round">Apple</a>
-                                    <a href="https://open.spotify.com/album/2orrfUEKesHEM3VD8DtzZr?si=jQ5HROs8SJefxnn0olwyrg" target="_blank" class="button error round">Spotify</a>
-                                <a href="https://entropyworship.bandcamp.com/album/thames-and-variations" target="_blank" class="button error round">Bandcamp</a>
-                                </div>
+                            <div class="card-body p-1">
+                                <img class="release-trigger img-fluid" style="width: 100%; aspect-ratio: 1; object-fit: cover; cursor: pointer;" src="images/EntropyWorshipDirtyConsecrationCover.jpg" alt="Dirty Consecration Cover" data-toggle="modal" data-target="#modal-dirty-consecration">
+                            </div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="card transparent-bg">
+                            <div class="card-body p-1">
+                                <img class="release-trigger img-fluid" style="width: 100%; aspect-ratio: 1; object-fit: cover; cursor: pointer;" src="images/EntropyWorshipThamesCover.jpg" alt="Thames and Variations Cover" data-toggle="modal" data-target="#modal-thames">
+                            </div>
                             </div>
                         </div>
                     </div><!--Masonry panel close-->
+
+                    <!-- Release Modals -->
+                    <div class="modal fade" id="modal-second-law" tabindex="-1" role="dialog" aria-labelledby="modal-second-law-label" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content" style="background-color: #1a1a1a; border: 1px solid #660c0c; color: white;">
+                                <div class="modal-header" style="border-bottom: 1px solid #660c0c;">
+                                    <h5 class="modal-title cyber-glitch-1" id="modal-second-law-label">Second Law</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;"><span aria-hidden="true">&times;</span></button>
+                                </div>
+                                <div class="modal-body text-center">
+                                    <img class="img-fluid mb-3" style="max-width: 260px; aspect-ratio: 1; object-fit: cover;" src="images/EW_Second_Law_Cover_W_Aerotek_Logo.png" alt="Second Law Cover">
+                                    <div>
+                                        <a href="https://www.beatport.com/release/second-law/4812389" target="_blank" class="button error round">Beatport</a>
+                                        <a href="https://music.apple.com/us/album/second-law/1778509857" target="_blank" class="button error round">Apple</a>
+                                        <a href="https://open.spotify.com/album/7D9HZJbX3SXttmz2jSxI23?si=_CfuUAtnRuuS_wK_xWorTQ" target="_blank" class="button error round">Spotify</a>
+                                        <a href="https://aerotekrecordings.bandcamp.com/album/entropy-worship-second-law-aero108" target="_blank" class="button error round">Bandcamp</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal fade" id="modal-facticity" tabindex="-1" role="dialog" aria-labelledby="modal-facticity-label" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content" style="background-color: #1a1a1a; border: 1px solid #660c0c; color: white;">
+                                <div class="modal-header" style="border-bottom: 1px solid #660c0c;">
+                                    <h5 class="modal-title cyber-glitch-1" id="modal-facticity-label">Facticity Devotion Discipline</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;"><span aria-hidden="true">&times;</span></button>
+                                </div>
+                                <div class="modal-body text-center">
+                                    <img class="img-fluid mb-3" style="max-width: 260px; aspect-ratio: 1; object-fit: cover;" src="images/EntropyWorshipFacticity-CoverForDigitalSmaller.jpg" alt="Facticity Devotion Discipline Cover">
+                                    <div>
+                                        <a href="https://www.missionsynths.com/products/entropy-worship-facticity-devotion-discipline-1" target="_blank" class="button error round">Vinyl</a>
+                                        <a href="https://music.apple.com/us/album/facticity-devotion-discipline-ep/1378491884" target="_blank" class="button error round">Apple</a>
+                                        <a href="https://open.spotify.com/album/4UqiFfR222eSeoPctBP5bF?si=_cyAkVnSQOCrkf4Ia-muFA" target="_blank" class="button error round">Spotify</a>
+                                        <a href="https://entropyworship.bandcamp.com/album/facticity-devotion-discipline" target="_blank" class="button error round">Bandcamp</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal fade" id="modal-dirty-consecration" tabindex="-1" role="dialog" aria-labelledby="modal-dirty-consecration-label" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content" style="background-color: #1a1a1a; border: 1px solid #660c0c; color: white;">
+                                <div class="modal-header" style="border-bottom: 1px solid #660c0c;">
+                                    <h5 class="modal-title cyber-glitch-1" id="modal-dirty-consecration-label">Dirty Consecration</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;"><span aria-hidden="true">&times;</span></button>
+                                </div>
+                                <div class="modal-body text-center">
+                                    <img class="img-fluid mb-3" style="max-width: 260px; aspect-ratio: 1; object-fit: cover;" src="images/EntropyWorshipDirtyConsecrationCover.jpg" alt="Dirty Consecration Cover">
+                                    <div>
+                                        <a href="https://music.apple.com/us/album/dirty-consecration-single/1113364047" target="_blank" class="button error round">Apple</a>
+                                        <a href="https://open.spotify.com/album/2aGUBW2oieV24apYcK4hZE?si=a9FB1TUNTEC2TEGSP81YrA" target="_blank" class="button error round">Spotify</a>
+                                        <a href="https://entropyworship.bandcamp.com/album/dirty-consecration" target="_blank" class="button error round">Bandcamp</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="modal fade" id="modal-thames" tabindex="-1" role="dialog" aria-labelledby="modal-thames-label" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered" role="document">
+                            <div class="modal-content" style="background-color: #1a1a1a; border: 1px solid #660c0c; color: white;">
+                                <div class="modal-header" style="border-bottom: 1px solid #660c0c;">
+                                    <h5 class="modal-title cyber-glitch-1" id="modal-thames-label">Thames and Variations</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;"><span aria-hidden="true">&times;</span></button>
+                                </div>
+                                <div class="modal-body text-center">
+                                    <img class="img-fluid mb-3" style="max-width: 260px; aspect-ratio: 1; object-fit: cover;" src="images/EntropyWorshipThamesCover.jpg" alt="Thames and Variations Cover">
+                                    <div>
+                                        <a href="https://music.apple.com/us/album/thames-and-variations-single/1110835303" target="_blank" class="button error round">Apple</a>
+                                        <a href="https://open.spotify.com/album/2orrfUEKesHEM3VD8DtzZr?si=jQ5HROs8SJefxnn0olwyrg" target="_blank" class="button error round">Spotify</a>
+                                        <a href="https://entropyworship.bandcamp.com/album/thames-and-variations" target="_blank" class="button error round">Bandcamp</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 <div class="card text-bg-danger mb-3" style="background-color: #2e2e2e16">
                 <div class="card-body">
                     <!-- <iframe src="https://embed.beatport.com/?id=4812389&type=release" 

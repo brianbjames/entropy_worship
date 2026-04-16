@@ -58,7 +58,8 @@ h3 {
   padding: 0;
   font-size: 1rem !important;
   color: white !important;
-  font-family: "BIONICKIDSIMPLESLANTED", sans-serif; /* Fallback to a generic font */
+  font-family:
+    "BIONICKIDSIMPLESLANTED", sans-serif; /* Fallback to a generic font */
 }
 h4 {
   text-align: left;
@@ -74,7 +75,7 @@ h5 {
   padding: 0;
   font-size: 0.75rem !important;
   color: white !important;
-  font-family: "NCLGesrob", sans-serif; /* Fallback to a generic font */
+  font-family: "sector_034", sans-serif; /* Fallback to a generic font */
 }
 body {
   position: relative;
