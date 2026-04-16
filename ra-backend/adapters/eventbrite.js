@@ -7,6 +7,14 @@ const AREA_CONFIG = {
     path: "ca--san-francisco/events",
     geoHint: "San Francisco, California, USA",
   },
+  losangeles: {
+    path: "ca--los-angeles/events",
+    geoHint: "Los Angeles, California, USA",
+  },
+  newyork: {
+    path: "ny--new-york/events",
+    geoHint: "New York, New York, USA",
+  },
 };
 
 const adapterCache = new Map();
