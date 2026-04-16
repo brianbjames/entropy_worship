@@ -72,6 +72,13 @@ export async function fetchEventbriteEvents({
     args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
 
+  let title = "";
+  let currentUrl = "";
+  let bodyText = "";
+  let html = "";
+  let jsonLdBlocks = [];
+  let navigationError = null;
+
   try {
     const page = await browser.newPage({
       viewport: { width: 1440, height: 1400 },
@@ -79,22 +86,26 @@ export async function fetchEventbriteEvents({
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
     });
 
-    await page.goto(discoverUrl, {
-      waitUntil: "networkidle",
-      timeout: 60000,
-    });
+    try {
+      await page.goto(discoverUrl, {
+        waitUntil: "domcontentloaded",
+        timeout: 45000,
+      });
+    } catch (err) {
+      navigationError = err instanceof Error ? err.message : String(err);
+    }
 
-    await page.waitForTimeout(4000);
+    await page.waitForTimeout(5000);
 
-    const title = await page.title().catch(() => "");
-    const currentUrl = page.url();
-    const bodyText = await page
+    title = await page.title().catch(() => "");
+    currentUrl = page.url();
+    bodyText = await page
       .locator("body")
       .innerText()
       .catch(() => "");
-    const html = await page.content().catch(() => "");
+    html = await page.content().catch(() => "");
 
-    const jsonLdBlocks = await page
+    jsonLdBlocks = await page
       .locator('script[type="application/ld+json"]')
       .evaluateAll((nodes) => nodes.map((n) => n.textContent || ""))
       .catch(() => []);
@@ -123,7 +134,7 @@ export async function fetchEventbriteEvents({
           }
         }
       } catch {
-        // ignore malformed blocks
+        // ignore malformed JSON-LD
       }
     }
 
@@ -146,6 +157,7 @@ export async function fetchEventbriteEvents({
           discoverUrl,
           pageTitle: title,
           currentUrl,
+          navigationError,
           bodyTextLength: bodyText.length,
           htmlLength: html.length,
           jsonLdBlockCount: jsonLdBlocks.length,
