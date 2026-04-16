@@ -1,0 +1,1291 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SF Street Cleaning — Park Finder</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        background: #0d0d0d;
+        font-family: "Courier New", monospace;
+      }
+
+      #map {
+        height: 100vh;
+        width: 100%;
+      }
+
+      /* ── Legend ─────────────────────────────────────────────────────────── */
+      .legend {
+        background: rgba(8, 8, 8, 0.92);
+        border: 1px solid #2a2a2a;
+        color: #bbb;
+        padding: 14px 18px;
+        border-radius: 3px;
+        min-width: 240px;
+        line-height: 1.6;
+      }
+
+      .legend h4 {
+        color: #fff;
+        margin: 0 0 2px;
+        font-size: 13px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+      }
+
+      .legend .subtitle {
+        color: #666;
+        font-size: 11px;
+        margin-bottom: 12px;
+      }
+
+      .legend hr {
+        border: none;
+        border-top: 1px solid #222;
+        margin: 8px 0;
+      }
+
+      .legend-row {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 12px;
+        margin: 5px 0;
+      }
+
+      .legend-line {
+        width: 22px;
+        height: 4px;
+        border-radius: 2px;
+        flex-shrink: 0;
+      }
+
+      .legend-count {
+        color: #555;
+        margin-left: auto;
+        font-size: 11px;
+        min-width: 28px;
+        text-align: right;
+      }
+
+      .legend .source {
+        font-size: 10px;
+        color: #444;
+        margin-top: 2px;
+      }
+      .legend .source a {
+        color: #666;
+      }
+
+      /* ── Search panel ────────────────────────────────────────────────────── */
+      #search-panel {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 1000;
+        background: rgba(8, 8, 8, 0.92);
+        border: 1px solid #2a2a2a;
+        border-radius: 3px;
+        padding: 12px 14px;
+        width: 236px;
+      }
+
+      #search-panel label {
+        display: block;
+        color: #555;
+        font-size: 10px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 7px;
+      }
+
+      #search-form {
+        display: flex;
+        gap: 6px;
+      }
+
+      #search-input {
+        flex: 1;
+        min-width: 0;
+        background: #111;
+        border: 1px solid #2e2e2e;
+        color: #ccc;
+        padding: 6px 8px;
+        font-family: "Courier New", monospace;
+        font-size: 12px;
+        border-radius: 2px;
+        outline: none;
+      }
+
+      #search-input::placeholder {
+        color: #3a3a3a;
+      }
+      #search-input:focus {
+        border-color: #444;
+      }
+
+      #search-btn {
+        background: #181818;
+        border: 1px solid #3a3a3a;
+        color: #888;
+        padding: 6px 10px;
+        font-family: "Courier New", monospace;
+        font-size: 11px;
+        border-radius: 2px;
+        cursor: pointer;
+        letter-spacing: 1px;
+        white-space: nowrap;
+      }
+
+      #search-btn:hover {
+        background: #242424;
+        color: #ccc;
+      }
+      #search-btn:disabled {
+        opacity: 0.4;
+        cursor: default;
+      }
+
+      #search-hint {
+        color: #3a3a3a;
+        font-size: 10px;
+        margin-top: 7px;
+      }
+
+      /* ── Verdict panel ───────────────────────────────────────────────────── */
+      #result-panel {
+        display: none;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #1e1e1e;
+      }
+
+      .verdict {
+        font-size: 10px;
+        font-weight: bold;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        padding: 5px 8px;
+        border-radius: 2px;
+        margin-bottom: 8px;
+      }
+
+      .verdict-ok {
+        background: #0c2010;
+        color: #44bb55;
+        border: 1px solid #1a4020;
+      }
+      .verdict-active {
+        background: #280808;
+        color: #ff4444;
+        border: 1px solid #481010;
+      }
+      .verdict-upcoming {
+        background: #281500;
+        color: #ff9922;
+        border: 1px solid #482800;
+      }
+      .verdict-passed {
+        background: #141414;
+        color: #777;
+        border: 1px solid #282828;
+      }
+
+      .result-address {
+        color: #999;
+        font-size: 11px;
+        margin-bottom: 6px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .result-rows {
+        font-size: 11px;
+        line-height: 1.9;
+      }
+      .result-rows .r-active {
+        color: #ff5555;
+      }
+      .result-rows .r-upcoming {
+        color: #ffaa33;
+      }
+      .result-rows .r-passed {
+        color: #44bb55;
+      }
+      .result-rows .r-dim {
+        color: #555;
+      }
+
+      /* ── Time slider ─────────────────────────────────────────────────────── */
+      #time-panel {
+        position: absolute;
+        bottom: 28px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+        background: rgba(8, 8, 8, 0.92);
+        border: 1px solid #2a2a2a;
+        border-radius: 3px;
+        padding: 10px 18px 8px;
+        min-width: 340px;
+      }
+
+      /* ── Day selector ────────────────────────────────────────────────────── */
+      #day-selector {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+      }
+
+      .day-btn {
+        background: #111;
+        border: 1px solid #2e2e2e;
+        color: #555;
+        font-family: "Courier New", monospace;
+        font-size: 10px;
+        padding: 3px 8px;
+        border-radius: 2px;
+        cursor: pointer;
+        letter-spacing: 0.5px;
+        white-space: nowrap;
+      }
+
+      .day-btn:hover {
+        color: #aaa;
+        border-color: #444;
+      }
+
+      .day-btn.active {
+        background: #1c1c1c;
+        border-color: #555;
+        color: #ddd;
+      }
+
+      #time-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+
+      #time-label {
+        color: #ccc;
+        font-size: 12px;
+        letter-spacing: 1px;
+      }
+
+      #time-reset {
+        background: none;
+        border: 1px solid #333;
+        color: #555;
+        font-family: "Courier New", monospace;
+        font-size: 10px;
+        padding: 2px 7px;
+        border-radius: 2px;
+        cursor: pointer;
+        letter-spacing: 1px;
+      }
+
+      #time-reset:hover {
+        color: #aaa;
+        border-color: #555;
+      }
+
+      #time-slider {
+        width: 100%;
+        -webkit-appearance: none;
+        appearance: none;
+        height: 3px;
+        background: #2a2a2a;
+        border-radius: 2px;
+        outline: none;
+      }
+
+      #time-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 13px;
+        height: 13px;
+        border-radius: 50%;
+        background: #ddd;
+        cursor: pointer;
+        box-shadow: 0 0 5px rgba(255, 255, 255, 0.25);
+      }
+
+      #time-slider::-moz-range-thumb {
+        width: 13px;
+        height: 13px;
+        border: none;
+        border-radius: 50%;
+        background: #ddd;
+        cursor: pointer;
+      }
+
+      .time-ticks {
+        display: flex;
+        justify-content: space-between;
+        color: #444;
+        font-size: 9px;
+        margin-top: 5px;
+        letter-spacing: 0.5px;
+      }
+
+      /* ── Popups / tooltips ───────────────────────────────────────────────── */
+      .leaflet-popup-content-wrapper {
+        background: rgba(8, 8, 8, 0.96);
+        color: #bbb;
+        border: 1px solid #333;
+        border-radius: 3px;
+        font-family: "Courier New", monospace;
+        font-size: 12px;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6);
+      }
+
+      .leaflet-popup-tip {
+        background: rgba(8, 8, 8, 0.96);
+      }
+      .leaflet-popup-content {
+        margin: 11px 14px;
+        line-height: 1.8;
+      }
+
+      .popup-street {
+        font-size: 14px;
+        color: #fff;
+        font-weight: bold;
+        margin-bottom: 6px;
+      }
+
+      .popup-badge {
+        display: inline-block;
+        padding: 2px 7px;
+        border-radius: 2px;
+        font-size: 10px;
+        font-weight: bold;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+      }
+
+      .badge-active {
+        background: #ff3333;
+        color: #fff;
+      }
+      .badge-upcoming {
+        background: #ff9900;
+        color: #000;
+      }
+      .badge-passed {
+        background: #2ecc71;
+        color: #000;
+      }
+
+      .leaflet-tooltip {
+        background: rgba(8, 8, 8, 0.88) !important;
+        border: 1px solid #333 !important;
+        color: #aaa !important;
+        font-family: "Courier New", monospace !important;
+        font-size: 11px !important;
+        border-radius: 2px !important;
+        box-shadow: none !important;
+        padding: 3px 8px !important;
+      }
+
+      .leaflet-tooltip::before {
+        display: none !important;
+      }
+
+      /* ── Overlays ────────────────────────────────────────────────────────── */
+      #loading {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(8, 8, 8, 0.92);
+        color: #666;
+        padding: 20px 32px;
+        font-size: 13px;
+        z-index: 2000;
+        border: 1px solid #2a2a2a;
+        border-radius: 3px;
+        letter-spacing: 1px;
+      }
+
+      .notice-overlay {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgba(8, 8, 8, 0.92);
+        border: 1px solid #2a2a2a;
+        color: #888;
+        padding: 32px 44px;
+        text-align: center;
+        z-index: 2000;
+        border-radius: 3px;
+      }
+
+      .notice-overlay h2 {
+        color: #fff;
+        margin: 0 0 10px;
+        font-size: 15px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+      }
+
+      .notice-overlay p {
+        margin: 0;
+        font-size: 12px;
+        line-height: 1.9;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <div id="loading">Loading street cleaning data&hellip;</div>
+
+    <div id="search-panel">
+      <label for="search-input">Find Parking</label>
+      <form id="search-form" autocomplete="off">
+        <input
+          id="search-input"
+          type="text"
+          placeholder="Address or intersection"
+          value="City Hall, San Francisco"
+        />
+        <button id="search-btn" type="submit">Go</button>
+      </form>
+      <div id="search-hint">or click anywhere on the map</div>
+      <div id="result-panel"></div>
+    </div>
+
+    <div id="time-panel" hidden>
+      <div id="day-selector"></div>
+      <div id="time-header">
+        <span id="time-label"></span>
+        <button id="time-reset">Reset to now</button>
+      </div>
+      <input type="range" id="time-slider" min="6" max="20" step="0.5" />
+      <div class="time-ticks">
+        <span>6 AM</span><span>9 AM</span><span>12 PM</span> <span>3 PM</span
+        ><span>6 PM</span><span>8 PM</span>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+      // ── Map init ──────────────────────────────────────────────────────────
+      const map = L.map("map", { zoomControl: false }).setView(
+        [37.7793, -122.4193],
+        15,
+      );
+      L.control.zoom({ position: "bottomright" }).addTo(map);
+
+      L.tileLayer(
+        "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
+        {
+          attribution:
+            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors ' +
+            '&copy; <a href="https://carto.com/">CARTO</a>',
+          subdomains: "abcd",
+          maxZoom: 19,
+        },
+      ).addTo(map);
+
+      // ── Date / time ───────────────────────────────────────────────────────
+      const now = new Date();
+      const DAY_NAMES = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+      ];
+      const DAY_ABBR = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+      const dayIndex = now.getDay();
+      const todayName = DAY_NAMES[dayIndex];
+      const currentHour = now.getHours() + now.getMinutes() / 60;
+      const weekOfMonth = Math.ceil(now.getDate() / 7);
+      const weekField = `week${weekOfMonth}`;
+
+      const dateStr = now.toLocaleDateString("en-US", {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+      });
+      const timeStr = now.toLocaleTimeString("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+      });
+
+      // Active viewing hour — updated by the slider, used everywhere
+      let activeHour = currentHour;
+
+      // ── View state — updated when the user picks a different day ──────────
+      let viewDate = new Date(now);
+      let viewDayName = todayName;
+      let viewWeekOfMonth = weekOfMonth;
+      let viewWeekField = weekField;
+
+      function isViewingToday() {
+        return viewDate.toDateString() === now.toDateString();
+      }
+
+      // ── Status + colors ───────────────────────────────────────────────────
+      const COLORS = {
+        active: "#ff3333", // red   — do not park
+        upcoming: "#ff9900", // orange — restriction coming up
+        passed: "#2ecc71", // green  — safe to park now
+      };
+
+      function getStatusAtHour(fromhour, tohour, hour) {
+        const from = parseFloat(fromhour);
+        const to = parseFloat(tohour);
+        if (isNaN(from) || isNaN(to)) return "upcoming";
+        if (hour >= from && hour < to) return "active";
+        if (hour < from) return "upcoming";
+        return "passed";
+      }
+
+      function getStatus(fromhour, tohour) {
+        return getStatusAtHour(fromhour, tohour, activeHour);
+      }
+
+      function fmtHour(h) {
+        const n = parseInt(h);
+        if (isNaN(n)) return String(h);
+        const ampm = n < 12 ? "AM" : "PM";
+        const h12 = n === 0 ? 12 : n > 12 ? n - 12 : n;
+        return `${h12}:00 ${ampm}`;
+      }
+
+      function fmtSliderHour(h) {
+        const hour = Math.floor(h);
+        const min = Math.round((h - hour) * 60);
+        const ampm = hour < 12 ? "AM" : "PM";
+        const h12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+        return `${h12}:${min.toString().padStart(2, "0")} ${ampm}`;
+      }
+
+      // ── Zoom-responsive line weight ───────────────────────────────────────
+      // Left-side (L) lines are slightly thicker than right-side (R) so both
+      // block faces are distinguishable when they overlap at low zoom.
+      function lineWeight(isLeft) {
+        const z = map.getZoom();
+        const base = isLeft ? 5 : 3;
+        return z >= 17
+          ? base + 6
+          : z >= 16
+            ? base + 4
+            : z >= 15
+              ? base + 2
+              : base;
+      }
+
+      // ── Legend ────────────────────────────────────────────────────────────
+      const legend = L.control({ position: "topright" });
+      legend.onAdd = function () {
+        const div = L.DomUtil.create("div", "legend");
+        div.innerHTML = `
+          <h4>SF Street Cleaning</h4>
+          <div class="subtitle" id="legend-subtitle">
+            ${dateStr}<br>
+            ${timeStr} &nbsp;&middot;&nbsp; Week ${weekOfMonth} of month
+          </div>
+          <hr>
+          <div class="legend-row">
+            <div class="legend-line" style="background:#ff3333"></div>
+            <span>No parking &mdash; active now</span>
+            <span class="legend-count" id="cnt-active">&mdash;</span>
+          </div>
+          <div class="legend-row">
+            <div class="legend-line" style="background:#ff9900"></div>
+            <span>Upcoming today</span>
+            <span class="legend-count" id="cnt-upcoming">&mdash;</span>
+          </div>
+          <div class="legend-row">
+            <div class="legend-line" style="background:#2ecc71"></div>
+            <span>Passed &mdash; safe to park</span>
+            <span class="legend-count" id="cnt-passed">&mdash;</span>
+          </div>
+          <hr>
+          <div class="source">
+            Thin/thick = right/left block face &nbsp;&middot;&nbsp;
+            <a href="https://datasf.org/opendata/" target="_blank">DataSF</a>
+          </div>
+        `;
+        return div;
+      };
+      legend.addTo(map);
+
+      function updateLegendSubtitle(date) {
+        const el = document.getElementById("legend-subtitle");
+        if (!el) return;
+        const ds = date.toLocaleDateString("en-US", {
+          weekday: "long",
+          month: "long",
+          day: "numeric",
+        });
+        const wom = Math.ceil(date.getDate() / 7);
+        const isToday = date.toDateString() === now.toDateString();
+        const timePart = isToday
+          ? `${timeStr} &nbsp;&middot;&nbsp; `
+          : "";
+        el.innerHTML = `${ds}<br>${timePart}Week ${wom} of month`;
+      }
+
+      // ── Feature + layer storage ───────────────────────────────────────────
+      // loadedFeatures: original (un-offset) features for distance queries
+      // geoLayer: the rendered L.geoJSON layer for slider updates
+      let loadedFeatures = [];
+      let geoLayer = null;
+      let checkMarker = null;
+      let lastSearchLabel = null;
+
+      // ── Geometry: block-face offset ───────────────────────────────────────
+      // Shifts a line ~6m perpendicular to street direction so left/right
+      // sides of the same block are visually distinct at zoom ≥ 15.
+      function offsetGeometry(geometry, cnnrightleft) {
+        // cnnrightleft is "L" or "R" in this dataset (not blockside cardinal)
+        if (!geometry) return geometry;
+        const side = (cnnrightleft || "").toUpperCase().trim();
+        if (side !== "L" && side !== "R") return geometry;
+
+        const dir = side === "L" ? 1 : -1;
+        const OFFSET = 6; // meters
+
+        function shiftCoords(coords) {
+          if (!coords || coords.length < 2) return coords;
+          const [lng1, lat1] = coords[0];
+          const [lng2, lat2] = coords[coords.length - 1];
+          const cosLat = Math.cos((lat1 * Math.PI) / 180);
+          const dx = (lng2 - lng1) * cosLat * 111320;
+          const dy = (lat2 - lat1) * 111320;
+          const len = Math.sqrt(dx * dx + dy * dy);
+          if (len === 0) return coords;
+
+          // Perpendicular unit vector (left = CCW rotation of travel direction)
+          const px = (-dy / len) * dir;
+          const py = (dx / len) * dir;
+
+          const dLng = (px * OFFSET) / (cosLat * 111320);
+          const dLat = (py * OFFSET) / 111320;
+          return coords.map(([lng, lat]) => [lng + dLng, lat + dLat]);
+        }
+
+        if (geometry.type === "LineString") {
+          return {
+            ...geometry,
+            coordinates: shiftCoords(geometry.coordinates),
+          };
+        }
+        if (geometry.type === "MultiLineString") {
+          return {
+            ...geometry,
+            coordinates: geometry.coordinates.map(shiftCoords),
+          };
+        }
+        return geometry;
+      }
+
+      // ── Distance helpers (for click-to-check) ────────────────────────────
+      function distPtSeg(lat, lng, a, b) {
+        const ym = 111320;
+        const xm = ym * Math.cos((lat * Math.PI) / 180);
+        const px = lng * xm,
+          py = lat * ym;
+        const ax = a[0] * xm,
+          ay = a[1] * ym;
+        const bx = b[0] * xm,
+          by = b[1] * ym;
+        const dx = bx - ax,
+          dy = by - ay;
+        const lenSq = dx * dx + dy * dy;
+        if (lenSq === 0) return Math.hypot(px - ax, py - ay);
+        const t = Math.max(
+          0,
+          Math.min(1, ((px - ax) * dx + (py - ay) * dy) / lenSq),
+        );
+        return Math.hypot(px - (ax + t * dx), py - (ay + t * dy));
+      }
+
+      function distToFeature(lat, lng, feature) {
+        const geom = feature.geometry;
+        if (!geom) return Infinity;
+        const lines =
+          geom.type === "LineString"
+            ? [geom.coordinates]
+            : geom.type === "MultiLineString"
+              ? geom.coordinates
+              : [];
+        let min = Infinity;
+        for (const line of lines)
+          for (let i = 0; i < line.length - 1; i++)
+            min = Math.min(min, distPtSeg(lat, lng, line[i], line[i + 1]));
+        return min;
+      }
+
+      // ── Verdict panel ─────────────────────────────────────────────────────
+      function showVerdict(latlng, label) {
+        lastSearchLabel = label;
+
+        // If data hasn't loaded yet, leave the panel in its loading state
+        if (loadedFeatures.length === 0) return;
+
+        const RADIUS = 60;
+        const nearby = loadedFeatures
+          .map((f) => ({ f, d: distToFeature(latlng.lat, latlng.lng, f) }))
+          .filter((x) => x.d <= RADIUS)
+          .sort((a, b) => a.d - b.d)
+          .slice(0, 8);
+
+        // Split by status, sort upcoming chronologically
+        const active = nearby.filter(
+          (x) =>
+            getStatusAtHour(
+              x.f.properties.fromhour,
+              x.f.properties.tohour,
+              activeHour,
+            ) === "active",
+        );
+        const upcoming = nearby
+          .filter(
+            (x) =>
+              getStatusAtHour(
+                x.f.properties.fromhour,
+                x.f.properties.tohour,
+                activeHour,
+              ) === "upcoming",
+          )
+          .sort(
+            (a, b) =>
+              parseFloat(a.f.properties.fromhour) -
+              parseFloat(b.f.properties.fromhour),
+          );
+        const passed = nearby.filter(
+          (x) =>
+            getStatusAtHour(
+              x.f.properties.fromhour,
+              x.f.properties.tohour,
+              activeHour,
+            ) === "passed",
+        );
+
+        // Verdict badge shows the most actionable time info
+        const dayLabel = isViewingToday() ? "today" : `this ${viewDayName}`;
+        let verdict, verdictHtml;
+        if (active.length > 0) {
+          verdict = "active";
+          const endTime = fmtHour(active[0].f.properties.tohour);
+          verdictHtml = `<div class="verdict verdict-active">&#x2717;&nbsp; No Parking — until ${endTime}</div>`;
+        } else if (upcoming.length > 0) {
+          verdict = "upcoming";
+          const p = upcoming[0].f.properties;
+          verdictHtml = `<div class="verdict verdict-upcoming">&#x26A0;&nbsp; Next cleaning: ${fmtHour(p.fromhour)} – ${fmtHour(p.tohour)}</div>`;
+        } else if (passed.length > 0) {
+          verdict = "passed";
+          verdictHtml = `<div class="verdict verdict-passed">&#x2713;&nbsp; Safe — no more cleaning ${dayLabel}</div>`;
+        } else {
+          verdict = "ok";
+          verdictHtml = `<div class="verdict verdict-ok">&#x2713;&nbsp; Safe — no restrictions nearby</div>`;
+        }
+
+        // Detail rows — active + upcoming first, then passed
+        const allItems = [...active, ...upcoming, ...passed];
+        let rows = "";
+        for (const { f, d } of allItems) {
+          const p = f.properties;
+          const status = getStatusAtHour(p.fromhour, p.tohour, activeHour);
+          const side = p.blockside
+            ? `<span class="r-dim"> · ${p.blockside}</span>`
+            : "";
+          rows += `
+            <div class="r-${status}">
+              ${p.corridor || "—"}${side}<br>
+              <span class="r-dim">${fmtHour(p.fromhour)}–${fmtHour(p.tohour)} &nbsp;·&nbsp; ${Math.round(d)}m</span>
+            </div>`;
+        }
+
+        // Update pin color to match verdict
+        const mColor = {
+          ok: "#2ecc71",
+          active: "#ff3333",
+          upcoming: "#ff9900",
+          passed: "#2ecc71",
+        }[verdict];
+        if (checkMarker) map.removeLayer(checkMarker);
+        checkMarker = L.circleMarker(latlng, {
+          radius: 7,
+          color: mColor,
+          weight: 3,
+          fillColor: mColor,
+          fillOpacity: 0.25,
+        }).addTo(map);
+
+        const panel = document.getElementById("result-panel");
+        panel.innerHTML = `
+          ${label ? `<div class="result-address">${label}</div>` : ""}
+          ${verdictHtml}
+          <div class="result-rows">
+            ${rows || `<span class="r-dim">No restrictions within 60m on ${viewDayName}.</span>`}
+          </div>
+        `;
+        panel.style.display = "block";
+      }
+
+      // ── Legend count update ───────────────────────────────────────────────
+      function updateCounts(hour) {
+        const c = { active: 0, upcoming: 0, passed: 0 };
+        if (geoLayer) {
+          geoLayer.eachLayer((layer) => {
+            const p = layer.feature && layer.feature.properties;
+            if (p) c[getStatusAtHour(p.fromhour, p.tohour, hour)]++;
+          });
+        }
+        document.getElementById("cnt-active").textContent =
+          c.active.toLocaleString();
+        document.getElementById("cnt-upcoming").textContent =
+          c.upcoming.toLocaleString();
+        document.getElementById("cnt-passed").textContent =
+          c.passed.toLocaleString();
+      }
+
+      // ── Render GeoJSON ────────────────────────────────────────────────────
+      function isTruthy(v) {
+        return v === true || v === "Y" || v === "y" || v === 1 || v === "1";
+      }
+
+      let daySelectorBuilt = false;
+
+      function renderGeoJSON(geojson) {
+        document.getElementById("loading").style.display = "none";
+        loadedFeatures = [];
+
+        if (!geojson.features || geojson.features.length === 0) {
+          showNotice(
+            "No Data Found",
+            `No restrictions found for ${viewDayName}, week ${viewWeekOfMonth}.<br>
+             Check the browser console for API field details.`,
+          );
+          return;
+        }
+
+        // Pre-process: filter to this week, apply block-face offset
+        const features = geojson.features
+          .filter((f) => isTruthy(f.properties[viewWeekField]) && f.geometry)
+          .map((f) => {
+            loadedFeatures.push(f); // original coords for distance calc
+            return {
+              ...f,
+              geometry: offsetGeometry(f.geometry, f.properties.cnnrightleft),
+            };
+          });
+
+        const c = { active: 0, upcoming: 0, passed: 0 };
+
+        geoLayer = L.geoJSON(
+          { type: "FeatureCollection", features },
+          {
+            style: (feature) => {
+              const p = feature.properties;
+              const status = getStatusAtHour(p.fromhour, p.tohour, activeHour);
+              c[status]++;
+              const isLeft = (p.cnnrightleft || "").toUpperCase() === "L";
+              return {
+                color: COLORS[status],
+                weight: lineWeight(isLeft),
+                opacity: status === "passed" ? 0.65 : 0.9,
+              };
+            },
+            onEachFeature: (feature, layer) => {
+              const p = feature.properties;
+
+              // Tooltip on hover
+              layer.bindTooltip(
+                () =>
+                  `${p.corridor || "—"} &nbsp;·&nbsp; ${fmtHour(p.fromhour)}–${fmtHour(p.tohour)}`,
+                { sticky: true, direction: "top" },
+              );
+
+              // Popup on click
+              layer.bindPopup(() => {
+                const status = getStatusAtHour(
+                  p.fromhour,
+                  p.tohour,
+                  activeHour,
+                );
+                const label =
+                  status === "active"
+                    ? "No Parking Now"
+                    : status === "upcoming"
+                      ? "Upcoming Today"
+                      : "Passed — Safe";
+                return `
+                <div class="popup-street">${p.corridor || "Unknown Street"}</div>
+                <span class="popup-badge badge-${status}">${label}</span><br>
+                <b>Cross streets:</b> ${p.limits || "—"}<br>
+                <b>Block side:</b>    ${p.blockside || "—"}<br>
+                <b>Hours:</b>         ${fmtHour(p.fromhour)} – ${fmtHour(p.tohour)}<br>
+                <b>Schedule:</b>      ${p.weekday || viewDayName}, week ${viewWeekOfMonth}
+              `;
+              });
+
+              // Highlight on hover
+              layer.on("mouseover", () => {
+                const isLeft = (p.cnnrightleft || "").toUpperCase() === "L";
+                layer.setStyle({ weight: lineWeight(isLeft) + 4 });
+              });
+              layer.on("mouseout", () => {
+                const isLeft = (p.cnnrightleft || "").toUpperCase() === "L";
+                layer.setStyle({ weight: lineWeight(isLeft) });
+              });
+            },
+          },
+        ).addTo(map);
+
+        // Update legend
+        document.getElementById("cnt-active").textContent =
+          c.active.toLocaleString();
+        document.getElementById("cnt-upcoming").textContent =
+          c.upcoming.toLocaleString();
+        document.getElementById("cnt-passed").textContent =
+          c.passed.toLocaleString();
+
+        // Show time slider (idempotent)
+        document.getElementById("time-panel").hidden = false;
+
+        // Build day selector once
+        if (!daySelectorBuilt) {
+          buildDaySelector();
+          daySelectorBuilt = true;
+        }
+
+        // Show verdict for pinned location (or default City Hall)
+        if (checkMarker) {
+          showVerdict(checkMarker.getLatLng(), lastSearchLabel);
+        } else {
+          const cityHall = L.latLng(37.7793, -122.4193);
+          showVerdict(cityHall, "SF City Hall");
+        }
+      }
+
+      // ── Day selector ──────────────────────────────────────────────────────
+      function buildDaySelector() {
+        const container = document.getElementById("day-selector");
+        if (!container) return;
+
+        // Collect up to 7 calendar days from today, weekdays only
+        const options = [];
+        for (let i = 0; i < 7; i++) {
+          const d = new Date(now);
+          d.setDate(now.getDate() + i);
+          const di = d.getDay();
+          let label;
+          if (i === 0) label = "Now";
+          else label = DAY_NAMES[di];
+          options.push({ date: d, label, offset: i });
+        }
+
+        container.innerHTML = "";
+        options.forEach(({ date, label, offset }) => {
+          const btn = document.createElement("button");
+          btn.className =
+            "day-btn" + (date.toDateString() === viewDate.toDateString() ? " active" : "");
+          btn.textContent = label;
+          btn.addEventListener("click", () => {
+            document
+              .querySelectorAll(".day-btn")
+              .forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+            switchToDay(date);
+          });
+          container.appendChild(btn);
+        });
+      }
+
+      // ── Switch to a different day ─────────────────────────────────────────
+      function switchToDay(date) {
+        viewDate = date;
+        viewDayName = DAY_NAMES[date.getDay()];
+        viewWeekOfMonth = Math.ceil(date.getDate() / 7);
+        viewWeekField = `week${viewWeekOfMonth}`;
+
+        // Clear existing layer
+        if (geoLayer) {
+          map.removeLayer(geoLayer);
+          geoLayer = null;
+        }
+        loadedFeatures = [];
+
+        // Reset time to current hour (today) or 8 AM (future day)
+        const targetHour = isViewingToday() ? currentHour : 8;
+        activeHour = targetHour;
+        const slider = document.getElementById("time-slider");
+        slider.value = Math.min(20, Math.max(6, targetHour));
+        setTimeLabel(targetHour);
+
+        // Update reset button label
+        document.getElementById("time-reset").textContent = isViewingToday()
+          ? "Reset to now"
+          : "Reset to 8 AM";
+
+        // Update legend subtitle
+        updateLegendSubtitle(date);
+
+        // Weekends have no cleaning — skip fetch, show inline message
+        const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+        if (isWeekend) {
+          updateCounts(activeHour);
+          const panel = document.getElementById("result-panel");
+          panel.innerHTML = `
+            <div class="verdict verdict-ok">&#x2713;&nbsp; No street cleaning</div>
+            <div class="result-rows">
+              <span class="r-dim">Street cleaning runs Mon – Fri.<br>${viewDayName} has no restrictions.</span>
+            </div>
+          `;
+          panel.style.display = "block";
+          if (checkMarker) map.removeLayer(checkMarker);
+          checkMarker = null;
+          return;
+        }
+
+        // Show loading
+        const loadEl = document.getElementById("loading");
+        loadEl.textContent = `Loading street cleaning data for ${viewDayName}…`;
+        loadEl.style.display = "block";
+
+        // Fetch data for the selected day
+        fetchForDay(viewDayName);
+      }
+
+      // ── Time slider ───────────────────────────────────────────────────────
+      function setTimeLabel(hour) {
+        const isNow = isViewingToday() && Math.abs(hour - currentHour) < 0.26;
+        const prefix = isNow
+          ? `Now · ${timeStr}`
+          : isViewingToday()
+            ? `Viewing · ${fmtSliderHour(hour)}`
+            : `${viewDayName} · ${fmtSliderHour(hour)}`;
+        document.getElementById("time-label").textContent = prefix;
+      }
+
+      function updateForHour(hour) {
+        activeHour = hour;
+        setTimeLabel(hour);
+
+        if (geoLayer) {
+          geoLayer.eachLayer((layer) => {
+            const p = layer.feature && layer.feature.properties;
+            if (!p) return;
+            const status = getStatusAtHour(p.fromhour, p.tohour, hour);
+            const isLeft = (p.cnnrightleft || "").toUpperCase() === "L";
+            layer.setStyle({
+              color: COLORS[status],
+              weight: lineWeight(isLeft),
+              opacity: status === "passed" ? 0.65 : 0.9,
+            });
+          });
+        }
+
+        updateCounts(hour);
+
+        // Refresh verdict if a location is pinned
+        if (checkMarker) showVerdict(checkMarker.getLatLng(), lastSearchLabel);
+      }
+
+      document
+        .getElementById("time-slider")
+        .addEventListener("input", function () {
+          updateForHour(parseFloat(this.value));
+        });
+
+      document.getElementById("time-reset").addEventListener("click", () => {
+        const targetHour = isViewingToday() ? currentHour : 8;
+        const slider = document.getElementById("time-slider");
+        slider.value = Math.min(20, Math.max(6, targetHour));
+        updateForHour(targetHour);
+      });
+
+      // Re-apply zoom-responsive weights whenever the user zooms in or out
+      map.on("zoomend", () => {
+        if (!geoLayer) return;
+        geoLayer.eachLayer((layer) => {
+          const p = layer.feature && layer.feature.properties;
+          if (!p) return;
+          const isLeft = (p.cnnrightleft || "").toUpperCase() === "L";
+          layer.setStyle({ weight: lineWeight(isLeft) });
+        });
+      });
+
+      // ── Map click → verdict ───────────────────────────────────────────────
+      map.on("click", (e) => showVerdict(e.latlng, null));
+
+      // ── Address search ────────────────────────────────────────────────────
+      document
+        .getElementById("search-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const q = document.getElementById("search-input").value.trim();
+          const btn = document.getElementById("search-btn");
+          if (!q) return;
+
+          btn.textContent = "…";
+          btn.disabled = true;
+
+          try {
+            const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q + ", San Francisco, CA")}&format=json&limit=1`;
+            const resp = await fetch(url, {
+              headers: { "User-Agent": "SF-Street-Cleaning-Map" },
+            });
+            const data = await resp.json();
+
+            if (!data.length) {
+              document.getElementById("result-panel").innerHTML =
+                `<div style="color:#aa4444;font-size:11px">Address not found in SF.</div>`;
+              document.getElementById("result-panel").style.display = "block";
+              return;
+            }
+
+            const { lat, lon, display_name } = data[0];
+            const latlng = L.latLng(parseFloat(lat), parseFloat(lon));
+            map.setView(latlng, 17);
+            const shortLabel = display_name.split(",").slice(0, 2).join(", ");
+            showVerdict(latlng, shortLabel);
+          } catch (err) {
+            document.getElementById("result-panel").innerHTML =
+              `<div style="color:#aa4444;font-size:11px">Geocoding error: ${err.message}</div>`;
+            document.getElementById("result-panel").style.display = "block";
+          } finally {
+            btn.textContent = "Go";
+            btn.disabled = false;
+          }
+        });
+
+      // ── Helpers ───────────────────────────────────────────────────────────
+      function showNotice(title, body) {
+        const el = document.createElement("div");
+        el.className = "notice-overlay";
+        el.innerHTML = `<h2>${title}</h2><p>${body}</p>`;
+        document.body.appendChild(el);
+      }
+
+      // ── Weekend ───────────────────────────────────────────────────────────
+      if (dayIndex === 0 || dayIndex === 6) {
+        document.getElementById("loading").style.display = "none";
+        showNotice(
+          "No Street Cleaning Today",
+          `Street cleaning runs Monday – Friday.<br>Today is ${todayName} — no parking restrictions.`,
+        );
+      } else {
+        // ── Place default City Hall pin immediately (before data loads) ───────
+        const CITY_HALL = L.latLng(37.7793, -122.4193);
+        lastSearchLabel = "SF City Hall";
+        checkMarker = L.circleMarker(CITY_HALL, {
+          radius: 7,
+          color: "#555",
+          weight: 3,
+          fillColor: "#555",
+          fillOpacity: 0.25,
+        }).addTo(map);
+        document.getElementById("result-panel").innerHTML = `
+          <div class="result-address">SF City Hall</div>
+          <div style="color:#444;font-size:11px;margin-top:4px">Loading cleaning data…</div>
+        `;
+        document.getElementById("result-panel").style.display = "block";
+
+        // ── Probe → detect field formats → fetch ────────────────────────────
+        // Step 1: fetch one record to detect weekday format + week field value type.
+        // Step 2: cache the detected field name, then fetch all day's restrictions.
+
+        const BASE = "https://data.sfgov.org/resource/yhqp-riqs";
+        let cachedWeekdayField = "weekday";
+
+        function fetchForDay(dayName) {
+          const where = `upper(${cachedWeekdayField})='${dayName.toUpperCase()}'`;
+          console.log(`[SF Cleaning] Query: $where=${where}`);
+          return fetch(
+            `${BASE}.geojson?$where=${encodeURIComponent(where)}&$limit=50000`,
+          )
+            .then((r) => {
+              if (!r.ok)
+                throw new Error(`Data fetch failed: HTTP ${r.status}`);
+              return r.json();
+            })
+            .then(renderGeoJSON)
+            .catch((err) => {
+              document.getElementById("loading").textContent =
+                `Error: ${err.message}`;
+              console.error("[SF Cleaning]", err);
+            });
+        }
+
+        // Initial slider position for today
+        const slider = document.getElementById("time-slider");
+        slider.value = Math.min(20, Math.max(6, currentHour));
+        setTimeLabel(currentHour);
+
+        fetch(`${BASE}.json?$limit=10`)
+          .then((r) => {
+            if (!r.ok) throw new Error(`Probe failed: HTTP ${r.status}`);
+            return r.json();
+          })
+          .then((probe) => {
+            const records = Array.isArray(probe) ? probe : [];
+            if (!records.length) throw new Error("Probe returned no records");
+
+            // Log all field names for debugging
+            console.log(
+              "[SF Cleaning] Fields:",
+              Object.keys(records[0]).join(", "),
+            );
+            console.log("[SF Cleaning] Sample record:", records[0]);
+
+            // Find the weekday field by scanning records for a field whose
+            // value matches a known day name (handles any field naming convention)
+            const daySet = new Set([
+              ...DAY_NAMES.map((d) => d.toLowerCase()),
+              ...DAY_ABBR.map((d) => d.toLowerCase()),
+            ]);
+            outer: for (const rec of records) {
+              for (const [key, val] of Object.entries(rec)) {
+                if (
+                  daySet.has(
+                    String(val || "")
+                      .toLowerCase()
+                      .trim(),
+                  )
+                ) {
+                  cachedWeekdayField = key;
+                  break outer;
+                }
+              }
+            }
+            console.log(
+              `[SF Cleaning] Weekday field: "${cachedWeekdayField}"`,
+            );
+
+            return fetchForDay(viewDayName);
+          })
+          .catch((err) => {
+            document.getElementById("loading").textContent =
+              `Error: ${err.message}`;
+            console.error("[SF Cleaning]", err);
+          });
+      }
+    </script>
+  </body>
+</html>
