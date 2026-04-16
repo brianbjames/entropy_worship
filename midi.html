@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENTROPY WORSHIP Calc</title>
+    <meta name="description" content="ENTROPY WORSHIP Calculator">
+    <meta name="keywords" content="Dark, Techno, Electronic, Industrial, Ambient, Noise, Avant-Garde, Experimental, Doom, Music, God, Deity, Worship, Death, Philosophy, Religion, Spiritual, Gospel, Electronic Music, Experimental Music">
+    <meta itemprop="name" content="ENTROPY WORSHIP Calculator">
+    <meta itemprop="description" content="WARNING: Experimental Project">
+    <meta name="twitter:url" content="https://www.entropyworship.com">
+    <meta name="twitter:site" content="@EntropyWorship">
+    <meta name="twitter:title" content="ENTROPY WORSHIP Calculator">
+    <meta name="twitter:description" content="ENTROPY WORSHIP Calculator">
+    <meta name="twitter:creator" content="@EntropyWorship">
+    <meta property="og:title" content="ENTROPY WORSHIP Calculator" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.entropyworship.com" />
+    <meta property="og:description" content="ENTROPY WORSHIP Calculator" />
+    <meta property="og:site_name" content="ENTROPY WORSHIP Calculator" />
+    <meta property="og:image:alt" content="WARNING: Experimental Project">
+
+<!-- Bootstrap CSS -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<script src="https://getbootstrap.com/assets/js/color-modes.js"></script>
+<!-- Augmented UI CSS -->
+<link rel="stylesheet" type="text/css" href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css">
+<!-- Sci UI CSS -->
+<link href="styles.css" rel="stylesheet">
+<link rel="stylesheet" href="styles/midi.css">
+<script src="./scripts/midi_helper.js"></script>
+<script src="./scripts/note_and_scale_definitions.js"></script>
+<script src="./scripts/oscillator.js"></script>
+
+</head>
+<body>
+    <div class="container">
+        <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c"><!--Header panel-->
+            <div class="card-header border-danger">
+                <h1 class="heading display-6" style="font-size: 1.5rem;">ENTROPY WORSHIP</h1>
+                <h2 class="panel info shown" style="font-size: 1.5rem;">build 3.0.11.07.24</h1>
+            </div>
+            <div class="card-body">
+                <h2>ewmidicalc</h2>
+                <div class="form-group">
+                    <div class="row">
+                        <button class="btn btn-outline-light btn-sm button alert" id="stopAllButton" style="position: absolute; right: 20px;">Stop</button>
+
+                        <select id="noteroot" class="form-select form-select-lg btn-outline-light btn" onchange="updateResults()">
+                            <option value="C">C</option>
+                            <option value="C♯">C♯</option>
+                            <option value="D">D</option>
+                            <option value="D♯">D♯</option>
+                            <option value="E" selected>E</option>
+                            <option value="F">F</option>
+                            <option value="F♯">F♯</option>
+                            <option value="G">G</option>
+                            <option value="G♯">G♯</option>
+                            <option value="A">A</option>
+                            <option value="A♯">A♯</option>
+                            <option value="B">B</option>
+                        </select>
+                        <select id="mode" class="form-select form-select-lg btn-outline-light btn" onchange="updateResults()">
+                            <option value="Ionian">Ionian</option>
+                            <option value="Dorian">Dorian</option>
+                            <option value="Phrygian" selected>Phrygian</option>
+                            <option value="Lydian">Lydian</option>
+                            <option value="Mixolydian">Mixolydian</option>
+                            <option value="Aeolian">Aeolian</option>
+                            <option value="Locrian">Locrian</option>
+                        </select>
+                        <input type="range" class="form-range" id="volumeSlider" min="0" max="100" value="50">
+                    </div>
+                </div>
+                <div class="results" id="results"></div>
+                 <!-- Modal for MIDI note information -->
+                <div class="modal fade" id="midiModal" tabindex="-1" aria-labelledby="midiModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-body">
+                                <p id="midiValue"></p>
+                                <p id="frequency"></p>
+                                <p id="octave"></p>
+                                <button class="btn btn-dark button success" id="playButton">Play</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal for Scale degree note information -->
+                <div class="modal fade" id="rootModal" tabindex="-1" aria-labelledby="rootModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-body">
+                                <p id="rootNote"></p>
+                                <p id="thirdNote"></p>
+                                <p id="fifthNote"></p>
+                                <p id="seventhNote"></p>
+                                <p id="ninthNote"></p>
+                                <!--<p id="nextChord"></p>-->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // let currentVolume = 0.5;
+        // let audioContext;
+        // let oscillators = [];
+        // let gainNodes = [];
+        // let globalGainNode;
+        // let isPlaying = [];
+
+        // Add a function to update the modal's play/stop button to "Play"
+        function resetModalPlayButton() {
+            const playButton = document.getElementById("playButton");
+            playButton.innerText = "Play";
+        }
+
+        // Event listener for the Stop All button
+        document.getElementById('stopAllButton').addEventListener('click', () => {
+            // Stop all oscillators
+            stopAllOscillators();
+            // Reset any modal stop button to Play
+            resetModalPlayButton();
+        });
+
+        // // Setup audio context and global gain node
+        // function setupAudioContext() {
+        //     // Create a new AudioContext
+        //     audioContext = AudioContext.makeAudioContextFactory(window);
+        //     // Create a global gain node
+        //     globalGainNode = audioContext.createGain();
+        //     globalGainNode.connect(audioContext.destination);  // Connect to audio context output
+        //     globalGainNode.gain.setValueAtTime(currentVolume, audioContext.currentTime); // Set initial volume
+        // }
+
+        // Event listener to update the global volume when the slider is changed
+        document.getElementById('volumeSlider').addEventListener('input', (e) => {
+            currentVolume = e.target.value / 100;  // Convert slider value to a decimal
+            globalGainNode.gain.setValueAtTime(currentVolume, audioContext.currentTime); // Set volume globally
+            // Optionally update the volume value in UI (you can add a span to show the volume value)
+            document.getElementById("volumeValue").innerText = `Volume: ${e.target.value}%`;
+        });
+
+        //These arrays are for overwriting incorrectly spelled enharomic notes
+        // Ionian (Major Scale)
+        let cShIonian = ["C♯", "D♯", "E♯", "F♯", "G♯", "A♯", "B♯"];
+        let cIonian = ["C", "D", "E", "F", "G", "A", "B"];
+        let dIonian = ["D", "E", "F♯", "G", "A", "B", "C♯"];
+        let dShIonian = ["D♯", "E♯", "F𝄪", "G♯", "A♯", "B♯", "C𝄪"]; // Corrected F♯ to F𝄪
+        let eIonian = ["E", "F♯", "G♯", "A", "B", "C♯", "D♯"];
+        let fIonian = ["F", "G", "A", "B♭", "C", "D", "E"];
+        let fShIonian = ["F♯", "G♯", "A♯", "B", "C♯", "D♯", "E♯"];
+        let gIonian = ["G", "A", "B", "C", "D", "E", "F♯"];
+        let gShIonian = ["G♯", "A♯", "B♯", "C♯", "D♯", "E♯", "F𝄪"]; // Corrected F♯ to F𝄪
+        let aIonian = ["A", "B", "C♯", "D", "E", "F♯", "G♯"];
+        let aShIonian = ["A♯", "B♯", "C𝄪", "D♯", "E♯", "F𝄪", "G𝄪"];
+        let bIonian = ["B", "C♯", "D♯", "E", "F♯", "G♯", "A♯"];
+
+        // Dorian Mode
+        let cDorian = ["C", "D", "E♭", "F", "G", "A", "B♭"];
+        let cShDorian = ["C♯", "D♯", "E", "F♯", "G♯", "A♯", "B"];
+        let dDorian = ["D", "E", "F", "G", "A", "B", "C"];
+        let dShDorian = ["D♯", "E♯", "F♯", "G♯", "A♯", "B♯", "C♯"];
+        let eDorian = ["E", "F♯", "G", "A", "B", "C♯", "D"];
+        let fDorian = ["F", "G", "A♭", "B♭", "C", "D", "E♭"];
+        let fShDorian = ["F♯", "G♯", "A", "B", "C♯", "D♯", "E"];
+        let gDorian = ["G", "A", "B♭", "C", "D", "E", "F"];
+        let gShDorian = ["G♯", "A♯", "B", "C♯", "D♯", "E♯", "F♯"];
+        let aDorian = ["A", "B", "C", "D", "E", "F♯", "G"];
+        let aShDorian = ["A♯", "B♯", "C♯", "D♯", "E♯", "F𝄪", "G♯"];
+        let bDorian = ["B", "C♯", "D", "E", "F♯", "G♯", "A"];
+
+        // Phrygian Mode
+        let cPhrygian = ["C", "D♭", "E♭", "F", "G", "A♭", "B♭"];
+        let cShPhrygian = ["C♯", "D", "E", "F♯", "G♯", "A", "B"];
+        let dPhrygian = ["D", "E♭", "F", "G", "A", "B♭", "C"];
+        let dShPhrygian = ["D♯", "E", "F", "G♯", "A♯", "B", "C♯"];
+        let ePhrygian = ["E", "F", "G", "A", "B", "C", "D"];
+        let fPhrygian = ["F", "G♭", "A♭", "B♭", "C", "D♭", "E♭"];
+        let fShPhrygian = ["F♯", "G", "A", "B", "C♯", "D", "E"];
+        let gPhrygian = ["G", "A♭", "B♭", "C", "D", "E♭", "F"];
+        let gShPhrygian = ["G♯", "A", "B", "C♯", "D♯", "E", "F♯"];
+        let aPhrygian = ["A", "B♭", "C", "D", "E", "F", "G"];
+        let aShPhrygian = ["A♯", "B", "C♯", "D♯", "E♯", "F♯", "G♯"];
+        let bPhrygian = ["B", "C", "D", "E", "F♯", "G", "A"];
+
+        // Lydian Mode
+        let cLydian = ["C", "D", "E", "F♯", "G", "A", "B"];
+        let cShLydian = ["C♯", "D♯", "E♯", "F𝄪", "G♯", "A♯", "B♯"];
+        let dLydian = ["D", "E", "F♯", "G♯", "A", "B", "C♯"];
+        let dShLydian = ["D♯", "E♯", "F𝄪", "G𝄪", "A♯", "B♯", "C𝄪"];
+        let eLydian = ["E", "F♯", "G♯", "A♯", "B", "C♯", "D♯"];
+        let fLydian = ["F", "G", "A", "B", "C", "D", "E"];
+        let fShLydian = ["F♯", "G♯", "A♯", "B♯", "C♯", "D♯", "E♯"];
+        let gLydian = ["G", "A", "B", "C♯", "D", "E", "F♯"];
+        let gShLydian = ["G♯", "A♯", "B♯", "C𝄪", "D♯", "E♯", "F♯"];
+        let aLydian = ["A", "B", "C♯", "D♯", "E", "F♯", "G♯"];
+        let aShLydian = ["A♯", "B♯", "C𝄪", "D𝄪", "E♯", "F𝄪", "G𝄪"];
+        let bLydian = ["B", "C♯", "D♯", "E♯", "F♯", "G♯", "A♯"];
+
+        // Mixolydian Mode
+        let cMixolydian = ["C", "D", "E", "F", "G", "A", "B♭"];
+        let cShMixolydian = ["C♯", "D♯", "E♯", "F♯", "G♯", "A♯", "B"];
+        let dMixolydian = ["D", "E", "F♯", "G", "A", "B", "C"];
+        let dShMixolydian = ["D♯", "E♯", "F𝄪", "G♯", "A♯", "B♯", "C♯"];
+        let eMixolydian = ["E", "F♯", "G♯", "A", "B", "C♯", "D"];
+        let fMixolydian = ["F", "G", "A", "B♭", "C", "D", "E♭"];
+        let fShMixolydian = ["F♯", "G♯", "A♯", "B", "C♯", "D♯", "E"];
+        let gMixolydian = ["G", "A", "B", "C", "D", "E", "F"];
+        let gShMixolydian = ["G♯", "A♯", "B♯", "C♯", "D♯", "E♯", "F♯"];
+        let aMixolydian = ["A", "B", "C♯", "D", "E", "F♯", "G"];
+        let aShMixolydian = ["A♯", "B♯", "C𝄪", "D♯", "E♯", "F𝄪", "G♯"];
+        let bMixolydian = ["B", "C♯", "D♯", "E", "F♯", "G♯", "A"];
+
+        // Aeolian Mode (Natural Minor)
+        let cAeolian = ["C", "D", "E♭", "F", "G", "A♭", "B♭"];
+        let cShAeolian = ["C♯", "D♯", "E", "F♯", "G♯", "A", "B"];
+        let dAeolian = ["D", "E♭", "F", "G", "A", "B♭", "C"];
+        let dShAeolian = ["D♯", "E", "F", "G♯", "A♯", "B", "C♯"];
+        let eAeolian = ["E", "F♯", "G", "A", "B", "C", "D"];
+        let fAeolian = ["F", "G♭", "A♭", "B♭", "C", "D♭", "E♭"];
+        let fShAeolian = ["F♯", "G", "A", "B", "C♯", "D", "E"];
+        let gAeolian = ["G", "A♭", "B♭", "C", "D", "E♭", "F"];
+        let gShAeolian = ["G♯", "A", "B", "C♯", "D♯", "E", "F♯"];
+        let aAeolian = ["A", "B♭", "C", "D", "E", "F", "G"];
+        let aShAeolian = ["A♯", "B", "C♯", "D♯", "E♯", "F", "G♯"];
+        let bAeolian = ["B", "C", "D", "E", "F♯", "G♯", "A"];
+
+        // Locrian Mode
+        let cLocrian = ["C", "D♭", "E♭", "F", "G♭", "A♭", "B♭"];
+        let cShLocrian = ["C♯", "D", "E", "F♯", "G", "A", "B"];
+        let dLocrian = ["D", "E♭", "F", "G", "A♭", "B♭", "C"];
+        let dShLocrian = ["D♯", "E", "F", "G♯", "A", "B", "C♯"];
+        let eLocrian = ["E", "F", "G", "A", "B♭", "C", "D"];
+        let fLocrian = ["F", "G♭", "A♭", "B♭", "C", "D♭", "E♭"];
+        let fShLocrian = ["F♯", "G", "A", "B", "C♯", "D", "E"];
+        let gLocrian = ["G", "A♭", "B♭", "C", "D♭", "E♭", "F"];
+        let gShLocrian = ["G♯", "A", "B", "C♯", "D", "E", "F♯"];
+        let aLocrian = ["A", "B♭", "C", "D", "E♭", "F", "G"];
+        let aShLocrian = ["A♯", "B", "C♯", "D♯", "E", "F♯", "G♯"];
+        let bLocrian = ["B", "C", "D", "E", "F", "G", "A"];
+
+        // Update results when inputs change
+        function updateResults() {
+
+            const noteroot = document.getElementById("noteroot").value;
+            const mode = document.getElementById("mode").value;
+            const octave = -1;  // Default octave set to -1
+
+            const noteRootIndex = notes.indexOf(noteroot);
+            const modeIntervals = modes[mode];
+            let romanHeaders = romanNumerals[mode];
+
+            // Calculate scale
+            const scale = modeIntervals.map(interval => notes[(noteRootIndex + interval) % notes.length]);
+
+            // Calculate MIDI values for each note in the scale
+            const midiValues = scale.map(note => MIDIUtil.getMidiValuesForNote(note, octave));
+
+            // Generate table rows with Roman numeral chord names, note names, and MIDI data
+            const diatonicChords = scale.map((_, i) => {
+            let rootNote = scale[i]; // The root note for the chord is the corresponding calculated scale note
+
+            // Ionian (Major Scale)
+            let cIonianRootsString = cIonian[i];
+            let cShIonianRootsString = cShIonian[i];
+            let dIonianRootsString = dIonian[i];
+            let dShIonianRootsString = dShIonian[i];
+            let eIonianRootsString = eIonian[i];
+            let fIonianRootsString = fIonian[i];
+            let fShIonianRootsString = fShIonian[i];
+            let gIonianRootsString = gIonian[i];
+            let gShIonianRootsString = gShIonian[i];
+            let aIonianRootsString = aIonian[i];
+            let aShIonianRootsString = aShIonian[i];
+            let bIonianRootsString = bIonian[i];
+
+            // Dorian Mode
+            let cDorianRootsString = cDorian[i];
+            let cShDorianRootsString = cShDorian[i];
+            let dDorianRootsString = dDorian[i];
+            let dShDorianRootsString = dShDorian[i];
+            let eDorianRootsString = eDorian[i];
+            let fDorianRootsString = fDorian[i];
+            let fShDorianRootsString = fShDorian[i];
+            let gDorianRootsString = gDorian[i];
+            let gShDorianRootsString = gShDorian[i];
+            let aDorianRootsString = aDorian[i];
+            let aShDorianRootsString = aShDorian[i];
+            let bDorianRootsString = bDorian[i];
+
+            // Phrygian Mode
+            let cPhrygianRootsString = cPhrygian[i];
+            let cShPhrygianRootsString = cShPhrygian[i];
+            let dPhrygianRootsString = dPhrygian[i];
+            let dShPhrygianRootsString = dShPhrygian[i];
+            let ePhrygianRootsString = ePhrygian[i];
+            let fPhrygianRootsString = fPhrygian[i];
+            let fShPhrygianRootsString = fShPhrygian[i];
+            let gPhrygianRootsString = gPhrygian[i];
+            let gShPhrygianRootsString = gShPhrygian[i];
+            let aPhrygianRootsString = aPhrygian[i];
+            let aShPhrygianRootsString = aShPhrygian[i];
+            let bPhrygianRootsString = bPhrygian[i];
+
+            // Lydian Mode
+            let cLydianRootsString = cLydian[i];
+            let cShLydianRootsString = cShLydian[i];
+            let dLydianRootsString = dLydian[i];
+            let dShLydianRootsString = dShLydian[i];
+            let eLydianRootsString = eLydian[i];
+            let fLydianRootsString = fLydian[i];
+            let fShLydianRootsString = fShLydian[i];
+            let gLydianRootsString = gLydian[i];
+            let gShLydianRootsString = gShLydian[i];
+            let aLydianRootsString = aLydian[i];
+            let aShLydianRootsString = aShLydian[i];
+            let bLydianRootsString = bLydian[i];
+
+            // Mixolydian Mode
+            let cMixolydianRootsString = cMixolydian[i];
+            let cShMixolydianRootsString = cShMixolydian[i];
+            let dMixolydianRootsString = dMixolydian[i];
+            let dShMixolydianRootsString = dShMixolydian[i];
+            let eMixolydianRootsString = eMixolydian[i];
+            let fMixolydianRootsString = fMixolydian[i];
+            let fShMixolydianRootsString = fShMixolydian[i];
+            let gMixolydianRootsString = gMixolydian[i];
+            let gShMixolydianRootsString = gShMixolydian[i];
+            let aMixolydianRootsString = aMixolydian[i];
+            let aShMixolydianRootsString = aShMixolydian[i];
+            let bMixolydianRootsString = bMixolydian[i];
+
+            // Aeolian Mode (Natural Minor Scale)
+            let cAeolianRootsString = cAeolian[i];
+            let cShAeolianRootsString = cShAeolian[i];
+            let dAeolianRootsString = dAeolian[i];
+            let dShAeolianRootsString = dShAeolian[i];
+            let eAeolianRootsString = eAeolian[i];
+            let fAeolianRootsString = fAeolian[i];
+            let fShAeolianRootsString = fShAeolian[i];
+            let gAeolianRootsString = gAeolian[i];
+            let gShAeolianRootsString = gShAeolian[i];
+            let aAeolianRootsString = aAeolian[i];
+            let aShAeolianRootsString = aShAeolian[i];
+            let bAeolianRootsString = bAeolian[i];
+
+            // Locrian Mode
+            let cLocrianRootsString = cLocrian[i];
+            let cShLocrianRootsString = cShLocrian[i];
+            let dLocrianRootsString = dLocrian[i];
+            let dShLocrianRootsString = dShLocrian[i];
+            let eLocrianRootsString = eLocrian[i];
+            let fLocrianRootsString = fLocrian[i];
+            let fShLocrianRootsString = fShLocrian[i];
+            let gLocrianRootsString = gLocrian[i];
+            let gShLocrianRootsString = gShLocrian[i];
+            let aLocrianRootsString = aLocrian[i];
+            let aShLocrianRootsString = aShLocrian[i];
+            let bLocrianRootsString = bLocrian[i];
+
+            // Ionian (Major Scale)
+            if (mode === "Ionian" && noteroot === "C") {
+                rootNote = cIonian[i];
+                thirdNote = cIonian[2];
+                fifthNote = cIonian[4];
+                seventhNote = cIonian[6];
+                ninthNote = cIonian[1];
+            }
+            if (mode === "Ionian" && noteroot === "C♯") {
+                rootNote = cShIonian[i];
+                thirdNote = cShIonian[2];
+                fifthNote = cShIonian[4];
+                seventhNote = cShIonian[6];
+                ninthNote = cShIonian[1];
+            }
+            if (mode === "Ionian" && noteroot === "D") {
+                rootNote = dIonian[i];
+                thirdNote = dIonian[2];
+                fifthNote = dIonian[4];
+                seventhNote = dIonian[6];
+                ninthNote = dIonian[1];
+            }
+            if (mode === "Ionian" && noteroot === "D♯") {
+                rootNote = dShIonian[i];
+                thirdNote = dShIonian[2];
+                fifthNote = dShIonian[4];
+                seventhNote = dShIonian[6];
+                ninthNote = dShIonian[1];
+            }
+            if (mode === "Ionian" && noteroot === "E") {
+                rootNote = eIonian[i];
+                thirdNote = eIonian[2];
+                fifthNote = eIonian[4];
+                seventhNote = eIonian[6];
+                ninthNote = eIonian[1];
+            }
+            if (mode === "Ionian" && noteroot === "F") {
+                rootNote = fIonian[i];
+                thirdNote = fIonian[2];
+                fifthNote = fIonian[4];
+                seventhNote = fIonian[6];
+                ninthNote = fIonian[1];
+            }
+            if (mode === "Ionian" && noteroot === "F♯") {
+                rootNote = fShIonian[i];
+                thirdNote = fShIonian[2];
+                fifthNote = fShIonian[4];
+                seventhNote = fShIonian[6];
+                ninthNote = fShIonian[1];
+            }
+            if (mode === "Ionian" && noteroot === "G") {
+                rootNote = gIonian[i];
+                thirdNote = gIonian[2];
+                fifthNote = gIonian[4];
+                seventhNote = gIonian[6];
+                ninthNote = gIonian[1];
+            }
+            if (mode === "Ionian" && noteroot === "G♯") {
+                rootNote = gShIonian[i];
+                thirdNote = gShIonian[2];
+                fifthNote = gShIonian[4];
+                seventhNote = gShIonian[6];
+                ninthNote = gShIonian[1];
+            }
+            if (mode === "Ionian" && noteroot === "A") {
+                rootNote = aIonian[i];
+                thirdNote = aIonian[2];
+                fifthNote = aIonian[4];
+                seventhNote = aIonian[6];
+                ninthNote = aIonian[1];
+            }
+            if (mode === "Ionian" && noteroot === "A♯") {
+                rootNote = aShIonian[i];
+                thirdNote = aShIonian[2];
+                fifthNote = aShIonian[4];
+                seventhNote = aShIonian[6];
+                ninthNote = aShIonian[1];
+            }
+            if (mode === "Ionian" && noteroot === "B") {
+                rootNote = bIonian[i];
+                thirdNote = bIonian[2];
+                fifthNote = bIonian[4];
+                seventhNote = bIonian[6];
+                ninthNote = bIonian[1];
+            }
+
+            // Dorian Mode
+            if (mode === "Dorian" && noteroot === "C") {
+                rootNote = cDorian[i];
+                thirdNote = cDorian[2];
+                fifthNote = cDorian[4];
+                seventhNote = cDorian[6];
+                ninthNote = cDorian[1];
+            }
+            if (mode === "Dorian" && noteroot === "C♯") {
+                rootNote = cShDorian[i];
+                thirdNote = cShDorian[2];
+                fifthNote = cShDorian[4];
+                seventhNote = cShDorian[6];
+                ninthNote = cShDorian[1];
+            }
+            if (mode === "Dorian" && noteroot === "D") {
+                rootNote = dDorian[i];
+                thirdNote = dDorian[2];
+                fifthNote = dDorian[4];
+                seventhNote = dDorian[6];
+                ninthNote = dDorian[1];
+            }
+            if (mode === "Dorian" && noteroot === "D♯") {
+                rootNote = dShDorian[i];
+                thirdNote = dShDorian[2];
+                fifthNote = dShDorian[4];
+                seventhNote = dShDorian[6];
+                ninthNote = dShDorian[1];
+            }
+            if (mode === "Dorian" && noteroot === "E") {
+                rootNote = eDorian[i];
+                thirdNote = eDorian[2];
+                fifthNote = eDorian[4];
+                seventhNote = eDorian[6];
+                ninthNote = eDorian[1];
+            }
+            if (mode === "Dorian" && noteroot === "F") {
+                rootNote = fDorian[i];
+                thirdNote = fDorian[2];
+                fifthNote = fDorian[4];
+                seventhNote = fDorian[6];
+                ninthNote = fDorian[1];
+            }
+            if (mode === "Dorian" && noteroot === "F♯") {
+                rootNote = fShDorian[i];
+                thirdNote = fShDorian[2];
+                fifthNote = fShDorian[4];
+                seventhNote = fShDorian[6];
+                ninthNote = fShDorian[1];
+            }
+            if (mode === "Dorian" && noteroot === "G") {
+                rootNote = gDorian[i];
+                thirdNote = gDorian[2];
+                fifthNote = gDorian[4];
+                seventhNote = gDorian[6];
+                ninthNote = gDorian[1];
+            }
+            if (mode === "Dorian" && noteroot === "G♯") {
+                rootNote = gShDorian[i];
+                thirdNote = gShDorian[2];
+                fifthNote = gShDorian[4];
+                seventhNote = gShDorian[6];
+                ninthNote = gShDorian[1];
+            }
+            if (mode === "Dorian" && noteroot === "A") {
+                rootNote = aDorian[i];
+                thirdNote = aDorian[2];
+                fifthNote = aDorian[4];
+                seventhNote = aDorian[6];
+                ninthNote = aDorian[1];
+            }
+            if (mode === "Dorian" && noteroot === "A♯") {
+                rootNote = aShDorian[i];
+                thirdNote = aShDorian[2];
+                fifthNote = aShDorian[4];
+                seventhNote = aShDorian[6];
+                ninthNote = aShDorian[1];
+            }
+            if (mode === "Dorian" && noteroot === "B") {
+                rootNote = bDorian[i];
+                thirdNote = bDorian[2];
+                fifthNote = bDorian[4];
+                seventhNote = bDorian[6];
+                ninthNote = bDorian[1];
+            }
+
+            // Phrygian Mode
+            if (mode === "Phrygian" && noteroot === "C") {
+                rootNote = cPhrygian[i];
+                thirdNote = cPhrygian[2];
+                fifthNote = cPhrygian[4];
+                seventhNote = cPhrygian[6];
+                ninthNote = cPhrygian[1];
+            }
+            if (mode === "Phrygian" && noteroot === "C♯") {
+                rootNote = cShPhrygian[i];
+                thirdNote = cShPhrygian[2];
+                fifthNote = cShPhrygian[4];
+                seventhNote = cShPhrygian[6];
+                ninthNote = cShPhrygian[1];
+            }
+            if (mode === "Phrygian" && noteroot === "D") {
+                rootNote = dPhrygian[i];
+                thirdNote = dPhrygian[2];
+                fifthNote = dPhrygian[4];
+                seventhNote = dPhrygian[6];
+                ninthNote = dPhrygian[1];
+            }
+            if (mode === "Phrygian" && noteroot === "D♯") {
+                rootNote = dShPhrygian[i];
+                thirdNote = dShPhrygian[2];
+                fifthNote = dShPhrygian[4];
+                seventhNote = dShPhrygian[6];
+                ninthNote = dShPhrygian[1];
+            }
+            if (mode === "Phrygian" && noteroot === "E") {
+                rootNote = ePhrygian[i];
+                thirdNote = ePhrygian[2];
+                fifthNote = ePhrygian[4];
+                seventhNote = ePhrygian[6];
+                ninthNote = ePhrygian[1];
+            }
+            if (mode === "Phrygian" && noteroot === "F") {
+                rootNote = fPhrygian[i];
+                thirdNote = fPhrygian[2];
+                fifthNote = fPhrygian[4];
+                seventhNote = fPhrygian[6];
+                ninthNote = fPhrygian[1];
+            }
+            if (mode === "Phrygian" && noteroot === "F♯") {
+                rootNote = fShPhrygian[i];
+                thirdNote = fShPhrygian[2];
+                fifthNote = fShPhrygian[4];
+                seventhNote = fShPhrygian[6];
+                ninthNote = fShPhrygian[1];
+            }
+            if (mode === "Phrygian" && noteroot === "G") {
+                rootNote = gPhrygian[i];
+                thirdNote = gPhrygian[2];
+                fifthNote = gPhrygian[4];
+                seventhNote = gPhrygian[6];
+                ninthNote = gPhrygian[1];
+            }
+            if (mode === "Phrygian" && noteroot === "G♯") {
+                rootNote = gShPhrygian[i];
+                thirdNote = gShPhrygian[2];
+                fifthNote = gShPhrygian[4];
+                seventhNote = gShPhrygian[6];
+                ninthNote = gShPhrygian[1];
+            }
+            if (mode === "Phrygian" && noteroot === "A") {
+                rootNote = aPhrygian[i];
+                thirdNote = aPhrygian[2];
+                fifthNote = aPhrygian[4];
+                seventhNote = aPhrygian[6];
+                ninthNote = aPhrygian[1];
+            }
+            if (mode === "Phrygian" && noteroot === "A♯") {
+                rootNote = aShPhrygian[i];
+                thirdNote = aShPhrygian[2];
+                fifthNote = aShPhrygian[4];
+                seventhNote = aShPhrygian[6];
+                ninthNote = aShPhrygian[1];
+            }
+            if (mode === "Phrygian" && noteroot === "B") {
+                rootNote = bPhrygian[i];
+                thirdNote = bPhrygian[2];
+                fifthNote = bPhrygian[4];
+                seventhNote = bPhrygian[6];
+                ninthNote = bPhrygian[1];
+            }
+
+            // Lydian Mode
+            if (mode === "Lydian" && noteroot === "C") {
+                rootNote = cLydian[i];
+                thirdNote = cLydian[2];
+                fifthNote = cLydian[4];
+                seventhNote = cLydian[6];
+                ninthNote = cLydian[1];
+            }
+            if (mode === "Lydian" && noteroot === "C♯") {
+                rootNote = cShLydian[i];
+                thirdNote = cShLydian[2];
+                fifthNote = cShLydian[4];
+                seventhNote = cShLydian[6];
+                ninthNote = cShLydian[1];
+            }
+            if (mode === "Lydian" && noteroot === "D") {
+                rootNote = dLydian[i];
+                thirdNote = dLydian[2];
+                fifthNote = dLydian[4];
+                seventhNote = dLydian[6];
+                ninthNote = dLydian[1];
+            }
+            if (mode === "Lydian" && noteroot === "D♯") {
+                rootNote = dShLydian[i];
+                thirdNote = dShLydian[2];
+                fifthNote = dShLydian[4];
+                seventhNote = dShLydian[6];
+                ninthNote = dShLydian[1];
+            }
+            if (mode === "Lydian" && noteroot === "E") {
+                rootNote = eLydian[i];
+                thirdNote = eLydian[2];
+                fifthNote = eLydian[4];
+                seventhNote = eLydian[6];
+                ninthNote = eLydian[1];
+            }
+            if (mode === "Lydian" && noteroot === "F") {
+                rootNote = fLydian[i];
+                thirdNote = fLydian[2];
+                fifthNote = fLydian[4];
+                seventhNote = fLydian[6];
+                ninthNote = fLydian[1];
+            }
+            if (mode === "Lydian" && noteroot === "F♯") {
+                rootNote = fShLydian[i];
+                thirdNote = fShLydian[2];
+                fifthNote = fShLydian[4];
+                seventhNote = fShLydian[6];
+                ninthNote = fShLydian[1];
+            }
+            if (mode === "Lydian" && noteroot === "G") {
+                rootNote = gLydian[i];
+                thirdNote = gLydian[2];
+                fifthNote = gLydian[4];
+                seventhNote = gLydian[6];
+                ninthNote = gLydian[1];
+            }
+            if (mode === "Lydian" && noteroot === "G♯") {
+                rootNote = gShLydian[i];
+                thirdNote = gShLydian[2];
+                fifthNote = gShLydian[4];
+                seventhNote = gShLydian[6];
+                ninthNote = gShLydian[1];
+            }
+            if (mode === "Lydian" && noteroot === "A") {
+                rootNote = aLydian[i];
+                thirdNote = aLydian[2];
+                fifthNote = aLydian[4];
+                seventhNote = aLydian[6];
+                ninthNote = aLydian[1];
+            }
+            if (mode === "Lydian" && noteroot === "A♯") {
+                rootNote = aShLydian[i];
+                thirdNote = aShLydian[2];
+                fifthNote = aShLydian[4];
+                seventhNote = aShLydian[6];
+                ninthNote = aShLydian[1];
+            }
+            if (mode === "Lydian" && noteroot === "B") {
+                rootNote = bLydian[i];
+                thirdNote = bLydian[2];
+                fifthNote = bLydian[4];
+                seventhNote = bLydian[6];
+                ninthNote = bLydian[1];
+            }
+
+            // Mixolydian Mode
+            if (mode === "Mixolydian" && noteroot === "C") {
+                rootNote = cMixolydian[i];
+                thirdNote = cMixolydian[2];
+                fifthNote = cMixolydian[4];
+                seventhNote = cMixolydian[6];
+                ninthNote = cMixolydian[1];
+            }
+            if (mode === "Mixolydian" && noteroot === "C♯") {
+                rootNote = cShMixolydian[i];
+                thirdNote = cShMixolydian[2];
+                fifthNote = cShMixolydian[4];
+                seventhNote = cShMixolydian[6];
+                ninthNote = cShMixolydian[1];
+            }
+            if (mode === "Mixolydian" && noteroot === "D") {
+                rootNote = dMixolydian[i];
+                thirdNote = dMixolydian[2];
+                fifthNote = dMixolydian[4];
+                seventhNote = dMixolydian[6];
+                ninthNote = dMixolydian[1];
+            }
+            if (mode === "Mixolydian" && noteroot === "D♯") {
+                rootNote = dShMixolydian[i];
+                thirdNote = dShMixolydian[2];
+                fifthNote = dShMixolydian[4];
+                seventhNote = dShMixolydian[6];
+                ninthNote = dShMixolydian[1];
+            }
+            if (mode === "Mixolydian" && noteroot === "E") {
+                rootNote = eMixolydian[i];
+                thirdNote = eMixolydian[2];
+                fifthNote = eMixolydian[4];
+                seventhNote = eMixolydian[6];
+                ninthNote = eMixolydian[1];
+            }
+            if (mode === "Mixolydian" && noteroot === "F") {
+                rootNote = fMixolydian[i];
+                thirdNote = fMixolydian[2];
+                fifthNote = fMixolydian[4];
+                seventhNote = fMixolydian[6];
+                ninthNote = fMixolydian[1];
+            }
+            if (mode === "Mixolydian" && noteroot === "F♯") {
+                rootNote = fShMixolydian[i];
+                thirdNote = fShMixolydian[2];
+                fifthNote = fShMixolydian[4];
+                seventhNote = fShMixolydian[6];
+                ninthNote = fShMixolydian[1];
+            }
+            if (mode === "Mixolydian" && noteroot === "G") {
+                rootNote = gMixolydian[i];
+                thirdNote = gMixolydian[2];
+                fifthNote = gMixolydian[4];
+                seventhNote = gMixolydian[6];
+                ninthNote = gMixolydian[1];
+            }
+            if (mode === "Mixolydian" && noteroot === "G♯") {
+                rootNote = gShMixolydian[i];
+                thirdNote = gShMixolydian[2];
+                fifthNote = gShMixolydian[4];
+                seventhNote = gShMixolydian[6];
+                ninthNote = gShMixolydian[1];
+            }
+            if (mode === "Mixolydian" && noteroot === "A") {
+                rootNote = aMixolydian[i];
+                thirdNote = aMixolydian[2];
+                fifthNote = aMixolydian[4];
+                seventhNote = aMixolydian[6];
+                ninthNote = aMixolydian[1];
+            }
+            if (mode === "Mixolydian" && noteroot === "A♯") {
+                rootNote = aShMixolydian[i];
+                thirdNote = aShMixolydian[2];
+                fifthNote = aShMixolydian[4];
+                seventhNote = aShMixolydian[6];
+                ninthNote = aShMixolydian[1];
+            }
+            if (mode === "Mixolydian" && noteroot === "B") {
+                rootNote = bMixolydian[i];
+                thirdNote = bMixolydian[2];
+                fifthNote = bMixolydian[4];
+                seventhNote = bMixolydian[6];
+                ninthNote = bMixolydian[1];
+            }
+
+            // Aeolian Mode (Natural Minor Scale)
+            if (mode === "Aeolian" && noteroot === "C") {
+                rootNote = cAeolian[i];
+                thirdNote = cAeolian[2];
+                fifthNote = cAeolian[4];
+                seventhNote = cAeolian[6];
+                ninthNote = cAeolian[1];
+            }
+            if (mode === "Aeolian" && noteroot === "C♯") {
+                rootNote = cShAeolian[i];
+                thirdNote = cShAeolian[2];
+                fifthNote = cShAeolian[4];
+                seventhNote = cShAeolian[6];
+                ninthNote = cShAeolian[1];
+            }
+            if (mode === "Aeolian" && noteroot === "D") {
+                rootNote = dAeolian[i];
+                thirdNote = dAeolian[2];
+                fifthNote = dAeolian[4];
+                seventhNote = dAeolian[6];
+                ninthNote = dAeolian[1];
+            }
+            if (mode === "Aeolian" && noteroot === "D♯") {
+                rootNote = dShAeolian[i];
+                thirdNote = dShAeolian[2];
+                fifthNote = dShAeolian[4];
+                seventhNote = dShAeolian[6];
+                ninthNote = dShAeolian[1];
+            }
+            if (mode === "Aeolian" && noteroot === "E") {
+                rootNote = eAeolian[i];
+                thirdNote = eAeolian[2];
+                fifthNote = eAeolian[4];
+                seventhNote = eAeolian[6];
+                ninthNote = eAeolian[1];
+            }
+            if (mode === "Aeolian" && noteroot === "F") {
+                rootNote = fAeolian[i];
+                thirdNote = fAeolian[2];
+                fifthNote = fAeolian[4];
+                seventhNote = fAeolian[6];
+                ninthNote = fAeolian[1];
+            }
+            if (mode === "Aeolian" && noteroot === "F♯") {
+                rootNote = fShAeolian[i];
+                thirdNote = fShAeolian[2];
+                fifthNote = fShAeolian[4];
+                seventhNote = fShAeolian[6];
+                ninthNote = fShAeolian[1];
+            }
+            if (mode === "Aeolian" && noteroot === "G") {
+                rootNote = gAeolian[i];
+                thirdNote = gAeolian[2];
+                fifthNote = gAeolian[4];
+                seventhNote = gAeolian[6];
+                ninthNote = gAeolian[1];
+            }
+            if (mode === "Aeolian" && noteroot === "G♯") {
+                rootNote = gShAeolian[i];
+                thirdNote = gShAeolian[2];
+                fifthNote = gShAeolian[4];
+                seventhNote = gShAeolian[6];
+                ninthNote = gShAeolian[1];
+            }
+            if (mode === "Aeolian" && noteroot === "A") {
+                rootNote = aAeolian[i];
+                thirdNote = aAeolian[2];
+                fifthNote = aAeolian[4];
+                seventhNote = aAeolian[6];
+                ninthNote = aAeolian[1];
+            }
+            if (mode === "Aeolian" && noteroot === "A♯") {
+                rootNote = aShAeolian[i];
+                thirdNote = aShAeolian[2];
+                fifthNote = aShAeolian[4];
+                seventhNote = aShAeolian[6];
+                ninthNote = aShAeolian[1];
+            }
+            if (mode === "Aeolian" && noteroot === "B") {
+                rootNote = bAeolian[i];
+                thirdNote = bAeolian[2];
+                fifthNote = bAeolian[4];
+                seventhNote = bAeolian[6];
+                ninthNote = bAeolian[1];
+            }
+
+            // Locrian Mode
+            if (mode === "Locrian" && noteroot === "C") {
+                rootNote = cLocrian[i];
+                thirdNote = cLocrian[2];
+                fifthNote = cLocrian[4];
+                seventhNote = cLocrian[6];
+                ninthNote = cLocrian[1];
+            }
+            if (mode === "Locrian" && noteroot === "C♯") {
+                rootNote = cShLocrian[i];
+                thirdNote = cShLocrian[2];
+                fifthNote = cShLocrian[4];
+                seventhNote = cShLocrian[6];
+                ninthNote = cShLocrian[1];
+            }
+            if (mode === "Locrian" && noteroot === "D") {
+                rootNote = dLocrian[i];
+                thirdNote = dLocrian[2];
+                fifthNote = dLocrian[4];
+                seventhNote = dLocrian[6];
+                ninthNote = dLocrian[1];
+            }
+            if (mode === "Locrian" && noteroot === "D♯") {
+                rootNote = dShLocrian[i];
+                thirdNote = dShLocrian[2];
+                fifthNote = dShLocrian[4];
+                seventhNote = dShLocrian[6];
+                ninthNote = dShLocrian[1];
+            }
+            if (mode === "Locrian" && noteroot === "E") {
+                rootNote = eLocrian[i];
+                thirdNote = eLocrian[2];
+                fifthNote = eLocrian[4];
+                seventhNote = eLocrian[6];
+                ninthNote = eLocrian[1];
+            }
+            if (mode === "Locrian" && noteroot === "F") {
+                rootNote = fLocrian[i];
+                thirdNote = fLocrian[2];
+                fifthNote = fLocrian[4];
+                seventhNote = fLocrian[6];
+                ninthNote = fLocrian[1];
+            }
+            if (mode === "Locrian" && noteroot === "F♯") {
+                rootNote = fShLocrian[i];
+                thirdNote = fShLocrian[2];
+                fifthNote = fShLocrian[4];
+                seventhNote = fShLocrian[6];
+                ninthNote = fShLocrian[1];
+            }
+            if (mode === "Locrian" && noteroot === "G") {
+                rootNote = gLocrian[i];
+                thirdNote = gLocrian[2];
+                fifthNote = gLocrian[4];
+                seventhNote = gLocrian[6];
+                ninthNote = gLocrian[1];
+            }
+            if (mode === "Locrian" && noteroot === "G♯") {
+                rootNote = gShLocrian[i];
+                thirdNote = gShLocrian[2];
+                fifthNote = gShLocrian[4];
+                seventhNote = gShLocrian[6];
+                ninthNote = gShLocrian[1];
+            }
+            if (mode === "Locrian" && noteroot === "A") {
+                rootNote = aLocrian[i];
+                thirdNote = aLocrian[2];
+                fifthNote = aLocrian[4];
+                seventhNote = aLocrian[6];
+                ninthNote = aLocrian[1];
+            }
+            if (mode === "Locrian" && noteroot === "A♯") {
+                rootNote = aShLocrian[i];
+                thirdNote = aShLocrian[2];
+                fifthNote = aShLocrian[4];
+                seventhNote = aShLocrian[6];
+                ninthNote = aShLocrian[1];
+            }
+            if (mode === "Locrian" && noteroot === "B") {
+                rootNote = bLocrian[i];
+                thirdNote = bLocrian[2];
+                fifthNote = bLocrian[4];
+                seventhNote = bLocrian[6];
+                ninthNote = bLocrian[1];
+            }
+
+            // This figures out what chord progression text should be written WIP!!
+            /*if (romanHeaders.includes("I") || romanHeaders[i].includes("i") || romanHeaders[i].includes("i°")){
+                nextChord = "Progresses to any chord";
+            } else {
+                nextChord = "";
+            }
+            if (romanHeaders.includes("ii")) {
+                nextChord = "Progresses vii° or V";
+            }
+            if (romanHeaders.includes("II")) {
+                nextChord = "Progresses vii° or V";
+            }*/
+
+            const rootMidi = midiValues[i].join(", ");
+                return `<tr>
+                    <td><button class="btn btn-outline-light btn-sm" style="color: white;><a href="#" data-scaleDegree="${rootNote}" data-scaleDegree3="${thirdNote}" data-scaleDegree5="${fifthNote}" data-scaleDegree7="${seventhNote}" data-scaleDegree9="${ninthNote}" onclick="openRootModal('${rootNote}')">${rootNote} ${romanHeaders[i]}</a></button></td>
+                    ${generateMidiLinks(rootMidi)}
+                </tr>`;
+            }).join("");
+
+            // Display results in table with dynamic Roman numeral headers, note names, and MIDI data
+            document.getElementById("results").innerHTML = `
+                <table class="table table-bordered mt-4 table-sm" style="color: white;">
+                    <tbody>
+                        ${diatonicChords}
+                    </tbody>
+                </table>
+            `;
+        }
+
+        function getMidiNotesAndFrequencies(midi) {
+          return midi.split(', ').map(midiValue => {
+              const midiNotesAndFrequencies = {
+                midiValue: midiValue,
+                frequency: MIDIUtil.midiToFrequency(parseInt(midiValue))
+              }
+              return midiNotesAndFrequencies
+          });
+        }
+
+        // Helper function to generate clickable MIDI links
+        function generateMidiLinks(midi) {
+            let midiNotesAndFrequencies = getMidiNotesAndFrequencies(midi)
+            return midiNotesAndFrequencies.map(values => {
+              let midiValue = values.midiValue
+              let frequency = values.frequency
+              return `
+              <td>
+                <button class="btn btn-outline-light btn-sm" style="color: white;><a href="#" data-midi="${midiValue}" data-frequency="${frequency}" onclick="openModal('${midiValue}', '${frequency}')">${midiValue}</a></button>
+              </td>`;
+            }).join(" ");
+        }
+
+        // Helper function to generate clickable scale degree links
+        function generateScaleDegreeLinks(scaleDegree) {
+            return `<button class="btn btn-outline-light btn-sm" style="color: white;><a href="#" data-scaleDegree="${rootNote}" onclick="openRootModal('${rootNote}')">${rootNote}</a></button>`;
+        }
+
+        // Function to open the modal and show information, including octave
+        function openModal(midiValue, frequency) {
+            const octave = MIDIUtil.getOctave(midiValue);
+            document.getElementById("midiValue").innerText = `MIDI Value: ${midiValue}`;
+            document.getElementById("frequency").innerText = `Frequency: ${frequency} Hz`;
+            document.getElementById("octave").innerText = `Octave: ${octave}`;
+
+            const playButton = document.getElementById("playButton");
+
+            // Add event listener to play button
+            playButton.onclick = () => {
+                if (isPlaying[midiValue]) {
+                    stopOscillator(midiValue);
+                    playButton.innerText = "Play"; // Change button to "Play"
+                    isPlaying[midiValue] = false;
+                } else {
+                    startOscillator(frequency, midiValue);
+                    //playButton.innerText = "Stop"; // Change button to "Stop"
+                    isPlaying[midiValue] = true;
+                }
+            };
+
+            // Show the modal
+            const myModal = new bootstrap.Modal(document.getElementById('midiModal'));
+            myModal.show();
+        }
+
+           // Function to open the ROOT modal and show information, including octave
+        function openRootModal(rootNote) {
+            document.getElementById("rootNote").innerText = `Root: ${rootNote}`;
+            document.getElementById("thirdNote").innerText = `Third: ${thirdNote}`;
+            document.getElementById("fifthNote").innerText = `Fifth: ${fifthNote}`;
+            document.getElementById("seventhNote").innerText = `Seventh: ${seventhNote}`;
+            document.getElementById("ninthNote").innerText = `Ninth: ${ninthNote}`;
+            //document.getElementById("nextChord").innerText = `${nextChord}`;
+            // Show the modal
+            const myModal = new bootstrap.Modal(document.getElementById('rootModal'));
+            myModal.show();
+        }
+
+        // // Function to start playing the sound for the given frequency
+        // function startOscillator(frequency, midiValue) {
+        //     const oscillator = audioContext.createOscillator();
+        //     oscillator.type = 'sine'; // Sine wave
+        //     oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+
+        //     // Set volume using the global gain node
+        //     oscillator.connect(globalGainNode); // Connect oscillator to the global gain node
+
+        //     oscillator.start();
+
+        //     // Store oscillator
+        //     oscillators[midiValue] = oscillator;
+        // }
+
+        // // Function to stop the oscillator
+        // function stopOscillator(midiValue) {
+        //     if (oscillators[midiValue]) {
+        //         oscillators[midiValue].stop();
+        //         oscillators[midiValue].disconnect();
+        //     }
+        // }
+
+        // // Stop all oscillators
+        // function stopAllOscillators() {
+        //     for (let midiValue in oscillators) {
+        //         stopOscillator(midiValue);
+        //     }
+        // }
+
+        // Event listener to update the global volume when the slider is changed
+        document.getElementById('volumeSlider').addEventListener('input', (e) => {
+            currentVolume = e.target.value / 100;
+            document.getElementById("volumeValue").innerText = e.target.value;
+            globalGainNode.gain.setValueAtTime(currentVolume, audioContext.currentTime); // Update global volume
+        });
+
+        // Event listener for the Stop All button
+        document.getElementById('stopAllButton').addEventListener('click', () => {
+            stopAllOscillators();
+        });
+
+        // Initial call to setup audio context and display results
+        setupAudioContext(window);
+        updateResults();
+    </script>
+
+
+<!-- jQuery (v3.6.0) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Popper.js (required for Bootstrap 4) -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+
+<!-- Bootstrap JavaScript (v4.5.2) -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>
