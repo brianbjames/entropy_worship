@@ -153,12 +153,10 @@ async function scrapeResidentAdvisor({ area, start, end }) {
   const cacheKey = `${area}|${start}|${end}`;
   const cached = eventCache.get(cacheKey);
   if (cached && Date.now() - cached.timestamp < 15 * 60 * 1000) {
-    console.log("Returning cached events for", cacheKey);
-    return cached.data;
+    return cached;
   }
 
   const listingUrl = `https://ra.co/events/${cfg.path}?startDate=${encodeURIComponent(start)}`;
-  console.log("RA listing URL:", listingUrl);
 
   const browser = await chromium.launch({
     headless: true,
@@ -187,19 +185,11 @@ async function scrapeResidentAdvisor({ area, start, end }) {
       .catch(() => "");
     const html = await page.content().catch(() => "");
 
-    console.log("Page title:", title);
-    console.log("Current URL:", currentUrl);
-    console.log("Body text length:", bodyText.length);
-    console.log("HTML length:", html.length);
-    console.log("HTML sample:", html.slice(0, 2000));
-
     const hasCaptchaText =
       /enable JS and disable any ad blocker/i.test(bodyText) ||
       /captcha/i.test(bodyText) ||
       /access denied/i.test(bodyText) ||
       /verify you are human/i.test(bodyText);
-
-    console.log("Has captcha text:", hasCaptchaText);
 
     const eventLinks = await page
       .locator('a[href^="/events/"]')
@@ -211,22 +201,9 @@ async function scrapeResidentAdvisor({ area, start, end }) {
           }))
           .filter((x) => x.href && x.text),
       )
-      .catch((err) => {
-        console.error("Failed reading event links:", err.message);
-        return [];
-      });
-
-    console.log("Found raw event links:", eventLinks.length);
-    console.log("First few raw links:", eventLinks.slice(0, 10));
+      .catch(() => []);
 
     await page.close();
-
-    if (hasCaptchaText) {
-      console.log(
-        "RA appears to be serving a challenge page. Returning empty result.",
-      );
-      return [];
-    }
 
     const rawEvents = eventLinks
       .map((item) => {
@@ -251,12 +228,9 @@ async function scrapeResidentAdvisor({ area, start, end }) {
       .filter(Boolean);
 
     const listingEvents = dedupeEvents(rawEvents).slice(0, 20);
-    console.log("Deduped listing events:", listingEvents.length);
 
     for (const event of listingEvents) {
       try {
-        console.log("Visiting event page:", event.url);
-
         const eventPage = await browser.newPage({
           viewport: { width: 1280, height: 1000 },
           userAgent:
@@ -297,15 +271,6 @@ async function scrapeResidentAdvisor({ area, start, end }) {
           event.longitude = geo.longitude;
         }
 
-        console.log("Event scraped:", {
-          id: event.id,
-          title: event.title,
-          date: event.date,
-          venueName: event.venueName,
-          latitude: event.latitude,
-          longitude: event.longitude,
-        });
-
         await sleep(1100);
       } catch (err) {
         console.error("Event page scrape failed for:", event.url, err.message);
@@ -316,60 +281,32 @@ async function scrapeResidentAdvisor({ area, start, end }) {
       (event) => event.date >= start && event.date <= end,
     );
 
-    console.log("Filtered final events:", filtered.length);
+    const result = {
+      ok: filtered.length > 0,
+      events: filtered,
+      debug: {
+        listingUrl,
+        pageTitle: title,
+        currentUrl,
+        bodyTextLength: bodyText.length,
+        htmlLength: html.length,
+        hasCaptchaText,
+        rawEventLinkCount: eventLinks.length,
+        rawEventLinksPreview: eventLinks.slice(0, 10),
+        htmlSample: html.slice(0, 2000),
+        bodyTextSample: bodyText.slice(0, 1000),
+      },
+    };
 
     eventCache.set(cacheKey, {
       timestamp: Date.now(),
-      data: filtered,
+      ...result,
     });
 
-    return filtered;
+    return result;
   } finally {
     await browser.close();
   }
-}
-
-function buildFallbackEvents(area, start, end) {
-  if (area === "sanfrancisco") {
-    return [
-      {
-        id: "fallback-1",
-        title: "Fallback Test Rave",
-        date: `${start}T22:00:00`,
-        venueName: "Public Works",
-        latitude: 37.7669,
-        longitude: -122.422,
-        url: "https://ra.co/",
-        artists: ["DJ Example"],
-        source: "Fallback",
-      },
-      {
-        id: "fallback-2",
-        title: "Fallback Warehouse Night",
-        date: `${end}T23:30:00`,
-        venueName: "The Great Northern",
-        latitude: 37.7818,
-        longitude: -122.4101,
-        url: "https://ra.co/",
-        artists: ["Artist A", "Artist B"],
-        source: "Fallback",
-      },
-    ];
-  }
-
-  return [
-    {
-      id: "fallback-generic-1",
-      title: "Fallback Event",
-      date: `${start}T22:00:00`,
-      venueName: "City Center",
-      latitude: null,
-      longitude: null,
-      url: "https://ra.co/",
-      artists: ["Test Artist"],
-      source: "Fallback",
-    },
-  ];
 }
 
 app.get("/", (_req, res) => {
@@ -380,6 +317,7 @@ app.get("/api/ra-events", async (req, res) => {
   const area = String(req.query.area || "");
   const start = String(req.query.start || "");
   const end = String(req.query.end || "");
+  const debugMode = String(req.query.debug || "") === "1";
 
   if (!area || !start || !end) {
     return res.status(400).json({
@@ -400,17 +338,20 @@ app.get("/api/ra-events", async (req, res) => {
   }
 
   try {
-    const events = await scrapeResidentAdvisor({ area, start, end });
+    const result = await scrapeResidentAdvisor({ area, start, end });
 
-    if (!events.length) {
-      console.log("No scraped events found. Returning fallback events.");
-      return res.json(buildFallbackEvents(area, start, end));
+    if (debugMode) {
+      return res.json(result);
     }
 
-    return res.json(events);
+    return res.json(result.events || []);
   } catch (error) {
     console.error("API error:", error);
-    return res.json(buildFallbackEvents(area, start, end));
+
+    return res.status(500).json({
+      error: "Failed to load events",
+      detail: error instanceof Error ? error.message : String(error),
+    });
   }
 });
 
