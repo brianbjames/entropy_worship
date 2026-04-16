@@ -1,4 +1,5 @@
 const API_BASE = "https://entropy-worship.onrender.com";
+const url = `${API_BASE}/api/events?area=${encodeURIComponent(area)}&start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`;
 
 const AREA_CONFIG = {
   sanfrancisco: {
