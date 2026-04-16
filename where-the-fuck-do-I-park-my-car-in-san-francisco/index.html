@@ -3,7 +3,68 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SF Street Cleaning — Park Finder</title>
+    <title>WTF do I park in San Francisco?</title>
+    <!-- General Meta Tags for SEO -->
+    <meta
+      name="description"
+      content="SF Street Cleaning Map — find safe parking in San Francisco based on real-time street cleaning schedules."
+    />
+    <meta
+      name="keywords"
+      content="San Francisco, Street Cleaning, Parking, SF Parking, Street Sweeping, SF Map, Dark, Techno, Electronic, Industrial, Experimental, Entropy Worship"
+    />
+    <!-- Schema.org markup for Google -->
+    <meta
+      itemprop="name"
+      content="WTF do I park in San Francisco? | Entropy Worship"
+    />
+    <meta
+      itemprop="description"
+      content="SF Street Cleaning Map — find safe parking in San Francisco based on real-time street cleaning schedules."
+    />
+    <!-- Twitter Card Data -->
+    <meta
+      name="twitter:url"
+      content="https://www.entropyworship.com/where-the-fuck-do-I-park-my-car-in-san-francisco/"
+    />
+    <meta name="twitter:site" content="@EntropyWorship" />
+    <meta
+      name="twitter:title"
+      content="WTF do I park in San Francisco? | Entropy Worship"
+    />
+    <meta
+      name="twitter:description"
+      content="SF Street Cleaning Map — find safe parking in San Francisco based on real-time street cleaning schedules."
+    />
+    <meta name="twitter:creator" content="@EntropyWorship" />
+    <meta
+      name="twitter:image"
+      content="https://www.entropyworship.com/images/EW_Second_Law_Cover_W_Aerotek_Logo.png"
+    />
+    <!-- Open Graph Data for Facebook, LinkedIn, and others -->
+    <meta
+      property="og:title"
+      content="WTF do I park in San Francisco? | Entropy Worship"
+    />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:url"
+      content="https://www.entropyworship.com/where-the-fuck-do-I-park-my-car-in-san-francisco/"
+    />
+    <meta
+      property="og:description"
+      content="SF Street Cleaning Map — find safe parking in San Francisco based on real-time street cleaning schedules."
+    />
+    <meta property="og:site_name" content="Entropy Worship" />
+    <meta
+      property="og:image"
+      content="https://www.entropyworship.com/images/EW_Second_Law_Cover_W_Aerotek_Logo.png"
+    />
+    <meta property="og:image:alt" content="Entropy Worship" />
+    <meta
+      property="article:tag"
+      content="Entropy Worship. SF Street Cleaning Map."
+    />
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -342,6 +403,54 @@
         letter-spacing: 0.5px;
       }
 
+      /* ── Park-until slider ───────────────────────────────────────────────── */
+      #park-panel {
+        margin-top: 10px;
+        padding-top: 8px;
+        border-top: 1px solid #1e1e1e;
+      }
+
+      #park-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+
+      #park-label {
+        color: #4499ff;
+        font-size: 12px;
+        letter-spacing: 1px;
+      }
+
+      #park-slider {
+        width: 100%;
+        -webkit-appearance: none;
+        appearance: none;
+        height: 3px;
+        background: #0e1e36;
+        border-radius: 2px;
+        outline: none;
+      }
+
+      #park-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 13px;
+        height: 13px;
+        border-radius: 50%;
+        background: #4499ff;
+        cursor: pointer;
+        box-shadow: 0 0 5px rgba(68, 153, 255, 0.4);
+      }
+
+      #park-slider::-moz-range-thumb {
+        width: 13px;
+        height: 13px;
+        border: none;
+        border-radius: 50%;
+        background: #4499ff;
+        cursor: pointer;
+      }
+
       /* ── Popups / tooltips ───────────────────────────────────────────────── */
       .leaflet-popup-content-wrapper {
         background: rgba(8, 8, 8, 0.96);
@@ -450,10 +559,42 @@
         font-size: 12px;
         line-height: 1.9;
       }
+
+      /* ── Entropy Worship logo ────────────────────────────────────────────── */
+      @font-face {
+        font-family: "BlenderProBook";
+        src: url("../styles/fonts/BlenderProBook.woff2") format("woff2");
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+      }
+
+      #ew-logo {
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        z-index: 1000;
+        font-family: "BlenderProBook", "Courier New", monospace;
+        font-size: 13px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+      }
+
+      #ew-logo a {
+        color: #444;
+        text-decoration: none;
+      }
+
+      #ew-logo a:hover {
+        color: #888;
+      }
     </style>
   </head>
   <body>
     <div id="map"></div>
+    <div id="ew-logo">
+      <a href="https://www.entropyworship.com">Entropy Worship</a>
+    </div>
     <div id="loading">Loading street cleaning data&hellip;</div>
 
     <div id="search-panel">
@@ -481,6 +622,16 @@
       <div class="time-ticks">
         <span>6 AM</span><span>9 AM</span><span>12 PM</span> <span>3 PM</span
         ><span>6 PM</span><span>8 PM</span>
+      </div>
+      <div id="park-panel">
+        <div id="park-header">
+          <span id="park-label">Park until: —</span>
+        </div>
+        <input type="range" id="park-slider" min="6" max="20" step="0.5" />
+        <div class="time-ticks">
+          <span>6 AM</span><span>9 AM</span><span>12 PM</span> <span>3 PM</span
+          ><span>6 PM</span><span>8 PM</span>
+        </div>
       </div>
     </div>
 
@@ -551,6 +702,9 @@
         upcoming: "#ff9900", // orange — restriction coming up
         passed: "#2ecc71", // green  — safe to park now
       };
+      const PARK_SAFE_COLOR = "#4499ff"; // blue — safe for your full window
+
+      let parkUntilHour = 0; // set when data loads; 0 = feature inactive
 
       function getStatusAtHour(fromhour, tohour, hour) {
         const from = parseFloat(fromhour);
@@ -563,6 +717,31 @@
 
       function getStatus(fromhour, tohour) {
         return getStatusAtHour(fromhour, tohour, activeHour);
+      }
+
+      // A block is park-safe if its cleaning window doesn't overlap [activeHour, parkUntilHour]
+      function isParkSafe(fromhour, tohour) {
+        if (parkUntilHour <= activeHour) return false;
+        const from = parseFloat(fromhour);
+        const to = parseFloat(tohour);
+        if (isNaN(from) || isNaN(to)) return true;
+        return to <= activeHour || from >= parkUntilHour;
+      }
+
+      function getFeatureStyle(p, isLeft) {
+        if (isParkSafe(p.fromhour, p.tohour)) {
+          return {
+            color: PARK_SAFE_COLOR,
+            weight: lineWeight(isLeft),
+            opacity: 0.9,
+          };
+        }
+        const status = getStatusAtHour(p.fromhour, p.tohour, activeHour);
+        return {
+          color: COLORS[status],
+          weight: lineWeight(isLeft),
+          opacity: status === "passed" ? 0.65 : 0.9,
+        };
       }
 
       function fmtHour(h) {
@@ -622,6 +801,10 @@
             <span>Passed &mdash; safe to park</span>
             <span class="legend-count" id="cnt-passed">&mdash;</span>
           </div>
+          <div class="legend-row">
+            <div class="legend-line" style="background:#4499ff"></div>
+            <span>Safe for your full window - park here</span>
+          </div>
           <hr>
           <div class="source">
             Thin/thick = right/left block face &nbsp;&middot;&nbsp;
@@ -642,9 +825,7 @@
         });
         const wom = Math.ceil(date.getDate() / 7);
         const isToday = date.toDateString() === now.toDateString();
-        const timePart = isToday
-          ? `${timeStr} &nbsp;&middot;&nbsp; `
-          : "";
+        const timePart = isToday ? `${timeStr} &nbsp;&middot;&nbsp; ` : "";
         el.innerHTML = `${ds}<br>${timePart}Week ${wom} of month`;
       }
 
@@ -905,11 +1086,7 @@
               const status = getStatusAtHour(p.fromhour, p.tohour, activeHour);
               c[status]++;
               const isLeft = (p.cnnrightleft || "").toUpperCase() === "L";
-              return {
-                color: COLORS[status],
-                weight: lineWeight(isLeft),
-                opacity: status === "passed" ? 0.65 : 0.9,
-              };
+              return getFeatureStyle(p, isLeft);
             },
             onEachFeature: (feature, layer) => {
               const p = feature.properties;
@@ -968,6 +1145,12 @@
         // Show time slider (idempotent)
         document.getElementById("time-panel").hidden = false;
 
+        // Init park-until slider to 2 h after current view hour
+        parkUntilHour = Math.min(20, activeHour + 2);
+        const parkSlider = document.getElementById("park-slider");
+        parkSlider.value = parkUntilHour;
+        updateParkLabel(parkUntilHour);
+
         // Build day selector once
         if (!daySelectorBuilt) {
           buildDaySelector();
@@ -1004,7 +1187,8 @@
         options.forEach(({ date, label, offset }) => {
           const btn = document.createElement("button");
           btn.className =
-            "day-btn" + (date.toDateString() === viewDate.toDateString() ? " active" : "");
+            "day-btn" +
+            (date.toDateString() === viewDate.toDateString() ? " active" : "");
           btn.textContent = label;
           btn.addEventListener("click", () => {
             document
@@ -1037,6 +1221,12 @@
         const slider = document.getElementById("time-slider");
         slider.value = Math.min(20, Math.max(6, targetHour));
         setTimeLabel(targetHour);
+
+        // Reset park-until to 2 h ahead
+        parkUntilHour = Math.min(20, targetHour + 2);
+        const parkSlider = document.getElementById("park-slider");
+        parkSlider.value = parkUntilHour;
+        updateParkLabel(parkUntilHour);
 
         // Update reset button label
         document.getElementById("time-reset").textContent = isViewingToday()
@@ -1091,13 +1281,8 @@
           geoLayer.eachLayer((layer) => {
             const p = layer.feature && layer.feature.properties;
             if (!p) return;
-            const status = getStatusAtHour(p.fromhour, p.tohour, hour);
             const isLeft = (p.cnnrightleft || "").toUpperCase() === "L";
-            layer.setStyle({
-              color: COLORS[status],
-              weight: lineWeight(isLeft),
-              opacity: status === "passed" ? 0.65 : 0.9,
-            });
+            layer.setStyle(getFeatureStyle(p, isLeft));
           });
         }
 
@@ -1119,6 +1304,32 @@
         slider.value = Math.min(20, Math.max(6, targetHour));
         updateForHour(targetHour);
       });
+
+      // ── Park-until slider ─────────────────────────────────────────────────
+      function updateParkLabel(hour) {
+        document.getElementById("park-label").textContent =
+          `Park until: ${fmtSliderHour(hour)}`;
+      }
+
+      function updateParkUntil(hour) {
+        parkUntilHour = hour;
+        updateParkLabel(hour);
+        if (geoLayer) {
+          geoLayer.eachLayer((layer) => {
+            const p = layer.feature && layer.feature.properties;
+            if (!p) return;
+            const isLeft = (p.cnnrightleft || "").toUpperCase() === "L";
+            layer.setStyle(getFeatureStyle(p, isLeft));
+          });
+        }
+        if (checkMarker) showVerdict(checkMarker.getLatLng(), lastSearchLabel);
+      }
+
+      document
+        .getElementById("park-slider")
+        .addEventListener("input", function () {
+          updateParkUntil(parseFloat(this.value));
+        });
 
       // Re-apply zoom-responsive weights whenever the user zooms in or out
       map.on("zoomend", () => {
@@ -1221,8 +1432,7 @@
             `${BASE}.geojson?$where=${encodeURIComponent(where)}&$limit=50000`,
           )
             .then((r) => {
-              if (!r.ok)
-                throw new Error(`Data fetch failed: HTTP ${r.status}`);
+              if (!r.ok) throw new Error(`Data fetch failed: HTTP ${r.status}`);
               return r.json();
             })
             .then(renderGeoJSON)
@@ -1274,9 +1484,7 @@
                 }
               }
             }
-            console.log(
-              `[SF Cleaning] Weekday field: "${cachedWeekdayField}"`,
-            );
+            console.log(`[SF Cleaning] Weekday field: "${cachedWeekdayField}"`);
 
             return fetchForDay(viewDayName);
           })
