@@ -1,0 +1,420 @@
+<!-- /-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\ -->
+<!-- |                                                                         | -->
+<!-- \ @@@@@@@@  @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@@@@@   @@@ @@@      / -->
+<!-- - @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@ @@@      - -->
+<!-- / @@!       @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!  @@@  @@! !@@      \ -->
+<!-- | !@!       !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!  @!@  !@! @!!      | -->
+<!-- \ @!!!:!    @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!@@!@!    !@!@!       / -->
+<!-- - !!!!!:    !@!  !!!    !!!    !!@!@!    !@!  !!!  !!@!!!      @!!!       - -->
+<!-- / !!:       !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:         !!:        \ -->
+<!-- | :!:       :!:  !:!    :!:    :!:  !:!  :!:  !:!  :!:         :!:        | -->
+<!-- \  :: ::::   ::   ::     ::    ::   :::  ::::: ::   ::          ::        / -->
+<!-- - : :: ::   ::    :      :      :   : :   : :  :    :           :         - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \ @@@  @@@  @@@   @@@@@@   @@@@@@@    @@@@@@   @@@  @@@  @@@  @@@@@@@     / -->
+<!-- - @@@  @@@  @@@  @@@@@@@@  @@@@@@@@  @@@@@@@   @@@  @@@  @@@  @@@@@@@@    - -->
+<!-- / @@!  @@!  @@!  @@!  @@@  @@!  @@@  !@@       @@!  @@@  @@!  @@!  @@@    \ -->
+<!-- | !@!  !@!  !@!  !@!  @!@  !@!  @!@  !@!       !@!  @!@  !@!  !@!  @!@    | -->
+<!-- \ @!!  !!@  @!@  @!@  !@!  @!@!!@!   !!@@!!    @!@!@!@!  !!@  @!@@!@!     / -->
+<!-- - !@!  !!!  !@!  !@!  !!!  !!@!@!     !!@!!!   !!!@!!!!  !!!  !!@!!!      - -->
+<!-- / !!:  !!:  !!:  !!:  !!!  !!: :!!        !:!  !!:  !!!  !!:  !!:         \ -->
+<!-- | :!:  :!:  :!:  :!:  !:!  :!:  !:!      !:!   :!:  !:!  :!:  :!:         | -->
+<!-- \  :::: :: :::   ::::: ::  ::   :::  :::: ::   ::   :::   ::   ::         / -->
+<!-- -   :: :  : :     : :  :    :   : :  :: : :     :   : :  :     :          - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>ENTROPY WORSHIP VR</title>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, user-scalable=no"
+    />
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- SciUI CSS -->
+    <link href="styles/styles.css" type="text/css" rel="stylesheet" />
+    <!-- Cyberpunk CSS -->
+    <link href="styles/cyberpunk.css" rel="stylesheet" type="text/css" />
+    <!-- Override CSS -->
+    <link href="styles/style_overrides.css" rel="stylesheet" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@v0.171.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@v0.171.0/examples/jsm/"
+        }
+      }
+    </script>
+    <style>
+        body {
+          margin: 0;
+          overflow: hidden; /* Prevent scrollbars */
+        }
+        canvas {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          z-index: -1; /* Push canvas to the background */
+          pointer-events: none; /* Allow clicks to pass through */
+        }
+        .container {
+          position: relative;
+          z-index: 1; /* Ensure container content is above the canvas */
+        }
+      </style>
+  </head>
+  <body>
+    <div class="container"><!--Main Container-->
+        <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c"><!--Header card-->
+            <div class="card-header border-danger">
+              <a href="https://www.entropyworship.com"><h1 class="heading display-6" style="font-size: 1.5rem;">ENTROPY WORSHIP</h1></a>
+                <h2 class="panel error shown" style="font-size: 1.5rem;">build 3.0.12.05.24</h1>
+        </div><!--Header panel-->
+              <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb71c">
+                <div class="card-body" id="card1">
+                </div>
+              </div>
+            <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb71c">
+                <div class="card-body" id="card2">
+                </div>
+              </div>
+          </div>
+          
+    </div><!--Main Container-->   
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "../build/three.module.js",
+          "three/addons/": "./jsm/"
+        }
+      }
+    </script>
+
+    <script type="module">
+      import * as THREE from "three";
+
+      import { BoxLineGeometry } from "three/addons/geometries/BoxLineGeometry.js";
+      import { XRButton } from "three/addons/webxr/XRButton.js";
+      import { XRControllerModelFactory } from "three/addons/webxr/XRControllerModelFactory.js";
+      import { GUI } from 'three/addons/libs/lil-gui.module.min.js';
+
+      const clock = new THREE.Clock();
+
+      let container;
+      let camera, scene, raycaster, renderer;
+
+      let room;
+
+      let controller, controllerGrip;
+      let INTERSECTED;
+      const backgroundTextures = [
+            "images/360_abandoned_workshop_02.jpg",
+            "images/360_abandoned_actory_canteen_02.jpg",
+            "images/360_abandoned_creepy_bathroom.jpg",
+            "images/360_abandoned_crossing.jpg",
+            "images/360_abandoned_dresden_station_night.jpg",
+            "images/360_abandoned_factory_canteen_01.jpg",
+            "images/360_abandoned_greenhouse.jpg",
+            "images/360_abandoned_industrial_pipe_and_valve_01.jpg",
+            "images/360_abandoned_industrial_workshop_foundry.jpg",
+            "images/360_abandoned_kandao3.jpg",
+            "images/360_abandoned_old_bus_depot.jpg",
+            "images/360_abandoned_reinforced_concrete_01.jpg",
+            "images/360_abandoned_small_hangar_01.jpg",
+            "images/360_abandoned_tiled_room.jpg",
+            "images/360_abandoned_workshop_01.jpg"
+        ];
+
+
+
+      init();
+      function createBackgroundSelector() {
+    const cardBody = document.querySelector(".card-body");
+
+    if (!cardBody) {
+        console.warn("No .card-body element found in the document.");
+        return;
+    }
+
+    const label = document.createElement("label");
+    label.textContent = "Select Background: ";
+    label.style.display = "block";
+    label.style.marginBottom = "5px";
+
+    const selector = document.createElement("select");
+    selector.classList.add("cyber-select", "mb-4"); 
+    //selector.style.width = "50%";
+    selector.style.padding = "5px";
+    selector.style.fontSize = "16px";
+    
+
+    backgroundTextures.forEach((texturePath) => {
+        const option = document.createElement("option");
+        option.value = texturePath;
+        option.textContent = texturePath.split("/").pop();
+        selector.appendChild(option);
+    });
+
+    selector.addEventListener("change", (event) => {
+        const selectedTexture = event.target.value;
+        const newTexture = new THREE.TextureLoader().load(selectedTexture);
+        room.material.map = newTexture;
+        room.material.needsUpdate = true;
+    });
+
+    cardBody.appendChild(label);
+    cardBody.appendChild(selector);
+}
+
+init();
+createBackgroundSelector();
+
+
+
+      function init() { 
+        container = document.createElement("div");
+        document.body.appendChild(container);
+
+        scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x505050);
+
+        camera = new THREE.PerspectiveCamera(
+          50,
+          window.innerWidth / window.innerHeight,
+          0.1,
+          10
+        );
+        camera.position.set(0, 1.6, 3);
+        scene.add(camera);
+
+        const textureLoader = new THREE.TextureLoader();
+        const roomTexture = textureLoader.load("images/360_abandoned_workshop_02.jpg"); // Use a 360° equirectangular image
+
+        const roomGeometry = new THREE.SphereGeometry(6, 64, 64); // Large enough to surround the scene
+        const roomMaterial = new THREE.MeshBasicMaterial({
+            map: roomTexture,
+            side: THREE.BackSide // Render from inside the sphere
+        });
+
+        room = new THREE.Mesh(roomGeometry, roomMaterial);
+        scene.add(room);
+
+        scene.add(new THREE.HemisphereLight(0xa5a5a5, 0x898989, 3));
+
+        const light = new THREE.DirectionalLight(0xffffff, 3);
+        light.position.set(1, 1, 1).normalize();
+        scene.add(light);
+
+        function getRandomGeometry() {
+            const geometries = [
+                new THREE.BoxGeometry(0.15, 0.15, 0.15),
+                new THREE.SphereGeometry(0.1, 16, 16),
+                new THREE.CylinderGeometry(0.1, 0.1, 0.2, 16),
+                //new THREE.TorusGeometry(0.1, 0.03, 16, 100),
+                new THREE.ConeGeometry(0.1, 0.2, 16)
+            ];
+            return geometries[Math.floor(Math.random() * geometries.length)];
+        }
+
+        for (let i = 0; i < 200; i++) {
+            const geometry = getRandomGeometry(); // Get a random shape
+            const material = new THREE.MeshLambertMaterial({ color: Math.random() * 0xffffff });
+            const object = new THREE.Mesh(geometry, material);
+
+            object.position.set(Math.random() * 4 - 2, Math.random() * 4, Math.random() * 4 - 2);
+            object.rotation.set(Math.random() * 2 * Math.PI, Math.random() * 2 * Math.PI, Math.random() * 2 * Math.PI);
+            object.scale.set(Math.random() + 0.5, Math.random() + 0.5, Math.random() + 0.5);
+
+            object.userData.velocity = new THREE.Vector3(
+                Math.random() * 0.01 - 0.005,
+                Math.random() * 0.01 - 0.005,
+                Math.random() * 0.01 - 0.005
+            );
+
+            room.add(object);
+        }
+
+        raycaster = new THREE.Raycaster();
+
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setPixelRatio(window.devicePixelRatio);
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setAnimationLoop(animate);
+        renderer.xr.enabled = true;
+        container.appendChild(renderer.domElement);
+
+        function onSelectStart() {
+          this.userData.isSelecting = true;
+        }
+
+        function onSelectEnd() {
+          this.userData.isSelecting = false;
+        }
+
+        controller = renderer.xr.getController(0);
+        controller.addEventListener("selectstart", onSelectStart);
+        controller.addEventListener("selectend", onSelectEnd);
+        controller.addEventListener("connected", function (event) {
+          this.add(buildController(event.data));
+        });
+        controller.addEventListener("disconnected", function () {
+          this.remove(this.children[0]);
+        });
+        scene.add(controller);
+
+        const controllerModelFactory = new XRControllerModelFactory();
+
+        controllerGrip = renderer.xr.getControllerGrip(0);
+        controllerGrip.add(
+          controllerModelFactory.createControllerModel(controllerGrip)
+        );
+        scene.add(controllerGrip);
+
+        window.addEventListener("resize", onWindowResize);
+
+        const xrButton = XRButton.createButton(renderer, {
+            optionalFeatures: ["depth-sensing"],
+            depthSensing: {
+            usagePreference: ["gpu-optimized"],
+            dataFormatPreference: [],
+            },
+        });
+        // Find the .card-body div and append the button there
+        document.querySelector(".card-body").appendChild(xrButton);
+        const cardBody = document.querySelector("#card2");
+
+        if (cardBody) {
+            cardBody.appendChild(document.createElement("br")); // Add spacing
+            cardBody.appendChild(xrButton);
+        } else {
+            console.warn("No element with id 'card2' found.");
+        }
+      }
+
+      function buildController(data) {
+        let geometry, material;
+
+        switch (data.targetRayMode) {
+          case "tracked-pointer":
+            geometry = new THREE.BufferGeometry();
+            geometry.setAttribute(
+              "position",
+              new THREE.Float32BufferAttribute([0, 0, 0, 0, 0, -1], 3)
+            );
+            geometry.setAttribute(
+              "color",
+              new THREE.Float32BufferAttribute([0.5, 0.5, 0.5, 0, 0, 0], 3)
+            );
+
+            material = new THREE.LineBasicMaterial({
+              vertexColors: true,
+              blending: THREE.AdditiveBlending,
+            });
+
+            return new THREE.Line(geometry, material);
+
+          case "gaze":
+            geometry = new THREE.RingGeometry(0.02, 0.04, 32).translate(
+              0,
+              0,
+              -1
+            );
+            material = new THREE.MeshBasicMaterial({
+              opacity: 0.5,
+              transparent: true,
+            });
+            return new THREE.Mesh(geometry, material);
+        }
+      }
+
+      function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      }
+
+      //
+
+      function animate() {
+        const delta = clock.getDelta() * 60;
+
+        if (controller.userData.isSelecting === true) {
+          const cube = room.children[0];
+          room.remove(cube);
+
+          cube.position.copy(controller.position);
+          cube.userData.velocity.x = (Math.random() - 0.5) * 0.02 * delta;
+          cube.userData.velocity.y = (Math.random() - 0.5) * 0.02 * delta;
+          cube.userData.velocity.z = (Math.random() * 0.01 - 0.05) * delta;
+          cube.userData.velocity.applyQuaternion(controller.quaternion);
+          room.add(cube);
+        }
+
+        // find intersections
+
+        raycaster.setFromXRController(controller);
+
+        const intersects = raycaster.intersectObjects(room.children, false);
+
+        if (intersects.length > 0) {
+          if (INTERSECTED != intersects[0].object) {
+            if (INTERSECTED)
+              INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
+
+            INTERSECTED = intersects[0].object;
+            INTERSECTED.currentHex = INTERSECTED.material.emissive.getHex();
+            INTERSECTED.material.emissive.setHex(0xff0000);
+          }
+        } else {
+          if (INTERSECTED)
+            INTERSECTED.material.emissive.setHex(INTERSECTED.currentHex);
+
+          INTERSECTED = undefined;
+        }
+
+        // Keep cubes inside room
+
+        for (let i = 0; i < room.children.length; i++) {
+          const cube = room.children[i];
+
+          cube.userData.velocity.multiplyScalar(1 - 0.001 * delta);
+
+          cube.position.add(cube.userData.velocity);
+
+          if (cube.position.x < -3 || cube.position.x > 3) {
+            cube.position.x = THREE.MathUtils.clamp(cube.position.x, -3, 3);
+            cube.userData.velocity.x = -cube.userData.velocity.x;
+          }
+
+          if (cube.position.y < 0 || cube.position.y > 6) {
+            cube.position.y = THREE.MathUtils.clamp(cube.position.y, 0, 6);
+            cube.userData.velocity.y = -cube.userData.velocity.y;
+          }
+
+          if (cube.position.z < -3 || cube.position.z > 3) {
+            cube.position.z = THREE.MathUtils.clamp(cube.position.z, -3, 3);
+            cube.userData.velocity.z = -cube.userData.velocity.z;
+          }
+
+          cube.rotation.x += cube.userData.velocity.x * 2 * delta;
+          cube.rotation.y += cube.userData.velocity.y * 2 * delta;
+          cube.rotation.z += cube.userData.velocity.z * 2 * delta;
+        }
+
+        renderer.render(scene, camera);
+      }
+    </script>
+  </body>
+</html>

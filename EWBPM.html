@@ -1,0 +1,424 @@
+<!-- /-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\ -->
+<!-- |                                                                         | -->
+<!-- \ @@@@@@@@  @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@@@@@   @@@ @@@      / -->
+<!-- - @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@ @@@      - -->
+<!-- / @@!       @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!  @@@  @@! !@@      \ -->
+<!-- | !@!       !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!  @!@  !@! @!!      | -->
+<!-- \ @!!!:!    @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!@@!@!    !@!@!       / -->
+<!-- - !!!!!:    !@!  !!!    !!!    !!@!@!    !@!  !!!  !!@!!!      @!!!       - -->
+<!-- / !!:       !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:         !!:        \ -->
+<!-- | :!:       :!:  !:!    :!:    :!:  !:!  :!:  !:!  :!:         :!:        | -->
+<!-- \  :: ::::   ::   ::     ::    ::   :::  ::::: ::   ::          ::        / -->
+<!-- - : :: ::   ::    :      :      :   : :   : :  :    :           :         - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \ @@@  @@@  @@@   @@@@@@   @@@@@@@    @@@@@@   @@@  @@@  @@@  @@@@@@@     / -->
+<!-- - @@@  @@@  @@@  @@@@@@@@  @@@@@@@@  @@@@@@@   @@@  @@@  @@@  @@@@@@@@    - -->
+<!-- / @@!  @@!  @@!  @@!  @@@  @@!  @@@  !@@       @@!  @@@  @@!  @@!  @@@    \ -->
+<!-- | !@!  !@!  !@!  !@!  @!@  !@!  @!@  !@!       !@!  @!@  !@!  !@!  @!@    | -->
+<!-- \ @!!  !!@  @!@  @!@  !@!  @!@!!@!   !!@@!!    @!@!@!@!  !!@  @!@@!@!     / -->
+<!-- - !@!  !!!  !@!  !@!  !!!  !!@!@!     !!@!!!   !!!@!!!!  !!!  !!@!!!      - -->
+<!-- / !!:  !!:  !!:  !!:  !!!  !!: :!!        !:!  !!:  !!!  !!:  !!:         \ -->
+<!-- | :!:  :!:  :!:  :!:  !:!  :!:  !:!      !:!   :!:  !:!  :!:  :!:         | -->
+<!-- \  :::: :: :::   ::::: ::  ::   :::  :::: ::   ::   :::   ::   ::         / -->
+<!-- -   :: :  : :     : :  :    :   : :  :: : :     :   : :  :     :          - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EW BPM Calculator</title>
+<!-- Babylon.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.2/dat.gui.min.js"></script>
+<script src="https://assets.babylonjs.com/generated/Assets.js"></script>
+<script src="https://cdn.babylonjs.com/recast.js"></script>
+<script src="https://cdn.babylonjs.com/ammo.js"></script>
+<script src="https://cdn.babylonjs.com/havok/HavokPhysics_umd.js"></script>
+<script src="https://cdn.babylonjs.com/cannon.js"></script>
+<script src="https://cdn.babylonjs.com/Oimo.js"></script>
+<script src="https://cdn.babylonjs.com/earcut.min.js"></script>
+<script src="https://cdn.babylonjs.com/babylon.js"></script>
+<script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+<script src="https://cdn.babylonjs.com/proceduralTexturesLibrary/babylonjs.proceduralTextures.min.js"></script>
+<script src="https://cdn.babylonjs.com/postProcessesLibrary/babylonjs.postProcess.min.js"></script>
+<script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.js"></script>
+<script src="https://cdn.babylonjs.com/serializers/babylonjs.serializers.min.js"></script>
+<script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
+<script src="https://cdn.babylonjs.com/addons/babylonjs.addons.min.js"></script>
+<script src="https://cdn.babylonjs.com/inspector/babylon.inspector.bundle.js"></script>
+<!-- Bootstrap CSS -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<!-- Augmented UI CSS -->
+<link rel="stylesheet" type="text/css" href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css">
+<!-- SciUI CSS -->
+<link href="styles/styles.css" type="text/css" rel="stylesheet">
+<!-- Cyberpunk CSS -->
+<link href="styles/cyberpunk.css" rel="stylesheet" type="text/css">
+<!-- Override CSS -->
+<link href="styles/style_overrides.css" rel="stylesheet">
+<style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+      }
+    
+      #renderCanvas {
+        position: fixed; /* Keep canvas fixed as a background */
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0; /* Keep it behind other content */
+        pointer-events: auto; /* Prevent interference with scrolling */
+      }
+    
+      .content {
+        position: relative;
+        z-index: 1; /* Ensure content is above the canvas */
+        color: white;
+        overflow-y: auto; /* Allow scrolling of the content */
+        background: transparent; /* Keep background clear to see canvas */
+      }
+    
+      .container {
+        padding: 20px;
+        margin: 0 auto;
+        max-width: 1200px;
+      }
+      .content a, .content button, .content input {
+        pointer-events: auto; /* Allow interaction for links, buttons, and inputs */
+      }
+</style>
+</head>
+<body>
+  <canvas id="renderCanvas"></canvas>
+    <div class="container"><!--Main Container-->
+        <div class="card text-bg-danger border-danger mb-3" style="background-color: #83a0b830"><!--Header card-->
+            <div class="card-header border-danger">
+                <a href="https://www.entropyworship.com"><h1 class="heading display-6" style="font-size: 1.5rem;">ENTROPY WORSHIP</h1></a>
+                <h2 class="panel info shown" style="font-size: 1.5rem;">build 3.0.12.03.24</h1>
+            </div>
+
+              <div class="card text-bg-danger border-danger mb-3" style="background-color: #83a0b830">
+                <div class="card-body">
+                  <div class="bpm" style="display: flex; justify-content: center; align-items: center; height: 100%; font-family: 'sector_034'; font-size: 30px; color: #cb0e0edc;">
+                    <span id="bpmDisplay">Skull Tap</span>
+                </div><!--                     <button id="resetButton" class="button warning round">Reset</button>
+                    <button id="tapButton" class="button success round">Tap</button>
+ -->                </div>
+
+              </div>
+          </div>
+          
+    </div><!--Main Container-->
+<!-- jQuery (v3.6.0) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Popper.js (required for Bootstrap 4) -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<!-- Bootstrap JavaScript (v4.5.2) -->
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+  var canvas = document.getElementById("renderCanvas");
+
+  var startRenderLoop = function (engine, canvas) {
+    engine.runRenderLoop(function () {
+      if (sceneToRender && sceneToRender.activeCamera) {
+        sceneToRender.render();
+      }
+    });
+  };
+
+  var engine = null;
+  var scene = null;
+  var sceneToRender = null;
+  var skullMesh = null; // Variable to hold the skull mesh
+  var bpm = 0; // Global BPM variable
+  var tapTimes = []; // Array to store tap timestamps
+  var bpmInterval = null; // Interval for BPM animation
+
+  var createDefaultEngine = function () {
+    return new BABYLON.Engine(canvas, true, {
+      preserveDrawingBuffer: true,
+      stencil: true,
+      disableWebGL2Support: false,
+    });
+  };
+
+  var delayCreateScene = function () {
+    var scene = new BABYLON.Scene(engine);
+
+    // Load the skull mesh
+    BABYLON.SceneLoader.ImportMesh("", "scenes/", "skull.babylon", scene, function (meshes) {
+        skullMesh = meshes[0]; // Assuming the first mesh is the skull
+        scene.createDefaultCameraOrLight(true, true, true);
+
+        // Fur material
+        let furMaterial = new BABYLON.FurMaterial("furMaterial", scene);
+        furMaterial.highLevelFur = false; // Basic fur effect
+        furMaterial.furLength = 0.03; // Length of the fur
+        furMaterial.furAngle = Math.PI / 6; // Angle the fur lies on the mesh
+        furMaterial.diffuseTexture = new BABYLON.Texture("textures/shardcreature.png", scene);
+        furMaterial.heightTexture = new BABYLON.Texture("textures/shardcreature.png", scene);
+
+        // Attach fur material to the skull mesh
+        skullMesh.material = furMaterial;
+
+        // Add fur layers for depth
+        let furLayers = BABYLON.FurMaterial.FurifyMesh(skullMesh, 10); // Generate 30 fur layers
+        for (let i = 0; i < furLayers.length; i++) {
+            let layer = furLayers[i];
+            layer.material.furLength = furMaterial.furLength - (i * 0.005); // Decrease length with each layer
+            layer.material.furAngle = furMaterial.furAngle; // Consistent fur angle
+            layer.material.diffuseTexture = furMaterial.diffuseTexture; // Use same texture
+        }
+
+        if (!skullMesh.isVerticesDataPresent(BABYLON.VertexBuffer.UVKind)) {
+    console.log("UV data is missing in skullMesh.");
+} else {
+    console.log("UV data exists in skullMesh.");
+}
+
+
+        // This targets the camera to scene origin
+        camera.setTarget(BABYLON.Vector3.Zero());
+
+        // This attaches the camera to the canvas
+        camera.attachControl(canvas, true);
+
+        // This creates a light, aiming 0,1,0 - to the sky (non-mesh)
+        var light = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), scene);
+
+        // Default intensity is 1. Let's dim the light a small amount
+        light.intensity = 0.7;
+
+        // Built-in 'ground' shape. Params: name, width, depth, subdivs, scene
+        var groundMaterial = new BABYLON.StandardMaterial("ground", scene);
+
+        var hdrTexture = new BABYLON.CubeTexture("textures/forest.dds", scene);
+        scene.createDefaultSkybox(hdrTexture, true, 10000);
+
+        // Set up click action on the skull
+        skullMesh.actionManager = new BABYLON.ActionManager(scene);
+        skullMesh.actionManager.registerAction(
+            new BABYLON.ExecuteCodeAction(
+                BABYLON.ActionManager.OnPickTrigger,
+                function () {
+                    const now = Date.now(); // Current time when clicked
+
+                    // Add timestamp of this tap
+                    tapTimes.push(now);
+
+                    // Keep only the last 10 taps for calculation
+                    if (tapTimes.length > 10) {
+                        tapTimes.shift();
+                    }
+
+                    // Update BPM
+                    calculateBPM();
+
+                    // Optional: Feedback when skull is clicked
+                    console.log("Skull clicked, tap time recorded.");
+                }
+            )
+        );
+    });
+
+    // Add a pointer event to ensure picking is enabled
+    scene.onPointerObservable.add((pointerInfo) => {
+        switch (pointerInfo.type) {
+            case BABYLON.PointerEventTypes.POINTERPICK:
+                console.log("Pointer picked object:", pointerInfo.pickInfo.pickedMesh?.name || "none");
+                break;
+        }
+    });
+
+    // This creates and positions a free camera (non-mesh)
+    var camera = new BABYLON.ArcRotateCamera("camera1", Math.PI / 2, Math.PI / 2, 2, new BABYLON.Vector3(0, 0, 0), scene);
+
+    // Attach the camera to the canvas
+    camera.attachControl(canvas, true);
+
+    // Default grid material for general objects
+/*     var defaultGridMaterial = new BABYLON.GridMaterial("default", scene);
+    defaultGridMaterial.majorUnitFrequency = 4; // Fewer lines, larger grid
+    defaultGridMaterial.gridRatio = 8; // Larger spacing between lines
+    defaultGridMaterial.lineColor = new BABYLON.Color3(1, 0, 0); // Optional: Make grid lines more visible */
+
+    // Ground grid material
+/*     var groundMaterial = new BABYLON.GridMaterial("groundMaterial", scene);
+    groundMaterial.majorUnitFrequency = 2; // Fewer major grid lines
+    groundMaterial.minorUnitVisibility = 0.7; // Minor grid lines more visible
+    groundMaterial.gridRatio = 4; // Larger ground grid
+    groundMaterial.mainColor = new BABYLON.Color3(1, 1, 1); // White grid
+    groundMaterial.lineColor = new BABYLON.Color3(0, 1, 0); // Green grid lines for visibility
+    groundMaterial.opacity = 0.98; */
+
+    // Apply ground material to a height-mapped ground
+/*     var ground = BABYLON.Mesh.CreateGroundFromHeightMap(
+        "ground",
+        "textures/heightMap.png",
+        200, // Increase size for larger ground
+        200,
+        100,
+        0,
+        10,
+        scene,
+        false
+    );
+    ground.material = groundMaterial; */
+
+    // Sky grid material
+/*     var skyMaterial = new BABYLON.GridMaterial("skyMaterial", scene);
+    skyMaterial.majorUnitFrequency = 16; // Larger sky grid
+    skyMaterial.minorUnitVisibility = 0.5;
+    skyMaterial.gridRatio = 3; // Larger spacing between sky grid lines
+    skyMaterial.mainColor = new BABYLON.Color3(0, 0.05, 0.2); // Subtle blue background
+    skyMaterial.lineColor = new BABYLON.Color3(0, 1, 1); // Bright cyan grid lines
+    skyMaterial.backFaceCulling = false; */
+
+    // Sky sphere mesh
+/*     var skySphere = BABYLON.Mesh.CreateSphere("skySphere", 300, 500, scene); // Larger diameter for sky sphere
+    skySphere.material = skyMaterial; */
+
+    // Adjust sphere position if needed
+/*     skySphere.position = new BABYLON.Vector3(0, 0, 0); */
+
+    camera.radius = 500;
+
+
+    return scene;
+  };
+
+  function calculateBPM() {
+    if (tapTimes.length < 2) {
+      bpm = 0;
+      bpmDisplay.textContent = bpm;
+      stopAnimation();
+      return;
+    }
+
+    const intervals = [];
+    for (let i = 1; i < tapTimes.length; i++) {
+      intervals.push(tapTimes[i] - tapTimes[i - 1]);
+    }
+
+    const averageInterval = intervals.reduce((sum, interval) => sum + interval, 0) / intervals.length;
+    bpm = Math.round(60000 / averageInterval);
+    bpmDisplay.textContent = bpm;
+
+    startAnimation(); // Start or update animation with new BPM
+  }
+
+  function getRandomAngle() {
+    return (Math.random() - 1.75) * Math.PI * 0.25; // Random angle between -π and π
+  }
+
+  function animateSkull() {
+    if (!skullMesh) return;
+
+    const animationDuration = (60 / bpm) * 8; // Duration in milliseconds
+    const randomRotation = getRandomAngle();
+
+    // Create an animation for turning the head
+    var turnAnimation = new BABYLON.Animation(
+      "turnAnimation",
+      "rotation.x", // Rotate on the Y-axis
+      30, // Frame rate
+      BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+      BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+    );
+
+    // Define keyframes for random turning
+    var turnKeys = [];
+    turnKeys.push({ frame: 0, value: skullMesh.rotation.x }); // Current rotation
+    turnKeys.push({ frame: 15, value: randomRotation }); // Turn to random direction
+    turnKeys.push({ frame: 30, value: skullMesh.rotation.x }); // Return to original position
+
+    turnAnimation.setKeys(turnKeys);
+
+    // Attach animation to the skull mesh
+    skullMesh.animations = []; // Clear previous animations
+    skullMesh.animations.push(turnAnimation);
+
+    // Start the animation
+    scene.beginAnimation(skullMesh, 0, 30, false, 30 / animationDuration);
+  }
+
+  function startAnimation() {
+    stopAnimation(); // Ensure no duplicate intervals
+
+    if (bpm > 0) {
+      const intervalDuration = (60 / bpm) * 1000;
+
+      bpmInterval = setInterval(() => {
+        animateSkull();
+      }, intervalDuration);
+    }
+  }
+
+  function stopAnimation() {
+    if (bpmInterval) {
+      clearInterval(bpmInterval);
+      bpmInterval = null;
+    }
+  }
+
+  window.initFunction = async function () {
+    var asyncEngineCreation = async function () {
+      try {
+        return createDefaultEngine();
+      } catch (e) {
+        console.log("the available createEngine function failed. Creating the default engine instead");
+        return createDefaultEngine();
+      }
+    };
+
+    window.engine = await asyncEngineCreation();
+    if (!engine) throw "engine should not be null.";
+    startRenderLoop(engine, canvas);
+    window.scene = delayCreateScene();
+  };
+
+  initFunction().then(() => {
+    sceneToRender = scene;
+  });
+
+  // Resize
+  window.addEventListener("resize", function () {
+    engine.resize();
+  });
+
+  // Handle BPM calculation and skull animation on tap
+/*   tapButton.addEventListener("click", () => {
+    const now = Date.now();
+
+    // Add timestamp of this tap
+    tapTimes.push(now);
+
+    // Keep only the last 10 taps for calculation
+    if (tapTimes.length > 10) {
+      tapTimes.shift();
+    }
+
+    calculateBPM();
+  }); */
+
+  // Reset BPM and clear taps
+/*   resetButton.addEventListener("click", () => {
+    tapTimes = [];
+    bpm = 0;
+    bpmDisplay.textContent = bpm;
+    stopAnimation();
+  }); */
+</script>
+
+
+
+</body>
+</html>

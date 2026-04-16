@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="icon" href="data:," />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Resident Advisor Rave Map</title>
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    />
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css"
+    />
+
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        background: #05070d;
+        color: #fff;
+        font-family: Arial, sans-serif;
+      }
+
+      #map {
+        height: 100vh;
+        width: 100%;
+      }
+
+      .control-panel {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        z-index: 1000;
+        width: 360px;
+        max-width: calc(100vw - 32px);
+        background: rgba(8, 12, 20, 0.92);
+        border: 1px solid rgba(0, 255, 255, 0.25);
+        border-radius: 12px;
+        padding: 14px;
+        box-shadow: 0 0 18px rgba(0, 255, 255, 0.1);
+        backdrop-filter: blur(8px);
+      }
+
+      .control-panel h4 {
+        margin: 0 0 12px 0;
+        font-size: 1.1rem;
+        color: #7df9ff;
+      }
+
+      .control-panel label {
+        font-size: 0.85rem;
+        margin-bottom: 4px;
+        color: #cfd8dc;
+      }
+
+      .control-panel .form-control,
+      .control-panel .btn,
+      .control-panel select {
+        font-size: 0.9rem;
+      }
+
+      .status {
+        margin-top: 10px;
+        font-size: 0.85rem;
+        color: #9ad1d4;
+      }
+
+      .leaflet-popup-content-wrapper {
+        background: #0e1525;
+        color: #fff;
+        border: 1px solid rgba(0, 255, 255, 0.2);
+      }
+
+      .leaflet-popup-tip {
+        background: #0e1525;
+      }
+
+      .legend-box {
+        color: white;
+        text-align: right;
+        padding: 8px 10px;
+        background: rgba(8, 12, 20, 0.85);
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.12);
+      }
+
+      .legend-box a {
+        color: #7df9ff;
+      }
+
+      .event-count {
+        font-weight: bold;
+        color: #7df9ff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="control-panel">
+      <h4>Resident Advisor Rave Map</h4>
+
+      <div class="form-group">
+        <label for="area">Area</label>
+        <select id="area" class="form-control">
+          <option value="sanfrancisco">San Francisco / Oakland</option>
+          <!-- <option value="losangeles">Los Angeles</option>
+          <option value="newyork">New York</option>
+          <option value="london">London</option>
+          <option value="berlin">Berlin</option>
+          <option value="chicago">Chicago</option>
+          <option value="miami">Miami</option>
+          <option value="austin">Austin</option>
+          <option value="seattle">Seattle</option>
+          <option value="amsterdam">Amsterdam</option> -->
+        </select>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group col-6">
+          <label for="startDate">Start date</label>
+          <input type="date" id="startDate" class="form-control" />
+        </div>
+        <div class="form-group col-6">
+          <label for="endDate">End date</label>
+          <input type="date" id="endDate" class="form-control" />
+        </div>
+      </div>
+
+      <button id="loadBtn" class="btn btn-info btn-block">Load events</button>
+      <div id="status" class="status">Choose a date range and load events.</div>
+    </div>
+
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="scripts/rave-map.js"></script>
+  </body>
+</html>
