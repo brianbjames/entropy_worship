@@ -1,7 +1,5 @@
 import express from "express";
 import cors from "cors";
-import { isIsoDate } from "./utils/normalize.js";
-import { fetchEventbriteEvents } from "./adapters/eventbrite.js";
 
 const app = express();
 app.use(cors());
@@ -12,75 +10,30 @@ app.get("/", (_req, res) => {
   res.send("Entropy Worship events backend is running.");
 });
 
-app.get("/api/eventbrite-events", async (req, res) => {
-  const area = String(req.query.area || "");
-  const start = String(req.query.start || "");
-  const end = String(req.query.end || "");
-  const debug = String(req.query.debug || "") === "1";
+app.get("/api/events", (req, res) => {
+  const start = String(req.query.start || "2026-04-16");
+  const end = String(req.query.end || "2026-04-23");
 
-  if (!area || !start || !end) {
-    return res.status(400).json({
-      error: "Missing required query params: area, start, end",
-    });
-  }
-
-  if (!isIsoDate(start) || !isIsoDate(end)) {
-    return res.status(400).json({
-      error: "Dates must be YYYY-MM-DD",
-    });
-  }
-
-  try {
-    const result = await fetchEventbriteEvents({ area, start, end, debug });
-    return res.json(result);
-  } catch (error) {
-    console.error("Eventbrite adapter error:", error);
-    return res.status(500).json({
-      error: "Failed to load Eventbrite events",
-      detail: error instanceof Error ? error.message : String(error),
-    });
-  }
-});
-
-app.get("/api/events", async (req, res) => {
-  const area = String(req.query.area || "");
-  const start = String(req.query.start || "");
-  const end = String(req.query.end || "");
-
-  if (!area || !start || !end) {
-    return res.status(400).json({
-      error: "Missing required query params: area, start, end",
-    });
-  }
-
-  if (!isIsoDate(start) || !isIsoDate(end)) {
-    return res.status(400).json({
-      error: "Dates must be YYYY-MM-DD",
-    });
-  }
-
-  try {
-    const eventbrite = await fetchEventbriteEvents({
-      area,
-      start,
-      end,
-      debug: false,
-    });
-
-    return res.json({
-      ok: true,
-      sources: {
-        eventbrite: eventbrite.length,
+  res.json({
+    ok: true,
+    sources: { test: 1 },
+    events: [
+      {
+        id: "test-1",
+        source: "Test",
+        title: "Test Event",
+        start: `${start}T22:00:00`,
+        end: `${end}T01:00:00`,
+        venueName: "Public Works",
+        address: "161 Erie St, San Francisco, CA",
+        latitude: 37.7669,
+        longitude: -122.422,
+        url: "https://eventbrite.com/",
+        artists: ["Test Artist"],
+        tags: ["test"],
       },
-      events: eventbrite,
-    });
-  } catch (error) {
-    console.error("Aggregate events error:", error);
-    return res.status(500).json({
-      error: "Failed to load events",
-      detail: error instanceof Error ? error.message : String(error),
-    });
-  }
+    ],
+  });
 });
 
 app.listen(PORT, () => {
