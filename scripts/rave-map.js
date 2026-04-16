@@ -1,5 +1,5 @@
 const API_BASE = "https://entropy-worship.onrender.com";
-const url = `${API_BASE}/api/events?area=${encodeURIComponent(area)}&start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`;
+
 const AREA_CONFIG = {
   sanfrancisco: {
     center: [37.7749, -122.4194],
@@ -95,7 +95,7 @@ function clearMarkers() {
 
 function buildPopupContent(event) {
   const title = escapeHtml(event.title || "Untitled event");
-  const date = escapeHtml(formatDate(event.date));
+  const date = escapeHtml(formatDate(event.start || event.date));
   const venue = escapeHtml(event.venueName || event.venue || "Unknown venue");
 
   let artists = "Unknown";
@@ -179,7 +179,7 @@ async function loadEvents() {
   clearMarkers();
   statusEl.textContent = "Loading events...";
 
-  const url = `${API_BASE}/api/ra-events?area=${encodeURIComponent(area)}&start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`;
+  const url = `${API_BASE}/api/events?area=${encodeURIComponent(area)}&start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`;
 
   try {
     console.log("Fetching:", url);
@@ -191,6 +191,8 @@ async function loadEvents() {
     }
 
     const payload = await res.json();
+    console.log("Payload:", payload);
+
     const events = Array.isArray(payload) ? payload : payload.events;
 
     if (!Array.isArray(events)) {
@@ -231,3 +233,4 @@ if (loadBtn) {
 
 setDefaultDates();
 updateMapForArea(areaInput ? areaInput.value : "sanfrancisco");
+loadEvents();
