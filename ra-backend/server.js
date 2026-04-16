@@ -1,17 +1,3 @@
-import express from "express";
-import cors from "cors";
-import { isIsoDate } from "./utils/normalize.js";
-import { fetchEventbriteEvents } from "./adapters/eventbrite.js";
-
-const app = express();
-app.use(cors());
-
-const PORT = process.env.PORT || 3000;
-
-app.get("/", (_req, res) => {
-  res.send("Backend running");
-});
-
 app.get("/api/events", async (req, res) => {
   const area = req.query.area;
   const start = req.query.start;
@@ -42,8 +28,4 @@ app.get("/api/events", async (req, res) => {
       events: [],
     });
   }
-});
-
-app.listen(PORT, () => {
-  console.log("Server running on", PORT);
 });
