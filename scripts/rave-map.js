@@ -26,6 +26,31 @@ const AREA_CONFIG = {
     zoom: 11,
     label: "Berlin",
   },
+  chicago: {
+    center: [41.8781, -87.6298],
+    zoom: 11,
+    label: "Chicago",
+  },
+  miami: {
+    center: [25.7617, -80.1918],
+    zoom: 11,
+    label: "Miami",
+  },
+  austin: {
+    center: [30.2672, -97.7431],
+    zoom: 11,
+    label: "Austin",
+  },
+  seattle: {
+    center: [47.6062, -122.3321],
+    zoom: 11,
+    label: "Seattle",
+  },
+  amsterdam: {
+    center: [52.3676, 4.9041],
+    zoom: 11,
+    label: "Amsterdam",
+  },
 };
 
 const map = L.map("map").setView(

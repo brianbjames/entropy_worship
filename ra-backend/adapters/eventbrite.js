@@ -15,6 +15,34 @@ const AREA_CONFIG = {
     path: "ny--new-york/events",
     geoHint: "New York, New York, USA",
   },
+  london: {
+    path: "greater-london--london/events",
+    geoHint: "London, UK",
+  },
+  berlin: {
+    path: "berlin--germany/events",
+    geoHint: "Berlin, Germany",
+  },
+  chicago: {
+    path: "il--chicago/events",
+    geoHint: "Chicago, Illinois, USA",
+  },
+  miami: {
+    path: "fl--miami/events",
+    geoHint: "Miami, Florida, USA",
+  },
+  austin: {
+    path: "tx--austin/events",
+    geoHint: "Austin, Texas, USA",
+  },
+  seattle: {
+    path: "wa--seattle/events",
+    geoHint: "Seattle, Washington, USA",
+  },
+  amsterdam: {
+    path: "amsterdam--netherlands/events",
+    geoHint: "Amsterdam, Netherlands",
+  },
 };
 
 const adapterCache = new Map();
