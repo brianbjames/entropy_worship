@@ -1,14 +1,7 @@
 const geocodeCache = new Map();
 
 export async function geocodeVenue(query, geoHint = "") {
-  if (!query) {
-    return { latitude: null, longitude: null };
-  }
-
-  const lowered = query.toLowerCase();
-  if (lowered.includes("tba") || lowered.includes("secret location")) {
-    return { latitude: null, longitude: null };
-  }
+  if (!query) return { latitude: null, longitude: null };
 
   const cacheKey = `${query}|${geoHint}`;
   if (geocodeCache.has(cacheKey)) {
@@ -17,14 +10,13 @@ export async function geocodeVenue(query, geoHint = "") {
 
   try {
     const fullQuery = geoHint ? `${query}, ${geoHint}` : query;
+
     const url =
       "https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=" +
       encodeURIComponent(fullQuery);
 
     const res = await fetch(url, {
-      headers: {
-        "User-Agent": "entropy-worship-events/1.0",
-      },
+      headers: { "User-Agent": "entropy-worship/1.0" },
     });
 
     if (!res.ok) {
@@ -34,6 +26,7 @@ export async function geocodeVenue(query, geoHint = "") {
     }
 
     const data = await res.json();
+
     const result =
       Array.isArray(data) && data[0]
         ? {

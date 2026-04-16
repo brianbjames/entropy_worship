@@ -1,5 +1,7 @@
 import express from "express";
 import cors from "cors";
+import { isIsoDate } from "./utils/normalize.js";
+import { fetchEventbriteEvents } from "./adapters/eventbrite.js";
 
 const app = express();
 app.use(cors());
@@ -7,35 +9,41 @@ app.use(cors());
 const PORT = process.env.PORT || 3000;
 
 app.get("/", (_req, res) => {
-  res.send("Entropy Worship events backend is running.");
+  res.send("Backend running");
 });
 
-app.get("/api/events", (req, res) => {
-  const start = String(req.query.start || "2026-04-16");
-  const end = String(req.query.end || "2026-04-23");
+app.get("/api/events", async (req, res) => {
+  const area = req.query.area;
+  const start = req.query.start;
+  const end = req.query.end;
 
-  res.json({
-    ok: true,
-    sources: { test: 1 },
-    events: [
-      {
-        id: "test-1",
-        source: "Test",
-        title: "Test Event",
-        start: `${start}T22:00:00`,
-        end: `${end}T01:00:00`,
-        venueName: "Public Works",
-        address: "161 Erie St, San Francisco, CA",
-        latitude: 37.7669,
-        longitude: -122.422,
-        url: "https://eventbrite.com/",
-        artists: ["Test Artist"],
-        tags: ["test"],
-      },
-    ],
-  });
+  if (!area || !start || !end) {
+    return res.status(400).json({ error: "Missing params" });
+  }
+
+  if (!isIsoDate(start) || !isIsoDate(end)) {
+    return res.status(400).json({ error: "Bad dates" });
+  }
+
+  try {
+    const events = await fetchEventbriteEvents({ area, start, end });
+
+    return res.json({
+      ok: true,
+      sources: { eventbrite: events.length },
+      events,
+    });
+  } catch (err) {
+    console.error(err);
+
+    return res.json({
+      ok: true,
+      sources: { eventbrite: 0 },
+      events: [],
+    });
+  }
 });
 
 app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+  console.log("Server running on", PORT);
 });

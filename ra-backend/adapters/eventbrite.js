@@ -4,52 +4,29 @@ import { dedupeEvents, inDateRange } from "../utils/normalize.js";
 
 const AREA_CONFIG = {
   sanfrancisco: {
-    discoverPath: "ca--san-francisco/events",
+    path: "ca--san-francisco/events",
     geoHint: "San Francisco, California, USA",
-  },
-  losangeles: {
-    discoverPath: "ca--los-angeles/events",
-    geoHint: "Los Angeles, California, USA",
-  },
-  newyork: {
-    discoverPath: "ny--new-york/events",
-    geoHint: "New York, New York, USA",
   },
 };
 
-function toArray(value) {
-  if (Array.isArray(value)) return value;
-  return value ? [value] : [];
+function toArray(v) {
+  return Array.isArray(v) ? v : v ? [v] : [];
 }
 
-function pickAddress(locationObj) {
-  if (!locationObj || typeof locationObj !== "object") return "";
-  const parts = [
-    locationObj.name,
-    locationObj.streetAddress,
-    locationObj.addressLocality,
-    locationObj.addressRegion,
-    locationObj.postalCode,
-    locationObj.addressCountry,
-  ].filter(Boolean);
-  return parts.join(", ");
-}
-
-function normalizeJsonLdEvent(item) {
-  const location = item.location || {};
-  const place = Array.isArray(location) ? location[0] : location;
+function normalizeEvent(item) {
+  const place = item.location || {};
 
   return {
-    id: item.url || item.identifier || item.name,
+    id: item.url,
     source: "Eventbrite",
-    title: item.name || "Untitled Event",
+    title: item.name || "Untitled",
     start: item.startDate || "",
     end: item.endDate || "",
     venueName: place?.name || "",
-    address: pickAddress(place?.address || place),
+    address: place?.address?.streetAddress || "",
     latitude: null,
     longitude: null,
-    url: item.url || "",
+    url: item.url,
     artists: [],
     tags: [],
   };
@@ -62,109 +39,62 @@ export async function fetchEventbriteEvents({
   debug = false,
 }) {
   const cfg = AREA_CONFIG[area];
-  if (!cfg) {
-    throw new Error(`Unsupported Eventbrite area: ${area}`);
-  }
+  if (!cfg) throw new Error("Unsupported area");
 
-  const discoverUrl = `https://www.eventbrite.com/d/${cfg.discoverPath}/`;
+  const url = `https://www.eventbrite.com/d/${cfg.path}/`;
+
   const browser = await chromium.launch({
     headless: true,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    args: ["--no-sandbox"],
   });
 
-  let title = "";
-  let currentUrl = "";
-  let bodyText = "";
-  let html = "";
-  let jsonLdBlocks = [];
-  let navigationError = null;
-
   try {
-    const page = await browser.newPage({
-      viewport: { width: 1440, height: 1400 },
-      userAgent:
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-    });
+    const page = await browser.newPage();
 
-    try {
-      await page.goto(discoverUrl, {
-        waitUntil: "domcontentloaded",
-        timeout: 45000,
-      });
-    } catch (err) {
-      navigationError = err instanceof Error ? err.message : String(err);
-    }
+    await page.goto(url, {
+      waitUntil: "domcontentloaded",
+      timeout: 45000,
+    });
 
     await page.waitForTimeout(5000);
 
-    title = await page.title().catch(() => "");
-    currentUrl = page.url();
-    bodyText = await page
-      .locator("body")
-      .innerText()
-      .catch(() => "");
-    html = await page.content().catch(() => "");
-
-    jsonLdBlocks = await page
+    const jsonLd = await page
       .locator('script[type="application/ld+json"]')
-      .evaluateAll((nodes) => nodes.map((n) => n.textContent || ""))
-      .catch(() => []);
+      .evaluateAll((nodes) => nodes.map((n) => n.textContent));
 
-    await page.close();
+    const raw = [];
 
-    const rawItems = [];
-
-    for (const block of jsonLdBlocks) {
+    for (const block of jsonLd) {
       try {
         const parsed = JSON.parse(block);
 
-        for (const candidate of toArray(parsed)) {
-          if (
-            candidate?.["@type"] === "ItemList" &&
-            Array.isArray(candidate.itemListElement)
-          ) {
-            for (const entry of candidate.itemListElement) {
-              const item = entry?.item || entry;
-              if (item?.["@type"] === "Event") {
-                rawItems.push(item);
+        for (const item of toArray(parsed)) {
+          if (item["@type"] === "ItemList") {
+            for (const e of item.itemListElement || []) {
+              if (e.item?.["@type"] === "Event") {
+                raw.push(e.item);
               }
             }
-          } else if (candidate?.["@type"] === "Event") {
-            rawItems.push(candidate);
           }
         }
-      } catch {
-        // ignore malformed JSON-LD
-      }
+      } catch {}
     }
 
-    let events = dedupeEvents(rawItems.map(normalizeJsonLdEvent)).filter(
-      (event) => inDateRange(event.start, start, end),
+    let events = dedupeEvents(raw.map(normalizeEvent)).filter((e) =>
+      inDateRange(e.start, start, end),
     );
 
-    for (const event of events) {
-      const query = event.address || event.venueName;
-      const geo = await geocodeVenue(query, cfg.geoHint);
-      event.latitude = geo.latitude;
-      event.longitude = geo.longitude;
+    for (const e of events) {
+      const geo = await geocodeVenue(e.address || e.venueName, cfg.geoHint);
+      e.latitude = geo.latitude;
+      e.longitude = geo.longitude;
     }
 
     if (debug) {
       return {
         ok: events.length > 0,
-        events,
-        debug: {
-          discoverUrl,
-          pageTitle: title,
-          currentUrl,
-          navigationError,
-          bodyTextLength: bodyText.length,
-          htmlLength: html.length,
-          jsonLdBlockCount: jsonLdBlocks.length,
-          rawJsonLdEventCount: rawItems.length,
-          bodyTextSample: bodyText.slice(0, 1000),
-          htmlSample: html.slice(0, 2000),
-        },
+        count: events.length,
+        sample: events.slice(0, 3),
       };
     }
 
