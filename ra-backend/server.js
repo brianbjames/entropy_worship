@@ -150,12 +150,6 @@ async function scrapeResidentAdvisor({ area, start, end }) {
     throw new Error("Unsupported area");
   }
 
-  const cacheKey = `${area}|${start}|${end}`;
-  const cached = eventCache.get(cacheKey);
-  if (cached && Date.now() - cached.timestamp < 15 * 60 * 1000) {
-    return cached.data;
-  }
-
   const listingUrl = `https://ra.co/events/${cfg.path}?startDate=${encodeURIComponent(start)}`;
 
   const browser = await chromium.launch({
@@ -175,31 +169,44 @@ async function scrapeResidentAdvisor({ area, start, end }) {
       timeout: 60000,
     });
 
-    await sleep(3000);
+    await sleep(5000);
 
+    const title = await page.title().catch(() => "");
     const bodyText = await page
       .locator("body")
       .innerText()
       .catch(() => "");
+    const bodyHtml = await page.content().catch(() => "");
+
+    console.log("RA listing URL:", listingUrl);
+    console.log("Page title:", title);
+    console.log("Body text sample:", bodyText.slice(0, 1000));
+    console.log(
+      "Has captcha text:",
+      /captcha|enable JS|ad blocker|access denied/i.test(bodyText),
+    );
+
+    const eventLinks = await page
+      .locator('a[href^="/events/"]')
+      .evaluateAll((anchors) =>
+        anchors.map((a) => ({
+          href: a.getAttribute("href") || "",
+          text: (a.textContent || "").trim(),
+        })),
+      )
+      .catch(() => []);
+
+    console.log("Found raw event links:", eventLinks.length);
+    console.log("First few links:", eventLinks.slice(0, 10));
 
     if (
       /enable JS and disable any ad blocker/i.test(bodyText) ||
       /captcha/i.test(bodyText) ||
       /access denied/i.test(bodyText)
     ) {
+      await page.close();
       return [];
     }
-
-    const eventLinks = await page
-      .locator('a[href^="/events/"]')
-      .evaluateAll((anchors) =>
-        anchors
-          .map((a) => ({
-            href: a.getAttribute("href") || "",
-            text: (a.textContent || "").trim(),
-          }))
-          .filter((x) => x.href && x.text),
-      );
 
     await page.close();
 
@@ -240,7 +247,7 @@ async function scrapeResidentAdvisor({ area, start, end }) {
           timeout: 45000,
         });
 
-        await sleep(2000);
+        await sleep(2500);
 
         const text = await eventPage
           .locator("body")
@@ -271,20 +278,11 @@ async function scrapeResidentAdvisor({ area, start, end }) {
 
         await sleep(1100);
       } catch (err) {
-        continue;
+        console.log("Event page scrape failed for:", event.url, err.message);
       }
     }
 
-    const filtered = events.filter(
-      (event) => event.date >= start && event.date <= end,
-    );
-
-    eventCache.set(cacheKey, {
-      timestamp: Date.now(),
-      data: filtered,
-    });
-
-    return filtered;
+    return events.filter((event) => event.date >= start && event.date <= end);
   } finally {
     await browser.close();
   }
