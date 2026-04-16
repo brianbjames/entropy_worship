@@ -173,22 +173,25 @@ async function scrapeResidentAdvisor({ area, start, end }) {
     });
 
     await page.goto(listingUrl, {
-      waitUntil: "domcontentloaded",
+      waitUntil: "networkidle",
       timeout: 60000,
     });
 
-    await sleep(5000);
+    await sleep(8000);
 
     const title = await page.title().catch(() => "");
+    const currentUrl = page.url();
     const bodyText = await page
       .locator("body")
       .innerText()
       .catch(() => "");
-    const currentUrl = page.url();
+    const html = await page.content().catch(() => "");
 
     console.log("Page title:", title);
     console.log("Current URL:", currentUrl);
-    console.log("Body text sample:", bodyText.slice(0, 1000));
+    console.log("Body text length:", bodyText.length);
+    console.log("HTML length:", html.length);
+    console.log("HTML sample:", html.slice(0, 2000));
 
     const hasCaptchaText =
       /enable JS and disable any ad blocker/i.test(bodyText) ||
@@ -407,7 +410,6 @@ app.get("/api/ra-events", async (req, res) => {
     return res.json(events);
   } catch (error) {
     console.error("API error:", error);
-
     return res.json(buildFallbackEvents(area, start, end));
   }
 });
