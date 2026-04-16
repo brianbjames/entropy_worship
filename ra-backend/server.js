@@ -160,6 +160,7 @@ async function scrapeResidentAdvisor({ area, start, end }) {
 
   const browser = await chromium.launch({
     headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
 
   try {

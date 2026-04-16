@@ -5,11 +5,11 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "postinstall": "npx playwright install chromium"
+    "render-build": "npm install && npx playwright install chromium"
   },
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.19.2",
+    "express": "^4.21.2",
     "playwright": "^1.53.0"
   }
 }
