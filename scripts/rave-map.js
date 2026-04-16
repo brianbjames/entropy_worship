@@ -1,6 +1,5 @@
 const API_BASE = "https://entropy-worship.onrender.com";
 const url = `${API_BASE}/api/events?area=${encodeURIComponent(area)}&start=${encodeURIComponent(start)}&end=${encodeURIComponent(end)}`;
-
 const AREA_CONFIG = {
   sanfrancisco: {
     center: [37.7749, -122.4194],
@@ -191,10 +190,11 @@ async function loadEvents() {
       throw new Error(`Server returned ${res.status}`);
     }
 
-    const events = await res.json();
+    const payload = await res.json();
+    const events = Array.isArray(payload) ? payload : payload.events;
 
     if (!Array.isArray(events)) {
-      throw new Error("API did not return an array of events");
+      throw new Error("API did not return an events array");
     }
 
     const plotted = addEventMarkers(events, area);
