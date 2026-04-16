@@ -26,181 +26,106 @@
 <!-- |                                                                         | -->
 <!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
 <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ENTROPY WORSHIP</title>
-<!-- General Meta Tags for SEO -->
-<meta name="description" content="WARNING: Experimental Project">
-<meta name="keywords" content="Dark, Techno, Electronic, Industrial, Ambient, Noise, Avant-Garde, Experimental, Doom, Music, God, Deity, Worship, Death, Philosophy, Religion, Spiritual, Gospel, Electronic Music, Experimental Music">
-<!-- Schema.org markup for Google -->
-<meta itemprop="name" content="Entropy Worship">
-<meta itemprop="description" content="WARNING: Experimental Project">
-<!-- Twitter Card Data -->
-<meta name="twitter:url" content="https://www.entropyworship.com">
-<meta name="twitter:site" content="@EntropyWorship">
-<meta name="twitter:title" content="Entropy Worship">
-<meta name="twitter:description" content="WARNING: Experimental Project">
-<meta name="twitter:creator" content="@EntropyWorship">
-<meta name="twitter:image" content="https://www.entropyworship.com/images/EW_Second_Law_Cover_W_Aerotek_Logo.png">
-<!-- Open Graph Data for Facebook, LinkedIn, and others -->
-<meta property="og:title" content="Entropy Worship" />
-<meta property="og:type" content="website" />
-<meta property="og:url" content="https://www.entropyworship.com" />
-<meta property="og:description" content="WARNING: Experimental Project" />
-<meta property="og:site_name" content="Entropy Worship" />
-<meta property="og:image" content="https://www.entropyworship.com/images/EW_Second_Law_Cover_W_Aerotek_Logo.png">
-<meta property="og:image:alt" content="WARNING: Experimental Project">
-<meta property="article:tag" content="Entropy Worship. WARNING: Experimental Project">
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENTROPY WORSHIP</title>
+    <!-- General Meta Tags for SEO -->
+    <meta name="description" content="WARNING: Experimental Project">
+    <meta name="keywords" content="Dark, Techno, Electronic, Industrial, Ambient, Noise, Avant-Garde, Experimental, Doom, Music, God, Deity, Worship, Death, Philosophy, Religion, Spiritual, Gospel, Electronic Music, Experimental Music">
+    <!-- Schema.org markup for Google -->
+    <meta itemprop="name" content="Entropy Worship">
+    <meta itemprop="description" content="WARNING: Experimental Project">
+    <!-- Twitter Card Data -->
+    <meta name="twitter:url" content="https://www.entropyworship.com">
+    <meta name="twitter:site" content="@EntropyWorship">
+    <meta name="twitter:title" content="Entropy Worship">
+    <meta name="twitter:description" content="WARNING: Experimental Project">
+    <meta name="twitter:creator" content="@EntropyWorship">
+    <meta name="twitter:image" content="https://www.entropyworship.com/images/EW_Second_Law_Cover_W_Aerotek_Logo.png">
+    <!-- Open Graph Data for Facebook, LinkedIn, and others -->
+    <meta property="og:title" content="Entropy Worship" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.entropyworship.com" />
+    <meta property="og:description" content="WARNING: Experimental Project" />
+    <meta property="og:site_name" content="Entropy Worship" />
+    <meta property="og:image" content="https://www.entropyworship.com/images/EW_Second_Law_Cover_W_Aerotek_Logo.png">
+    <meta property="og:image:alt" content="WARNING: Experimental Project">
+    <meta property="article:tag" content="Entropy Worship. WARNING: Experimental Project">
 
-<!-- Bootstrap CSS -->
-<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-<!-- SciUI CSS -->
-<link href="styles/styles.css" type="text/css" rel="stylesheet">
-<!-- Cyberpunk CSS -->
-<link href="styles/cyberpunk.css" rel="stylesheet" type="text/css">
-<!-- Override CSS -->
-<link href="styles/style_overrides.css" rel="stylesheet">
-<style>
-
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden; /* keep body static */
+    <!-- Babylon.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.2/dat.gui.min.js"></script>
+    <script src="https://assets.babylonjs.com/generated/Assets.js"></script>
+    <script src="https://cdn.babylonjs.com/recast.js"></script>
+    <script src="https://cdn.babylonjs.com/ammo.js"></script>
+    <script src="https://cdn.babylonjs.com/havok/HavokPhysics_umd.js"></script>
+    <script src="https://cdn.babylonjs.com/cannon.js"></script>
+    <script src="https://cdn.babylonjs.com/Oimo.js"></script>
+    <script src="https://cdn.babylonjs.com/earcut.min.js"></script>
+    <script src="https://cdn.babylonjs.com/babylon.js"></script>
+    <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
+    <script src="https://cdn.babylonjs.com/proceduralTexturesLibrary/babylonjs.proceduralTextures.min.js"></script>
+    <script src="https://cdn.babylonjs.com/postProcessesLibrary/babylonjs.postProcess.min.js"></script>
+    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.js"></script>
+    <script src="https://cdn.babylonjs.com/serializers/babylonjs.serializers.min.js"></script>
+    <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
+    <script src="https://cdn.babylonjs.com/addons/babylonjs.addons.min.js"></script>
+    <script src="https://cdn.babylonjs.com/inspector/babylon.inspector.bundle.js"></script>
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- SciUI CSS -->
+    <link href="styles/styles.css" type="text/css" rel="stylesheet" />
+    <!-- Cyberpunk CSS -->
+    <link href="styles/cyberpunk.css" rel="stylesheet" type="text/css" />
+    <!-- Override CSS -->
+    <link href="styles/style_overrides.css" rel="stylesheet" />
+    <!-- ShareThis CSS -->
+<!--     <script type="text/javascript" src="https://platform-api.sharethis.com/js/sharethis.js#property=677b01f910699f0019238311&product=image-share-buttons&source=platform" async="async"></script>
+ -->    
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+      }
+    
+      #renderCanvas {
+        position: fixed; /* Keep canvas fixed as a background */
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0; /* Keep it behind other content */
+        pointer-events: auto; /* Prevent interference with scrolling */
+      }
+    
+      .content {
+        position: relative;
+        z-index: 1; /* Ensure content is above the canvas */
+        color: white;
+        overflow-y: auto; /* Allow scrolling of the content */
+        background: transparent; /* Keep background clear to see canvas */
+      }
+    
+      .container {
+        padding: 20px;
+        margin: 0 auto;
+        max-width: 1200px;
+      }
+      .content a, .content button, .content input {
+  pointer-events: auto; /* Allow interaction for links, buttons, and inputs */
 }
-
-#renderCanvas,
-canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-  pointer-events: auto; /* enable camera/mouse */
-}
-
-.content {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 1;
-  color: white;
-  background: transparent;
-  overflow-y: scroll;
-  padding: 20px;
-  pointer-events: auto;
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.content a,
-.content button,
-.content input,
-button,
-input,
-a {
-  pointer-events: auto !important;
-}
-
-#left-joystick, #right-touch {
-  border-radius: 50%;
-  touch-action: none;
-  z-index: 10;
-}
-
-.hidden {
-  display: none;
-}
-
-.slidecontainer {
-  width: 100%;
-}
-
-.slider {
-  -webkit-appearance: none;
-  width: 100%;
-  height: 25px;
-  background: #d3d3d30f;
-  outline: none;
-  opacity: 0.7;
-  -webkit-transition: .2s;
-  transition: opacity .2s;
-}
-
-.slider:hover {
-  opacity: 1;
-}
-
-.slider::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 25px;
-  height: 25px;
-  background: #f70404f5;
-  opacity: 0.7;
-  cursor: pointer;
-}
-
-.slider::-moz-range-thumb {
-  width: 25px;
-  height: 25px;
-  background: #0462aab4;
-  opacity: 0.7;
-  cursor: pointer;
-}
-
-#mediacontainer {
-  position: relative;
-  z-index: 1;
-  max-height: 100vh; /* Restrict height to viewport */
-  overflow-y: auto;   /* Enable vertical scroll */
-  padding: 20px;
-  background: transparent;
-  pointer-events: auto;
-}
-
-</style>
-
-<script type="importmap">
-  {
-    "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@v0.171.0/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@v0.171.0/examples/jsm/"
-    }
-  }
-</script>
-
-</head>
-<body>
-
-<script type="importmap">
-  {
-    "imports": {
-      "three": "../build/three.module.js",
-      "three/addons/": "./jsm/"
-    }
-  }
-</script>
-
-<!--NippleJS for mobile joysticks -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/nipplejs/0.9.0/nipplejs.min.js"></script>
-
-<!--Container for ThreeJS -->
-<div id="container"></div>
-
-<!--Main Game JS -->
-<script type="module" src="scripts/ewdegame.js"></script>
-
-<!--Main HTML-->
+    </style>
+    
+  </head>
+  <body>
+    <canvas id="renderCanvas"></canvas>
 <div class="container"><!--Main Container-->
   <!-- <div id="start-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); color: white; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10000;">
     <div class="card-header">
@@ -232,23 +157,23 @@ a {
     </div>
 
   </div> -->
-  <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c"><!--Header card-->
-      <div class="card-header border-danger">
+  <div class="card text-bg-danger mb-3" style="background-color: #2e2e2e39"><!--Header card-->
+      <div class="card-header">
         <div style="display: flex; align-items: center; justify-content: space-between;">
           <a href="index.html" style="text-decoration: none;">
               <h1 class="heading display-6 cyber-glitch-2" style="font-size: 1.5rem; margin: 0;" id="mainlogo">
                   ENTROPY WORSHIP
               </h1>
           </a>
-          <a class="button alert round" id="closebutton" style="padding: 5px 10px; text-align: center;">
-          </a>
+          <!-- <a class="button alert round" id="closebutton" style="padding: 5px 10px; text-align: center;">
+          </a> -->
         </div>
-          <h2 class="panel error shown" style="font-size: 1.5rem;" id="mainpanel">build 4.0.13.05.25</h2>
-            <div id="preferences">
+          <h2 class="panel error shown" style="font-size: 1.5rem;" id="mainpanel">build 4.1.16.04.26</h2>
+            <!-- <div id="preferences">
               <input id="volume-slider" class="slider" type="range" min="0" max="1" step="0.01" value="0.25">
-            </div>
+            </div> -->
             <div class="container" id="mediacontainer">
-              <div class="row cyber-glitch-1 panel shown" id="controls" style="font-family:VT323-Regular; font-size: 30px;">
+              <!-- <div class="row cyber-glitch-1 panel shown" id="controls" style="font-family:VT323-Regular; font-size: 30px;">
                 <div class="row" style="display: flex; justify-content: left; align-items: left; gap: 10px;">
                   <div class="info">
                     <div class="label error">Time</div>
@@ -281,18 +206,21 @@ a {
                     <div class="value error" id="z">0.0</div>
                   </div>
                 </div>
-              </div>
-              <div class="row cyber-glitch-1 panel shown" id="coordinates">
+              </div> -->
+
+              
+              <div class="card text-bg-danger mb-3" style="background-color: #2e2e2e16">
                     <div class="card-body">
                       <a href="EW909.html" target="_blank" class="button error round">909 CLONE</a>
                       <a href="EWMIDICALC.html" target="_blank" class="button error round">MIDI CALC</a>
                       <a href="EWDBLEVL.html" target="_blank" class="button error round">DB LEVEL</a>
                       <a href="EWBPM.html" target="_blank" class="button error round">BPM CALC</a> 
                       <a href="projects/detroit-trip/" target="_blank" class="button error round">Detroit Trip</a> 
-                      <a href="EWDEITYENGINE.html" class="button error round">Deity Engine</a>                                        
+                      <a href="EWDEITYENGINE.html" class="button error round">Deity Engine</a>   
+                      <a href="https://github.com/brianbjames/Entropy-Worship-MaxMSP-Collection" class="button error round"  target="_blank">MaxMSP Repository</a>                                        
                     </div>
               </div>
-                    <div class="card transparent-bg">
+                    <!-- <div class="card transparent-bg">
                         <div class="card-body">
                         <span class="cyber-glitch-1 panel error shown">
                             <span class="cyber-glitch-1" style="font-family:Chargen; font-size: 30px;">>>deityengine console<br></span>
@@ -320,17 +248,17 @@ a {
                           </span>
                         </span>
                         </div>
-                    </div>
+                    </div> -->
               
-                <div class="card text-bg-danger border-danger mb-3" style="background-color: #83a0b830"><!--Release panel-->
-                    <div class="card-header border-danger">
-                    <!-- <h3 class="cyber-h">Releases</h3> -->
+                <div class="card text-bg-danger mb-3" style="background-color: #2e2e2e16"><!--Release panel-->
+                    <!-- <div class="card-header">
+                    <h3 class="cyber-h">Releases</h3>
                     <span style="font-family:VT323-Regular; font-size: 40px;" class="cyber-glitch-1 panel error shown">
-                        >audio errors<br></span>
-                    </div>
+                        releases<br></span>
+                    </div> -->
                     <div class="row row-cols-4" data-masonry='{"percentPosition": true }'><!--Masonry panel-->
                         <div class="col">
-                            <div class="card transparent-bg border-danger">
+                            <div class="card transparent-bg">
                             <!-- First Image Container -->
                             <div class="card-body">
                                 <img class="img-fluid cyber-glitch-0" style="width: 100%; aspect-ratio: 1; object-fit: cover;" src="images/EW_Second_Law_Cover_W_Aerotek_Logo.png" alt="Second Law Cover">
@@ -344,7 +272,7 @@ a {
                             </div>
                         </div>
                         <div class="col">
-                        <div class="card transparent-bg border-danger">
+                        <div class="card transparent-bg">
                             <!-- Second Image Container -->
                             <div class="card-body">
                             <img class="img-fluid" style="width: 100%; aspect-ratio: 1; object-fit: cover;" src="images/EntropyWorshipFacticity-CoverForDigitalSmaller.jpg" alt="Facticity Devotion Discipline Cover">
@@ -357,7 +285,7 @@ a {
                         </div>
                         </div>
                         <div class="col">
-                            <div class="card transparent-bg border-danger">
+                            <div class="card transparent-bg">
                             <!-- Third Image Container -->
                             <div class="card-body">
                                 <img class="img-fluid" style="width: 100%; aspect-ratio: 1; object-fit: cover;" src="images/EntropyWorshipDirtyConsecrationCover.jpg" alt="Facticity Devotion Discipline Cover">
@@ -370,7 +298,7 @@ a {
                         </div>
                         
                         <div class="col">
-                            <div class="card transparent-bg border-danger">
+                            <div class="card transparent-bg">
                                 <!-- Forth Image Container -->
                                 <div class="card-body">
                                     <img class="img-fluid" style="width: 100%; aspect-ratio: 1; object-fit: cover;" src="images/EntropyWorshipThamesCover.jpg" alt="Thames and Variations Cover">
@@ -382,74 +310,29 @@ a {
                             </div>
                         </div>
                     </div><!--Masonry panel close-->
-                <div class="card text-bg-danger border-danger mb-3" style="background-color: #83a0b830">
+                <div class="card text-bg-danger mb-3" style="background-color: #2e2e2e16">
                 <div class="card-body">
-                    <iframe src="https://embed.beatport.com/?id=4812389&type=release" 
+                    <!-- <iframe src="https://embed.beatport.com/?id=4812389&type=release" 
                     width="100%" 
                     height="300px" 
                     frameborder="0" 
                     scrolling="yes" 
-                    style="opacity: 0.6;"></iframe>          
+                    style="opacity: 0.6;"></iframe>           -->
+                    <iframe width="100%" height="150" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/soundcloud%253Atracks%253A2302207463&color=%23000000&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false&visual=true"></iframe><div style="font-size: 10px; color: #cccccc;line-break: anywhere;word-break: normal;overflow: hidden;white-space: nowrap;text-overflow: ellipsis; font-family: Interstate,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Garuda,Verdana,Tahoma,sans-serif;font-weight: 100;"><a href="https://soundcloud.com/entropy-worship" title="Entropy Worship" target="_blank" style="color: #cccccc; text-decoration: none;">Entropy Worship</a> · <a href="https://soundcloud.com/entropy-worship/entropy-worship-future-perfect" title="Entropy Worship - Future Perfect @ Noc Noc" target="_blank" style="color: #cccccc; text-decoration: none;">Entropy Worship - Future Perfect @ Noc Noc</a></div>
                 </div>
                 </div>
                 </div><!--Release panel close-->
         
-                <div class="card text-bg-danger border-danger mb-3" style="background-color: #83a0b830">
-                <div class="row row-cols-1" data-masonry='{"percentPosition": true }'><!--Masonry panel-->
-        
-                    <div class="col">
-                    <div class="card transparent-bg">
-                        <div class="card-header border-danger">
-                        <!-- <h3 class="cyber-h">Downloads</h3> -->
-                        <span style="font-family:VT323-Regular; font-size: 40px;" class="cyber-glitch-1 panel error shown">
-                            >files detected<br></span>
-                        </div>
-                        <div class="card-body">
-                        <table class="table table-borderless" style="color: white;">
-                            <tbody>
-                            <tr>
-                                <td><a href="downloads/harmGran.amxd.zip" class="button success round">Download</a></td>
-                                <td>Max for Live Harmonic Granulizer</td>
-                            </tr>
-                            <tr>
-                                <td><a href="downloads/MetaEffects.zip" class="button success round">Download</a></td>
-                                <td>MaxMSP Audio effects rack</td>
-                            </tr>
-                            <tr>
-                                <td><a href="downloads/qwerty.zip" class="button success round">Download</a></td>
-                                <td>MaxMSP keyboard triggered events module</td>
-                            </tr>
-                            <tr>
-                                <td><a href="downloads/seqENV.zip" class="button success round">Download</a></td>
-                                <td>MaxMSP 32 Step FM Sequencer</td>
-                            </tr>
-                            <tr>
-                                <td><a href="downloads/stereoDetuner.pat.zip" class="button success round">Download</a></td>
-                                <td>Frequency Stereo Detuning Plug In for Ableton Live</td>
-                            </tr>
-                            <tr>
-                                <td><a href="downloads/SuperFlange.amxd.zip" class="button success round">Download</a></td>
-                                <td>Flange Plug In for Ableton Live</td>
-                            </tr>
-                            </tbody> 
-                        </table> 
-                        </div>
-                    </div>
-
-                    </div>
-                </div>
-                </div><!--Masonry panel close-->    
-        
-                <div class="card text-bg-danger border-danger mb-3" style="background-color: #83a0b830"><!--Performance Schedule panel-->
-                    <div class="card-header border-danger">
-                    <!-- <h3 class="cyber-h">Schedule</h3> -->
+                <div class="card text-bg-danger mb-3" style="background-color: #2e2e2e16"><!--Performance Schedule panel-->
+                    <!-- <div class="card-header">
+                    <h3 class="cyber-h">Schedule</h3>
                     <span style="font-family:VT323-Regular; font-size: 40px;" class="cyber-glitch-1 panel error shown">
-                        >events detected<br></span>
-                    </div>
+                        bookings<br></span>
+                    </div> -->
                     <div class="card-body">
                         <table class="table table-borderless" style="color: white;">
                             <tbody>
-                            <tr>
+                            <!-- <tr>
                                 <th scope="row">092625</th>
                                 <td><a href="https://ra.co/events/2219745" target="_blank" class="button error round">Proximity</a></td>
                                 <td>Underground SF, 424 Haight St. SF</td>
@@ -463,7 +346,7 @@ a {
                                 <th scope="row">071925</th>
                                 <td><a href="https://ra.co/events/2193182" target="_blank" class="button error round">Freq Didactic</a></td>
                                 <td>Yerba Buena Estudios, 1566 Carroll Ave. SF</td>
-                            </tr>
+                            </tr> -->
                             <tr>
                                 <th scope="row">081724</th>
                                 <td><a href="https://www.ra.co/events/1964938" target="_blank" class="button error round">DOMAIN</a></td>
@@ -575,12 +458,12 @@ a {
                 </div><!--Perf panel close-->  
               
             
-                <div class="card text-bg-danger border-danger mb-3" style="background-color: #83a0b830">
-                <div class="card-header border-danger">
-                    <!-- <h3 class="cyber-h">Links</h3> -->
+                <div class="card text-bg-danger mb-3" style="background-color: #2e2e2e16">
+                <!-- <div class="card-header">
+                    <h3 class="cyber-h">Links</h3>
                     <span style="font-family:VT323-Regular; font-size: 40px;" class="cyber-glitch-1 panel error shown">
-                    >social contact<br></span>
-                </div>
+                    social contact<br></span>
+                </div> -->
                     <div class="card-body">
                         <a href="https://soundcloud.com/entropy-worship" target="_blank" class="button error round">Soundcloud</a>
                         <a href="https://ra.co/dj/entropyworship" target="_blank" class="button error round">Resident Advisor</a>
@@ -608,42 +491,77 @@ a {
                     <br>
                     <br>
                     <br>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
                 </div>
-      <!--         <div class="card text-bg-danger border-danger mb-3" style="background-color: #83a0b830">
+      <!--         <div class="card text-bg-danger mb-3" style="background-color: #2e2e2e16">
                 <div class="card-body">
                     <div class="sharethis-inline-share-buttons"></div>
                   </div>
                 </div> -->
   </div><!--Header panel-->
 </div><!--Main Container-->   
-<div id="left-joystick" style="position: fixed; bottom: 1%; left: 1%; width: 100px; height: 100px;"></div>
-<div id="right-touch" style="position: fixed; bottom: 1%; right: 1%; width: 100px; height: 100px;"></div>
-
-<script>
-  // Select elements and hide/display panels. must be placed in code after the HTML elements
-  const closebutton = document.getElementById('closebutton');
-  const controls = document.getElementById('controls');
-  const coordinates = document.getElementById('coordinates');
-  const preferences = document.getElementById('preferences');
-  const mediacontainer = document.getElementById('mediacontainer');
-  // Add click/tap event listener to toggle the hidden class
-  closebutton.addEventListener('click', () => {
-      controls.classList.toggle('hidden');
-      coordinates.classList.toggle('hidden');
-      preferences.classList.toggle('hidden');
-      mediacontainer.classList.toggle('hidden');
-  });
-</script>
-    
 <!-- jQuery (v3.6.0) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <!-- Popper.js (required for Bootstrap 4) -->
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
 <!-- Bootstrap JavaScript (v4.5.2) -->
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
+
+<script>
+  var canvas = document.getElementById("renderCanvas");
+
+  var engine = new BABYLON.Engine(canvas, true);
+  var createScene = function () {
+    var scene = new BABYLON.Scene(engine);
+
+    // Set black background color
+    scene.clearColor = new BABYLON.Color3.Black();
+
+    // Create and position a camera
+    var camera = new BABYLON.ArcRotateCamera(
+      "camera1",
+      -Math.PI / 3,
+      (5 * Math.PI) / 20,
+      50,
+      new BABYLON.Vector3(0, 5, 0),
+      scene
+    );
+    camera.attachControl(canvas, true);
+
+    // Create ground with height map
+    var ground = BABYLON.Mesh.CreateGroundFromHeightMap(
+      "ground",
+      "textures/heightMap.png",
+      100,
+      100,
+      100,
+      0,
+      10,
+      scene,
+      false
+    );
+    ground.material = new BABYLON.GridMaterial("groundMaterial", scene);
+    ground.material.lineColor = new BABYLON.Color3(1, 0, 0, 0.95);
+
+    // Rotate camera
+    engine.runRenderLoop(function () {
+      camera.alpha += 0.003;
+    });
+
+    return scene;
+  };
+
+  var scene = createScene();
+  engine.runRenderLoop(function () {
+    scene.render();
+  });
+
+  window.addEventListener("resize", function () {
+    engine.resize();
+  });
+</script>
+  </body>
+  <!-- Bootstrap JS and dependencies -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </html>
