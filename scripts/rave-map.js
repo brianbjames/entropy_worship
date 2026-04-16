@@ -5,6 +5,8 @@ const AREA_CONFIG = {
     center: [37.7749, -122.4194],
     zoom: 11,
     label: "San Francisco / Oakland",
+    // Bounding box: SW corner → NE corner [minLat, minLng, maxLat, maxLng]
+    bounds: [36.8, -123.5, 38.5, -121.0],
   },
   //   losangeles: {
   //     center: [34.0522, -118.2437],
@@ -53,10 +55,13 @@ const AREA_CONFIG = {
   //   },
 };
 
-const map = L.map("map").setView(
-  AREA_CONFIG.sanfrancisco.center,
-  AREA_CONFIG.sanfrancisco.zoom,
-);
+const map = L.map("map", {
+  attributionControl: false,
+  zoomControl: false,
+}).setView(AREA_CONFIG.sanfrancisco.center, AREA_CONFIG.sanfrancisco.zoom);
+
+L.control.attribution({ position: "bottomright" }).addTo(map);
+L.control.zoom({ position: "topright" }).addTo(map);
 
 L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
   attribution:
@@ -154,6 +159,13 @@ function buildPopupContent(event) {
   `;
 }
 
+function isWithinAreaBounds(lat, lng, areaKey) {
+  const areaBounds = AREA_CONFIG[areaKey]?.bounds;
+  if (!areaBounds) return true; // no bounds defined, allow all
+  const [minLat, minLng, maxLat, maxLng] = areaBounds;
+  return lat >= minLat && lat <= maxLat && lng >= minLng && lng <= maxLng;
+}
+
 function addEventMarkers(events, areaKey) {
   let plotted = 0;
   const bounds = [];
@@ -162,19 +174,26 @@ function addEventMarkers(events, areaKey) {
     const lat = Number(event.latitude);
     const lng = Number(event.longitude);
 
-    if (Number.isFinite(lat) && Number.isFinite(lng)) {
-      const marker = L.circleMarker([lat, lng], {
-        radius: 7,
-        color: "#00ffff",
-        weight: 2,
-        fillColor: "#ff00cc",
-        fillOpacity: 0.35,
-      }).addTo(markersLayer);
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return;
 
-      marker.bindPopup(buildPopupContent(event));
-      bounds.push([lat, lng]);
-      plotted++;
+    if (!isWithinAreaBounds(lat, lng, areaKey)) {
+      console.warn(
+        `Skipping "${event.title}" — coordinates [${lat}, ${lng}] are outside the ${areaKey} area bounds.`
+      );
+      return;
     }
+
+    const marker = L.circleMarker([lat, lng], {
+      radius: 7,
+      color: "#00ffff",
+      weight: 2,
+      fillColor: "#ff00cc",
+      fillOpacity: 0.35,
+    }).addTo(markersLayer);
+
+    marker.bindPopup(buildPopupContent(event));
+    bounds.push([lat, lng]);
+    plotted++;
   });
 
   if (bounds.length) {
@@ -233,18 +252,18 @@ async function loadEvents() {
   }
 }
 
-const legend = L.control({ position: "topright" });
-legend.onAdd = function () {
-  const div = L.DomUtil.create("div", "legend-box");
-  div.innerHTML = `
-    <h5 style="margin: 0; color: white;">Rave Event Map</h5>
-    <div style="font-size: 0.9rem; margin-top: 4px;">
-      User-selected date range
-    </div>
-  `;
-  return div;
-};
-legend.addTo(map);
+// const legend = L.control({ position: "topright" });
+// legend.onAdd = function () {
+//   const div = L.DomUtil.create("div", "legend-box");
+//   div.innerHTML = `
+//     <h5 style="margin: 0; color: white;">Rave Event Map</h5>
+//     <div style="font-size: 0.9rem; margin-top: 4px;">
+//       User-selected date range
+//     </div>
+//   `;
+//   return div;
+// };
+// legend.addTo(map);
 
 if (areaInput) {
   areaInput.addEventListener("change", function () {
