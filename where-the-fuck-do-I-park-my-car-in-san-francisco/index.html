@@ -1310,14 +1310,14 @@
         if (active.length > 0) {
           verdict = "active";
           const endTime = fmtHour(active[0].f.properties.tohour);
-          verdictHtml = `<div class="verdict verdict-active">No Parking — until ${endTime}</div>`;
+          verdictHtml = `<div class="verdict verdict-active">No Parking Until ${endTime}</div>`;
         } else if (upcoming.length > 0) {
           verdict = "upcoming";
           const p = upcoming[0].f.properties;
-          verdictHtml = `<div class="verdict verdict-upcoming">Next cleaning: ${fmtHour(p.fromhour)} – ${fmtHour(p.tohour)}</div>`;
+          verdictHtml = `<div class="verdict verdict-upcoming">Next cleaning ${fmtHour(p.fromhour)} – ${fmtHour(p.tohour)}</div>`;
         } else if (passed.length > 0) {
           verdict = "passed";
-          verdictHtml = `<div class="verdict verdict-ok">Safe — no more cleaning ${dayLabel}</div>`;
+          verdictHtml = `<div class="verdict verdict-ok">No more cleaning ${dayLabel}</div>`;
         } else if (nearbyOtherWeek.length > 0) {
           verdict = "ok";
           verdictHtml = `<div class="verdict verdict-ok">Safe — no cleaning this week</div>`;
@@ -1393,8 +1393,8 @@
         if (_lastRecs.length > 0) {
           const hasParkWindow = parkUntilHour > activeHour;
           const hdr = hasParkWindow
-            ? "Nearest safe for your window"
-            : "Nearest safe parking";
+            ? "Try to park here"
+            : "Try to park here";
           recsHtml = `
             <div class="recs-section">
               <div class="verdict verdict-parksafe">${hdr}</div>
@@ -1540,8 +1540,8 @@
                   : status === "active"
                     ? "No Parking Now"
                     : status === "upcoming"
-                      ? "Upcoming Today"
-                      : "Passed — Safe";
+                      ? "Upcoming Cleaning"
+                      : "No Upcoming Cleaning";
                 const badgeClass = !p._thisWeek
                   ? "badge-passed"
                   : `badge-${status}`;
