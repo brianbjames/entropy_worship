@@ -708,6 +708,51 @@
         font-size: 10px;
         white-space: nowrap;
       }
+
+      /* ── Parking meters toggle ───────────────────────────────────────────── */
+      .meters-toggle {
+        background: #111;
+        border: 1px solid #2e2e2e;
+        color: #666;
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        font-size: 9px;
+        padding: 2px 7px;
+        border-radius: 2px;
+        cursor: pointer;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin-left: auto;
+        flex-shrink: 0;
+      }
+
+      .meters-toggle:hover {
+        border-color: #555;
+        color: #ccc;
+      }
+
+      .meters-toggle.meters-on {
+        background: #1a1a1a;
+        border-color: #888;
+        color: #fff;
+      }
+
+      .legend-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+
+      #meters-status {
+        color: #555;
+        font-size: 10px;
+        margin-left: 6px;
+      }
     </style>
   </head>
   <body>
@@ -753,6 +798,19 @@
         <!-- <div class="source">
           Thin/thick = right/left block face
         </div> -->
+        <hr />
+        <div class="legend-row" style="align-items: center">
+          <span style="font-size: 11px; color: #ccc">Parking Meters</span>
+          <span id="meters-status"></span>
+          <button class="meters-toggle" id="meters-toggle">Off</button>
+        </div>
+        <div id="meters-legend" style="display: none">
+          <div class="legend-row" style="margin-top: 4px">
+            <div class="legend-dot" style="background: #1e7a38"></div>
+            <span>Free parking meters found</span>
+            <span class="legend-count" id="cnt-meter-free">&mdash;</span>
+          </div>
+        </div>
       </div>
 
       <!-- Day / time controls -->
@@ -1586,6 +1644,9 @@
         const isWeekend = date.getDay() === 0 || date.getDay() === 6;
         isWeekendView = isWeekend;
 
+        // Reset meters so they reload for the new day
+        metersBoundsKey = "";
+
         // For weekdays, clear the layer and re-fetch.
         // For weekends, keep the existing geometry and just re-style it blue.
         if (!isWeekend) {
@@ -1641,6 +1702,7 @@
             : L.latLng(37.7793, -122.4193);
           const lbl = checkMarker ? lastSearchLabel : "SF City Hall";
           showVerdict(latlng, lbl);
+          if (metersVisible) setTimeout(fetchMeters, 300);
           return;
         }
 
@@ -1651,6 +1713,7 @@
 
         // Fetch data for the selected day
         fetchForDay(viewDayName);
+        if (metersVisible) setTimeout(fetchMeters, 500);
       }
 
       // ── Time slider ───────────────────────────────────────────────────────
@@ -1678,6 +1741,9 @@
         }
 
         updateCounts(hour);
+
+        // Re-render meters if visible (active hours may change with time)
+        if (metersVisible) renderMeters();
 
         // Refresh verdict if a location is pinned
         if (checkMarker) showVerdict(checkMarker.getLatLng(), lastSearchLabel);
@@ -1977,6 +2043,416 @@
 
         probeAndFetch(viewDayName);
       }
+      // ── Parking Meters ────────────────────────────────────────────────────
+      // Dataset IDs to try in order (probe picks the first that responds with data)
+      const METER_DATASET_IDS = ["nwbb-fxhp", "28et-5khy", "rqzj-sfat"];
+      let METER_API = `https://data.sfgov.org/resource/${METER_DATASET_IDS[0]}.json`;
+      let meterLocField = "location"; // detected during probe
+      const METER_ACTIVE_COLOR = "#44ee66";
+      const METER_FREE_COLOR = "#1e7a38";
+      let metersVisible = false;
+      let metersLayer = null;
+      let metersData = [];
+      let metersBoundsKey = "";
+
+      const METER_DAY_MAP = {
+        sun: 0,
+        mon: 1,
+        tue: 2,
+        wed: 3,
+        thu: 4,
+        fri: 5,
+        sat: 6,
+      };
+
+      function parseMeterReg(reg) {
+        if (!reg || typeof reg !== "string") return null;
+
+        // Parse day range: "Mon thru Fri", "Mon-Fri", "Mon through Sat"
+        let days = null;
+        const rangeM = reg.match(
+          /\b(sun|mon|tue|wed|thu|fri|sat)\w*\s+(?:thru|through|to)\s+(sun|mon|tue|wed|thu|fri|sat)\w*/i,
+        );
+        if (rangeM) {
+          const s = METER_DAY_MAP[rangeM[1].toLowerCase().slice(0, 3)];
+          const e = METER_DAY_MAP[rangeM[2].toLowerCase().slice(0, 3)];
+          if (s !== undefined && e !== undefined) {
+            days = [];
+            let d = s;
+            while (days.length <= 7) {
+              days.push(d);
+              if (d === e) break;
+              d = (d + 1) % 7;
+            }
+          }
+        } else {
+          const allDayM = reg.match(
+            /\b(sun|mon|tue|wed|thu|fri|sat)\w*/gi,
+          );
+          if (allDayM) {
+            days = [
+              ...new Set(
+                allDayM
+                  .map((d) => METER_DAY_MAP[d.toLowerCase().slice(0, 3)])
+                  .filter((d) => d !== undefined),
+              ),
+            ];
+          }
+        }
+
+        // Parse time: "9AM-6PM", "9:30AM-10PM", "08:00AM-06:00PM"
+        const timeM = reg.match(
+          /(\d{1,2})(?::(\d{2}))?\s*(am|pm)\s*[-\u2013]\s*(\d{1,2})(?::(\d{2}))?\s*(am|pm)/i,
+        );
+        if (!timeM) return null;
+
+        function toH(h, min, ampm) {
+          let n = parseInt(h, 10);
+          const m = min ? parseInt(min, 10) / 60 : 0;
+          if (ampm.toLowerCase() === "pm" && n !== 12) n += 12;
+          if (ampm.toLowerCase() === "am" && n === 12) n = 0;
+          return n + m;
+        }
+
+        return {
+          days,
+          from: toH(timeM[1], timeM[2], timeM[3]),
+          to: toH(timeM[4], timeM[5], timeM[6]),
+        };
+      }
+
+      function isMeterActiveNow(meter) {
+        const regs = [
+          meter.parking_regs_1,
+          meter.parking_regs_2,
+          meter.parking_regs_3,
+        ];
+        const dayOfWeek = viewDate.getDay();
+        for (const reg of regs) {
+          const p = parseMeterReg(reg);
+          if (!p) continue;
+          const dayOk =
+            !p.days || p.days.length === 0 || p.days.includes(dayOfWeek);
+          if (dayOk && activeHour >= p.from && activeHour < p.to) return true;
+        }
+        return false;
+      }
+
+      function meterRadius() {
+        const z = map.getZoom();
+        return z >= 17 ? 5 : z >= 16 ? 4 : 3;
+      }
+
+      // ── Snap a meter coordinate to the nearest street curb ────────────────
+      // Uses the already-loaded street cleaning road geometry (loadedFeatures)
+      // so no extra API calls are needed.  Returns [lat, lng] on the curb side,
+      // or null if no road found within 120 m.
+      function snapMeterToStreet(lat, lng) {
+        if (!loadedFeatures.length) return null;
+
+        const ym = 111320;
+        const cosLat = Math.cos((lat * Math.PI) / 180);
+        const xm = cosLat * ym;
+        const px = lng * xm;
+        const py = lat * ym;
+
+        const SEARCH_M = 120;
+        const sLat = SEARCH_M / ym;
+        const sLng = SEARCH_M / xm;
+
+        let bestDistSq = Infinity;
+        let bestNX = px, bestNY = py;
+
+        for (const f of loadedFeatures) {
+          const geom = f.geometry;
+          if (!geom) continue;
+          const lines =
+            geom.type === "LineString"
+              ? [geom.coordinates]
+              : geom.type === "MultiLineString"
+                ? geom.coordinates
+                : [];
+
+          for (const line of lines) {
+            for (let i = 0; i < line.length - 1; i++) {
+              const c0 = line[i], c1 = line[i + 1];
+              // Fast bbox reject before projecting
+              const minLng = Math.min(c0[0], c1[0]);
+              const maxLng = Math.max(c0[0], c1[0]);
+              const minLat = Math.min(c0[1], c1[1]);
+              const maxLat = Math.max(c0[1], c1[1]);
+              if (lng < minLng - sLng || lng > maxLng + sLng) continue;
+              if (lat < minLat - sLat || lat > maxLat + sLat) continue;
+
+              const ax = c0[0] * xm, ay = c0[1] * ym;
+              const bx = c1[0] * xm, by = c1[1] * ym;
+              const dx = bx - ax, dy = by - ay;
+              const lenSq = dx * dx + dy * dy;
+
+              let nx, ny;
+              if (lenSq < 0.001) {
+                nx = ax; ny = ay;
+              } else {
+                const t = Math.max(
+                  0,
+                  Math.min(1, ((px - ax) * dx + (py - ay) * dy) / lenSq),
+                );
+                nx = ax + t * dx;
+                ny = ay + t * dy;
+              }
+
+              const dSq = (px - nx) * (px - nx) + (py - ny) * (py - ny);
+              if (dSq < bestDistSq) {
+                bestDistSq = dSq;
+                bestNX = nx;
+                bestNY = ny;
+              }
+            }
+          }
+        }
+
+        if (bestDistSq > SEARCH_M * SEARCH_M) return null;
+
+        // Offset 5 m from the road center toward the original coordinate
+        // so the dot lands on the curb / sidewalk on the correct side.
+        const CURB_OFFSET = 5;
+        const perpX = px - bestNX;
+        const perpY = py - bestNY;
+        const perpLen = Math.sqrt(perpX * perpX + perpY * perpY);
+
+        if (perpLen < 0.5) {
+          // Meter is essentially on the centre line — just return snapped point
+          return [bestNY / ym, bestNX / xm];
+        }
+
+        const scale = CURB_OFFSET / perpLen;
+        return [
+          (bestNY + perpY * scale) / ym,
+          (bestNX + perpX * scale) / xm,
+        ];
+      }
+
+      function renderMeters() {
+        if (metersLayer) {
+          map.removeLayer(metersLayer);
+          metersLayer = null;
+        }
+        if (!metersVisible || !metersData.length) return;
+
+        const r = meterRadius();
+        let cntActive = 0, cntFree = 0;
+        const markers = [];
+
+        for (const m of metersData) {
+          const loc = m.location;
+          if (!loc) continue;
+          const rawLat = parseFloat(loc.latitude || loc.lat);
+          const rawLng = parseFloat(loc.longitude || loc.lon || loc.long);
+          if (isNaN(rawLat) || isNaN(rawLng)) continue;
+
+          // Snap to street curb once per meter load; cache result on the object
+          if (!m._snapped) {
+            m._snapped = snapMeterToStreet(rawLat, rawLng) || [rawLat, rawLng];
+          }
+          const [lat, lng] = m._snapped;
+
+          const active = isMeterActiveNow(m);
+          active ? cntActive++ : cntFree++;
+          const color = active ? METER_ACTIVE_COLOR : METER_FREE_COLOR;
+          const stroke = active ? "#22aa44" : "#145528";
+
+          const marker = L.circleMarker([lat, lng], {
+            radius: r,
+            color: stroke,
+            weight: 1,
+            fillColor: color,
+            fillOpacity: active ? 0.9 : 0.65,
+          });
+
+          const regs = [
+            m.parking_regs_1,
+            m.parking_regs_2,
+            m.parking_regs_3,
+          ].filter(Boolean);
+          const rates = [m.rates_1, m.rates_2, m.rates_3].filter(Boolean);
+
+          const capLabels = {
+            "Green": "Short-term (30 min)",
+            "Black": "Motorcycle",
+            "Gray": "Standard metered",
+            "Yellow": "Commercial/loading",
+            "Red": "Pay station",
+          };
+          const capLabel = m.cap_color
+            ? capLabels[m.cap_color] || m.cap_color
+            : null;
+
+          marker.bindPopup(`
+            <div class="popup-street">Parking Meter</div>
+            <span class="popup-badge ${active ? "badge-active" : "badge-passed"}">${active ? "Pay Required" : "Free Now"}</span>
+            <br>
+            ${
+              regs.length
+                ? `<b>Hours:</b> ${regs.map((r) => `<span style="color:#ccc">${r}</span>`).join("<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;")}<br>`
+                : '<span style="color:#666">No schedule data</span><br>'
+            }
+            ${rates.length ? `<b>Rate:</b> <span style="color:#ffcc66">${rates.join(" &nbsp;·&nbsp; ")}</span><br>` : ""}
+            ${capLabel ? `<b>Type:</b> ${capLabel}<br>` : ""}
+            <span style="color:#555;font-size:10px">Post ${m.post_id || "—"}</span>
+          `);
+
+          markers.push(marker);
+        }
+
+        metersLayer = L.layerGroup(markers).addTo(map);
+
+        const ae = document.getElementById("cnt-meter-active");
+        const fe = document.getElementById("cnt-meter-free");
+        if (ae) ae.textContent = cntActive.toLocaleString();
+        if (fe) fe.textContent = cntFree.toLocaleString();
+      }
+
+      let meterProbed = false;
+      let meterOnStreetFilter = ""; // set during probe, e.g. "AND upper(on_offstreet_type)='ON'"
+
+      async function probeMeterDataset() {
+        for (const id of METER_DATASET_IDS) {
+          const url = `https://data.sfgov.org/resource/${id}.json?$limit=10`;
+          try {
+            const resp = await fetch(url);
+            if (!resp.ok) continue;
+            const rows = await resp.json();
+            if (!Array.isArray(rows) || rows.length === 0) continue;
+            METER_API = `https://data.sfgov.org/resource/${id}.json`;
+            const fields = Object.keys(rows[0]);
+            console.log(`[Meters] Using dataset ${id}. Fields:`, fields.join(", "));
+            console.log("[Meters] Sample row:", rows[0]);
+
+            // Detect location field
+            const geoFields = ["location", "the_geom", "point", "geom"];
+            for (const f of geoFields) {
+              if (rows[0][f] && rows[0][f].latitude) { meterLocField = f; break; }
+            }
+
+            // Detect on/off-street field and the value used for on-street
+            const onOffField = fields.find(f => /on.?off|offstreet|street.?type/i.test(f));
+            if (onOffField) {
+              const vals = [...new Set(rows.map(r => r[onOffField]).filter(Boolean))];
+              console.log(`[Meters] on_offstreet field "${onOffField}" values in probe:`, vals);
+              // "ON" = on-street in SFMTA data; anything starting with "O" is on-street
+              const onVal = vals.find(v => /^on/i.test(v));
+              if (onVal) {
+                meterOnStreetFilter = ` AND upper(${onOffField})='${onVal.toUpperCase()}'`;
+                console.log(`[Meters] On-street filter:`, meterOnStreetFilter);
+              }
+            }
+
+            return true;
+          } catch {}
+        }
+        return false;
+      }
+
+      async function fetchMeters() {
+        if (!metersVisible) return;
+        const z = map.getZoom();
+        const statusEl = document.getElementById("meters-status");
+        if (z < 14) {
+          if (metersLayer) {
+            map.removeLayer(metersLayer);
+            metersLayer = null;
+          }
+          if (statusEl) statusEl.textContent = "zoom in to load";
+          return;
+        }
+
+        const bounds = map.getBounds();
+        const key = [
+          bounds.getSouth().toFixed(3),
+          bounds.getWest().toFixed(3),
+          bounds.getNorth().toFixed(3),
+          bounds.getEast().toFixed(3),
+        ].join(",");
+
+        if (key === metersBoundsKey) {
+          renderMeters();
+          return;
+        }
+        metersBoundsKey = key;
+        if (statusEl) statusEl.textContent = "loading\u2026";
+
+        // Probe dataset on first use to confirm ID + fields
+        if (!meterProbed) {
+          const ok = await probeMeterDataset();
+          if (!ok) {
+            if (statusEl) statusEl.textContent = "dataset not found";
+            metersBoundsKey = "";
+            return;
+          }
+          meterProbed = true;
+        }
+
+        const s = bounds.getSouth(), w = bounds.getWest();
+        const n = bounds.getNorth(), e = bounds.getEast();
+        const whereClause = `within_box(${meterLocField},${s},${w},${n},${e})${meterOnStreetFilter}`;
+        const url = `${METER_API}?$where=${encodeURIComponent(whereClause)}&$limit=2000`;
+        console.log("[Meters] Fetching:", url);
+
+        try {
+          const resp = await fetch(url);
+          if (!resp.ok) {
+            const body = await resp.text().catch(() => "");
+            const hint = body.slice(0, 120);
+            if (statusEl) statusEl.textContent = `HTTP ${resp.status}`;
+            console.error("[Meters] HTTP error:", resp.status, hint);
+            metersBoundsKey = "";
+            return;
+          }
+          metersData = await resp.json();
+          // Clear cached snaps so new data is snapped fresh
+          metersData.forEach(m => { delete m._snapped; });
+          if (statusEl)
+            statusEl.textContent = `${metersData.length.toLocaleString()} meters`;
+          renderMeters();
+        } catch (err) {
+          if (statusEl) statusEl.textContent = err.message || "fetch failed";
+          console.error("[Meters]", err);
+          metersBoundsKey = "";
+        }
+      }
+
+      document
+        .getElementById("meters-toggle")
+        .addEventListener("click", () => {
+          metersVisible = !metersVisible;
+          const btn = document.getElementById("meters-toggle");
+          const leg = document.getElementById("meters-legend");
+          const statusEl = document.getElementById("meters-status");
+          btn.textContent = metersVisible ? "On" : "Off";
+          btn.classList.toggle("meters-on", metersVisible);
+          leg.style.display = metersVisible ? "block" : "none";
+          if (metersVisible) {
+            fetchMeters();
+          } else {
+            if (metersLayer) {
+              map.removeLayer(metersLayer);
+              metersLayer = null;
+            }
+            metersData = [];
+            metersBoundsKey = "";
+            meterProbed = false;
+            meterOnStreetFilter = "";
+            if (statusEl) statusEl.textContent = "";
+          }
+        });
+
+      // Reload meters when map moves or zooms
+      let _metersMoveTimer = null;
+      map.on("moveend zoomend", () => {
+        if (!metersVisible) return;
+        clearTimeout(_metersMoveTimer);
+        _metersMoveTimer = setTimeout(fetchMeters, 400);
+      });
     </script>
   </body>
 </html>
