@@ -925,6 +925,7 @@
       let geoLayer = null;
       let checkMarker = null;
       let lastSearchLabel = null;
+      let _lastLayerClick = 0; // timestamp of last layer click, to suppress duplicate map click
 
       // ── Geometry: block-face offset ───────────────────────────────────────
       // Shifts a line ~6m perpendicular to street direction so left/right
@@ -1212,7 +1213,7 @@
           .filter((f) => f.geometry)
           .map((f) => {
             const thisWeek = isTruthy(f.properties[viewWeekField]);
-            loadedFeatures.push(f); // all features for distance queries; _thisWeek distinguishes active vs. other-week
+            loadedFeatures.push({ ...f, properties: { ...f.properties, _thisWeek: thisWeek } }); // include _thisWeek for verdict logic
             return {
               ...f,
               properties: { ...f.properties, _thisWeek: thisWeek },
@@ -1285,6 +1286,12 @@
               layer.on("mouseout", () => {
                 const isLeft = (p.cnnrightleft || "").toUpperCase() === "L";
                 layer.setStyle({ weight: lineWeight(isLeft) });
+              });
+
+              // Update verdict panel when clicking a street
+              layer.on("click", (e) => {
+                _lastLayerClick = Date.now();
+                showVerdict(e.latlng, p.corridor || "Unknown Street");
               });
             },
           },
@@ -1515,7 +1522,10 @@
       });
 
       // ── Map click → verdict ───────────────────────────────────────────────
-      map.on("click", (e) => showVerdict(e.latlng, null));
+      map.on("click", (e) => {
+        if (Date.now() - _lastLayerClick < 50) return; // layer already handled this
+        showVerdict(e.latlng, null);
+      });
 
       // ── My Location ───────────────────────────────────────────────────────
       document.getElementById("locate-btn").addEventListener("click", () => {
