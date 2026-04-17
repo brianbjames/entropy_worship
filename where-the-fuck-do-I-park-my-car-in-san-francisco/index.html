@@ -1013,8 +1013,11 @@
           .sort((a, b) => a.d - b.d)
           .slice(0, 8);
 
-        // Split by status, sort upcoming chronologically
-        const active = nearby.filter(
+        // Split by this-week status (for the verdict badge) and other-week (shown as context)
+        const nearbyThisWeek = nearby.filter((x) => x.f.properties._thisWeek);
+        const nearbyOtherWeek = nearby.filter((x) => !x.f.properties._thisWeek);
+
+        const active = nearbyThisWeek.filter(
           (x) =>
             getStatusAtHour(
               x.f.properties.fromhour,
@@ -1022,7 +1025,7 @@
               activeHour,
             ) === "active",
         );
-        const upcoming = nearby
+        const upcoming = nearbyThisWeek
           .filter(
             (x) =>
               getStatusAtHour(
@@ -1036,7 +1039,7 @@
               parseFloat(a.f.properties.fromhour) -
               parseFloat(b.f.properties.fromhour),
           );
-        const passed = nearby.filter(
+        const passed = nearbyThisWeek.filter(
           (x) =>
             getStatusAtHour(
               x.f.properties.fromhour,
@@ -1059,15 +1062,17 @@
         } else if (passed.length > 0) {
           verdict = "passed";
           verdictHtml = `<div class="verdict verdict-passed">&#x2713;&nbsp; Safe — no more cleaning ${dayLabel}</div>`;
+        } else if (nearbyOtherWeek.length > 0) {
+          verdict = "ok";
+          verdictHtml = `<div class="verdict verdict-ok">&#x2713;&nbsp; Safe — no cleaning this week</div>`;
         } else {
           verdict = "ok";
-          verdictHtml = `<div class="verdict verdict-ok">&#x2713;&nbsp; Safe — no restrictions nearby</div>`;
+          verdictHtml = `<div class="verdict verdict-passed">&#x2014;&nbsp; No street cleaning data here</div>`;
         }
 
-        // Detail rows — active + upcoming first, then passed
-        const allItems = [...active, ...upcoming, ...passed];
+        // Detail rows — this-week entries first (active/upcoming/passed), then other-week as context
         let rows = "";
-        for (const { f, d } of allItems) {
+        for (const { f, d } of [...active, ...upcoming, ...passed]) {
           const p = f.properties;
           const status = getStatusAtHour(p.fromhour, p.tohour, activeHour);
           const side = p.blockside
@@ -1078,6 +1083,20 @@
               ${p.corridor || "—"}${side}<br>
               <span class="r-dim">${fmtHour(p.fromhour)}–${fmtHour(p.tohour)} &nbsp;·&nbsp; ${Math.round(d)}m</span>
             </div>`;
+        }
+        if (nearbyOtherWeek.length > 0) {
+          if (rows) rows += `<div style="border-top:1px solid #1e1e1e;margin:5px 0"></div>`;
+          for (const { f, d } of nearbyOtherWeek.slice(0, 4)) {
+            const p = f.properties;
+            const side = p.blockside
+              ? `<span class="r-dim"> · ${p.blockside}</span>`
+              : "";
+            rows += `
+              <div class="r-dim">
+                ${p.corridor || "—"}${side}<br>
+                <span class="r-dim">${fmtHour(p.fromhour)}–${fmtHour(p.tohour)} &nbsp;·&nbsp; ${Math.round(d)}m &nbsp;·&nbsp; not this week</span>
+              </div>`;
+          }
         }
 
         // Update pin color to match verdict
@@ -1101,7 +1120,7 @@
           ${label ? `<div class="result-address">${label}</div>` : ""}
           ${verdictHtml}
           <div class="result-rows">
-            ${rows || `<span class="r-dim">No restrictions within 60m on ${viewDayName}.</span>`}
+            ${rows || `<span class="r-dim">No street cleaning data within 60m.</span>`}
           </div>
         `;
         panel.style.display = "block";
@@ -1150,7 +1169,7 @@
           .filter((f) => f.geometry)
           .map((f) => {
             const thisWeek = isTruthy(f.properties[viewWeekField]);
-            if (thisWeek) loadedFeatures.push(f); // only this week's for distance queries
+            loadedFeatures.push(f); // all features for distance queries; _thisWeek distinguishes active vs. other-week
             return {
               ...f,
               properties: { ...f.properties, _thisWeek: thisWeek },
@@ -1190,18 +1209,23 @@
                   activeHour,
                 );
                 const label =
-                  status === "active"
-                    ? "No Parking Now"
-                    : status === "upcoming"
-                      ? "Upcoming Today"
-                      : "Passed — Safe";
+                  !p._thisWeek
+                    ? "Not This Week"
+                    : status === "active"
+                      ? "No Parking Now"
+                      : status === "upcoming"
+                        ? "Upcoming Today"
+                        : "Passed — Safe";
+                const badgeClass = !p._thisWeek ? "badge-passed" : `badge-${status}`;
+                // Determine which weeks this block is scheduled
+                const weekNums = [1,2,3,4,5].filter((w) => isTruthy(p[`week${w}`])).join(", ");
                 return `
                 <div class="popup-street">${p.corridor || "Unknown Street"}</div>
-                <span class="popup-badge badge-${status}">${label}</span><br>
+                <span class="popup-badge ${badgeClass}">${label}</span><br>
                 <b>Cross streets:</b> ${p.limits || "—"}<br>
                 <b>Block side:</b>    ${p.blockside || "—"}<br>
                 <b>Hours:</b>         ${fmtHour(p.fromhour)} – ${fmtHour(p.tohour)}<br>
-                <b>Schedule:</b>      ${p.weekday || viewDayName}, week ${viewWeekOfMonth}
+                <b>Schedule:</b>      ${p.weekday || viewDayName}${weekNums ? `, week${weekNums.length > 1 ? "s" : ""} ${weekNums}` : ""}
               `;
               });
 
@@ -1544,20 +1568,42 @@
 
         function fetchForDay(dayName) {
           const where = `upper(${cachedWeekdayField})='${dayName.toUpperCase()}'`;
-          console.log(`[SF Cleaning] Query: $where=${where}`);
-          return fetch(
-            `${BASE}.geojson?$where=${encodeURIComponent(where)}&$limit=50000`,
-          )
-            .then((r) => {
-              if (!r.ok) throw new Error(`Data fetch failed: HTTP ${r.status}`);
-              return r.json();
-            })
-            .then(renderGeoJSON)
-            .catch((err) => {
-              document.getElementById("loading").textContent =
-                `Error: ${err.message}`;
-              console.error("[SF Cleaning]", err);
-            });
+          console.log(`[SF Cleaning] Fetching day=${dayName}, weekField=${viewWeekField}, query: $where=${where}`);
+
+          const pageSize = 10000;
+          let offset = 0;
+          let allFeatures = [];
+
+          function fetchPage() {
+            const url = `${BASE}.geojson?$where=${encodeURIComponent(where)}&$limit=${pageSize}&$offset=${offset}`;
+            return fetch(url)
+              .then((r) => {
+                if (!r.ok) throw new Error(`Data fetch failed: HTTP ${r.status}`);
+                return r.json();
+              })
+              .then((data) => {
+                const batch = (data.features || []);
+                allFeatures = allFeatures.concat(batch);
+                console.log(`[SF Cleaning] Page offset=${offset}: ${batch.length} features (total so far: ${allFeatures.length})`);
+                if (batch.length < pageSize) {
+                  // Last page — render everything
+                  const thisWeekCount = allFeatures.filter(
+                    (f) => f.properties && isTruthy(f.properties[viewWeekField])
+                  ).length;
+                  console.log(`[SF Cleaning] Done. Total=${allFeatures.length}, thisWeek(${viewWeekField})=${thisWeekCount}`);
+                  renderGeoJSON({ type: "FeatureCollection", features: allFeatures });
+                } else {
+                  offset += pageSize;
+                  return fetchPage();
+                }
+              });
+          }
+
+          return fetchPage().catch((err) => {
+            document.getElementById("loading").textContent =
+              `Error: ${err.message}`;
+            console.error("[SF Cleaning]", err);
+          });
         }
 
         // Initial slider position for today
