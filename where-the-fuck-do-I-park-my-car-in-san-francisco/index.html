@@ -409,28 +409,6 @@
         letter-spacing: 1px;
       }
 
-      #time-reset {
-        background: none;
-        border: 1px solid #555;
-        color: #ccc;
-        font-family:
-          "Inter",
-          -apple-system,
-          BlinkMacSystemFont,
-          "Segoe UI",
-          sans-serif;
-        font-size: 10px;
-        padding: 2px 7px;
-        border-radius: 2px;
-        cursor: pointer;
-        letter-spacing: 1px;
-      }
-
-      #time-reset:hover {
-        color: #fff;
-        border-color: #aaa;
-      }
-
       #time-slider {
         width: 100%;
         -webkit-appearance: none;
@@ -774,31 +752,57 @@
           >
         </h4>
         <div class="subtitle" id="legend-subtitle"></div>
-        <hr />
-        <div class="legend-row">
-          <div class="legend-line" style="background: #ff3333"></div>
-          <span>No parking &mdash; active now</span>
-          <span class="legend-count" id="cnt-active">&mdash;</span>
-        </div>
-        <div class="legend-row">
-          <div class="legend-line" style="background: #ff9900"></div>
-          <span>Upcoming today</span>
-          <span class="legend-count" id="cnt-upcoming">&mdash;</span>
-        </div>
-        <div class="legend-row">
-          <div class="legend-line" style="background: #2ecc71"></div>
-          <span>Passed &mdash; safe to park</span>
-          <span class="legend-count" id="cnt-passed">&mdash;</span>
-        </div>
-        <div class="legend-row">
-          <div class="legend-line" style="background: #4499ff"></div>
-          <span>Safe for your full window</span>
-          <span class="legend-count" id="cnt-parksafe">&mdash;</span>
-        </div>
+        <form id="search-form" autocomplete="off" style="display:flex;gap:6px;margin-top:8px">
+          <input
+            id="search-input"
+            type="text"
+            placeholder="Address or intersection"
+          />
+          <button id="search-btn" type="submit">Go</button>
+        </form>
+        <button
+          type="button"
+          id="locate-btn"
+          style="margin-top: 7px; width: 100%"
+        >
+          &#9678; My Location
+        </button>
         <!-- <div class="source">
           Thin/thick = right/left block face
         </div> -->
-        <hr />
+      </div>
+
+      <!-- Day / time controls -->
+      <div class="panel-section" id="time-section" hidden>
+        <div id="time-header">
+          <span id="time-label"></span>
+        </div>
+        <div id="day-selector"></div>
+        <input type="range" id="time-slider" min="0" max="24" step="0.5" />
+        <div class="time-ticks">
+          <span>12 AM</span><span>6 AM</span><span>12 PM</span><span>6 PM</span
+          ><span>12 AM</span>
+        </div>
+        <div id="park-panel">
+          <div id="park-header">
+            <span id="park-label">Park until: &mdash;</span>
+          </div>
+          <div id="park-day-selector"></div>
+          <input type="range" id="park-slider" min="0" max="24" step="0.5" />
+          <div class="time-ticks">
+            <span>12 AM</span><span>6 AM</span><span>12 PM</span
+            ><span>6 PM</span><span>12 AM</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Find by address -->
+      <div class="panel-section" id="search-panel">
+        <div id="result-panel"></div>
+      </div>
+
+      <!-- Data overlays -->
+      <div class="panel-section legend">
         <div class="legend-row" style="align-items: center">
           <span style="font-size: 11px; color: #ccc">Parking Meters</span>
           <span id="meters-status"></span>
@@ -860,50 +864,28 @@
         </div>
       </div>
 
-      <!-- Day / time controls -->
-      <div class="panel-section" id="time-section" hidden>
-        <div id="day-selector"></div>
-        <div id="time-header">
-          <span id="time-label"></span>
-          <button id="time-reset">Reset to now</button>
+      <!-- Street cleaning color key -->
+      <div class="panel-section legend">
+        <div class="legend-row">
+          <div class="legend-line" style="background: #ff3333"></div>
+          <span>No parking &mdash; active now</span>
+          <span class="legend-count" id="cnt-active">&mdash;</span>
         </div>
-        <input type="range" id="time-slider" min="0" max="24" step="0.5" />
-        <div class="time-ticks">
-          <span>12 AM</span><span>6 AM</span><span>12 PM</span><span>6 PM</span
-          ><span>12 AM</span>
+        <div class="legend-row">
+          <div class="legend-line" style="background: #ff9900"></div>
+          <span>Upcoming cleaning today</span>
+          <span class="legend-count" id="cnt-upcoming">&mdash;</span>
         </div>
-        <div id="park-panel">
-          <div id="park-day-selector"></div>
-          <div id="park-header">
-            <span id="park-label">Park until: &mdash;</span>
-          </div>
-          <input type="range" id="park-slider" min="0" max="24" step="0.5" />
-          <div class="time-ticks">
-            <span>12 AM</span><span>6 AM</span><span>12 PM</span
-            ><span>6 PM</span><span>12 AM</span>
-          </div>
+        <div class="legend-row">
+          <div class="legend-line" style="background: #2ecc71"></div>
+          <span>No upcoming cleaning</span>
+          <span class="legend-count" id="cnt-passed">&mdash;</span>
         </div>
-      </div>
-
-      <!-- Find by address -->
-      <div class="panel-section" id="search-panel">
-        <form id="search-form" autocomplete="off">
-          <input
-            id="search-input"
-            type="text"
-            placeholder="Address or intersection"
-          />
-          <button id="search-btn" type="submit">Go</button>
-        </form>
-        <!-- <div id="search-hint">or click anywhere on the map</div> -->
-        <button
-          type="button"
-          id="locate-btn"
-          style="margin-top: 7px; width: 100%"
-        >
-          &#9678; My Location
-        </button>
-        <div id="result-panel"></div>
+        <div class="legend-row">
+          <div class="legend-line" style="background: #4499ff"></div>
+          <span>No cleaning for full window</span>
+          <span class="legend-count" id="cnt-parksafe">&mdash;</span>
+        </div>
       </div>
     </div>
 
@@ -1719,11 +1701,6 @@
         updateParkLabel(parkUntilHour);
         buildParkDaySelector();
 
-        // Update reset button label
-        document.getElementById("time-reset").textContent = isViewingToday()
-          ? "Reset to now"
-          : "Reset to 8 AM";
-
         // Update legend subtitle
         updateLegendSubtitle(date);
 
@@ -1767,7 +1744,7 @@
       function setTimeLabel(hour) {
         const isNow = isViewingToday() && Math.abs(hour - currentHour) < 0.26;
         const prefix = isNow
-          ? `Now · ${timeStr}`
+          ? `Park from · ${timeStr}`
           : isViewingToday()
             ? `Viewing · ${fmtSliderHour(hour)}`
             : `${viewDayName} · ${fmtSliderHour(hour)}`;
@@ -1802,12 +1779,7 @@
           updateForHour(parseFloat(this.value));
         });
 
-      document.getElementById("time-reset").addEventListener("click", () => {
-        const targetHour = isViewingToday() ? currentHour : 8;
-        const slider = document.getElementById("time-slider");
-        slider.value = Math.min(24, Math.max(0, targetHour));
-        updateForHour(targetHour);
-      });
+
 
       // ── Park-until slider ─────────────────────────────────────────────────
       function updateParkLabel(sliderHour) {
