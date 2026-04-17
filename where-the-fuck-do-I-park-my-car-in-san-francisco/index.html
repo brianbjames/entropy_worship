@@ -321,9 +321,9 @@
         border: 1px solid #482800;
       }
       .verdict-passed {
-        background: #141414;
-        color: #777;
-        border: 1px solid #282828;
+        background: #1e1a00;
+        color: #ccbb00;
+        border: 1px solid #3a3000;
       }
       .verdict-parksafe {
         background: #091828;
@@ -1148,7 +1148,7 @@
           const panel = document.getElementById("result-panel");
           panel.innerHTML = `
             ${label ? `<div class="result-address">${label}</div>` : ""}
-            <div class="verdict verdict-ok">&#x2713;&nbsp; Safe — no weekend cleaning</div>
+            <div class="verdict verdict-ok">Safe — no weekend cleaning</div>
             <div class="result-rows">
               <span class="r-dim">Street cleaning runs Mon – Fri.<br>${viewDayName} has no restrictions.</span>
             </div>
@@ -1205,20 +1205,20 @@
         if (active.length > 0) {
           verdict = "active";
           const endTime = fmtHour(active[0].f.properties.tohour);
-          verdictHtml = `<div class="verdict verdict-active">&#x2717;&nbsp; No Parking — until ${endTime}</div>`;
+          verdictHtml = `<div class="verdict verdict-active">No Parking — until ${endTime}</div>`;
         } else if (upcoming.length > 0) {
           verdict = "upcoming";
           const p = upcoming[0].f.properties;
-          verdictHtml = `<div class="verdict verdict-upcoming">&#x26A0;&nbsp; Next cleaning: ${fmtHour(p.fromhour)} – ${fmtHour(p.tohour)}</div>`;
+          verdictHtml = `<div class="verdict verdict-upcoming">Next cleaning: ${fmtHour(p.fromhour)} – ${fmtHour(p.tohour)}</div>`;
         } else if (passed.length > 0) {
           verdict = "passed";
-          verdictHtml = `<div class="verdict verdict-ok">&#x2713;&nbsp; Safe — no more cleaning ${dayLabel}</div>`;
+          verdictHtml = `<div class="verdict verdict-ok">Safe — no more cleaning ${dayLabel}</div>`;
         } else if (nearbyOtherWeek.length > 0) {
           verdict = "ok";
-          verdictHtml = `<div class="verdict verdict-ok">&#x2713;&nbsp; Safe — no cleaning this week</div>`;
+          verdictHtml = `<div class="verdict verdict-ok">Safe — no cleaning this week</div>`;
         } else {
           verdict = "ok";
-          verdictHtml = `<div class="verdict verdict-passed">&#x2014;&nbsp; No street cleaning data here</div>`;
+          verdictHtml = `<div class="verdict verdict-passed">No street cleaning data here</div>`;
         }
 
         // Detail rows — this-week entries first (active/upcoming/passed), then other-week as context
@@ -1312,9 +1312,7 @@
         panel.innerHTML = `
           ${label ? `<div class="result-address">${label}</div>` : ""}
           ${verdictHtml}
-          <div class="result-rows">
-            ${rows || `<span class="r-dim">${label ? `${label} &nbsp;&middot;&nbsp; ` : ""}No street cleaning data within 60m.</span>`}
-          </div>
+          ${rows ? `<div class="result-rows">${rows}</div>` : ""}
           ${recsHtml}
         `;
         panel.style.display = "block";
