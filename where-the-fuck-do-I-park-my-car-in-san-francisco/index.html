@@ -971,6 +971,9 @@
       // A block is park-safe if its cleaning window doesn't overlap [activeHour, parkUntilHour]
       function isParkSafe(fromhour, tohour) {
         if (parkUntilHour <= activeHour) return false;
+        // Multi-day windows: we only have one day's data loaded, so streets
+        // cleaned on other days within the window are unknown — never show blue.
+        if (parkUntilDayOffset > 0) return false;
         const from = parseFloat(fromhour);
         const to = parseFloat(tohour);
         if (isNaN(from) || isNaN(to)) return true;
@@ -978,8 +981,8 @@
       }
 
       function getFeatureStyle(p, isLeft) {
-        // Weekends: every street is safe — show all blue
-        if (isWeekendView) {
+        // Weekends with no multi-day window: every street is safe — show all blue
+        if (isWeekendView && parkUntilDayOffset === 0) {
           return {
             color: PARK_SAFE_COLOR,
             weight: lineWeight(isLeft),
@@ -1152,6 +1155,7 @@
       // ── Parking recommendations ───────────────────────────────────────────
       let _lastRecs = [];
       let _recMarkers = [];
+      let _postSwitchOverride = null; // { activeHour, parkUntilHour } applied after next renderGeoJSON
 
       function clearRecMarkers() {
         _recMarkers.forEach((m) => map.removeLayer(m));
@@ -1591,6 +1595,31 @@
           const cityHall = L.latLng(37.7793, -122.4193);
           showVerdict(cityHall, "SF City Hall");
         }
+
+        // If triggered by a park-until day switch, override activeHour to midnight
+        // so streets are evaluated from the start of the park-until day.
+        if (_postSwitchOverride) {
+          const { activeHour: ovHour, parkUntilHour: ovPark } = _postSwitchOverride;
+          _postSwitchOverride = null;
+          activeHour = ovHour;
+          parkUntilHour = ovPark;
+          parkUntilDayOffset = 0;
+          const timeSlider = document.getElementById("time-slider");
+          timeSlider.value = ovHour;
+          setTimeLabel(ovHour);
+          const parkSlider = document.getElementById("park-slider");
+          parkSlider.value = ovPark;
+          updateParkLabel(ovPark);
+          geoLayer.eachLayer((layer) => {
+            const p = layer.feature && layer.feature.properties;
+            if (!p) return;
+            const isLeft = (p.cnnrightleft || "").toUpperCase() === "L";
+            layer.setStyle(getFeatureStyle(p, isLeft));
+          });
+          updateCounts(ovHour);
+          if (checkMarker) showVerdict(checkMarker.getLatLng(), lastSearchLabel);
+          else showVerdict(L.latLng(37.7793, -122.4193), "SF City Hall");
+        }
       }
 
       // ── Day selector ──────────────────────────────────────────────────────
@@ -1653,6 +1682,24 @@
             const sliderVal = parseFloat(
               document.getElementById("park-slider").value,
             );
+
+            if (i > 0) {
+              // Target is a future day — switch the map to that day so we load
+              // its cleaning data and can accurately show what gets cleaned
+              // before the park-until time.
+              const targetDate = new Date(viewDate);
+              targetDate.setDate(viewDate.getDate() + i);
+              const dow = targetDate.getDay();
+              if (dow !== 0 && dow !== 6) {
+                // It's a weekday — load its data, then override activeHour to
+                // midnight so restrictions are shown from the day's start.
+                _postSwitchOverride = { activeHour: 0, parkUntilHour: sliderVal };
+                switchToDay(targetDate);
+                return;
+              }
+              // Target is a weekend — no cleaning, standard park-safe is fine
+            }
+
             updateParkUntil(parkUntilDayOffset * 24 + sliderVal);
           });
           container.appendChild(btn);
