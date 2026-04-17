@@ -325,6 +325,11 @@
         color: #777;
         border: 1px solid #282828;
       }
+      .verdict-parksafe {
+        background: #091828;
+        color: #4499ff;
+        border: 1px solid #1a3a5e;
+      }
 
       .result-address {
         color: #ddd;
@@ -1074,9 +1079,11 @@
         const geom = feature.geometry;
         if (!geom) return null;
         const coords =
-          geom.type === "LineString" ? geom.coordinates
-          : geom.type === "MultiLineString" ? geom.coordinates[0]
-          : null;
+          geom.type === "LineString"
+            ? geom.coordinates
+            : geom.type === "MultiLineString"
+              ? geom.coordinates[0]
+              : null;
         if (!coords || !coords.length) return null;
         const mid = coords[Math.floor(coords.length / 2)];
         return L.latLng(mid[1], mid[0]);
@@ -1085,7 +1092,8 @@
       function parkSafeReason(fromhour, tohour) {
         const from = parseFloat(fromhour);
         const to = parseFloat(tohour);
-        if (to <= activeHour) return `cleaned ${fmtHour(fromhour)}–${fmtHour(tohour)}`;
+        if (to <= activeHour)
+          return `cleaned ${fmtHour(fromhour)}–${fmtHour(tohour)}`;
         if (from >= parkUntilHour && parkUntilHour > activeHour)
           return `cleaning at ${fmtHour(fromhour)}`;
         return "safe";
@@ -1228,7 +1236,8 @@
             </div>`;
         }
         if (nearbyOtherWeek.length > 0) {
-          if (rows) rows += `<div style="border-top:1px solid #1e1e1e;margin:5px 0"></div>`;
+          if (rows)
+            rows += `<div style="border-top:1px solid #1e1e1e;margin:5px 0"></div>`;
           for (const { f, d } of nearbyOtherWeek.slice(0, 4)) {
             const p = f.properties;
             const side = p.blockside
@@ -1278,19 +1287,23 @@
         let recsHtml = "";
         if (_lastRecs.length > 0) {
           const hasParkWindow = parkUntilHour > activeHour;
-          const hdr = hasParkWindow ? "Nearest safe for your window" : "Nearest safe parking";
+          const hdr = hasParkWindow
+            ? "Nearest safe for your window"
+            : "Nearest safe parking";
           recsHtml = `
             <div class="recs-section">
-              <div class="recs-header">${hdr}</div>
-              ${_lastRecs.map(({ f, d }, i) => {
-                const p = f.properties;
-                const reason = parkSafeReason(p.fromhour, p.tohour);
-                return `<div class="rec-row" data-rec-idx="${i}">
+              <div class="verdict verdict-parksafe">${hdr}</div>
+              ${_lastRecs
+                .map(({ f, d }, i) => {
+                  const p = f.properties;
+                  const reason = parkSafeReason(p.fromhour, p.tohour);
+                  return `<div class="rec-row" data-rec-idx="${i}">
                   <span class="rec-name">${p.corridor || "—"}</span>
                   <span class="rec-why">${reason}</span>
                   <span class="rec-dist">${Math.round(d)}m</span>
                 </div>`;
-              }).join("")}
+                })
+                .join("")}
             </div>
           `;
         }
@@ -1372,7 +1385,10 @@
           .filter((f) => f.geometry)
           .map((f) => {
             const thisWeek = isTruthy(f.properties[viewWeekField]);
-            loadedFeatures.push({ ...f, properties: { ...f.properties, _thisWeek: thisWeek } }); // include _thisWeek for verdict logic
+            loadedFeatures.push({
+              ...f,
+              properties: { ...f.properties, _thisWeek: thisWeek },
+            }); // include _thisWeek for verdict logic
             return {
               ...f,
               properties: { ...f.properties, _thisWeek: thisWeek },
@@ -1416,17 +1432,20 @@
                   p.tohour,
                   activeHour,
                 );
-                const label =
-                  !p._thisWeek
-                    ? "Not This Week"
-                    : status === "active"
-                      ? "No Parking Now"
-                      : status === "upcoming"
-                        ? "Upcoming Today"
-                        : "Passed — Safe";
-                const badgeClass = !p._thisWeek ? "badge-passed" : `badge-${status}`;
+                const label = !p._thisWeek
+                  ? "Not This Week"
+                  : status === "active"
+                    ? "No Parking Now"
+                    : status === "upcoming"
+                      ? "Upcoming Today"
+                      : "Passed — Safe";
+                const badgeClass = !p._thisWeek
+                  ? "badge-passed"
+                  : `badge-${status}`;
                 // Determine which weeks this block is scheduled
-                const weekNums = [1,2,3,4,5].filter((w) => isTruthy(p[`week${w}`])).join(", ");
+                const weekNums = [1, 2, 3, 4, 5]
+                  .filter((w) => isTruthy(p[`week${w}`]))
+                  .join(", ");
                 return `
                 <div class="popup-street">${p.corridor || "Unknown Street"}</div>
                 <span class="popup-badge ${badgeClass}">${label}</span><br>
@@ -1540,7 +1559,8 @@
           const d = new Date(viewDate);
           d.setDate(viewDate.getDate() + i);
           const btn = document.createElement("button");
-          btn.className = "day-btn" + (i === parkUntilDayOffset ? " active" : "");
+          btn.className =
+            "day-btn" + (i === parkUntilDayOffset ? " active" : "");
           btn.textContent = DAY_NAMES[d.getDay()];
           btn.dataset.offset = i;
           btn.addEventListener("click", () => {
@@ -1618,7 +1638,9 @@
             loadEl.style.display = "block";
             fetchForDay("Friday");
           }
-          const latlng = checkMarker ? checkMarker.getLatLng() : L.latLng(37.7793, -122.4193);
+          const latlng = checkMarker
+            ? checkMarker.getLatLng()
+            : L.latLng(37.7793, -122.4193);
           const lbl = checkMarker ? lastSearchLabel : "SF City Hall";
           showVerdict(latlng, lbl);
           return;
@@ -1833,7 +1855,9 @@
 
       function fetchForDay(dayName) {
         const where = `upper(${cachedWeekdayField})='${dayName.toUpperCase()}'`;
-        console.log(`[SF Cleaning] Fetching day=${dayName}, weekField=${viewWeekField}, query: $where=${where}`);
+        console.log(
+          `[SF Cleaning] Fetching day=${dayName}, weekField=${viewWeekField}, query: $where=${where}`,
+        );
 
         const pageSize = 10000;
         let offset = 0;
@@ -1847,15 +1871,22 @@
               return r.json();
             })
             .then((data) => {
-              const batch = (data.features || []);
+              const batch = data.features || [];
               allFeatures = allFeatures.concat(batch);
-              console.log(`[SF Cleaning] Page offset=${offset}: ${batch.length} features (total so far: ${allFeatures.length})`);
+              console.log(
+                `[SF Cleaning] Page offset=${offset}: ${batch.length} features (total so far: ${allFeatures.length})`,
+              );
               if (batch.length < pageSize) {
                 const thisWeekCount = allFeatures.filter(
-                  (f) => f.properties && isTruthy(f.properties[viewWeekField])
+                  (f) => f.properties && isTruthy(f.properties[viewWeekField]),
                 ).length;
-                console.log(`[SF Cleaning] Done. Total=${allFeatures.length}, thisWeek(${viewWeekField})=${thisWeekCount}`);
-                renderGeoJSON({ type: "FeatureCollection", features: allFeatures });
+                console.log(
+                  `[SF Cleaning] Done. Total=${allFeatures.length}, thisWeek(${viewWeekField})=${thisWeekCount}`,
+                );
+                renderGeoJSON({
+                  type: "FeatureCollection",
+                  features: allFeatures,
+                });
               } else {
                 offset += pageSize;
                 return fetchPage();
@@ -1864,7 +1895,8 @@
         }
 
         return fetchPage().catch((err) => {
-          document.getElementById("loading").textContent = `Error: ${err.message}`;
+          document.getElementById("loading").textContent =
+            `Error: ${err.message}`;
           console.error("[SF Cleaning]", err);
         });
       }
@@ -1880,7 +1912,10 @@
             const records = Array.isArray(probe) ? probe : [];
             if (!records.length) throw new Error("Probe returned no records");
 
-            console.log("[SF Cleaning] Fields:", Object.keys(records[0]).join(", "));
+            console.log(
+              "[SF Cleaning] Fields:",
+              Object.keys(records[0]).join(", "),
+            );
             console.log("[SF Cleaning] Sample record:", records[0]);
 
             const daySet = new Set([
@@ -1889,7 +1924,13 @@
             ]);
             outer: for (const rec of records) {
               for (const [key, val] of Object.entries(rec)) {
-                if (daySet.has(String(val || "").toLowerCase().trim())) {
+                if (
+                  daySet.has(
+                    String(val || "")
+                      .toLowerCase()
+                      .trim(),
+                  )
+                ) {
                   cachedWeekdayField = key;
                   break outer;
                 }
@@ -1900,7 +1941,8 @@
             return fetchForDay(dayName);
           })
           .catch((err) => {
-            document.getElementById("loading").textContent = `Error: ${err.message}`;
+            document.getElementById("loading").textContent =
+              `Error: ${err.message}`;
             console.error("[SF Cleaning]", err);
           });
       }
