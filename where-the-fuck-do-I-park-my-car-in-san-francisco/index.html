@@ -1094,7 +1094,7 @@
           verdictHtml = `<div class="verdict verdict-upcoming">&#x26A0;&nbsp; Next cleaning: ${fmtHour(p.fromhour)} – ${fmtHour(p.tohour)}</div>`;
         } else if (passed.length > 0) {
           verdict = "passed";
-          verdictHtml = `<div class="verdict verdict-passed">&#x2713;&nbsp; Safe — no more cleaning ${dayLabel}</div>`;
+          verdictHtml = `<div class="verdict verdict-ok">&#x2713;&nbsp; Safe — no more cleaning ${dayLabel}</div>`;
         } else if (nearbyOtherWeek.length > 0) {
           verdict = "ok";
           verdictHtml = `<div class="verdict verdict-ok">&#x2713;&nbsp; Safe — no cleaning this week</div>`;
@@ -1153,7 +1153,7 @@
           ${label ? `<div class="result-address">${label}</div>` : ""}
           ${verdictHtml}
           <div class="result-rows">
-            ${rows || `<span class="r-dim">No street cleaning data within 60m.</span>`}
+            ${rows || `<span class="r-dim">${label ? `${label} &nbsp;&middot;&nbsp; ` : ""}No street cleaning data within 60m.</span>`}
           </div>
         `;
         panel.style.display = "block";
@@ -1522,9 +1522,23 @@
       });
 
       // ── Map click → verdict ───────────────────────────────────────────────
-      map.on("click", (e) => {
+      map.on("click", async (e) => {
         if (Date.now() - _lastLayerClick < 50) return; // layer already handled this
         showVerdict(e.latlng, null);
+        try {
+          const resp = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${e.latlng.lat}&lon=${e.latlng.lng}&format=json`,
+            { headers: { "User-Agent": "SF-Street-Cleaning-Map" } },
+          );
+          const data = await resp.json();
+          const street =
+            data.address?.road ||
+            data.address?.pedestrian ||
+            data.address?.path ||
+            null;
+          if (street && checkMarker && checkMarker.getLatLng().equals(e.latlng))
+            showVerdict(e.latlng, street);
+        } catch {}
       });
 
       // ── My Location ───────────────────────────────────────────────────────
