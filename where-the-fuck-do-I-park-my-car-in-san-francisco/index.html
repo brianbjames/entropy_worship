@@ -694,6 +694,7 @@
         <div class="legend-row">
           <div class="legend-line" style="background: #4499ff"></div>
           <span>Safe for your full window</span>
+          <span class="legend-count" id="cnt-parksafe">&mdash;</span>
         </div>
         <!-- <div class="source">
           Thin/thick = right/left block face
@@ -1128,11 +1129,17 @@
 
       // ── Legend count update ───────────────────────────────────────────────
       function updateCounts(hour) {
-        const c = { active: 0, upcoming: 0, passed: 0 };
+        const c = { active: 0, upcoming: 0, passed: 0, parksafe: 0 };
         if (geoLayer) {
           geoLayer.eachLayer((layer) => {
             const p = layer.feature && layer.feature.properties;
-            if (p && p._thisWeek) c[getStatusAtHour(p.fromhour, p.tohour, hour)]++;
+            if (p && p._thisWeek) {
+              if (isParkSafe(p.fromhour, p.tohour)) {
+                c.parksafe++;
+              } else {
+                c[getStatusAtHour(p.fromhour, p.tohour, hour)]++;
+              }
+            }
           });
         }
         document.getElementById("cnt-active").textContent =
@@ -1141,6 +1148,8 @@
           c.upcoming.toLocaleString();
         document.getElementById("cnt-passed").textContent =
           c.passed.toLocaleString();
+        document.getElementById("cnt-parksafe").textContent =
+          c.parksafe.toLocaleString();
       }
 
       // ── Render GeoJSON ────────────────────────────────────────────────────
@@ -1177,7 +1186,7 @@
             };
           });
 
-        const c = { active: 0, upcoming: 0, passed: 0 };
+        const c = { active: 0, upcoming: 0, passed: 0, parksafe: 0 };
 
         geoLayer = L.geoJSON(
           { type: "FeatureCollection", features },
@@ -1185,8 +1194,11 @@
             style: (feature) => {
               const p = feature.properties;
               if (p._thisWeek) {
-                const status = getStatusAtHour(p.fromhour, p.tohour, activeHour);
-                c[status]++;
+                if (isParkSafe(p.fromhour, p.tohour)) {
+                  c.parksafe++;
+                } else {
+                  c[getStatusAtHour(p.fromhour, p.tohour, activeHour)]++;
+                }
               }
               const isLeft = (p.cnnrightleft || "").toUpperCase() === "L";
               return getFeatureStyle(p, isLeft);
@@ -1249,6 +1261,8 @@
           c.upcoming.toLocaleString();
         document.getElementById("cnt-passed").textContent =
           c.passed.toLocaleString();
+        document.getElementById("cnt-parksafe").textContent =
+          c.parksafe.toLocaleString();
 
         // Show time slider (idempotent)
         document.getElementById("time-section").hidden = false;
