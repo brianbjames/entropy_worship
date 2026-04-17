@@ -65,6 +65,12 @@
       property="article:tag"
       content="Entropy Worship. SF Street Cleaning Map."
     />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
@@ -78,7 +84,12 @@
         margin: 0;
         padding: 0;
         background: #0d0d0d;
-        font-family: "Courier New", monospace;
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
       }
 
       #map {
@@ -86,14 +97,29 @@
         width: 100%;
       }
 
+      /* ── Combined control panel ──────────────────────────────────────────── */
+      #control-panel {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        z-index: 1000;
+        background: rgba(8, 8, 8, 0.65);
+        border: 1px solid #2a2a2a;
+        border-radius: 3px;
+        width: 280px;
+        color: #fff;
+      }
+
+      .panel-section {
+        padding: 12px 16px;
+      }
+
+      .panel-section + .panel-section {
+        border-top: 1px solid #222;
+      }
+
       /* ── Legend ─────────────────────────────────────────────────────────── */
       .legend {
-        background: rgba(8, 8, 8, 0.92);
-        border: 1px solid #2a2a2a;
-        color: #bbb;
-        padding: 14px 18px;
-        border-radius: 3px;
-        min-width: 240px;
         line-height: 1.6;
       }
 
@@ -106,7 +132,7 @@
       }
 
       .legend .subtitle {
-        color: #666;
+        color: #ccc;
         font-size: 11px;
         margin-bottom: 12px;
       }
@@ -133,7 +159,7 @@
       }
 
       .legend-count {
-        color: #555;
+        color: #ccc;
         margin-left: auto;
         font-size: 11px;
         min-width: 28px;
@@ -142,29 +168,29 @@
 
       .legend .source {
         font-size: 10px;
-        color: #444;
+        color: #aaa;
         margin-top: 2px;
       }
       .legend .source a {
+        color: #ccc;
+      }
+      .source-link {
+        font-size: 10px;
+        font-weight: normal;
+        letter-spacing: 1px;
         color: #666;
+        text-decoration: none;
+        text-transform: uppercase;
+        vertical-align: middle;
+      }
+      .source-link:hover {
+        color: #aaa;
       }
 
       /* ── Search panel ────────────────────────────────────────────────────── */
-      #search-panel {
-        position: absolute;
-        top: 10px;
-        left: 10px;
-        z-index: 1000;
-        background: rgba(8, 8, 8, 0.92);
-        border: 1px solid #2a2a2a;
-        border-radius: 3px;
-        padding: 12px 14px;
-        width: 236px;
-      }
-
       #search-panel label {
         display: block;
-        color: #555;
+        color: #ccc;
         font-size: 10px;
         letter-spacing: 2px;
         text-transform: uppercase;
@@ -181,27 +207,37 @@
         min-width: 0;
         background: #111;
         border: 1px solid #2e2e2e;
-        color: #ccc;
+        color: #fff;
         padding: 6px 8px;
-        font-family: "Courier New", monospace;
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
         font-size: 12px;
         border-radius: 2px;
         outline: none;
       }
 
       #search-input::placeholder {
-        color: #3a3a3a;
+        color: #666;
       }
       #search-input:focus {
-        border-color: #444;
+        border-color: #666;
       }
 
       #search-btn {
         background: #181818;
         border: 1px solid #3a3a3a;
-        color: #888;
+        color: #ddd;
         padding: 6px 10px;
-        font-family: "Courier New", monospace;
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
         font-size: 11px;
         border-radius: 2px;
         cursor: pointer;
@@ -211,7 +247,7 @@
 
       #search-btn:hover {
         background: #242424;
-        color: #ccc;
+        color: #fff;
       }
       #search-btn:disabled {
         opacity: 0.4;
@@ -219,9 +255,26 @@
       }
 
       #search-hint {
-        color: #3a3a3a;
+        color: #888;
         font-size: 10px;
         margin-top: 7px;
+      }
+
+      #locate-btn {
+        background: #181818;
+        border: 1px solid #3a3a3a;
+        color: #ddd;
+        padding: 6px 10px;
+        font-size: 11px;
+        border-radius: 2px;
+        cursor: pointer;
+        letter-spacing: 1px;
+        white-space: nowrap;
+      }
+
+      #locate-btn:hover {
+        background: #242424;
+        color: #fff;
       }
 
       /* ── Verdict panel ───────────────────────────────────────────────────── */
@@ -264,7 +317,7 @@
       }
 
       .result-address {
-        color: #999;
+        color: #ddd;
         font-size: 11px;
         margin-bottom: 6px;
         white-space: nowrap;
@@ -286,22 +339,10 @@
         color: #44bb55;
       }
       .result-rows .r-dim {
-        color: #555;
+        color: #aaa;
       }
 
-      /* ── Time slider ─────────────────────────────────────────────────────── */
-      #time-panel {
-        position: absolute;
-        bottom: 28px;
-        left: 50%;
-        transform: translateX(-50%);
-        z-index: 1000;
-        background: rgba(8, 8, 8, 0.92);
-        border: 1px solid #2a2a2a;
-        border-radius: 3px;
-        padding: 10px 18px 8px;
-        min-width: 340px;
-      }
+      /* ── Time section ────────────────────────────────────────────────────── */
 
       /* ── Day selector ────────────────────────────────────────────────────── */
       #day-selector {
@@ -314,8 +355,13 @@
       .day-btn {
         background: #111;
         border: 1px solid #2e2e2e;
-        color: #555;
-        font-family: "Courier New", monospace;
+        color: #ccc;
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
         font-size: 10px;
         padding: 3px 8px;
         border-radius: 2px;
@@ -325,14 +371,14 @@
       }
 
       .day-btn:hover {
-        color: #aaa;
-        border-color: #444;
+        color: #fff;
+        border-color: #666;
       }
 
       .day-btn.active {
         background: #1c1c1c;
-        border-color: #555;
-        color: #ddd;
+        border-color: #888;
+        color: #fff;
       }
 
       #time-header {
@@ -343,16 +389,21 @@
       }
 
       #time-label {
-        color: #ccc;
+        color: #fff;
         font-size: 12px;
         letter-spacing: 1px;
       }
 
       #time-reset {
         background: none;
-        border: 1px solid #333;
-        color: #555;
-        font-family: "Courier New", monospace;
+        border: 1px solid #555;
+        color: #ccc;
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
         font-size: 10px;
         padding: 2px 7px;
         border-radius: 2px;
@@ -361,8 +412,8 @@
       }
 
       #time-reset:hover {
-        color: #aaa;
-        border-color: #555;
+        color: #fff;
+        border-color: #aaa;
       }
 
       #time-slider {
@@ -397,7 +448,7 @@
       .time-ticks {
         display: flex;
         justify-content: space-between;
-        color: #444;
+        color: #aaa;
         font-size: 9px;
         margin-top: 5px;
         letter-spacing: 0.5px;
@@ -417,7 +468,7 @@
       }
 
       #park-label {
-        color: #4499ff;
+        color: #fff;
         font-size: 12px;
         letter-spacing: 1px;
       }
@@ -427,7 +478,7 @@
         -webkit-appearance: none;
         appearance: none;
         height: 3px;
-        background: #0e1e36;
+        background: #444;
         border-radius: 2px;
         outline: none;
       }
@@ -437,9 +488,9 @@
         width: 13px;
         height: 13px;
         border-radius: 50%;
-        background: #4499ff;
+        background: #fff;
         cursor: pointer;
-        box-shadow: 0 0 5px rgba(68, 153, 255, 0.4);
+        box-shadow: 0 0 5px rgba(255, 255, 255, 0.25);
       }
 
       #park-slider::-moz-range-thumb {
@@ -447,7 +498,7 @@
         height: 13px;
         border: none;
         border-radius: 50%;
-        background: #4499ff;
+        background: #fff;
         cursor: pointer;
       }
 
@@ -457,7 +508,12 @@
         color: #bbb;
         border: 1px solid #333;
         border-radius: 3px;
-        font-family: "Courier New", monospace;
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
         font-size: 12px;
         box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6);
       }
@@ -522,7 +578,7 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background: rgba(8, 8, 8, 0.92);
+        background: rgba(8, 8, 8, 0.65);
         color: #666;
         padding: 20px 32px;
         font-size: 13px;
@@ -537,7 +593,7 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background: rgba(8, 8, 8, 0.92);
+        background: rgba(8, 8, 8, 0.65);
         border: 1px solid #2a2a2a;
         color: #888;
         padding: 32px 44px;
@@ -572,16 +628,16 @@
       #ew-logo {
         position: absolute;
         bottom: 10px;
-        left: 10px;
+        right: 10px;
         z-index: 1000;
-        font-family: "BlenderProBook", "Courier New", monospace;
+        font-family: "BlenderProBook", "Inter", sans-serif;
         font-size: 13px;
         letter-spacing: 3px;
         text-transform: uppercase;
       }
 
       #ew-logo a {
-        color: #444;
+        color: #aaa;
         text-decoration: none;
       }
 
@@ -597,59 +653,97 @@
     </div>
     <div id="loading">Loading street cleaning data&hellip;</div>
 
-    <div id="search-panel">
-      <label for="search-input">Find Parking</label>
-      <form id="search-form" autocomplete="off">
-        <input
-          id="search-input"
-          type="text"
-          placeholder="Address or intersection"
-          value="City Hall, San Francisco"
-        />
-        <button id="search-btn" type="submit">Go</button>
-      </form>
-      <div id="search-hint">or click anywhere on the map</div>
-      <div id="result-panel"></div>
-    </div>
+    <div id="control-panel">
+      <!-- Legend -->
+      <div class="panel-section legend">
+        <h4>
+          SF Street Cleaning &nbsp;<a
+            class="source-link"
+            href="https://datasf.org/opendata/"
+            target="_blank"
+            >DataSF</a
+          >
+        </h4>
+        <div class="subtitle" id="legend-subtitle"></div>
+        <hr />
+        <div class="legend-row">
+          <div class="legend-line" style="background: #ff3333"></div>
+          <span>No parking &mdash; active now</span>
+          <span class="legend-count" id="cnt-active">&mdash;</span>
+        </div>
+        <div class="legend-row">
+          <div class="legend-line" style="background: #ff9900"></div>
+          <span>Upcoming today</span>
+          <span class="legend-count" id="cnt-upcoming">&mdash;</span>
+        </div>
+        <div class="legend-row">
+          <div class="legend-line" style="background: #2ecc71"></div>
+          <span>Passed &mdash; safe to park</span>
+          <span class="legend-count" id="cnt-passed">&mdash;</span>
+        </div>
+        <div class="legend-row">
+          <div class="legend-line" style="background: #4499ff"></div>
+          <span>Safe for your full window</span>
+        </div>
+        <!-- <div class="source">
+          Thin/thick = right/left block face
+        </div> -->
+      </div>
 
-    <div id="time-panel" hidden>
-      <div id="day-selector"></div>
-      <div id="time-header">
-        <span id="time-label"></span>
-        <button id="time-reset">Reset to now</button>
-      </div>
-      <input type="range" id="time-slider" min="6" max="20" step="0.5" />
-      <div class="time-ticks">
-        <span>6 AM</span><span>9 AM</span><span>12 PM</span> <span>3 PM</span
-        ><span>6 PM</span><span>8 PM</span>
-      </div>
-      <div id="park-panel">
-        <div id="park-header">
-          <span id="park-label">Park until: —</span>
+      <!-- Day / time controls -->
+      <div class="panel-section" id="time-section" hidden>
+        <div id="day-selector"></div>
+        <div id="time-header">
+          <span id="time-label"></span>
+          <button id="time-reset">Reset to now</button>
         </div>
-        <input type="range" id="park-slider" min="6" max="20" step="0.5" />
+        <input type="range" id="time-slider" min="0" max="24" step="0.5" />
         <div class="time-ticks">
-          <span>6 AM</span><span>9 AM</span><span>12 PM</span> <span>3 PM</span
-          ><span>6 PM</span><span>8 PM</span>
+          <span>12 AM</span><span>6 AM</span><span>12 PM</span><span>6 PM</span
+          ><span>12 AM</span>
         </div>
+        <div id="park-panel">
+          <div id="park-header">
+            <span id="park-label">Park until: &mdash;</span>
+          </div>
+          <input type="range" id="park-slider" min="0" max="24" step="0.5" />
+          <div class="time-ticks">
+            <span>12 AM</span><span>6 AM</span><span>12 PM</span
+            ><span>6 PM</span><span>12 AM</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Find by address -->
+      <div class="panel-section" id="search-panel">
+        <form id="search-form" autocomplete="off">
+          <input
+            id="search-input"
+            type="text"
+            placeholder="Address or intersection"
+          />
+          <button id="search-btn" type="submit">Go</button>
+        </form>
+        <!-- <div id="search-hint">or click anywhere on the map</div> -->
+        <button id="locate-btn" style="margin-top: 7px; width: 100%">
+          &#9678; My Location
+        </button>
+        <div id="result-panel"></div>
       </div>
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
       // ── Map init ──────────────────────────────────────────────────────────
-      const map = L.map("map", { zoomControl: false }).setView(
-        [37.7793, -122.4193],
-        15,
-      );
-      L.control.zoom({ position: "bottomright" }).addTo(map);
+      const map = L.map("map", {
+        zoomControl: false,
+        attributionControl: false,
+      }).setView([37.7793, -122.4193], 15);
 
       L.tileLayer(
         "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",
         {
-          attribution:
-            '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors ' +
-            '&copy; <a href="https://carto.com/">CARTO</a>',
+          attribution: "",
           subdomains: "abcd",
           maxZoom: 19,
         },
@@ -753,8 +847,8 @@
       }
 
       function fmtSliderHour(h) {
-        const hour = Math.floor(h);
-        const min = Math.round((h - hour) * 60);
+        const hour = Math.floor(h) % 24;
+        const min = Math.round((h - Math.floor(h)) * 60);
         const ampm = hour < 12 ? "AM" : "PM";
         const h12 = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
         return `${h12}:${min.toString().padStart(2, "0")} ${ampm}`;
@@ -775,46 +869,7 @@
               : base;
       }
 
-      // ── Legend ────────────────────────────────────────────────────────────
-      const legend = L.control({ position: "topright" });
-      legend.onAdd = function () {
-        const div = L.DomUtil.create("div", "legend");
-        div.innerHTML = `
-          <h4>SF Street Cleaning</h4>
-          <div class="subtitle" id="legend-subtitle">
-            ${dateStr}<br>
-            ${timeStr} &nbsp;&middot;&nbsp; Week ${weekOfMonth} of month
-          </div>
-          <hr>
-          <div class="legend-row">
-            <div class="legend-line" style="background:#ff3333"></div>
-            <span>No parking &mdash; active now</span>
-            <span class="legend-count" id="cnt-active">&mdash;</span>
-          </div>
-          <div class="legend-row">
-            <div class="legend-line" style="background:#ff9900"></div>
-            <span>Upcoming today</span>
-            <span class="legend-count" id="cnt-upcoming">&mdash;</span>
-          </div>
-          <div class="legend-row">
-            <div class="legend-line" style="background:#2ecc71"></div>
-            <span>Passed &mdash; safe to park</span>
-            <span class="legend-count" id="cnt-passed">&mdash;</span>
-          </div>
-          <div class="legend-row">
-            <div class="legend-line" style="background:#4499ff"></div>
-            <span>Safe for your full window - park here</span>
-          </div>
-          <hr>
-          <div class="source">
-            Thin/thick = right/left block face &nbsp;&middot;&nbsp;
-            <a href="https://datasf.org/opendata/" target="_blank">DataSF</a>
-          </div>
-        `;
-        return div;
-      };
-      legend.addTo(map);
-
+      // ── Legend subtitle ───────────────────────────────────────────────────
       function updateLegendSubtitle(date) {
         const el = document.getElementById("legend-subtitle");
         if (!el) return;
@@ -828,6 +883,7 @@
         const timePart = isToday ? `${timeStr} &nbsp;&middot;&nbsp; ` : "";
         el.innerHTML = `${ds}<br>${timePart}Week ${wom} of month`;
       }
+      updateLegendSubtitle(now);
 
       // ── Feature + layer storage ───────────────────────────────────────────
       // loadedFeatures: original (un-offset) features for distance queries
@@ -1143,10 +1199,10 @@
           c.passed.toLocaleString();
 
         // Show time slider (idempotent)
-        document.getElementById("time-panel").hidden = false;
+        document.getElementById("time-section").hidden = false;
 
         // Init park-until slider to 2 h after current view hour
-        parkUntilHour = Math.min(20, activeHour + 2);
+        parkUntilHour = Math.min(24, activeHour + 2);
         const parkSlider = document.getElementById("park-slider");
         parkSlider.value = parkUntilHour;
         updateParkLabel(parkUntilHour);
@@ -1219,11 +1275,11 @@
         const targetHour = isViewingToday() ? currentHour : 8;
         activeHour = targetHour;
         const slider = document.getElementById("time-slider");
-        slider.value = Math.min(20, Math.max(6, targetHour));
+        slider.value = Math.min(24, Math.max(0, targetHour));
         setTimeLabel(targetHour);
 
         // Reset park-until to 2 h ahead
-        parkUntilHour = Math.min(20, targetHour + 2);
+        parkUntilHour = Math.min(24, targetHour + 2);
         const parkSlider = document.getElementById("park-slider");
         parkSlider.value = parkUntilHour;
         updateParkLabel(parkUntilHour);
@@ -1301,7 +1357,7 @@
       document.getElementById("time-reset").addEventListener("click", () => {
         const targetHour = isViewingToday() ? currentHour : 8;
         const slider = document.getElementById("time-slider");
-        slider.value = Math.min(20, Math.max(6, targetHour));
+        slider.value = Math.min(24, Math.max(0, targetHour));
         updateForHour(targetHour);
       });
 
@@ -1344,6 +1400,32 @@
 
       // ── Map click → verdict ───────────────────────────────────────────────
       map.on("click", (e) => showVerdict(e.latlng, null));
+
+      // ── My Location ───────────────────────────────────────────────────────
+      document.getElementById("locate-btn").addEventListener("click", () => {
+        if (!navigator.geolocation) {
+          document.getElementById("result-panel").innerHTML =
+            `<div style="color:#aa4444;font-size:11px">Geolocation not supported by this browser.</div>`;
+          document.getElementById("result-panel").style.display = "block";
+          return;
+        }
+        const btn = document.getElementById("locate-btn");
+        btn.textContent = "…";
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            btn.textContent = "⊙ My Location";
+            const latlng = L.latLng(pos.coords.latitude, pos.coords.longitude);
+            map.setView(latlng, 17);
+            showVerdict(latlng, "Your Location");
+          },
+          () => {
+            btn.textContent = "⊙ My Location";
+            document.getElementById("result-panel").innerHTML =
+              `<div style="color:#aa4444;font-size:11px">Location access denied.</div>`;
+            document.getElementById("result-panel").style.display = "block";
+          },
+        );
+      });
 
       // ── Address search ────────────────────────────────────────────────────
       document
@@ -1414,7 +1496,7 @@
         }).addTo(map);
         document.getElementById("result-panel").innerHTML = `
           <div class="result-address">SF City Hall</div>
-          <div style="color:#444;font-size:11px;margin-top:4px">Loading cleaning data…</div>
+          <div style="color:#ccc;font-size:11px;margin-top:4px">Loading cleaning data…</div>
         `;
         document.getElementById("result-panel").style.display = "block";
 
@@ -1445,7 +1527,7 @@
 
         // Initial slider position for today
         const slider = document.getElementById("time-slider");
-        slider.value = Math.min(20, Math.max(6, currentHour));
+        slider.value = Math.min(24, Math.max(0, currentHour));
         setTimeLabel(currentHour);
 
         fetch(`${BASE}.json?$limit=10`)
