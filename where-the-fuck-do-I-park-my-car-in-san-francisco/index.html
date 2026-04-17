@@ -837,6 +837,15 @@
       }
 
       function getFeatureStyle(p, isLeft) {
+        // Street has a schedule for this weekday but not this specific week —
+        // show it dimly so the map looks complete without implying a restriction.
+        if (!p._thisWeek) {
+          return {
+            color: "#444444",
+            weight: lineWeight(isLeft),
+            opacity: 0.35,
+          };
+        }
         if (isParkSafe(p.fromhour, p.tohour)) {
           return {
             color: PARK_SAFE_COLOR,
@@ -1104,7 +1113,7 @@
         if (geoLayer) {
           geoLayer.eachLayer((layer) => {
             const p = layer.feature && layer.feature.properties;
-            if (p) c[getStatusAtHour(p.fromhour, p.tohour, hour)]++;
+            if (p && p._thisWeek) c[getStatusAtHour(p.fromhour, p.tohour, hour)]++;
           });
         }
         document.getElementById("cnt-active").textContent =
@@ -1135,13 +1144,16 @@
           return;
         }
 
-        // Pre-process: filter to this week, apply block-face offset
+        // Pre-process: tag each feature with whether it's active this week,
+        // keep all features so every street shows on the map.
         const features = geojson.features
-          .filter((f) => isTruthy(f.properties[viewWeekField]) && f.geometry)
+          .filter((f) => f.geometry)
           .map((f) => {
-            loadedFeatures.push(f); // original coords for distance calc
+            const thisWeek = isTruthy(f.properties[viewWeekField]);
+            if (thisWeek) loadedFeatures.push(f); // only this week's for distance queries
             return {
               ...f,
+              properties: { ...f.properties, _thisWeek: thisWeek },
               geometry: offsetGeometry(f.geometry, f.properties.cnnrightleft),
             };
           });
@@ -1153,8 +1165,10 @@
           {
             style: (feature) => {
               const p = feature.properties;
-              const status = getStatusAtHour(p.fromhour, p.tohour, activeHour);
-              c[status]++;
+              if (p._thisWeek) {
+                const status = getStatusAtHour(p.fromhour, p.tohour, activeHour);
+                c[status]++;
+              }
               const isLeft = (p.cnnrightleft || "").toUpperCase() === "L";
               return getFeatureStyle(p, isLeft);
             },
