@@ -661,6 +661,48 @@
       #ew-logo a:hover {
         color: #888;
       }
+
+      /* ── Recommendations ─────────────────────────────────────────────────── */
+      .recs-section {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #1e1e1e;
+      }
+
+      .recs-header {
+        color: #666;
+        font-size: 9px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+      }
+
+      .rec-row {
+        display: flex;
+        align-items: baseline;
+        gap: 5px;
+        font-size: 11px;
+        line-height: 1.9;
+        cursor: pointer;
+        color: #4499ff;
+      }
+
+      .rec-row:hover .rec-name {
+        text-decoration: underline;
+      }
+
+      .rec-dist {
+        color: #555;
+        font-size: 10px;
+        margin-left: auto;
+        white-space: nowrap;
+      }
+
+      .rec-why {
+        color: #555;
+        font-size: 10px;
+        white-space: nowrap;
+      }
     </style>
   </head>
   <body>
@@ -1019,6 +1061,58 @@
         return min;
       }
 
+      // ── Parking recommendations ───────────────────────────────────────────
+      let _lastRecs = [];
+
+      function featureMidpoint(feature) {
+        const geom = feature.geometry;
+        if (!geom) return null;
+        const coords =
+          geom.type === "LineString" ? geom.coordinates
+          : geom.type === "MultiLineString" ? geom.coordinates[0]
+          : null;
+        if (!coords || !coords.length) return null;
+        const mid = coords[Math.floor(coords.length / 2)];
+        return L.latLng(mid[1], mid[0]);
+      }
+
+      function parkSafeReason(fromhour, tohour) {
+        const from = parseFloat(fromhour);
+        const to = parseFloat(tohour);
+        if (to <= activeHour) return `cleaned ${fmtHour(fromhour)}–${fmtHour(tohour)}`;
+        if (from >= parkUntilHour && parkUntilHour > activeHour)
+          return `cleaning at ${fmtHour(fromhour)}`;
+        return "safe";
+      }
+
+      function findRecommendations(latlng, maxResults = 5, maxRadius = 400) {
+        if (loadedFeatures.length === 0) return [];
+        const hasParkWindow = parkUntilHour > activeHour;
+
+        const scored = loadedFeatures
+          .map((f) => ({ f, d: distToFeature(latlng.lat, latlng.lng, f) }))
+          .filter((x) => x.d <= maxRadius && x.f.properties._thisWeek)
+          .filter((x) => {
+            const p = x.f.properties;
+            return hasParkWindow
+              ? isParkSafe(p.fromhour, p.tohour)
+              : getStatusAtHour(p.fromhour, p.tohour, activeHour) === "passed";
+          })
+          .sort((a, b) => a.d - b.d);
+
+        const seen = new Set();
+        const unique = [];
+        for (const item of scored) {
+          const key = (item.f.properties.corridor || "").toLowerCase().trim();
+          if (key && !seen.has(key)) {
+            seen.add(key);
+            unique.push(item);
+          }
+          if (unique.length >= maxResults) break;
+        }
+        return unique;
+      }
+
       // ── Verdict panel ─────────────────────────────────────────────────────
       function showVerdict(latlng, label) {
         lastSearchLabel = label;
@@ -1157,6 +1251,28 @@
           fillOpacity: 0.25,
         }).addTo(map);
 
+        // Build recommendations
+        _lastRecs = findRecommendations(latlng);
+        let recsHtml = "";
+        if (_lastRecs.length > 0) {
+          const hasParkWindow = parkUntilHour > activeHour;
+          const hdr = hasParkWindow ? "Nearest safe for your window" : "Nearest safe parking";
+          recsHtml = `
+            <div class="recs-section">
+              <div class="recs-header">${hdr}</div>
+              ${_lastRecs.map(({ f, d }, i) => {
+                const p = f.properties;
+                const reason = parkSafeReason(p.fromhour, p.tohour);
+                return `<div class="rec-row" data-rec-idx="${i}">
+                  <span class="rec-name">${p.corridor || "—"}</span>
+                  <span class="rec-why">${reason}</span>
+                  <span class="rec-dist">${Math.round(d)}m</span>
+                </div>`;
+              }).join("")}
+            </div>
+          `;
+        }
+
         const panel = document.getElementById("result-panel");
         panel.innerHTML = `
           ${label ? `<div class="result-address">${label}</div>` : ""}
@@ -1164,8 +1280,20 @@
           <div class="result-rows">
             ${rows || `<span class="r-dim">${label ? `${label} &nbsp;&middot;&nbsp; ` : ""}No street cleaning data within 60m.</span>`}
           </div>
+          ${recsHtml}
         `;
         panel.style.display = "block";
+
+        // Wire up rec row clicks → pan to that street
+        panel.querySelectorAll(".rec-row").forEach((row) => {
+          row.addEventListener("click", () => {
+            const idx = parseInt(row.dataset.recIdx, 10);
+            const rec = _lastRecs[idx];
+            if (!rec) return;
+            const mid = featureMidpoint(rec.f);
+            if (mid) map.setView(mid, Math.max(map.getZoom(), 17));
+          });
+        });
       }
 
       // ── Legend count update ───────────────────────────────────────────────
