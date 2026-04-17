@@ -1063,6 +1063,12 @@
 
       // ── Parking recommendations ───────────────────────────────────────────
       let _lastRecs = [];
+      let _recMarkers = [];
+
+      function clearRecMarkers() {
+        _recMarkers.forEach((m) => map.removeLayer(m));
+        _recMarkers = [];
+      }
 
       function featureMidpoint(feature) {
         const geom = feature.geometry;
@@ -1116,6 +1122,7 @@
       // ── Verdict panel ─────────────────────────────────────────────────────
       function showVerdict(latlng, label) {
         lastSearchLabel = label;
+        clearRecMarkers();
 
         // If data hasn't loaded yet (and it's not a weekend), leave the panel in its loading state
         if (!isWeekendView && loadedFeatures.length === 0) return;
@@ -1253,6 +1260,21 @@
 
         // Build recommendations
         _lastRecs = findRecommendations(latlng);
+
+        // Place blue pins at each recommended location
+        _lastRecs.forEach(({ f }) => {
+          const mid = featureMidpoint(f);
+          if (!mid) return;
+          const m = L.circleMarker(mid, {
+            radius: 6,
+            color: PARK_SAFE_COLOR,
+            weight: 2,
+            fillColor: PARK_SAFE_COLOR,
+            fillOpacity: 0.35,
+          }).addTo(map);
+          _recMarkers.push(m);
+        });
+
         let recsHtml = "";
         if (_lastRecs.length > 0) {
           const hasParkWindow = parkUntilHour > activeHour;
