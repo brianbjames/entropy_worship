@@ -735,7 +735,11 @@
           <button id="search-btn" type="submit">Go</button>
         </form>
         <!-- <div id="search-hint">or click anywhere on the map</div> -->
-        <button type="button" id="locate-btn" style="margin-top: 7px; width: 100%">
+        <button
+          type="button"
+          id="locate-btn"
+          style="margin-top: 7px; width: 100%"
+        >
           &#9678; My Location
         </button>
         <div id="result-panel"></div>
@@ -891,7 +895,7 @@
         const wom = Math.ceil(date.getDate() / 7);
         const isToday = date.toDateString() === now.toDateString();
         const timePart = isToday ? `${timeStr} &nbsp;&middot;&nbsp; ` : "";
-        el.innerHTML = `${ds}<br>${timePart}Week ${wom} of month`;
+        el.innerHTML = `${ds}, ${timePart}Week ${wom}`;
       }
       updateLegendSubtitle(now);
 
@@ -1432,9 +1436,10 @@
           },
           (err) => {
             btn.textContent = "⊙ My Location";
-            const msg = err.code === 1
-              ? "Location access denied — check Settings > Safari > Location."
-              : "Could not get location. Try again.";
+            const msg =
+              err.code === 1
+                ? "Location access denied — check Settings > Safari > Location."
+                : "Could not get location. Try again.";
             document.getElementById("result-panel").innerHTML =
               `<div style="color:#aa4444;font-size:11px">${msg}</div>`;
             document.getElementById("result-panel").style.display = "block";
