@@ -811,6 +811,26 @@
             <span class="legend-count" id="cnt-meter-free">&mdash;</span>
           </div>
         </div>
+        <hr />
+        <div class="legend-row" style="align-items: center">
+          <span style="font-size: 11px; color: #ccc">Police Incidents</span>
+          <span id="incidents-status"></span>
+          <button class="meters-toggle" id="incidents-toggle">Off</button>
+        </div>
+        <div id="incidents-legend" style="display: none">
+          <div class="legend-row" style="margin-top: 4px">
+            <div
+              class="legend-dot"
+              style="
+                background: transparent;
+                border: 2px solid #ff4466;
+                box-sizing: border-box;
+              "
+            ></div>
+            <span>Recent incidents within 24 hours</span>
+            <span class="legend-count" id="cnt-incidents">&mdash;</span>
+          </div>
+        </div>
       </div>
 
       <!-- Day / time controls -->
@@ -2452,6 +2472,153 @@
         if (!metersVisible) return;
         clearTimeout(_metersMoveTimer);
         _metersMoveTimer = setTimeout(fetchMeters, 400);
+      });
+
+      // ── Police Incidents ─────────────────────────────────────────────────
+      const INCIDENTS_API =
+        "https://data.sfgov.org/resource/wg3w-h783.json";
+      let incidentsVisible = false;
+      let incidentsLayer = null;
+      let incidentsData = [];
+      let incidentsBoundsKey = "";
+
+      function renderIncidents() {
+        if (incidentsLayer) {
+          map.removeLayer(incidentsLayer);
+          incidentsLayer = null;
+        }
+        if (!incidentsVisible || !incidentsData.length) return;
+
+        const markers = [];
+        for (const inc of incidentsData) {
+          const lat = parseFloat(inc.latitude);
+          const lng = parseFloat(inc.longitude);
+
+          const reportDate = inc.report_datetime
+            ? new Date(inc.report_datetime).toLocaleDateString("en-US", {
+                month: "2-digit",
+                day: "2-digit",
+                year: "numeric",
+              })
+            : "Unknown";
+
+          const marker = L.circleMarker([lat, lng], {
+            radius: 5,
+            color: "#ff4466",
+            weight: 2,
+            fillColor: "#ff4466",
+            fillOpacity: 0.15,
+          });
+
+          marker.bindPopup(`
+            <div class="popup-street">${inc.incident_category || "Incident"}</div>
+            <span class="popup-badge badge-active">${inc.incident_subcategory || inc.incident_category || "—"}</span><br>
+            ${inc.incident_description ? `<b>Description:</b> ${inc.incident_description}<br>` : ""}
+            ${inc.incident_time ? `<b>Time:</b> ${inc.incident_time}<br>` : ""}
+            ${inc.incident_day_of_week ? `<b>Day:</b> ${inc.incident_day_of_week}<br>` : ""}
+            <b>Date:</b> ${reportDate}<br>
+            ${inc.police_district ? `<b>District:</b> ${inc.police_district}<br>` : ""}
+            ${inc.resolution ? `<b>Resolution:</b> ${inc.resolution}<br>` : ""}
+            <span style="color:#555;font-size:10px">#${inc.incident_number || inc.incident_id || "—"}</span>
+          `);
+
+          markers.push(marker);
+        }
+
+        incidentsLayer = L.layerGroup(markers).addTo(map);
+
+        const el = document.getElementById("cnt-incidents");
+        if (el) el.textContent = markers.length.toLocaleString();
+      }
+
+      async function fetchIncidents() {
+        if (!incidentsVisible) return;
+        const statusEl = document.getElementById("incidents-status");
+
+        const bounds = map.getBounds();
+        // Cache key is bounds only — the time window is fixed at page load
+        const key = [
+          bounds.getSouth().toFixed(3),
+          bounds.getWest().toFixed(3),
+          bounds.getNorth().toFixed(3),
+          bounds.getEast().toFixed(3),
+        ].join(",");
+
+        if (key === incidentsBoundsKey) {
+          renderIncidents();
+          return;
+        }
+        incidentsBoundsKey = key;
+        if (statusEl) statusEl.textContent = "loading\u2026";
+
+        // Format a Date as a local-time Socrata datetime string
+        function socrataLocal(d) {
+          const p = (n) => String(n).padStart(2, "0");
+          return (
+            `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}` +
+            `T${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}.000`
+          );
+        }
+        const oneHourAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+        const dtFrom = socrataLocal(oneHourAgo);
+        const dtTo = socrataLocal(now);
+
+        const s = bounds.getSouth(), w = bounds.getWest();
+        const n2 = bounds.getNorth(), e = bounds.getEast();
+        const where =
+          `latitude > ${s} AND latitude < ${n2} AND longitude > ${w} AND longitude < ${e}` +
+          ` AND report_datetime >= '${dtFrom}' AND report_datetime <= '${dtTo}'`;
+        const url =
+          `${INCIDENTS_API}?$where=${encodeURIComponent(where)}&$limit=500&$order=report_datetime DESC`;
+        console.log("[Incidents] Fetching:", url);
+
+        try {
+          const resp = await fetch(url);
+          if (!resp.ok) {
+            const hint = await resp.text().catch(() => "").then(t => t.slice(0, 120));
+            if (statusEl) statusEl.textContent = `HTTP ${resp.status}`;
+            console.error("[Incidents] HTTP error:", resp.status, hint);
+            incidentsBoundsKey = "";
+            return;
+          }
+          incidentsData = await resp.json();
+          if (statusEl) statusEl.textContent = "";
+          renderIncidents();
+        } catch (err) {
+          if (statusEl) statusEl.textContent = err.message || "fetch failed";
+          console.error("[Incidents]", err);
+          incidentsBoundsKey = "";
+        }
+      }
+
+      document
+        .getElementById("incidents-toggle")
+        .addEventListener("click", () => {
+          incidentsVisible = !incidentsVisible;
+          const btn = document.getElementById("incidents-toggle");
+          const leg = document.getElementById("incidents-legend");
+          const statusEl = document.getElementById("incidents-status");
+          btn.textContent = incidentsVisible ? "On" : "Off";
+          btn.classList.toggle("meters-on", incidentsVisible);
+          leg.style.display = incidentsVisible ? "block" : "none";
+          if (incidentsVisible) {
+            fetchIncidents();
+          } else {
+            if (incidentsLayer) {
+              map.removeLayer(incidentsLayer);
+              incidentsLayer = null;
+            }
+            incidentsData = [];
+            incidentsBoundsKey = "";
+            if (statusEl) statusEl.textContent = "";
+          }
+        });
+
+      let _incidentsMoveTimer = null;
+      map.on("moveend zoomend", () => {
+        if (!incidentsVisible) return;
+        clearTimeout(_incidentsMoveTimer);
+        _incidentsMoveTimer = setTimeout(fetchIncidents, 400);
       });
     </script>
   </body>
