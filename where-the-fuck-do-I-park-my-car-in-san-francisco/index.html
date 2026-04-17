@@ -115,7 +115,7 @@
         border-radius: 3px;
         width: 280px;
         color: #fff;
-        max-height: calc(100dvh - 20px);
+        max-height: calc(100dvh - 50px);
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
       }
@@ -290,9 +290,7 @@
       /* ── Verdict panel ───────────────────────────────────────────────────── */
       #result-panel {
         display: none;
-        margin-top: 10px;
-        padding-top: 10px;
-        border-top: 1px solid #1e1e1e;
+        margin-top: 4px;
       }
 
       .verdict {
@@ -630,6 +628,8 @@
         bottom: 10px;
         right: 10px;
         z-index: 1000;
+        width: 280px;
+        text-align: right;
         font-family: "BlenderProBook", "Inter", sans-serif;
         font-size: 13px;
         letter-spacing: 3px;
@@ -879,6 +879,7 @@
           <span>No cleaning for full window</span>
           <span class="legend-count" id="cnt-parksafe">&mdash;</span>
         </div>
+        <hr />
         <div style="margin-top: 6px; text-align: right">
           <span style="font-size:10px;color:#666">Data is fetched from <a href="https://datasf.org/opendata/" target="_blank" style="color:#888">DataSF</a></span>
         </div>
