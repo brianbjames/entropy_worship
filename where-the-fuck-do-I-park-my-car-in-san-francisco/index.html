@@ -806,7 +806,14 @@
         </div>
         <div id="meters-legend" style="display: none">
           <div class="legend-row" style="margin-top: 4px">
-            <div class="legend-dot" style="background: #1e7a38"></div>
+            <div
+              class="legend-dot"
+              style="
+                background: transparent;
+                border: 2px solid #1e7a38;
+                box-sizing: border-box;
+              "
+            ></div>
             <span>Free parking meters found</span>
             <span class="legend-count" id="cnt-meter-free">&mdash;</span>
           </div>
@@ -829,6 +836,26 @@
             ></div>
             <span>Recent incidents within 24 hours</span>
             <span class="legend-count" id="cnt-incidents">&mdash;</span>
+          </div>
+        </div>
+        <hr />
+        <div class="legend-row" style="align-items: center">
+          <span style="font-size: 11px; color: #ccc">Traffic Crashes</span>
+          <span id="crashes-status"></span>
+          <button class="meters-toggle" id="crashes-toggle">Off</button>
+        </div>
+        <div id="crashes-legend" style="display: none">
+          <div class="legend-row" style="margin-top: 4px">
+            <div
+              class="legend-dot"
+              style="
+                background: transparent;
+                border: 2px solid #ffcc00;
+                box-sizing: border-box;
+              "
+            ></div>
+            <span>Recent crash incidents</span>
+            <span class="legend-count" id="cnt-crashes">&mdash;</span>
           </div>
         </div>
       </div>
@@ -2283,10 +2310,10 @@
 
           const marker = L.circleMarker([lat, lng], {
             radius: r,
-            color: stroke,
-            weight: 1,
+            color: color,
+            weight: 2,
             fillColor: color,
-            fillOpacity: active ? 0.9 : 0.65,
+            fillOpacity: 0.15,
           });
 
           const regs = [
@@ -2619,6 +2646,183 @@
         if (!incidentsVisible) return;
         clearTimeout(_incidentsMoveTimer);
         _incidentsMoveTimer = setTimeout(fetchIncidents, 400);
+      });
+
+      // ── Traffic Crashes ───────────────────────────────────────────────────
+      const CRASHES_API = "https://data.sfgov.org/resource/ubvf-ztfx.json";
+      let crashesVisible = false;
+      let crashesLayer = null;
+      let crashesData = [];
+      let crashesLoaded = false;
+
+      function renderCrashes() {
+        if (crashesLayer) {
+          map.removeLayer(crashesLayer);
+          crashesLayer = null;
+        }
+        if (!crashesVisible || !crashesData.length) return;
+
+        const viewBounds = map.getBounds();
+        const markers = [];
+        for (const c of crashesData) {
+          const lat = parseFloat(c[crashesLatField]);
+          const lng = parseFloat(c[crashesLngField]);
+          if (isNaN(lat) || isNaN(lng)) continue;
+          if (!viewBounds.contains([lat, lng])) continue;
+
+          const flags = [
+            c.pedestrian_accident === "Y" && "Pedestrian",
+            c.bicycle_accident    === "Y" && "Bicycle",
+            c.motorcycle_accident === "Y" && "Motorcycle",
+            c.truck_accident      === "Y" && "Truck",
+            c.hit_and_run         === "Y" && "Hit & Run",
+            c.alcohol_involved    === "Y" && "Alcohol",
+          ].filter(Boolean);
+
+          const killed   = parseInt(c.number_killed)  || 0;
+          const injured  = parseInt(c.number_injured) || 0;
+          const severity = killed > 0 ? "#ff3333" : injured > 1 ? "#ffaa00" : "#ffcc00";
+
+          const marker = L.circleMarker([lat, lng], {
+            radius: 5,
+            color: severity,
+            weight: 2,
+            fillColor: severity,
+            fillOpacity: 0.15,
+          });
+
+          const crossStreet = [c.primary_rd, c.secondary_rd]
+            .filter(Boolean).join(" & ") || "Unknown location";
+          const collisionDate = c.collision_date
+            ? new Date(c.collision_date).toLocaleDateString("en-US", {
+                month: "2-digit", day: "2-digit", year: "numeric",
+              })
+            : "Unknown";
+
+          marker.bindPopup(`
+            <div class="popup-street">${crossStreet}</div>
+            <span class="popup-badge badge-active">${c.type_of_collision || "Traffic Crash"}</span><br>
+            ${killed  ? `<b>Fatalities:</b> ${killed}<br>`  : ""}
+            ${injured ? `<b>Injured:</b> ${injured}<br>`    : ""}
+            ${flags.length ? `<b>Involved:</b> ${flags.join(", ")}<br>` : ""}
+            ${c.lighting      ? `<b>Lighting:</b> ${c.lighting}<br>`           : ""}
+            ${c.weather_1     ? `<b>Weather:</b> ${c.weather_1}<br>`           : ""}
+            ${c.road_surface  ? `<b>Road surface:</b> ${c.road_surface}<br>`   : ""}
+            <b>Date:</b> ${collisionDate}
+            ${c.collision_time ? ` &nbsp;&middot;&nbsp; ${c.collision_time}` : ""}
+          `);
+
+          markers.push(marker);
+        }
+
+        crashesLayer = L.layerGroup(markers).addTo(map);
+        const el = document.getElementById("cnt-crashes");
+        if (el) el.textContent = markers.length.toLocaleString();
+      }
+
+      let crashesProbed = false;
+      let crashesDateField = "collision_datetime";
+      let crashesLatField  = "tb_latitude";
+      let crashesLngField  = "tb_longitude";
+
+      async function probeCrashes() {
+        const url = `${CRASHES_API}?$limit=3`;
+        try {
+          const resp = await fetch(url);
+          if (!resp.ok) {
+            console.error("[Crashes] Probe failed:", resp.status, await resp.text().catch(() => ""));
+            return false;
+          }
+          const rows = await resp.json();
+          if (!Array.isArray(rows) || !rows.length) return false;
+          const fields = Object.keys(rows[0]);
+          console.log("[Crashes] Fields:", fields.join(", "));
+
+          // Date field
+          const dateField = fields.find(f => /collision.?date|crash.?date|incident.?date/i.test(f));
+          if (dateField) crashesDateField = dateField;
+
+          // Lat/lng: prefer tb_latitude/tb_longitude, then plain latitude/longitude
+          if (fields.includes("tb_latitude") && fields.includes("tb_longitude")) {
+            crashesLatField = "tb_latitude";
+            crashesLngField = "tb_longitude";
+          } else if (fields.includes("latitude") && fields.includes("longitude")) {
+            crashesLatField = "latitude";
+            crashesLngField = "longitude";
+          }
+
+          console.log("[Crashes] date:", crashesDateField, "| lat:", crashesLatField, "| lng:", crashesLngField);
+          return true;
+        } catch (e) {
+          console.error("[Crashes] Probe error:", e);
+          return false;
+        }
+      }
+
+      async function fetchCrashes() {
+        if (!crashesVisible) return;
+        const statusEl = document.getElementById("crashes-status");
+
+        // Data is fetched once for all of SF — pan/zoom just re-renders client-side
+        if (crashesLoaded) { renderCrashes(); return; }
+        if (statusEl) statusEl.textContent = "loading\u2026";
+
+        if (!crashesProbed) {
+          const ok = await probeCrashes();
+          if (!ok) {
+            if (statusEl) statusEl.textContent = "dataset not found";
+            return;
+          }
+          crashesProbed = true;
+        }
+
+        const url =
+          `${CRASHES_API}?$limit=500&$order=${crashesDateField} DESC`;
+        console.log("[Crashes] Fetching:", url);
+
+        try {
+          const resp = await fetch(url);
+          if (!resp.ok) {
+            const body = await resp.text().catch(() => "");
+            if (statusEl) statusEl.textContent = `HTTP ${resp.status}`;
+            console.error("[Crashes] HTTP error:", resp.status);
+            console.error("[Crashes] Error body:", body);
+            return;
+          }
+          crashesData = await resp.json();
+          crashesLoaded = true;
+          if (statusEl) statusEl.textContent = "";
+          renderCrashes();
+        } catch (err) {
+          if (statusEl) statusEl.textContent = err.message || "fetch failed";
+          console.error("[Crashes]", err);
+        }
+      }
+
+      document.getElementById("crashes-toggle").addEventListener("click", () => {
+        crashesVisible = !crashesVisible;
+        const btn    = document.getElementById("crashes-toggle");
+        const leg    = document.getElementById("crashes-legend");
+        const statusEl = document.getElementById("crashes-status");
+        btn.textContent = crashesVisible ? "On" : "Off";
+        btn.classList.toggle("meters-on", crashesVisible);
+        leg.style.display = crashesVisible ? "block" : "none";
+        if (crashesVisible) {
+          fetchCrashes();
+        } else {
+          if (crashesLayer) { map.removeLayer(crashesLayer); crashesLayer = null; }
+          crashesData = [];
+          crashesLoaded = false;
+          crashesProbed = false;
+          if (statusEl) statusEl.textContent = "";
+        }
+      });
+
+      let _crashesMoveTimer = null;
+      map.on("moveend zoomend", () => {
+        if (!crashesVisible) return;
+        clearTimeout(_crashesMoveTimer);
+        _crashesMoveTimer = setTimeout(renderCrashes, 100);
       });
     </script>
   </body>
