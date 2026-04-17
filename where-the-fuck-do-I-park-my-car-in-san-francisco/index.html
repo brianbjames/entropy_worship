@@ -483,6 +483,13 @@
         letter-spacing: 1px;
       }
 
+      #park-day-selector {
+        display: flex;
+        gap: 4px;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+      }
+
       #park-slider {
         width: 100%;
         -webkit-appearance: none;
@@ -714,6 +721,7 @@
           ><span>12 AM</span>
         </div>
         <div id="park-panel">
+          <div id="park-day-selector"></div>
           <div id="park-header">
             <span id="park-label">Park until: &mdash;</span>
           </div>
@@ -814,6 +822,7 @@
       const PARK_SAFE_COLOR = "#4499ff"; // blue — safe for your full window
 
       let parkUntilHour = 0; // set when data loads; 0 = feature inactive
+      let parkUntilDayOffset = 0; // 0 = same day as viewed, 1 = next day, etc.
       let isWeekendView = false; // true on Sat/Sun — all streets shown as blue park-safe
 
       function getStatusAtHour(fromhour, tohour, hour) {
@@ -1311,6 +1320,7 @@
         document.getElementById("time-section").hidden = false;
 
         // Init park-until slider to 2 h after current view hour
+        parkUntilDayOffset = 0;
         parkUntilHour = Math.min(24, activeHour + 2);
         const parkSlider = document.getElementById("park-slider");
         parkSlider.value = parkUntilHour;
@@ -1320,6 +1330,8 @@
         if (!daySelectorBuilt) {
           buildDaySelector();
           daySelectorBuilt = true;
+        } else {
+          buildParkDaySelector();
         }
 
         // Show verdict for pinned location (or default City Hall)
@@ -1343,7 +1355,7 @@
           d.setDate(now.getDate() + i);
           const di = d.getDay();
           let label;
-          if (i === 0) label = "Now";
+          if (i === 0) label = "Today";
           else label = DAY_NAMES[di];
           options.push({ date: d, label, offset: i });
         }
@@ -1357,13 +1369,43 @@
           btn.textContent = label;
           btn.addEventListener("click", () => {
             document
-              .querySelectorAll(".day-btn")
+              .querySelectorAll("#day-selector .day-btn")
               .forEach((b) => b.classList.remove("active"));
             btn.classList.add("active");
             switchToDay(date);
           });
           container.appendChild(btn);
         });
+
+        buildParkDaySelector();
+      }
+
+      // ── Park-until day selector ───────────────────────────────────────────
+      function buildParkDaySelector() {
+        const container = document.getElementById("park-day-selector");
+        if (!container) return;
+
+        container.innerHTML = "";
+        for (let i = 0; i < 7; i++) {
+          const d = new Date(viewDate);
+          d.setDate(viewDate.getDate() + i);
+          const btn = document.createElement("button");
+          btn.className = "day-btn" + (i === parkUntilDayOffset ? " active" : "");
+          btn.textContent = DAY_NAMES[d.getDay()];
+          btn.dataset.offset = i;
+          btn.addEventListener("click", () => {
+            document
+              .querySelectorAll("#park-day-selector .day-btn")
+              .forEach((b) => b.classList.remove("active"));
+            btn.classList.add("active");
+            parkUntilDayOffset = i;
+            const sliderVal = parseFloat(
+              document.getElementById("park-slider").value,
+            );
+            updateParkUntil(parkUntilDayOffset * 24 + sliderVal);
+          });
+          container.appendChild(btn);
+        }
       }
 
       // ── Switch to a different day ─────────────────────────────────────────
@@ -1394,10 +1436,12 @@
         setTimeLabel(targetHour);
 
         // Reset park-until to 2 h ahead
+        parkUntilDayOffset = 0;
         parkUntilHour = Math.min(24, targetHour + 2);
         const parkSlider = document.getElementById("park-slider");
         parkSlider.value = parkUntilHour;
         updateParkLabel(parkUntilHour);
+        buildParkDaySelector();
 
         // Update reset button label
         document.getElementById("time-reset").textContent = isViewingToday()
@@ -1483,9 +1527,17 @@
       });
 
       // ── Park-until slider ─────────────────────────────────────────────────
-      function updateParkLabel(hour) {
-        document.getElementById("park-label").textContent =
-          `Park until: ${fmtSliderHour(hour)}`;
+      function updateParkLabel(sliderHour) {
+        const timeStr = fmtSliderHour(sliderHour % 24);
+        let label = "Park until: ";
+        if (parkUntilDayOffset === 0) {
+          label += timeStr;
+        } else {
+          const d = new Date(viewDate);
+          d.setDate(d.getDate() + parkUntilDayOffset);
+          label += `${DAY_ABBR[d.getDay()]} ${timeStr}`;
+        }
+        document.getElementById("park-label").textContent = label;
       }
 
       function updateParkUntil(hour) {
@@ -1505,7 +1557,8 @@
       document
         .getElementById("park-slider")
         .addEventListener("input", function () {
-          updateParkUntil(parseFloat(this.value));
+          const sliderVal = parseFloat(this.value);
+          updateParkUntil(parkUntilDayOffset * 24 + sliderVal);
         });
 
       // Re-apply zoom-responsive weights whenever the user zooms in or out
