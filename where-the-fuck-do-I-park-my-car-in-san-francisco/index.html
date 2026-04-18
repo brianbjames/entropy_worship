@@ -1001,6 +1001,18 @@
             <span class="legend-count" id="cnt-garages-closed">&mdash;</span>
           </div>
         </div>
+        <hr />
+        <div class="legend-row" style="align-items: center">
+          <span style="font-size: 11px; color: #ccc">Neighborhood Score</span>
+          <span id="nhood-status" style="font-size: 10px; color: #aaa; margin-left: 4px;"></span>
+          <button class="meters-toggle" id="nhood-toggle">Off</button>
+        </div>
+        <div id="nhood-legend" style="display: none">
+          <div class="legend-row" style="margin-top: 4px; align-items: center">
+            <div style="width: 60px; height: 7px; background: linear-gradient(to right, #00cc55, #ffcc00, #ff3333); border-radius: 2px; flex-shrink: 0;"></div>
+            <span>Easy &rarr; Difficult</span>
+          </div>
+        </div>
       </div>
 
       <!-- Street cleaning color key -->
@@ -4375,6 +4387,176 @@
           fetchGarages();
         } else {
           if (garagesLayer) { map.removeLayer(garagesLayer); garagesLayer = null; }
+          if (statusEl) statusEl.textContent = "";
+        }
+      });
+
+      // ── Neighborhood Parking Score Choropleth ────────────────────────────────
+      // Source: SF Neighborhood boundaries (j2bu-swwd), scored from loaded data
+      const NHOOD_API = "https://data.sfgov.org/resource/j2bu-swwd.geojson";
+      let nhoodVisible = false;
+      let nhoodLayer = null;
+      let nhoodLoaded = false;
+      let nhoodData = null;
+
+      // Ray-casting point-in-polygon; ring is [[lng, lat], ...] (GeoJSON order)
+      function pointInRing(lat, lng, ring) {
+        let inside = false;
+        for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+          const xi = ring[i][0], yi = ring[i][1];
+          const xj = ring[j][0], yj = ring[j][1];
+          if (((yi > lat) !== (yj > lat)) && (lng < (xj - xi) * (lat - yi) / (yj - yi) + xi))
+            inside = !inside;
+        }
+        return inside;
+      }
+
+      function pointInGeom(lat, lng, geometry) {
+        const { type, coordinates } = geometry;
+        if (type === "Polygon") return pointInRing(lat, lng, coordinates[0]);
+        if (type === "MultiPolygon") return coordinates.some(poly => pointInRing(lat, lng, poly[0]));
+        return false;
+      }
+
+      function nhoodScoreColor(t) {
+        // t 0→1: green (easy) → yellow → red (difficult)
+        const r = t < 0.5 ? Math.round(t * 2 * 220) : 220;
+        const g = t < 0.5 ? 200 : Math.round((1 - (t - 0.5) * 2) * 200);
+        return `rgb(${r},${g},30)`;
+      }
+
+      function buildNhoodLayer() {
+        if (nhoodLayer) { map.removeLayer(nhoodLayer); nhoodLayer = null; }
+        if (!nhoodVisible || !nhoodData) return;
+
+        // Pre-compute bounding boxes for fast bbox pre-reject
+        const items = nhoodData.features
+          .filter(f => f.geometry)
+          .map(f => {
+            let minLat = Infinity, maxLat = -Infinity, minLng = Infinity, maxLng = -Infinity;
+            const scan = (ring) => ring.forEach(([lng, lat]) => {
+              if (lat < minLat) minLat = lat; if (lat > maxLat) maxLat = lat;
+              if (lng < minLng) minLng = lng; if (lng > maxLng) maxLng = lng;
+            });
+            const geom = f.geometry;
+            if (geom.type === "Polygon") geom.coordinates.forEach(scan);
+            else if (geom.type === "MultiPolygon") geom.coordinates.forEach(p => p.forEach(scan));
+            return { f, name: f.properties.nhood, minLat, maxLat, minLng, maxLng,
+                     breakins: 0, incidents: 0, cleaning: 0, citations: 0 };
+          });
+
+        const byName = {};
+        items.forEach(it => { byName[it.name] = it; });
+
+        function addPoint(lat, lng, field) {
+          if (isNaN(lat) || isNaN(lng)) return;
+          for (const it of items) {
+            if (lat < it.minLat || lat > it.maxLat || lng < it.minLng || lng > it.maxLng) continue;
+            if (pointInGeom(lat, lng, it.f.geometry)) { it[field]++; break; }
+          }
+        }
+
+        // Tally each data source
+        for (const [lat, lng] of breakinsPoints) addPoint(lat, lng, "breakins");
+        for (const inc of incidentsData) addPoint(parseFloat(inc.latitude), parseFloat(inc.longitude), "incidents");
+        for (const feat of loadedFeatures) {
+          if (!feat.properties._thisWeek) continue;
+          const mid = featureMidpoint(feat);
+          if (mid) addPoint(mid.lat, mid.lng, "cleaning");
+        }
+        for (const coords of citationsGeoCache.values()) {
+          if (coords) addPoint(coords[0], coords[1], "citations");
+        }
+
+        // Normalize and weight
+        const maxB   = Math.max(1, ...items.map(it => it.breakins));
+        const maxI   = Math.max(1, ...items.map(it => it.incidents));
+        const maxC   = Math.max(1, ...items.map(it => it.cleaning));
+        const maxCit = Math.max(1, ...items.map(it => it.citations));
+
+        const hasBreakIns  = breakinsPoints.length > 0;
+        const hasIncidents = incidentsData.length > 0;
+        const hasCitations = [...citationsGeoCache.values()].some(Boolean);
+
+        // Cleaning always contributes; other sources only if loaded
+        const wB   = hasBreakIns  ? 0.40 : 0;
+        const wI   = hasIncidents ? 0.20 : 0;
+        const wCit = hasCitations ? 0.15 : 0;
+        const wC   = 0.25;
+        const total = (wB + wI + wCit + wC) || 1;
+
+        for (const it of items) {
+          it.score = (wB   / total) * (it.breakins  / maxB)   +
+                     (wI   / total) * (it.incidents / maxI)   +
+                     (wC   / total) * (it.cleaning  / maxC)   +
+                     (wCit / total) * (it.citations / maxCit);
+        }
+
+        const sources = ["street cleaning"];
+        if (hasBreakIns)  sources.push("break-ins");
+        if (hasIncidents) sources.push("incidents");
+        if (hasCitations) sources.push("citations");
+
+        nhoodLayer = L.geoJSON(nhoodData, {
+          filter: (f) => !!f.geometry,
+          style: (f) => {
+            const it = byName[f.properties.nhood];
+            const t = it ? it.score : 0;
+            return { fillColor: nhoodScoreColor(t), color: nhoodScoreColor(t),
+                     weight: 1, opacity: 0.45, fillOpacity: 0.28 };
+          },
+          onEachFeature: (f, layer) => {
+            const it = byName[f.properties.nhood];
+            const pct = it ? Math.round(it.score * 100) : 0;
+            layer.bindTooltip(f.properties.nhood, { sticky: true, direction: "top" });
+            layer.bindPopup(`
+              <div class="popup-street">${f.properties.nhood}</div>
+              <b>Parking Difficulty:</b> ${pct}/100<br>
+              ${it && it.breakins  ? `<b>Vehicle break-ins:</b> ${it.breakins}<br>`  : ""}
+              ${it && it.incidents ? `<b>Police incidents:</b> ${it.incidents}<br>`  : ""}
+              ${it && it.citations ? `<b>Parking citations:</b> ${it.citations}<br>` : ""}
+              ${it && it.cleaning  ? `<b>Cleaning segments:</b> ${it.cleaning}<br>` : ""}
+              <span style="color:#555;font-size:10px">Score from: ${sources.join(", ")}</span>
+            `);
+          },
+        }).addTo(map);
+
+        // Render below street lines but above base tiles
+        nhoodLayer.bringToBack();
+        console.log("[Nhood] Rendered choropleth. Sources:", sources.join(", "));
+      }
+
+      async function fetchNhood() {
+        if (!nhoodVisible) return;
+        const statusEl = document.getElementById("nhood-status");
+        if (nhoodLoaded && nhoodData) { buildNhoodLayer(); return; }
+        if (statusEl) statusEl.textContent = "loading\u2026";
+        try {
+          const resp = await fetch(`${NHOOD_API}?$limit=50`);
+          if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+          nhoodData = await resp.json();
+          nhoodLoaded = true;
+          if (statusEl) statusEl.textContent = "";
+          console.log("[Nhood] Loaded", nhoodData.features.length, "neighborhoods");
+          buildNhoodLayer();
+        } catch (err) {
+          if (statusEl) statusEl.textContent = err.message;
+          console.error("[Nhood]", err);
+        }
+      }
+
+      document.getElementById("nhood-toggle").addEventListener("click", () => {
+        nhoodVisible = !nhoodVisible;
+        const btn = document.getElementById("nhood-toggle");
+        const leg = document.getElementById("nhood-legend");
+        const statusEl = document.getElementById("nhood-status");
+        btn.textContent = nhoodVisible ? "On" : "Off";
+        btn.classList.toggle("meters-on", nhoodVisible);
+        leg.style.display = nhoodVisible ? "block" : "none";
+        if (nhoodVisible) {
+          fetchNhood();
+        } else {
+          if (nhoodLayer) { map.removeLayer(nhoodLayer); nhoodLayer = null; }
           if (statusEl) statusEl.textContent = "";
         }
       });
