@@ -1,9 +1,36 @@
+<!-- /-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\ -->
+<!-- |                                                                         | -->
+<!-- \ @@@@@@@@  @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@@@@@   @@@ @@@      / -->
+<!-- - @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@ @@@      - -->
+<!-- / @@!       @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!  @@@  @@! !@@      \ -->
+<!-- | !@!       !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!  @!@  !@! @!!      | -->
+<!-- \ @!!!:!    @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!@@!@!    !@!@!       / -->
+<!-- - !!!!!:    !@!  !!!    !!!    !!@!@!    !@!  !!!  !!@!!!      @!!!       - -->
+<!-- / !!:       !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:         !!:        \ -->
+<!-- | :!:       :!:  !:!    :!:    :!:  !:!  :!:  !:!  :!:         :!:        | -->
+<!-- \  :: ::::   ::   ::     ::    ::   :::  ::::: ::   ::          ::        / -->
+<!-- - : :: ::   ::    :      :      :   : :   : :  :    :           :         - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \ @@@  @@@  @@@   @@@@@@   @@@@@@@    @@@@@@   @@@  @@@  @@@  @@@@@@@     / -->
+<!-- - @@@  @@@  @@@  @@@@@@@@  @@@@@@@@  @@@@@@@   @@@  @@@  @@@  @@@@@@@@    - -->
+<!-- / @@!  @@!  @@!  @@!  @@@  @@!  @@@  !@@       @@!  @@@  @@!  @@!  @@@    \ -->
+<!-- | !@!  !@!  !@!  !@!  @!@  !@!  @!@  !@!       !@!  @!@  !@!  !@!  @!@    | -->
+<!-- \ @!!  !!@  @!@  @!@  !@!  @!@!!@!   !!@@!!    @!@!@!@!  !!@  @!@@!@!     / -->
+<!-- - !@!  !!!  !@!  !@!  !!!  !!@!@!     !!@!!!   !!!@!!!!  !!!  !!@!!!      - -->
+<!-- / !!:  !!:  !!:  !!:  !!!  !!: :!!        !:!  !!:  !!!  !!:  !!:         \ -->
+<!-- | :!:  :!:  :!:  :!:  !:!  :!:  !:!      !:!   :!:  !:!  :!:  :!:         | -->
+<!-- \  :::: :: :::   ::::: ::  ::   :::  :::: ::   ::   :::   ::   ::         / -->
+<!-- -   :: :  : :     : :  :    :   : :  :: : :     :   : :  :     :          - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
 <!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="data:,">
+    <link rel="icon" href="data:," />
     <title>WTF do I park in San Francisco?</title>
     <!-- General Meta Tags for SEO -->
     <meta
@@ -112,15 +139,16 @@
         right: 10px;
         z-index: 1000;
         clip-path: polygon(
-          14px 0%, 100% 0%,
-          100% calc(100% - 14px), calc(100% - 14px) 100%,
-          0% 100%, 0% 14px
+          14px 0%,
+          100% 0%,
+          100% calc(100% - 14px),
+          calc(100% - 14px) 100%,
+          0% 100%,
+          0% 14px
         );
-        filter:
-          drop-shadow(0 0 8px rgba(68, 153, 255, 0.28))
+        filter: drop-shadow(0 0 8px rgba(68, 153, 255, 0.28))
           drop-shadow(0 0 24px rgba(68, 153, 255, 0.12));
       }
-
 
       #control-panel {
         position: relative;
@@ -366,37 +394,49 @@
         background: #0c2010;
         color: #44bb55;
         border: 1px solid #1a4020;
-        box-shadow: 0 0 8px rgba(68, 187, 85, 0.35), inset 0 0 8px rgba(68, 187, 85, 0.05);
+        box-shadow:
+          0 0 8px rgba(68, 187, 85, 0.35),
+          inset 0 0 8px rgba(68, 187, 85, 0.05);
       }
       .verdict-active {
         background: #280808;
         color: #ff4444;
         border: 1px solid #481010;
-        box-shadow: 0 0 8px rgba(255, 68, 68, 0.4), inset 0 0 8px rgba(255, 68, 68, 0.06);
+        box-shadow:
+          0 0 8px rgba(255, 68, 68, 0.4),
+          inset 0 0 8px rgba(255, 68, 68, 0.06);
       }
       .verdict-upcoming {
         background: #281500;
         color: #ff9922;
         border: 1px solid #482800;
-        box-shadow: 0 0 8px rgba(255, 153, 34, 0.35), inset 0 0 8px rgba(255, 153, 34, 0.05);
+        box-shadow:
+          0 0 8px rgba(255, 153, 34, 0.35),
+          inset 0 0 8px rgba(255, 153, 34, 0.05);
       }
       .verdict-passed {
         background: #1e1a00;
         color: #ccbb00;
         border: 1px solid #3a3000;
-        box-shadow: 0 0 8px rgba(204, 187, 0, 0.3), inset 0 0 8px rgba(204, 187, 0, 0.04);
+        box-shadow:
+          0 0 8px rgba(204, 187, 0, 0.3),
+          inset 0 0 8px rgba(204, 187, 0, 0.04);
       }
       .verdict-inferred {
         background: #1e1a00;
         color: #ccbb00;
         border: 1px solid #3a3000;
-        box-shadow: 0 0 8px rgba(204, 187, 0, 0.3), inset 0 0 8px rgba(204, 187, 0, 0.04);
+        box-shadow:
+          0 0 8px rgba(204, 187, 0, 0.3),
+          inset 0 0 8px rgba(204, 187, 0, 0.04);
       }
       .verdict-parksafe {
         background: #091828;
         color: #4499ff;
         border: 1px solid #1a3a5e;
-        box-shadow: 0 0 8px rgba(68, 153, 255, 0.35), inset 0 0 8px rgba(68, 153, 255, 0.05);
+        box-shadow:
+          0 0 8px rgba(68, 153, 255, 0.35),
+          inset 0 0 8px rgba(68, 153, 255, 0.05);
       }
 
       .result-address {
@@ -488,7 +528,8 @@
       }
       .custom-slider-track {
         position: absolute;
-        left: 0; right: 0;
+        left: 0;
+        right: 0;
         height: 3px;
         background: #2a2a2a;
         border-radius: 2px;
@@ -507,11 +548,14 @@
         position: absolute;
         top: 50%;
         transform: translate(-50%, -50%);
-        width: 13px; height: 13px;
+        width: 13px;
+        height: 13px;
         border-radius: 50%;
         background: #ddd;
         box-shadow: 0 0 5px rgba(255, 255, 255, 0.25);
-        transition: background 0.1s, box-shadow 0.1s;
+        transition:
+          background 0.1s,
+          box-shadow 0.1s;
       }
       .custom-slider-wrap:hover .custom-slider-thumb {
         background: #fff;
@@ -520,8 +564,10 @@
       #time-slider,
       #park-slider {
         position: absolute;
-        left: 0; top: 0;
-        width: 100%; height: 100%;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
         opacity: 0;
         cursor: pointer;
         margin: 0;
@@ -563,7 +609,6 @@
         gap: 3px;
         margin-bottom: 10px;
       }
-
 
       /* ── Popups / tooltips ───────────────────────────────────────────────── */
       .leaflet-popup-content-wrapper {
@@ -706,7 +751,12 @@
         background: rgba(6, 8, 14, 0.95) !important;
         border: 1px solid #1e3a4a !important;
         color: #ccc !important;
-        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+        font-family:
+          "Inter",
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif !important;
         font-size: 11px !important;
         letter-spacing: 0.5px !important;
         border-radius: 2px !important;
@@ -829,9 +879,15 @@
         color: #000;
         flex-shrink: 0;
       }
-      .risk-low    { background: #00cc88; }
-      .risk-medium { background: #ffaa00; }
-      .risk-high   { background: #ff4444; }
+      .risk-low {
+        background: #00cc88;
+      }
+      .risk-medium {
+        background: #ffaa00;
+      }
+      .risk-high {
+        background: #ff4444;
+      }
 
       .recs-header {
         color: #666;
@@ -915,18 +971,29 @@
 
       /* ── Pulsing route line ──────────────────────────────────────────────── */
       @keyframes route-pulse {
-        0%, 100% { opacity: 0.9; }
-        50% { opacity: 0.12; }
+        0%,
+        100% {
+          opacity: 0.9;
+        }
+        50% {
+          opacity: 0.12;
+        }
       }
       .route-pulse {
         animation: route-pulse 3.2s ease-in-out infinite;
-        filter: drop-shadow(0 0 4px #cc44ff) drop-shadow(0 0 10px #cc44ff) drop-shadow(0 0 22px rgba(204, 68, 255, 0.6));
+        filter: drop-shadow(0 0 4px #cc44ff) drop-shadow(0 0 10px #cc44ff)
+          drop-shadow(0 0 22px rgba(204, 68, 255, 0.6));
       }
 
       /* ── Neighborhood score shimmer ─────────────────────────────────────── */
       @keyframes nhood-shimmer {
-        0%, 100% { opacity: 1; }
-        50%       { opacity: 0.3; }
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.3;
+        }
       }
       .nhood-pulse {
         animation: nhood-shimmer 5s ease-in-out infinite;
@@ -934,8 +1001,13 @@
 
       /* ── Pulsing active streets ──────────────────────────────────────────── */
       @keyframes pulse-active {
-        0%, 100% { opacity: 0.9; }
-        50% { opacity: 0.18; }
+        0%,
+        100% {
+          opacity: 0.9;
+        }
+        50% {
+          opacity: 0.18;
+        }
       }
       .active-street {
         animation: pulse-active 1.4s ease-in-out infinite;
@@ -943,8 +1015,14 @@
 
       /* ── User location pin ───────────────────────────────────────────────── */
       @keyframes pin-ring-pulse {
-        0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
-        100% { transform: translate(-50%, -50%) scale(2.8); opacity: 0; }
+        0% {
+          transform: translate(-50%, -50%) scale(0.5);
+          opacity: 1;
+        }
+        100% {
+          transform: translate(-50%, -50%) scale(2.8);
+          opacity: 0;
+        }
       }
       .user-pin {
         position: relative;
@@ -953,18 +1031,24 @@
       }
       .user-pin-core {
         position: absolute;
-        top: 50%; left: 50%;
+        top: 50%;
+        left: 50%;
         transform: translate(-50%, -50%);
-        width: 13px; height: 13px;
+        width: 13px;
+        height: 13px;
         border-radius: 50%;
         background: var(--pin-color, #fff);
-        box-shadow: 0 0 6px var(--pin-color, #fff), 0 0 14px var(--pin-color, #fff);
+        box-shadow:
+          0 0 6px var(--pin-color, #fff),
+          0 0 14px var(--pin-color, #fff);
       }
       .user-pin-ring {
         position: absolute;
-        top: 50%; left: 50%;
+        top: 50%;
+        left: 50%;
         transform: translate(-50%, -50%);
-        width: 13px; height: 13px;
+        width: 13px;
+        height: 13px;
         border-radius: 50%;
         border: 2px solid var(--pin-color, #fff);
         animation: pin-ring-pulse 1.6s ease-out infinite;
@@ -972,27 +1056,40 @@
 
       /* ── Free meter pulse pin ────────────────────────────────────────────── */
       @keyframes meter-ring-pulse {
-        0%   { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
-        100% { transform: translate(-50%, -50%) scale(3.2); opacity: 0; }
+        0% {
+          transform: translate(-50%, -50%) scale(0.5);
+          opacity: 1;
+        }
+        100% {
+          transform: translate(-50%, -50%) scale(3.2);
+          opacity: 0;
+        }
       }
       .meter-free-pin {
         position: relative;
-        width: 18px; height: 18px;
+        width: 18px;
+        height: 18px;
       }
       .meter-free-dot {
         position: absolute;
-        top: 50%; left: 50%;
+        top: 50%;
+        left: 50%;
         transform: translate(-50%, -50%);
-        width: 7px; height: 7px;
+        width: 7px;
+        height: 7px;
         border-radius: 50%;
         background: #1e7a38;
-        box-shadow: 0 0 4px #1e7a38, 0 0 10px rgba(30,122,56,0.7);
+        box-shadow:
+          0 0 4px #1e7a38,
+          0 0 10px rgba(30, 122, 56, 0.7);
       }
       .meter-free-ring {
         position: absolute;
-        top: 50%; left: 50%;
+        top: 50%;
+        left: 50%;
         transform: translate(-50%, -50%);
-        width: 7px; height: 7px;
+        width: 7px;
+        height: 7px;
         border-radius: 50%;
         border: 2px solid #1e7a38;
         animation: meter-ring-pulse 2s ease-out infinite;
@@ -1007,284 +1104,423 @@
     <div id="loading">Loading street cleaning data&hellip;</div>
 
     <div id="panel-wrapper">
-    <div id="control-panel">
-      <!-- Legend -->
-      <div class="panel-section legend">
-        <div id="panel-drag-handle">
-          <h4 style="margin:0">WTF Do I Park in SF?</h4>
-          <div class="drag-grip">
-            <span></span><span></span><span></span>
+      <div id="control-panel">
+        <!-- Legend -->
+        <div class="panel-section legend">
+          <div id="panel-drag-handle">
+            <h4 style="margin: 0">WTF Do I Park in SF?</h4>
+            <div class="drag-grip"><span></span><span></span><span></span></div>
           </div>
-        </div>
-        <div class="subtitle" id="legend-subtitle"></div>
-        <form id="search-form" autocomplete="off" style="display:flex;gap:6px;margin-top:8px">
-          <input
-            id="search-input"
-            type="text"
-            placeholder="Address or intersection"
-          />
-          <button id="search-btn" type="submit">Go</button>
-        </form>
-        <button
-          type="button"
-          id="locate-btn"
-          style="margin-top: 7px; width: 100%"
-        >
-          &#9678; My Location
-        </button>
-        <!-- <div class="source">
+          <div class="subtitle" id="legend-subtitle"></div>
+          <form
+            id="search-form"
+            autocomplete="off"
+            style="display: flex; gap: 6px; margin-top: 8px"
+          >
+            <input
+              id="search-input"
+              type="text"
+              placeholder="Address or intersection"
+            />
+            <button id="search-btn" type="submit">Go</button>
+          </form>
+          <button
+            type="button"
+            id="locate-btn"
+            style="margin-top: 7px; width: 100%"
+          >
+            &#9678; My Location
+          </button>
+          <!-- <div class="source">
           Thin/thick = right/left block face
         </div> -->
-      </div>
+        </div>
 
-      <!-- Day / time controls -->
-      <div class="panel-section" id="time-section" hidden>
-        <div id="time-header">
-          <span id="time-label"></span>
-        </div>
-        <div id="day-selector"></div>
-        <div class="custom-slider-wrap">
-          <div class="custom-slider-track">
-            <div class="custom-slider-fill" id="time-slider-fill"></div>
-            <div class="custom-slider-thumb" id="time-slider-thumb"></div>
+        <!-- Day / time controls -->
+        <div class="panel-section" id="time-section" hidden>
+          <div id="time-header">
+            <span id="time-label"></span>
           </div>
-          <input type="range" id="time-slider" min="0" max="24" step="0.5" title="" />
-        </div>
-        <div class="time-ticks">
-          <span>12 AM</span><span>6 AM</span><span>12 PM</span><span>6 PM</span
-          ><span>12 AM</span>
-        </div>
-        <div id="park-panel">
-          <div id="park-header">
-            <span id="park-label">Park until: &mdash;</span>
-          </div>
-          <div id="park-day-selector"></div>
+          <div id="day-selector"></div>
           <div class="custom-slider-wrap">
             <div class="custom-slider-track">
-              <div class="custom-slider-fill" id="park-slider-fill"></div>
-              <div class="custom-slider-thumb" id="park-slider-thumb"></div>
+              <div class="custom-slider-fill" id="time-slider-fill"></div>
+              <div class="custom-slider-thumb" id="time-slider-thumb"></div>
             </div>
-            <input type="range" id="park-slider" min="0" max="24" step="0.5" title="" />
+            <input
+              type="range"
+              id="time-slider"
+              min="0"
+              max="24"
+              step="0.5"
+              title=""
+            />
           </div>
           <div class="time-ticks">
             <span>12 AM</span><span>6 AM</span><span>12 PM</span
             ><span>6 PM</span><span>12 AM</span>
           </div>
+          <div id="park-panel">
+            <div id="park-header">
+              <span id="park-label">Park until: &mdash;</span>
+            </div>
+            <div id="park-day-selector"></div>
+            <div class="custom-slider-wrap">
+              <div class="custom-slider-track">
+                <div class="custom-slider-fill" id="park-slider-fill"></div>
+                <div class="custom-slider-thumb" id="park-slider-thumb"></div>
+              </div>
+              <input
+                type="range"
+                id="park-slider"
+                min="0"
+                max="24"
+                step="0.5"
+                title=""
+              />
+            </div>
+            <div class="time-ticks">
+              <span>12 AM</span><span>6 AM</span><span>12 PM</span
+              ><span>6 PM</span><span>12 AM</span>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <!-- Find by address -->
-      <div class="panel-section" id="search-panel">
-        <div id="result-panel"></div>
-      </div>
-
-      <!-- Data overlays -->
-      <div class="panel-section legend">
-        <div class="legend-row" style="align-items: center">
-          <span style="font-size: 12px; color: #fff">Residential Permit Zones</span>
-          <span id="rpp-status" style="font-size: 10px; color: #bbb; margin-left: 4px;"></span>
-          <button class="meters-toggle" id="rpp-toggle">Off</button>
+        <!-- Find by address -->
+        <div class="panel-section" id="search-panel">
+          <div id="result-panel"></div>
         </div>
-        <div id="rpp-legend" style="display: none">
-          <div class="legend-row" style="margin-top: 4px">
-            <div class="legend-line" style="background: #ff6622"></div>
-            <span>Permit required now</span>
+
+        <!-- Data overlays -->
+        <div class="panel-section legend">
+          <div class="legend-row" style="align-items: center">
+            <span style="font-size: 12px; color: #fff"
+              >Residential Permit Zones</span
+            >
+            <span
+              id="rpp-status"
+              style="font-size: 10px; color: #bbb; margin-left: 4px"
+            ></span>
+            <button class="meters-toggle" id="rpp-toggle">Off</button>
+          </div>
+          <div id="rpp-legend" style="display: none">
+            <div class="legend-row" style="margin-top: 4px">
+              <div class="legend-line" style="background: #ff6622"></div>
+              <span>Permit required now</span>
+            </div>
+            <div class="legend-row">
+              <div
+                class="legend-line"
+                style="background: #ffaa44; opacity: 0.6"
+              ></div>
+              <span>Permit required (outside hours)</span>
+            </div>
+          </div>
+          <hr />
+          <div class="legend-row" style="align-items: center">
+            <span style="font-size: 12px; color: #fff">Parking Meters</span>
+            <span id="meters-status"></span>
+            <button class="meters-toggle" id="meters-toggle">Off</button>
+          </div>
+          <div id="meters-legend" style="display: none">
+            <div class="legend-row" style="margin-top: 4px">
+              <div
+                class="legend-dot"
+                style="
+                  background: #1e7a38;
+                  border: 2px solid #1e7a38;
+                  box-sizing: border-box;
+                "
+              ></div>
+              <span>Free parking meters found</span>
+              <span class="legend-count" id="cnt-meter-free">&mdash;</span>
+            </div>
+          </div>
+          <hr />
+          <div class="legend-row" style="align-items: center">
+            <span style="font-size: 12px; color: #fff">Street Permits</span>
+            <span
+              id="permits-status"
+              style="font-size: 10px; color: #bbb; margin-left: 4px"
+            ></span>
+            <button class="meters-toggle" id="permits-toggle">Off</button>
+          </div>
+          <div id="permits-legend" style="display: none">
+            <div class="legend-row" style="margin-top: 4px">
+              <div
+                class="legend-dot"
+                style="
+                  background: transparent;
+                  border: 2px solid #ff8800;
+                  box-sizing: border-box;
+                "
+              ></div>
+              <span>Street space permits</span>
+              <span class="legend-count" id="cnt-permits">&mdash;</span>
+            </div>
+          </div>
+          <hr />
+          <div class="legend-row" style="align-items: center">
+            <span style="font-size: 12px; color: #fff">Parking Garages</span>
+            <span
+              id="garages-status"
+              style="font-size: 10px; color: #bbb; margin-left: 4px"
+            ></span>
+            <button class="meters-toggle" id="garages-toggle">Off</button>
+          </div>
+          <div id="garages-legend" style="display: none">
+            <div class="legend-row" style="margin-top: 4px">
+              <div
+                class="legend-dot"
+                style="
+                  background: #00cc88;
+                  border: 2px solid #00cc88;
+                  box-sizing: border-box;
+                "
+              ></div>
+              <span>Open now</span>
+              <span class="legend-count" id="cnt-garages-open">&mdash;</span>
+            </div>
+            <div class="legend-row" style="margin-top: 2px">
+              <div
+                class="legend-dot"
+                style="
+                  background: transparent;
+                  border: 2px solid #555;
+                  box-sizing: border-box;
+                "
+              ></div>
+              <span>Closed / unknown</span>
+              <span class="legend-count" id="cnt-garages-closed">&mdash;</span>
+            </div>
+          </div>
+          <hr />
+          <div class="legend-row" style="align-items: center">
+            <span style="font-size: 12px; color: #fff">Parking Citations</span>
+            <span
+              id="citations-status"
+              style="font-size: 10px; color: #bbb; margin-left: 4px"
+            ></span>
+            <button class="meters-toggle" id="citations-toggle">Off</button>
+          </div>
+          <div id="citations-legend" style="display: none">
+            <div class="legend-row" style="margin-top: 4px">
+              <div
+                class="legend-dot"
+                style="
+                  background: #bb44ff;
+                  border: 2px solid #bb44ff;
+                  box-sizing: border-box;
+                "
+              ></div>
+              <span>Citation density</span>
+              <span class="legend-count" id="cnt-citations">&mdash;</span>
+            </div>
+          </div>
+          <hr />
+          <div class="legend-row" style="align-items: center">
+            <span style="font-size: 12px; color: #fff">Car Break-ins</span>
+            <span
+              id="breakins-status"
+              style="font-size: 10px; color: #bbb; margin-left: 4px"
+            ></span>
+            <button class="meters-toggle" id="breakins-toggle">Off</button>
+          </div>
+          <div id="breakins-legend" style="display: none">
+            <div class="legend-row" style="margin-top: 4px">
+              <div
+                class="legend-dot"
+                style="
+                  background: #ff6600;
+                  border: 2px solid #ff6600;
+                  box-sizing: border-box;
+                "
+              ></div>
+              <span>Vehicle theft &amp; break-ins</span>
+              <span class="legend-count" id="cnt-breakins">&mdash;</span>
+            </div>
+          </div>
+          <hr />
+          <div class="legend-row" style="align-items: center">
+            <span style="font-size: 12px; color: #fff">Traffic Crashes</span>
+            <span
+              id="crashes-status"
+              style="font-size: 10px; color: #bbb; margin-left: 4px"
+            ></span>
+            <button class="meters-toggle" id="crashes-toggle">Off</button>
+          </div>
+          <div id="crashes-legend" style="display: none">
+            <div class="legend-row" style="margin-top: 4px">
+              <div
+                class="legend-dot"
+                style="
+                  background: transparent;
+                  border: 2px solid #ffcc00;
+                  box-sizing: border-box;
+                "
+              ></div>
+              <span>Recent crash incidents</span>
+              <span class="legend-count" id="cnt-crashes">&mdash;</span>
+            </div>
+          </div>
+          <hr />
+          <div class="legend-row" style="align-items: center">
+            <span style="font-size: 12px; color: #fff">Police Incidents</span>
+            <span
+              id="incidents-status"
+              style="font-size: 10px; color: #bbb; margin-left: 4px"
+            ></span>
+            <button class="meters-toggle" id="incidents-toggle">Off</button>
+          </div>
+          <div id="incidents-legend" style="display: none">
+            <div class="legend-row" style="margin-top: 4px">
+              <div
+                class="legend-dot"
+                style="
+                  background: transparent;
+                  border: 2px solid #ff4466;
+                  box-sizing: border-box;
+                "
+              ></div>
+              <span>Recent incidents within 24 hours</span>
+              <span class="legend-count" id="cnt-incidents">&mdash;</span>
+            </div>
+          </div>
+          <hr />
+          <div class="legend-row" style="align-items: center">
+            <span style="font-size: 12px; color: #fff">Abandoned Vehicles</span>
+            <span
+              id="tows-status"
+              style="font-size: 10px; color: #bbb; margin-left: 4px"
+            ></span>
+            <button class="meters-toggle" id="tows-toggle">Off</button>
+          </div>
+          <div id="tows-legend" style="display: none">
+            <div class="legend-row" style="margin-top: 4px">
+              <div
+                class="legend-dot"
+                style="
+                  background: #ffcc00;
+                  border: 2px solid #ffcc00;
+                  box-sizing: border-box;
+                "
+              ></div>
+              <span>311 abandoned vehicle reports</span>
+              <span class="legend-count" id="cnt-tows">&mdash;</span>
+            </div>
+          </div>
+          <hr />
+          <div class="legend-row" style="align-items: center">
+            <span style="font-size: 12px; color: #fff">Special Events</span>
+            <span
+              id="events-status"
+              style="font-size: 10px; color: #bbb; margin-left: 4px"
+            ></span>
+            <button class="meters-toggle" id="events-toggle">Off</button>
+          </div>
+          <div id="events-legend" style="display: none">
+            <div class="legend-row" style="margin-top: 4px">
+              <div
+                class="legend-line"
+                style="
+                  background: #ff44aa;
+                  height: 3px;
+                  width: 18px;
+                  border-radius: 2px;
+                  flex-shrink: 0;
+                "
+              ></div>
+              <span>Street closures &amp; events</span>
+              <span class="legend-count" id="cnt-events">&mdash;</span>
+            </div>
+          </div>
+          <hr />
+          <div class="legend-row" style="align-items: center">
+            <span style="font-size: 12px; color: #fff">Neighborhood Score</span>
+            <span
+              id="nhood-status"
+              style="font-size: 10px; color: #bbb; margin-left: 4px"
+            ></span>
+            <button class="meters-toggle" id="nhood-toggle">Off</button>
+          </div>
+          <div id="nhood-legend" style="display: none">
+            <div
+              class="legend-row"
+              style="margin-top: 4px; align-items: center"
+            >
+              <div
+                style="
+                  width: 60px;
+                  height: 7px;
+                  background: linear-gradient(
+                    to right,
+                    #00cc55,
+                    #ffcc00,
+                    #ff3333
+                  );
+                  border-radius: 2px;
+                  flex-shrink: 0;
+                "
+              ></div>
+              <span>Easy &rarr; Difficult</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Street cleaning color key -->
+        <div class="panel-section legend">
+          <div class="legend-row">
+            <div class="legend-line" style="background: #ff3333"></div>
+            <span>Street cleaning</span>
+            <span class="legend-count" id="cnt-active">&mdash;</span>
           </div>
           <div class="legend-row">
-            <div class="legend-line" style="background: #ffaa44; opacity: 0.6"></div>
-            <span>Permit required (outside hours)</span>
+            <div class="legend-line" style="background: #ff9900"></div>
+            <span>Upcoming cleaning today</span>
+            <span class="legend-count" id="cnt-upcoming">&mdash;</span>
           </div>
-        </div>
-        <hr />
-        <div class="legend-row" style="align-items: center">
-          <span style="font-size: 12px; color: #fff">Parking Meters</span>
-          <span id="meters-status"></span>
-          <button class="meters-toggle" id="meters-toggle">Off</button>
-        </div>
-        <div id="meters-legend" style="display: none">
-          <div class="legend-row" style="margin-top: 4px">
+          <div class="legend-row">
+            <div class="legend-line" style="background: #2ecc71"></div>
+            <span>No upcoming cleaning</span>
+            <span class="legend-count" id="cnt-passed">&mdash;</span>
+          </div>
+          <div class="legend-row">
+            <div class="legend-line" style="background: #4499ff"></div>
+            <span>No cleaning for full window</span>
+            <span class="legend-count" id="cnt-parksafe">&mdash;</span>
+          </div>
+          <div class="legend-row">
             <div
-              class="legend-dot"
+              class="legend-line"
               style="
-                background: #1e7a38;
-                border: 2px solid #1e7a38;
-                box-sizing: border-box;
+                background: repeating-linear-gradient(
+                  90deg,
+                  #cc44ff 0px,
+                  #cc44ff 6px,
+                  transparent 6px,
+                  transparent 10px
+                );
               "
             ></div>
-            <span>Free parking meters found</span>
-            <span class="legend-count" id="cnt-meter-free">&mdash;</span>
+            <span>Recommended parking route</span>
           </div>
-        </div>
-        <hr />
-        <div class="legend-row" style="align-items: center">
-          <span style="font-size: 12px; color: #fff">Street Permits</span>
-          <span id="permits-status" style="font-size: 10px; color: #bbb; margin-left: 4px;"></span>
-          <button class="meters-toggle" id="permits-toggle">Off</button>
-        </div>
-        <div id="permits-legend" style="display: none">
-          <div class="legend-row" style="margin-top: 4px">
-            <div class="legend-dot" style="background: transparent; border: 2px solid #ff8800; box-sizing: border-box;"></div>
-            <span>Street space permits</span>
-            <span class="legend-count" id="cnt-permits">&mdash;</span>
-          </div>
-        </div>
-        <hr />
-        <div class="legend-row" style="align-items: center">
-          <span style="font-size: 12px; color: #fff">Parking Garages</span>
-          <span id="garages-status" style="font-size: 10px; color: #bbb; margin-left: 4px;"></span>
-          <button class="meters-toggle" id="garages-toggle">Off</button>
-        </div>
-        <div id="garages-legend" style="display: none">
-          <div class="legend-row" style="margin-top: 4px">
-            <div class="legend-dot" style="background: #00cc88; border: 2px solid #00cc88; box-sizing: border-box;"></div>
-            <span>Open now</span>
-            <span class="legend-count" id="cnt-garages-open">&mdash;</span>
-          </div>
-          <div class="legend-row" style="margin-top: 2px">
-            <div class="legend-dot" style="background: transparent; border: 2px solid #555; box-sizing: border-box;"></div>
-            <span>Closed / unknown</span>
-            <span class="legend-count" id="cnt-garages-closed">&mdash;</span>
-          </div>
-        </div>
-        <hr />
-        <div class="legend-row" style="align-items: center">
-          <span style="font-size: 12px; color: #fff">Parking Citations</span>
-          <span id="citations-status" style="font-size: 10px; color: #bbb; margin-left: 4px;"></span>
-          <button class="meters-toggle" id="citations-toggle">Off</button>
-        </div>
-        <div id="citations-legend" style="display: none">
-          <div class="legend-row" style="margin-top: 4px">
-            <div class="legend-dot" style="background: #bb44ff; border: 2px solid #bb44ff; box-sizing: border-box;"></div>
-            <span>Citation density</span>
-            <span class="legend-count" id="cnt-citations">&mdash;</span>
-          </div>
-        </div>
-        <hr />
-        <div class="legend-row" style="align-items: center">
-          <span style="font-size: 12px; color: #fff">Car Break-ins</span>
-          <span id="breakins-status" style="font-size: 10px; color: #bbb; margin-left: 4px;"></span>
-          <button class="meters-toggle" id="breakins-toggle">Off</button>
-        </div>
-        <div id="breakins-legend" style="display: none">
-          <div class="legend-row" style="margin-top: 4px">
-            <div class="legend-dot" style="background: #ff6600; border: 2px solid #ff6600; box-sizing: border-box;"></div>
-            <span>Vehicle theft &amp; break-ins</span>
-            <span class="legend-count" id="cnt-breakins">&mdash;</span>
-          </div>
-        </div>
-        <hr />
-        <div class="legend-row" style="align-items: center">
-          <span style="font-size: 12px; color: #fff">Traffic Crashes</span>
-          <span id="crashes-status" style="font-size: 10px; color: #bbb; margin-left: 4px;"></span>
-          <button class="meters-toggle" id="crashes-toggle">Off</button>
-        </div>
-        <div id="crashes-legend" style="display: none">
-          <div class="legend-row" style="margin-top: 4px">
-            <div
-              class="legend-dot"
-              style="
-                background: transparent;
-                border: 2px solid #ffcc00;
-                box-sizing: border-box;
-              "
-            ></div>
-            <span>Recent crash incidents</span>
-            <span class="legend-count" id="cnt-crashes">&mdash;</span>
-          </div>
-        </div>
-        <hr />
-        <div class="legend-row" style="align-items: center">
-          <span style="font-size: 12px; color: #fff">Police Incidents</span>
-          <span id="incidents-status" style="font-size: 10px; color: #bbb; margin-left: 4px;"></span>
-          <button class="meters-toggle" id="incidents-toggle">Off</button>
-        </div>
-        <div id="incidents-legend" style="display: none">
-          <div class="legend-row" style="margin-top: 4px">
-            <div
-              class="legend-dot"
-              style="
-                background: transparent;
-                border: 2px solid #ff4466;
-                box-sizing: border-box;
-              "
-            ></div>
-            <span>Recent incidents within 24 hours</span>
-            <span class="legend-count" id="cnt-incidents">&mdash;</span>
-          </div>
-        </div>
-        <hr />
-        <div class="legend-row" style="align-items: center">
-          <span style="font-size: 12px; color: #fff">Abandoned Vehicles</span>
-          <span id="tows-status" style="font-size: 10px; color: #bbb; margin-left: 4px;"></span>
-          <button class="meters-toggle" id="tows-toggle">Off</button>
-        </div>
-        <div id="tows-legend" style="display: none">
-          <div class="legend-row" style="margin-top: 4px">
-            <div class="legend-dot" style="background: #ffcc00; border: 2px solid #ffcc00; box-sizing: border-box;"></div>
-            <span>311 abandoned vehicle reports</span>
-            <span class="legend-count" id="cnt-tows">&mdash;</span>
-          </div>
-        </div>
-        <hr />
-        <div class="legend-row" style="align-items: center">
-          <span style="font-size: 12px; color: #fff">Special Events</span>
-          <span id="events-status" style="font-size: 10px; color: #bbb; margin-left: 4px;"></span>
-          <button class="meters-toggle" id="events-toggle">Off</button>
-        </div>
-        <div id="events-legend" style="display: none">
-          <div class="legend-row" style="margin-top: 4px">
-            <div class="legend-line" style="background: #ff44aa; height: 3px; width: 18px; border-radius: 2px; flex-shrink: 0;"></div>
-            <span>Street closures &amp; events</span>
-            <span class="legend-count" id="cnt-events">&mdash;</span>
-          </div>
-        </div>
-        <hr />
-        <div class="legend-row" style="align-items: center">
-          <span style="font-size: 12px; color: #fff">Neighborhood Score</span>
-          <span id="nhood-status" style="font-size: 10px; color: #bbb; margin-left: 4px;"></span>
-          <button class="meters-toggle" id="nhood-toggle">Off</button>
-        </div>
-        <div id="nhood-legend" style="display: none">
-          <div class="legend-row" style="margin-top: 4px; align-items: center">
-            <div style="width: 60px; height: 7px; background: linear-gradient(to right, #00cc55, #ffcc00, #ff3333); border-radius: 2px; flex-shrink: 0;"></div>
-            <span>Easy &rarr; Difficult</span>
+          <hr />
+          <div style="margin-top: 6px; text-align: right">
+            <span style="font-size: 10px; color: #666"
+              >Data is fetched from
+              <a
+                href="https://datasf.org/opendata/"
+                target="_blank"
+                style="color: #888"
+                >DataSF</a
+              ></span
+            >
           </div>
         </div>
       </div>
-
-      <!-- Street cleaning color key -->
-      <div class="panel-section legend">
-        <div class="legend-row">
-          <div class="legend-line" style="background: #ff3333"></div>
-          <span>Street cleaning</span>
-          <span class="legend-count" id="cnt-active">&mdash;</span>
-        </div>
-        <div class="legend-row">
-          <div class="legend-line" style="background: #ff9900"></div>
-          <span>Upcoming cleaning today</span>
-          <span class="legend-count" id="cnt-upcoming">&mdash;</span>
-        </div>
-        <div class="legend-row">
-          <div class="legend-line" style="background: #2ecc71"></div>
-          <span>No upcoming cleaning</span>
-          <span class="legend-count" id="cnt-passed">&mdash;</span>
-        </div>
-        <div class="legend-row">
-          <div class="legend-line" style="background: #4499ff"></div>
-          <span>No cleaning for full window</span>
-          <span class="legend-count" id="cnt-parksafe">&mdash;</span>
-        </div>
-        <div class="legend-row">
-          <div class="legend-line" style="background: repeating-linear-gradient(90deg, #cc44ff 0px, #cc44ff 6px, transparent 6px, transparent 10px)"></div>
-          <span>Recommended parking route</span>
-        </div>
-        <hr />
-        <div style="margin-top: 6px; text-align: right">
-          <span style="font-size:10px;color:#666">Data is fetched from <a href="https://datasf.org/opendata/" target="_blank" style="color:#888">DataSF</a></span>
-        </div>
-      </div>
-    </div><!-- /#control-panel -->
-    </div><!-- /#panel-wrapper -->
+      <!-- /#control-panel -->
+    </div>
+    <!-- /#panel-wrapper -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
     <script>
@@ -1346,30 +1582,31 @@
 
       // ── Status + colors ───────────────────────────────────────────────────
       const COLORS = {
-        active: "#ff2200",   // bright red  — being cleaned right now
+        active: "#ff2200", // bright red  — being cleaned right now
         upcoming: "#ff9900", // orange      — restriction coming up today
-        passed: "#2ecc71",   // green       — safe to park now
+        passed: "#2ecc71", // green       — safe to park now
       };
       const PARK_SAFE_COLOR = "#4499ff"; // blue — safe for your full window
 
       // Urgency color for upcoming streets based on hours until cleaning
       function urgencyColor(hoursUntil) {
         if (hoursUntil <= 0.5) return "#ff2200"; // < 30 min — critical
-        if (hoursUntil <= 1)   return "#ff5500"; // < 1 hr   — urgent
-        if (hoursUntil <= 2)   return "#ff9900"; // < 2 hr   — warning
-        return "#ffcc00";                         // > 2 hr   — heads-up
+        if (hoursUntil <= 1) return "#ff5500"; // < 1 hr   — urgent
+        if (hoursUntil <= 2) return "#ff9900"; // < 2 hr   — warning
+        return "#ffcc00"; // > 2 hr   — heads-up
       }
 
       // Next-occurrence line for popups — works for any viewed day
       function fmtNextOccurrence(fromhour, tohour, cleaningDayName) {
         const cleaningIdx = DAY_NAMES.findIndex(
-          d => d.toLowerCase() === (cleaningDayName || "").toLowerCase()
+          (d) => d.toLowerCase() === (cleaningDayName || "").toLowerCase(),
         );
         const cur = now.getHours() + now.getMinutes() / 60;
         const todayIdx = now.getDay();
 
         // If cleaning day is unknown, fall back to simple countdown (must be today's view)
-        if (cleaningIdx === -1) return isViewingToday() ? fmtCountdown(fromhour, tohour) : "";
+        if (cleaningIdx === -1)
+          return isViewingToday() ? fmtCountdown(fromhour, tohour) : "";
 
         let daysUntil = (cleaningIdx - todayIdx + 7) % 7;
         // If today IS the cleaning day but it's already past, next is in 7 days
@@ -1383,7 +1620,9 @@
         const nextDate = new Date(now);
         nextDate.setDate(now.getDate() + daysUntil);
         const dateStr = nextDate.toLocaleDateString("en-US", {
-          weekday: "short", month: "short", day: "numeric"
+          weekday: "short",
+          month: "short",
+          day: "numeric",
         });
         return `<span style="color:#aaa">Next: ${dateStr} &nbsp;${fmtHour(fromhour)}–${fmtHour(tohour)}</span>`;
       }
@@ -1392,20 +1631,23 @@
       function fmtCountdown(fromhour, tohour) {
         const cur = now.getHours() + now.getMinutes() / 60;
         const from = parseFloat(fromhour);
-        const to   = parseFloat(tohour);
+        const to = parseFloat(tohour);
         if (cur >= from && cur < to) {
           const m = Math.round((to - cur) * 60);
           return `<span style="color:#ff4444">&#9888; Cleaning now &mdash; ends in ${m}m</span>`;
         }
         if (cur < from) {
           const total = Math.round((from - cur) * 60);
-          const h = Math.floor(total / 60), m = total % 60;
+          const h = Math.floor(total / 60),
+            m = total % 60;
           const txt = h ? `${h}h ${m}m` : `${m}m`;
-          const color = total <= 60 ? "#ff7700" : total <= 120 ? "#ffaa00" : "#aaaaaa";
+          const color =
+            total <= 60 ? "#ff7700" : total <= 120 ? "#ffaa00" : "#aaaaaa";
           return `<span style="color:${color}">Cleaning in ${txt}</span>`;
         }
         const ago = Math.round((cur - to) * 60);
-        const h = Math.floor(ago / 60), m = ago % 60;
+        const h = Math.floor(ago / 60),
+          m = ago % 60;
         return `<span style="color:#888">Cleaned ${h ? `${h}h ` : ""}${m}m ago</span>`;
       }
 
@@ -1512,7 +1754,7 @@
 
       function fmtSafeFor(hours) {
         if (hours <= 0) return null;
-        if (hours < 1/60) return "< 1min";
+        if (hours < 1 / 60) return "< 1min";
         if (hours < 1) return `${Math.round(hours * 60)}min`;
         const h = Math.floor(hours);
         const m = Math.round((hours - h) * 60);
@@ -1520,25 +1762,48 @@
         return `${h}h ${m}m`;
       }
 
-      function safeUntilHtml(verdict, active, upcoming, passed, nearbyOtherWeek) {
+      function safeUntilHtml(
+        verdict,
+        active,
+        upcoming,
+        passed,
+        nearbyOtherWeek,
+      ) {
         if (verdict === "active") return "";
         if (verdict === "upcoming") {
-          const hoursLeft = parseFloat(upcoming[0].f.properties.fromhour) - activeHour;
+          const hoursLeft =
+            parseFloat(upcoming[0].f.properties.fromhour) - activeHour;
           const dur = fmtSafeFor(hoursLeft);
-          return dur ? `<div style="font-size:11px;color:#888;margin-top:3px">Safe to park for <span style="color:#ccc;font-weight:bold">${dur}</span></div>` : "";
+          return dur
+            ? `<div style="font-size:11px;color:#888;margin-top:3px">Safe to park for <span style="color:#ccc;font-weight:bold">${dur}</span></div>`
+            : "";
         }
         if (verdict === "passed") {
           const hoursLeft = 24 - activeHour;
           const dur = fmtSafeFor(hoursLeft);
-          return dur ? `<div style="font-size:11px;color:#888;margin-top:3px">Safe for <span style="color:#ccc;font-weight:bold">${dur}</span> (rest of day)</div>` : "";
+          return dur
+            ? `<div style="font-size:11px;color:#888;margin-top:3px">Safe for <span style="color:#ccc;font-weight:bold">${dur}</span> (rest of day)</div>`
+            : "";
         }
         if (nearbyOtherWeek.length > 0) {
           // Find next cleaning day
-          const DAY_IDX = { sunday:0, monday:1, tuesday:2, wednesday:3, thursday:4, friday:5, saturday:6 };
+          const DAY_IDX = {
+            sunday: 0,
+            monday: 1,
+            tuesday: 2,
+            wednesday: 3,
+            thursday: 4,
+            friday: 5,
+            saturday: 6,
+          };
           const todayIdx = now.getDay();
           let minDays = 7;
           for (const { f } of nearbyOtherWeek) {
-            const d = (f.properties.fullname || f.properties.weekday || "").toLowerCase();
+            const d = (
+              f.properties.fullname ||
+              f.properties.weekday ||
+              ""
+            ).toLowerCase();
             const idx = DAY_IDX[d];
             if (idx == null) continue;
             const diff = (idx - todayIdx + 7) % 7 || 7;
@@ -1557,8 +1822,9 @@
         const restricted = new Array(SLOTS).fill(false);
         for (const { f } of nearbyThisWeek) {
           const from = Math.floor(parseFloat(f.properties.fromhour) * 4);
-          const to   = Math.ceil(parseFloat(f.properties.tohour) * 4);
-          for (let i = Math.max(0, from); i < Math.min(SLOTS, to); i++) restricted[i] = true;
+          const to = Math.ceil(parseFloat(f.properties.tohour) * 4);
+          for (let i = Math.max(0, from); i < Math.min(SLOTS, to); i++)
+            restricted[i] = true;
         }
 
         // Merge adjacent same-state slots into segments
@@ -1567,24 +1833,45 @@
         while (i < SLOTS) {
           let j = i + 1;
           while (j < SLOTS && restricted[j] === restricted[i]) j++;
-          segments.push({ restricted: restricted[i], pct: i / SLOTS * 100, w: (j - i) / SLOTS * 100 });
+          segments.push({
+            restricted: restricted[i],
+            pct: (i / SLOTS) * 100,
+            w: ((j - i) / SLOTS) * 100,
+          });
           i = j;
         }
 
-        const bars = segments.map(s =>
-          `<div style="position:absolute;left:${s.pct.toFixed(2)}%;width:${s.w.toFixed(2)}%;height:100%;background:${s.restricted ? "#ff3333" : "#2ecc71"};opacity:0.5"></div>`
-        ).join("");
+        const bars = segments
+          .map(
+            (s) =>
+              `<div style="position:absolute;left:${s.pct.toFixed(2)}%;width:${s.w.toFixed(2)}%;height:100%;background:${s.restricted ? "#ff3333" : "#2ecc71"};opacity:0.5"></div>`,
+          )
+          .join("");
 
         const nowPct = Math.min(100, (activeHour / 24) * 100);
         const nowLine = `<div style="position:absolute;left:${nowPct.toFixed(2)}%;top:-2px;width:2px;height:calc(100% + 4px);background:#fff;z-index:10;border-radius:1px"></div>`;
 
         const labelHours = [0, 4, 8, 12, 16, 20, 24];
-        const labelHtml = labelHours.map(h => {
-          const pct = h / 24 * 100;
-          const txt = h === 0 || h === 24 ? "12am" : h < 12 ? `${h}am` : h === 12 ? "12pm" : `${h - 12}pm`;
-          const align = h === 0 ? "left:0%;transform:none" : h === 24 ? "right:0%;left:auto;transform:none" : `left:${pct}%;transform:translateX(-50%)`;
-          return `<span style="position:absolute;${align};font-size:9px;color:#aaa;letter-spacing:0.5px">${txt}</span>`;
-        }).join("");
+        const labelHtml = labelHours
+          .map((h) => {
+            const pct = (h / 24) * 100;
+            const txt =
+              h === 0 || h === 24
+                ? "12am"
+                : h < 12
+                  ? `${h}am`
+                  : h === 12
+                    ? "12pm"
+                    : `${h - 12}pm`;
+            const align =
+              h === 0
+                ? "left:0%;transform:none"
+                : h === 24
+                  ? "right:0%;left:auto;transform:none"
+                  : `left:${pct}%;transform:translateX(-50%)`;
+            return `<span style="position:absolute;${align};font-size:9px;color:#aaa;letter-spacing:0.5px">${txt}</span>`;
+          })
+          .join("");
 
         return `
           <div style="margin-top:8px;margin-bottom:2px">
@@ -1737,35 +2024,60 @@
       function clearRecMarkers() {
         _recMarkers.forEach((m) => map.removeLayer(m));
         _recMarkers = [];
-        if (_routeAbort) { _routeAbort.abort(); _routeAbort = null; }
-        if (_routeLayer) { map.removeLayer(_routeLayer); _routeLayer = null; }
+        if (_routeAbort) {
+          _routeAbort.abort();
+          _routeAbort = null;
+        }
+        if (_routeLayer) {
+          map.removeLayer(_routeLayer);
+          _routeLayer = null;
+        }
       }
 
       // Precision-6 polyline decoder for Valhalla responses
       function decodePolyline6(str) {
         const coords = [];
-        let lat = 0, lng = 0, i = 0;
+        let lat = 0,
+          lng = 0,
+          i = 0;
         while (i < str.length) {
-          let b, shift = 0, result = 0;
-          do { b = str.charCodeAt(i++) - 63; result |= (b & 0x1f) << shift; shift += 5; } while (b >= 0x20);
-          lat += (result & 1) ? ~(result >> 1) : (result >> 1);
-          shift = 0; result = 0;
-          do { b = str.charCodeAt(i++) - 63; result |= (b & 0x1f) << shift; shift += 5; } while (b >= 0x20);
-          lng += (result & 1) ? ~(result >> 1) : (result >> 1);
+          let b,
+            shift = 0,
+            result = 0;
+          do {
+            b = str.charCodeAt(i++) - 63;
+            result |= (b & 0x1f) << shift;
+            shift += 5;
+          } while (b >= 0x20);
+          lat += result & 1 ? ~(result >> 1) : result >> 1;
+          shift = 0;
+          result = 0;
+          do {
+            b = str.charCodeAt(i++) - 63;
+            result |= (b & 0x1f) << shift;
+            shift += 5;
+          } while (b >= 0x20);
+          lng += result & 1 ? ~(result >> 1) : result >> 1;
           coords.push([lng / 1e6, lat / 1e6]); // [lon, lat] for GeoJSON
         }
         return coords;
       }
 
       function greedySortRecs(origin, recs) {
-        const items = recs.map((r, i) => ({ r, pt: featureMidpoint(r.f), i })).filter(x => x.pt);
+        const items = recs
+          .map((r, i) => ({ r, pt: featureMidpoint(r.f), i }))
+          .filter((x) => x.pt);
         const sorted = [];
         let cur = origin;
         while (items.length) {
-          let bestIdx = 0, bestDist = Infinity;
+          let bestIdx = 0,
+            bestDist = Infinity;
           items.forEach((x, i) => {
             const d = Math.hypot(x.pt.lat - cur.lat, x.pt.lng - cur.lng);
-            if (d < bestDist) { bestDist = d; bestIdx = i; }
+            if (d < bestDist) {
+              bestDist = d;
+              bestIdx = i;
+            }
           });
           const best = items.splice(bestIdx, 1)[0];
           sorted.push(best.r);
@@ -1775,20 +2087,33 @@
       }
 
       async function drawParkingRoute(origin, sortedRecs) {
-        if (_routeAbort) { _routeAbort.abort(); }
-        if (_routeLayer) { map.removeLayer(_routeLayer); _routeLayer = null; }
+        if (_routeAbort) {
+          _routeAbort.abort();
+        }
+        if (_routeLayer) {
+          map.removeLayer(_routeLayer);
+          _routeLayer = null;
+        }
         const controller = new AbortController();
         _routeAbort = controller;
 
-        const pts = sortedRecs.map(({ f }) => featureMidpoint(f)).filter(Boolean);
+        const pts = sortedRecs
+          .map(({ f }) => featureMidpoint(f))
+          .filter(Boolean);
         if (pts.length === 0) return;
         const waypoints = [origin, ...pts];
-        const routeStyle = { color: "#cc44ff", weight: 4, opacity: 0.9, dashArray: "8 6", className: "route-pulse" };
+        const routeStyle = {
+          color: "#cc44ff",
+          weight: 4,
+          opacity: 0.9,
+          dashArray: "8 6",
+          className: "route-pulse",
+        };
 
         if (controller.signal.aborted) return;
 
         // 1) Try OSRM hosts (GET, GeoJSON geometry)
-        const osrmCoords = waypoints.map(p => `${p.lng},${p.lat}`).join(";");
+        const osrmCoords = waypoints.map((p) => `${p.lng},${p.lat}`).join(";");
         const OSRM_HOSTS = [
           "https://routing.openstreetmap.de/routed-car",
           "https://router.project-osrm.org",
@@ -1815,7 +2140,11 @@
         if (controller.signal.aborted) return;
         try {
           const body = {
-            locations: waypoints.map(p => ({ lon: p.lng, lat: p.lat, type: "break" })),
+            locations: waypoints.map((p) => ({
+              lon: p.lng,
+              lat: p.lat,
+              type: "break",
+            })),
             costing: "auto",
           };
           const resp = await fetch("https://valhalla1.openstreetmap.de/route", {
@@ -1827,12 +2156,14 @@
           if (resp.ok) {
             const data = await resp.json();
             if (controller.signal.aborted) return;
-            const allCoords = (data.trip?.legs ?? []).flatMap(leg => decodePolyline6(leg.shape));
+            const allCoords = (data.trip?.legs ?? []).flatMap((leg) =>
+              decodePolyline6(leg.shape),
+            );
             if (allCoords.length > 0) {
               if (_routeLayer) map.removeLayer(_routeLayer);
               _routeLayer = L.geoJSON(
                 { type: "LineString", coordinates: allCoords },
-                { style: routeStyle }
+                { style: routeStyle },
               ).addTo(map);
             }
           }
@@ -1896,21 +2227,31 @@
       // ── Composite risk scoring ────────────────────────────────────────────
       function countNearby(latlng, points, radiusM) {
         // points: array of [lat, lng] or [lat, lng, ...]
-        const lat1 = latlng.lat * Math.PI / 180;
-        const lng1 = latlng.lng * Math.PI / 180;
+        const lat1 = (latlng.lat * Math.PI) / 180;
+        const lng1 = (latlng.lng * Math.PI) / 180;
         let count = 0;
         for (const p of points) {
-          const lat2 = p[0] * Math.PI / 180;
+          const lat2 = (p[0] * Math.PI) / 180;
           const dlat = lat2 - lat1;
-          const dlng = (p[1] * Math.PI / 180) - lng1;
-          const a = Math.sin(dlat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dlng / 2) ** 2;
-          if (6371000 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) <= radiusM) count++;
+          const dlng = (p[1] * Math.PI) / 180 - lng1;
+          const a =
+            Math.sin(dlat / 2) ** 2 +
+            Math.cos(lat1) * Math.cos(lat2) * Math.sin(dlng / 2) ** 2;
+          if (
+            6371000 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) <=
+            radiusM
+          )
+            count++;
         }
         return count;
       }
 
       function riskBadge(level) {
-        const cls = { LOW: "risk-low", MEDIUM: "risk-medium", HIGH: "risk-high" };
+        const cls = {
+          LOW: "risk-low",
+          MEDIUM: "risk-medium",
+          HIGH: "risk-high",
+        };
         return `<span class="risk-badge ${cls[level]}">${level}</span>`;
       }
 
@@ -1921,7 +2262,9 @@
         if (breakinsLoaded && breakinsPoints.length) {
           const n = countNearby(latlng, breakinsPoints, 200);
           const level = n >= 6 ? "HIGH" : n >= 3 ? "MEDIUM" : "LOW";
-          rows.push(`<div class="risk-row"><span>Vehicle break-ins nearby</span>${riskBadge(level)}</div>`);
+          rows.push(
+            `<div class="risk-row"><span>Vehicle break-ins nearby</span>${riskBadge(level)}</div>`,
+          );
         }
 
         // Citation risk — build coordinate list from geocache (200m radius)
@@ -1933,31 +2276,40 @@
           if (citPts.length) {
             const n = countNearby(latlng, citPts, 200);
             const level = n >= 10 ? "HIGH" : n >= 4 ? "MEDIUM" : "LOW";
-            rows.push(`<div class="risk-row"><span>Parking citations nearby</span>${riskBadge(level)}</div>`);
+            rows.push(
+              `<div class="risk-row"><span>Parking citations nearby</span>${riskBadge(level)}</div>`,
+            );
           }
         }
 
         // Abandoned vehicle density (200m radius)
         if (towsData.length) {
           const towsPts = towsData
-            .filter(t => t[towsLatField] && t[towsLngField])
-            .map(t => [parseFloat(t[towsLatField]), parseFloat(t[towsLngField])]);
+            .filter((t) => t[towsLatField] && t[towsLngField])
+            .map((t) => [
+              parseFloat(t[towsLatField]),
+              parseFloat(t[towsLngField]),
+            ]);
           if (towsPts.length) {
             const n = countNearby(latlng, towsPts, 200);
             const level = n >= 4 ? "HIGH" : n >= 2 ? "MEDIUM" : "LOW";
-            rows.push(`<div class="risk-row"><span>Abandoned vehicles nearby</span>${riskBadge(level)}</div>`);
+            rows.push(
+              `<div class="risk-row"><span>Abandoned vehicles nearby</span>${riskBadge(level)}</div>`,
+            );
           }
         }
 
         // Police incidents (200m radius)
         if (incidentsData.length) {
           const incPts = incidentsData
-            .filter(i => i.latitude && i.longitude)
-            .map(i => [parseFloat(i.latitude), parseFloat(i.longitude)]);
+            .filter((i) => i.latitude && i.longitude)
+            .map((i) => [parseFloat(i.latitude), parseFloat(i.longitude)]);
           if (incPts.length) {
             const n = countNearby(latlng, incPts, 200);
             const level = n >= 8 ? "HIGH" : n >= 3 ? "MEDIUM" : "LOW";
-            rows.push(`<div class="risk-row"><span>Police incidents nearby</span>${riskBadge(level)}</div>`);
+            rows.push(
+              `<div class="risk-row"><span>Police incidents nearby</span>${riskBadge(level)}</div>`,
+            );
           }
         }
 
@@ -1972,12 +2324,19 @@
       // ── Corridor schedule inference ───────────────────────────────────────
       function inferCorridorSchedule(label) {
         if (!label || !loadedFeatures.length) return null;
-        const raw = label.split(",")[0].trim().toUpperCase()
-          .replace(/\bSTREET\b/g, "ST").replace(/\bAVENUE\b/g, "AVE")
-          .replace(/\bBOULEVARD\b/g, "BLVD").replace(/\bDRIVE\b/g, "DR")
-          .replace(/\bCOURT\b/g, "CT").replace(/\bLANE\b/g, "LN")
-          .replace(/\bPLACE\b/g, "PL").replace(/\bROAD\b/g, "RD");
-        const matches = loadedFeatures.filter(f => {
+        const raw = label
+          .split(",")[0]
+          .trim()
+          .toUpperCase()
+          .replace(/\bSTREET\b/g, "ST")
+          .replace(/\bAVENUE\b/g, "AVE")
+          .replace(/\bBOULEVARD\b/g, "BLVD")
+          .replace(/\bDRIVE\b/g, "DR")
+          .replace(/\bCOURT\b/g, "CT")
+          .replace(/\bLANE\b/g, "LN")
+          .replace(/\bPLACE\b/g, "PL")
+          .replace(/\bROAD\b/g, "RD");
+        const matches = loadedFeatures.filter((f) => {
           const c = (f.properties.corridor || "").toUpperCase();
           return c === raw || c.startsWith(raw) || raw.startsWith(c);
         });
@@ -1988,7 +2347,8 @@
           const day = (p.fullname || p.weekday || "").trim();
           if (!day || p.fromhour == null || p.tohour == null) continue;
           const key = `${day}|${p.fromhour}|${p.tohour}`;
-          if (!tally[key]) tally[key] = { day, fromhour: p.fromhour, tohour: p.tohour, n: 0 };
+          if (!tally[key])
+            tally[key] = { day, fromhour: p.fromhour, tohour: p.tohour, n: 0 };
           tally[key].n++;
         }
         const top = Object.values(tally).sort((a, b) => b.n - a.n);
@@ -2007,7 +2367,10 @@
         // Weekends: all streets are safe, no data needed
         if (isWeekendView) {
           if (checkMarker) map.removeLayer(checkMarker);
-          checkMarker = L.marker(latlng, { icon: makeUserPin(PARK_SAFE_COLOR), zIndexOffset: 1000 }).addTo(map);
+          checkMarker = L.marker(latlng, {
+            icon: makeUserPin(PARK_SAFE_COLOR),
+            zIndexOffset: 1000,
+          }).addTo(map);
           const panel = document.getElementById("result-panel");
           panel.innerHTML = `
             ${label ? `<div class="result-address">${label}</div>` : ""}
@@ -2088,7 +2451,13 @@
             verdictHtml = `<div class="verdict verdict-passed">No street cleaning data here</div>`;
           }
         }
-        verdictHtml += safeUntilHtml(verdict, active, upcoming, passed, nearbyOtherWeek);
+        verdictHtml += safeUntilHtml(
+          verdict,
+          active,
+          upcoming,
+          passed,
+          nearbyOtherWeek,
+        );
 
         // Detail rows — this-week entries first (active/upcoming/passed), then other-week as context
         let rows = "";
@@ -2128,7 +2497,10 @@
           passed: "#2ecc71",
         }[verdict];
         if (checkMarker) map.removeLayer(checkMarker);
-        checkMarker = L.marker(latlng, { icon: makeUserPin(mColor), zIndexOffset: 1000 }).addTo(map);
+        checkMarker = L.marker(latlng, {
+          icon: makeUserPin(mColor),
+          zIndexOffset: 1000,
+        }).addTo(map);
 
         // Build recommendations
         _lastRecs = findRecommendations(latlng);
@@ -2155,31 +2527,35 @@
           recsHtml = `
             <div class="recs-section">
               <div class="verdict verdict-parksafe">Try to park here</div>
-              ${_sortedRecs.map(({ f, d }, i) => {
-                const p = f.properties;
-                const reason = parkSafeReason(p.fromhour, p.tohour);
-                return `<div class="rec-row" data-rec-idx="${i}">
+              ${_sortedRecs
+                .map(({ f, d }, i) => {
+                  const p = f.properties;
+                  const reason = parkSafeReason(p.fromhour, p.tohour);
+                  return `<div class="rec-row" data-rec-idx="${i}">
                   <span style="color:#cc44ff;flex-shrink:0;min-width:14px">${i + 1}.</span>
                   <span class="rec-name" style="color:#cc44ff">${p.corridor || "—"}</span>
                   <span class="rec-why">${reason}</span>
                   <span class="rec-dist">${Math.round(d)}m</span>
                 </div>`;
-              }).join("")}
+                })
+                .join("")}
             </div>
           `;
         } else if (_lastRecs.length > 0) {
           recsHtml = `
             <div class="recs-section">
               <div class="verdict verdict-parksafe">Try to park here</div>
-              ${_lastRecs.map(({ f, d }, i) => {
-                const p = f.properties;
-                const reason = parkSafeReason(p.fromhour, p.tohour);
-                return `<div class="rec-row" data-rec-idx="${i}">
+              ${_lastRecs
+                .map(({ f, d }, i) => {
+                  const p = f.properties;
+                  const reason = parkSafeReason(p.fromhour, p.tohour);
+                  return `<div class="rec-row" data-rec-idx="${i}">
                   <span class="rec-name">${p.corridor || "—"}</span>
                   <span class="rec-why">${reason}</span>
                   <span class="rec-dist">${Math.round(d)}m</span>
                 </div>`;
-              }).join("")}
+                })
+                .join("")}
             </div>
           `;
         }
@@ -2391,7 +2767,8 @@
         // If triggered by a park-until day switch, override activeHour to midnight
         // so streets are evaluated from the start of the park-until day.
         if (_postSwitchOverride) {
-          const { activeHour: ovHour, parkUntilHour: ovPark } = _postSwitchOverride;
+          const { activeHour: ovHour, parkUntilHour: ovPark } =
+            _postSwitchOverride;
           _postSwitchOverride = null;
           activeHour = ovHour;
           parkUntilHour = ovPark;
@@ -2411,7 +2788,8 @@
             applyFeatureStyle(layer, p, isLeft);
           });
           updateCounts(ovHour);
-          if (checkMarker) showVerdict(checkMarker.getLatLng(), lastSearchLabel);
+          if (checkMarker)
+            showVerdict(checkMarker.getLatLng(), lastSearchLabel);
           else showVerdict(L.latLng(37.7793, -122.4193), "SF City Hall");
         }
       }
@@ -2487,7 +2865,10 @@
               if (dow !== 0 && dow !== 6) {
                 // It's a weekday — load its data, then override activeHour to
                 // midnight so restrictions are shown from the day's start.
-                _postSwitchOverride = { activeHour: 0, parkUntilHour: sliderVal };
+                _postSwitchOverride = {
+                  activeHour: 0,
+                  parkUntilHour: sliderVal,
+                };
                 switchToDay(targetDate);
                 return;
               }
@@ -2616,7 +2997,7 @@
       // ── Custom slider visual sync ─────────────────────────────────────────
       function syncSlider(which) {
         const input = document.getElementById(which + "-slider");
-        const fill  = document.getElementById(which + "-slider-fill");
+        const fill = document.getElementById(which + "-slider-fill");
         const thumb = document.getElementById(which + "-slider-thumb");
         if (!input || !fill || !thumb) return;
         const pct = ((input.value - input.min) / (input.max - input.min)) * 100;
@@ -2630,8 +3011,6 @@
           syncSlider("time");
           updateForHour(parseFloat(this.value));
         });
-
-
 
       // ── Park-until slider ─────────────────────────────────────────────────
       function updateParkLabel(sliderHour) {
@@ -2784,9 +3163,13 @@
       }
 
       function isApiDown(err) {
-        const m = (err && err.message || "").toLowerCase();
-        return m.includes("load failed") || m.includes("failed to fetch") ||
-               m.includes("networkerror") || m.includes("503");
+        const m = ((err && err.message) || "").toLowerCase();
+        return (
+          m.includes("load failed") ||
+          m.includes("failed to fetch") ||
+          m.includes("networkerror") ||
+          m.includes("503")
+        );
       }
 
       function showApiDown() {
@@ -2860,7 +3243,9 @@
 
         return fetchPage().catch((err) => {
           if (isApiDown(err)) showApiDown();
-          else document.getElementById("loading").textContent = `Error: ${err.message}`;
+          else
+            document.getElementById("loading").textContent =
+              `Error: ${err.message}`;
           console.error("[SF Cleaning]", err);
         });
       }
@@ -2906,7 +3291,9 @@
           })
           .catch((err) => {
             if (isApiDown(err)) showApiDown();
-            else document.getElementById("loading").textContent = `Error: ${err.message}`;
+            else
+              document.getElementById("loading").textContent =
+                `Error: ${err.message}`;
             console.error("[SF Cleaning]", err);
           });
       }
@@ -2930,7 +3317,10 @@
         // Weekday: place City Hall pin and load today's cleaning data
         const CITY_HALL = L.latLng(37.7793, -122.4193);
         lastSearchLabel = "SF City Hall";
-        checkMarker = L.marker(CITY_HALL, { icon: makeUserPin("#555"), zIndexOffset: 1000 }).addTo(map);
+        checkMarker = L.marker(CITY_HALL, {
+          icon: makeUserPin("#555"),
+          zIndexOffset: 1000,
+        }).addTo(map);
         document.getElementById("result-panel").innerHTML = `
           <div class="result-address">SF City Hall</div>
           <div style="color:#ccc;font-size:11px;margin-top:4px">Loading cleaning data…</div>
@@ -2996,9 +3386,7 @@
             }
           }
         } else {
-          const allDayM = reg.match(
-            /\b(sun|mon|tue|wed|thu|fri|sat)\w*/gi,
-          );
+          const allDayM = reg.match(/\b(sun|mon|tue|wed|thu|fri|sat)\w*/gi);
           if (allDayM) {
             days = [
               ...new Set(
@@ -3071,7 +3459,8 @@
         const sLng = SEARCH_M / xm;
 
         let bestDistSq = Infinity;
-        let bestNX = px, bestNY = py;
+        let bestNX = px,
+          bestNY = py;
 
         for (const f of loadedFeatures) {
           const geom = f.geometry;
@@ -3085,7 +3474,8 @@
 
           for (const line of lines) {
             for (let i = 0; i < line.length - 1; i++) {
-              const c0 = line[i], c1 = line[i + 1];
+              const c0 = line[i],
+                c1 = line[i + 1];
               // Fast bbox reject before projecting
               const minLng = Math.min(c0[0], c1[0]);
               const maxLng = Math.max(c0[0], c1[0]);
@@ -3094,14 +3484,18 @@
               if (lng < minLng - sLng || lng > maxLng + sLng) continue;
               if (lat < minLat - sLat || lat > maxLat + sLat) continue;
 
-              const ax = c0[0] * xm, ay = c0[1] * ym;
-              const bx = c1[0] * xm, by = c1[1] * ym;
-              const dx = bx - ax, dy = by - ay;
+              const ax = c0[0] * xm,
+                ay = c0[1] * ym;
+              const bx = c1[0] * xm,
+                by = c1[1] * ym;
+              const dx = bx - ax,
+                dy = by - ay;
               const lenSq = dx * dx + dy * dy;
 
               let nx, ny;
               if (lenSq < 0.001) {
-                nx = ax; ny = ay;
+                nx = ax;
+                ny = ay;
               } else {
                 const t = Math.max(
                   0,
@@ -3136,10 +3530,7 @@
         }
 
         const scale = CURB_OFFSET / perpLen;
-        return [
-          (bestNY + perpY * scale) / ym,
-          (bestNX + perpX * scale) / xm,
-        ];
+        return [(bestNY + perpY * scale) / ym, (bestNX + perpX * scale) / xm];
       }
 
       function renderMeters() {
@@ -3150,7 +3541,8 @@
         if (!metersVisible || !metersData.length) return;
 
         const r = meterRadius();
-        let cntActive = 0, cntFree = 0;
+        let cntActive = 0,
+          cntFree = 0;
         const markers = [];
 
         for (const m of metersData) {
@@ -3199,11 +3591,11 @@
           const rates = [m.rates_1, m.rates_2, m.rates_3].filter(Boolean);
 
           const capLabels = {
-            "Green": "Short-term (30 min)",
-            "Black": "Motorcycle",
-            "Gray": "Standard metered",
-            "Yellow": "Commercial/loading",
-            "Red": "Pay station",
+            Green: "Short-term (30 min)",
+            Black: "Motorcycle",
+            Gray: "Standard metered",
+            Yellow: "Commercial/loading",
+            Red: "Pay station",
           };
           const capLabel = m.cap_color
             ? capLabels[m.cap_color] || m.cap_color
@@ -3247,22 +3639,35 @@
             if (!Array.isArray(rows) || rows.length === 0) continue;
             METER_API = `https://data.sfgov.org/resource/${id}.json`;
             const fields = Object.keys(rows[0]);
-            console.log(`[Meters] Using dataset ${id}. Fields:`, fields.join(", "));
+            console.log(
+              `[Meters] Using dataset ${id}. Fields:`,
+              fields.join(", "),
+            );
             console.log("[Meters] Sample row:", rows[0]);
 
             // Detect location field
             const geoFields = ["location", "the_geom", "point", "geom"];
             for (const f of geoFields) {
-              if (rows[0][f] && rows[0][f].latitude) { meterLocField = f; break; }
+              if (rows[0][f] && rows[0][f].latitude) {
+                meterLocField = f;
+                break;
+              }
             }
 
             // Detect on/off-street field and the value used for on-street
-            const onOffField = fields.find(f => /on.?off|offstreet|street.?type/i.test(f));
+            const onOffField = fields.find((f) =>
+              /on.?off|offstreet|street.?type/i.test(f),
+            );
             if (onOffField) {
-              const vals = [...new Set(rows.map(r => r[onOffField]).filter(Boolean))];
-              console.log(`[Meters] on_offstreet field "${onOffField}" values in probe:`, vals);
+              const vals = [
+                ...new Set(rows.map((r) => r[onOffField]).filter(Boolean)),
+              ];
+              console.log(
+                `[Meters] on_offstreet field "${onOffField}" values in probe:`,
+                vals,
+              );
               // "ON" = on-street in SFMTA data; anything starting with "O" is on-street
-              const onVal = vals.find(v => /^on/i.test(v));
+              const onVal = vals.find((v) => /^on/i.test(v));
               if (onVal) {
                 meterOnStreetFilter = ` AND upper(${onOffField})='${onVal.toUpperCase()}'`;
                 console.log(`[Meters] On-street filter:`, meterOnStreetFilter);
@@ -3314,8 +3719,10 @@
           meterProbed = true;
         }
 
-        const s = bounds.getSouth(), w = bounds.getWest();
-        const n = bounds.getNorth(), e = bounds.getEast();
+        const s = bounds.getSouth(),
+          w = bounds.getWest();
+        const n = bounds.getNorth(),
+          e = bounds.getEast();
         const whereClause = `within_box(${meterLocField},${s},${w},${n},${e})${meterOnStreetFilter}`;
         const url = `${METER_API}?$where=${encodeURIComponent(whereClause)}&$limit=2000`;
         console.log("[Meters] Fetching:", url);
@@ -3332,7 +3739,9 @@
           }
           metersData = await resp.json();
           // Clear cached snaps so new data is snapped fresh
-          metersData.forEach(m => { delete m._snapped; });
+          metersData.forEach((m) => {
+            delete m._snapped;
+          });
           if (statusEl)
             statusEl.textContent = `${metersData.length.toLocaleString()} meters`;
           renderMeters();
@@ -3343,30 +3752,28 @@
         }
       }
 
-      document
-        .getElementById("meters-toggle")
-        .addEventListener("click", () => {
-          metersVisible = !metersVisible;
-          const btn = document.getElementById("meters-toggle");
-          const leg = document.getElementById("meters-legend");
-          const statusEl = document.getElementById("meters-status");
-          btn.textContent = metersVisible ? "On" : "Off";
-          btn.classList.toggle("meters-on", metersVisible);
-          leg.style.display = metersVisible ? "block" : "none";
-          if (metersVisible) {
-            fetchMeters();
-          } else {
-            if (metersLayer) {
-              map.removeLayer(metersLayer);
-              metersLayer = null;
-            }
-            metersData = [];
-            metersBoundsKey = "";
-            meterProbed = false;
-            meterOnStreetFilter = "";
-            if (statusEl) statusEl.textContent = "";
+      document.getElementById("meters-toggle").addEventListener("click", () => {
+        metersVisible = !metersVisible;
+        const btn = document.getElementById("meters-toggle");
+        const leg = document.getElementById("meters-legend");
+        const statusEl = document.getElementById("meters-status");
+        btn.textContent = metersVisible ? "On" : "Off";
+        btn.classList.toggle("meters-on", metersVisible);
+        leg.style.display = metersVisible ? "block" : "none";
+        if (metersVisible) {
+          fetchMeters();
+        } else {
+          if (metersLayer) {
+            map.removeLayer(metersLayer);
+            metersLayer = null;
           }
-        });
+          metersData = [];
+          metersBoundsKey = "";
+          meterProbed = false;
+          meterOnStreetFilter = "";
+          if (statusEl) statusEl.textContent = "";
+        }
+      });
 
       // Reload meters when map moves or zooms
       let _metersMoveTimer = null;
@@ -3377,8 +3784,7 @@
       });
 
       // ── Police Incidents ─────────────────────────────────────────────────
-      const INCIDENTS_API =
-        "https://data.sfgov.org/resource/wg3w-h783.json";
+      const INCIDENTS_API = "https://data.sfgov.org/resource/wg3w-h783.json";
       let incidentsVisible = false;
       let incidentsLayer = null;
       let incidentsData = [];
@@ -3465,19 +3871,23 @@
         const dtFrom = socrataLocal(oneHourAgo);
         const dtTo = socrataLocal(now);
 
-        const s = bounds.getSouth(), w = bounds.getWest();
-        const n2 = bounds.getNorth(), e = bounds.getEast();
+        const s = bounds.getSouth(),
+          w = bounds.getWest();
+        const n2 = bounds.getNorth(),
+          e = bounds.getEast();
         const where =
           `latitude > ${s} AND latitude < ${n2} AND longitude > ${w} AND longitude < ${e}` +
           ` AND report_datetime >= '${dtFrom}' AND report_datetime <= '${dtTo}'`;
-        const url =
-          `${INCIDENTS_API}?$where=${encodeURIComponent(where)}&$limit=500&$order=report_datetime DESC`;
+        const url = `${INCIDENTS_API}?$where=${encodeURIComponent(where)}&$limit=500&$order=report_datetime DESC`;
         console.log("[Incidents] Fetching:", url);
 
         try {
           const resp = await fetch(url);
           if (!resp.ok) {
-            const hint = await resp.text().catch(() => "").then(t => t.slice(0, 120));
+            const hint = await resp
+              .text()
+              .catch(() => "")
+              .then((t) => t.slice(0, 120));
             if (statusEl) statusEl.textContent = `HTTP ${resp.status}`;
             console.error("[Incidents] HTTP error:", resp.status, hint);
             incidentsBoundsKey = "";
@@ -3547,16 +3957,17 @@
 
           const flags = [
             c.pedestrian_accident === "Y" && "Pedestrian",
-            c.bicycle_accident    === "Y" && "Bicycle",
+            c.bicycle_accident === "Y" && "Bicycle",
             c.motorcycle_accident === "Y" && "Motorcycle",
-            c.truck_accident      === "Y" && "Truck",
-            c.hit_and_run         === "Y" && "Hit & Run",
-            c.alcohol_involved    === "Y" && "Alcohol",
+            c.truck_accident === "Y" && "Truck",
+            c.hit_and_run === "Y" && "Hit & Run",
+            c.alcohol_involved === "Y" && "Alcohol",
           ].filter(Boolean);
 
-          const killed   = parseInt(c.number_killed)  || 0;
-          const injured  = parseInt(c.number_injured) || 0;
-          const severity = killed > 0 ? "#ff3333" : injured > 1 ? "#ffaa00" : "#ffcc00";
+          const killed = parseInt(c.number_killed) || 0;
+          const injured = parseInt(c.number_injured) || 0;
+          const severity =
+            killed > 0 ? "#ff3333" : injured > 1 ? "#ffaa00" : "#ffcc00";
 
           const marker = L.circleMarker([lat, lng], {
             radius: 5,
@@ -3566,23 +3977,26 @@
             fillOpacity: 0.15,
           });
 
-          const crossStreet = [c.primary_rd, c.secondary_rd]
-            .filter(Boolean).join(" & ") || "Unknown location";
+          const crossStreet =
+            [c.primary_rd, c.secondary_rd].filter(Boolean).join(" & ") ||
+            "Unknown location";
           const collisionDate = c.collision_date
             ? new Date(c.collision_date).toLocaleDateString("en-US", {
-                month: "2-digit", day: "2-digit", year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                year: "numeric",
               })
             : "Unknown";
 
           marker.bindPopup(`
             <div class="popup-street">${crossStreet}</div>
             <span class="popup-badge badge-crash">${c.type_of_collision || "Traffic Crash"}</span><br>
-            ${killed  ? `<b>Fatalities:</b> ${killed}<br>`  : ""}
-            ${injured ? `<b>Injured:</b> ${injured}<br>`    : ""}
+            ${killed ? `<b>Fatalities:</b> ${killed}<br>` : ""}
+            ${injured ? `<b>Injured:</b> ${injured}<br>` : ""}
             ${flags.length ? `<b>Involved:</b> ${flags.join(", ")}<br>` : ""}
-            ${c.lighting      ? `<b>Lighting:</b> ${c.lighting}<br>`           : ""}
-            ${c.weather_1     ? `<b>Weather:</b> ${c.weather_1}<br>`           : ""}
-            ${c.road_surface  ? `<b>Road surface:</b> ${c.road_surface}<br>`   : ""}
+            ${c.lighting ? `<b>Lighting:</b> ${c.lighting}<br>` : ""}
+            ${c.weather_1 ? `<b>Weather:</b> ${c.weather_1}<br>` : ""}
+            ${c.road_surface ? `<b>Road surface:</b> ${c.road_surface}<br>` : ""}
             <b>Date:</b> ${collisionDate}
             ${c.collision_time ? ` &nbsp;&middot;&nbsp; ${c.collision_time}` : ""}
           `);
@@ -3597,15 +4011,19 @@
 
       let crashesProbed = false;
       let crashesDateField = "collision_datetime";
-      let crashesLatField  = "tb_latitude";
-      let crashesLngField  = "tb_longitude";
+      let crashesLatField = "tb_latitude";
+      let crashesLngField = "tb_longitude";
 
       async function probeCrashes() {
         const url = `${CRASHES_API}?$limit=3`;
         try {
           const resp = await fetch(url);
           if (!resp.ok) {
-            console.error("[Crashes] Probe failed:", resp.status, await resp.text().catch(() => ""));
+            console.error(
+              "[Crashes] Probe failed:",
+              resp.status,
+              await resp.text().catch(() => ""),
+            );
             return false;
           }
           const rows = await resp.json();
@@ -3614,19 +4032,34 @@
           console.log("[Crashes] Fields:", fields.join(", "));
 
           // Date field
-          const dateField = fields.find(f => /collision.?date|crash.?date|incident.?date/i.test(f));
+          const dateField = fields.find((f) =>
+            /collision.?date|crash.?date|incident.?date/i.test(f),
+          );
           if (dateField) crashesDateField = dateField;
 
           // Lat/lng: prefer tb_latitude/tb_longitude, then plain latitude/longitude
-          if (fields.includes("tb_latitude") && fields.includes("tb_longitude")) {
+          if (
+            fields.includes("tb_latitude") &&
+            fields.includes("tb_longitude")
+          ) {
             crashesLatField = "tb_latitude";
             crashesLngField = "tb_longitude";
-          } else if (fields.includes("latitude") && fields.includes("longitude")) {
+          } else if (
+            fields.includes("latitude") &&
+            fields.includes("longitude")
+          ) {
             crashesLatField = "latitude";
             crashesLngField = "longitude";
           }
 
-          console.log("[Crashes] date:", crashesDateField, "| lat:", crashesLatField, "| lng:", crashesLngField);
+          console.log(
+            "[Crashes] date:",
+            crashesDateField,
+            "| lat:",
+            crashesLatField,
+            "| lng:",
+            crashesLngField,
+          );
           return true;
         } catch (e) {
           console.error("[Crashes] Probe error:", e);
@@ -3639,7 +4072,10 @@
         const statusEl = document.getElementById("crashes-status");
 
         // Data is fetched once for all of SF — pan/zoom just re-renders client-side
-        if (crashesLoaded) { renderCrashes(); return; }
+        if (crashesLoaded) {
+          renderCrashes();
+          return;
+        }
         if (statusEl) statusEl.textContent = "loading\u2026";
 
         if (!crashesProbed) {
@@ -3651,8 +4087,7 @@
           crashesProbed = true;
         }
 
-        const url =
-          `${CRASHES_API}?$limit=500&$order=${crashesDateField} DESC`;
+        const url = `${CRASHES_API}?$limit=500&$order=${crashesDateField} DESC`;
         console.log("[Crashes] Fetching:", url);
 
         try {
@@ -3674,24 +4109,29 @@
         }
       }
 
-      document.getElementById("crashes-toggle").addEventListener("click", () => {
-        crashesVisible = !crashesVisible;
-        const btn    = document.getElementById("crashes-toggle");
-        const leg    = document.getElementById("crashes-legend");
-        const statusEl = document.getElementById("crashes-status");
-        btn.textContent = crashesVisible ? "On" : "Off";
-        btn.classList.toggle("meters-on", crashesVisible);
-        leg.style.display = crashesVisible ? "block" : "none";
-        if (crashesVisible) {
-          fetchCrashes();
-        } else {
-          if (crashesLayer) { map.removeLayer(crashesLayer); crashesLayer = null; }
-          crashesData = [];
-          crashesLoaded = false;
-          crashesProbed = false;
-          if (statusEl) statusEl.textContent = "";
-        }
-      });
+      document
+        .getElementById("crashes-toggle")
+        .addEventListener("click", () => {
+          crashesVisible = !crashesVisible;
+          const btn = document.getElementById("crashes-toggle");
+          const leg = document.getElementById("crashes-legend");
+          const statusEl = document.getElementById("crashes-status");
+          btn.textContent = crashesVisible ? "On" : "Off";
+          btn.classList.toggle("meters-on", crashesVisible);
+          leg.style.display = crashesVisible ? "block" : "none";
+          if (crashesVisible) {
+            fetchCrashes();
+          } else {
+            if (crashesLayer) {
+              map.removeLayer(crashesLayer);
+              crashesLayer = null;
+            }
+            crashesData = [];
+            crashesLoaded = false;
+            crashesProbed = false;
+            if (statusEl) statusEl.textContent = "";
+          }
+        });
 
       let _crashesMoveTimer = null;
       map.on("moveend zoomend", () => {
@@ -3715,7 +4155,10 @@
       let citationsLocTextField = "citation_location";
 
       function rebuildCitationsLayer() {
-        if (citationsLayer) { map.removeLayer(citationsLayer); citationsLayer = null; }
+        if (citationsLayer) {
+          map.removeLayer(citationsLayer);
+          citationsLayer = null;
+        }
         if (!citationsVisible) return;
 
         const points = [];
@@ -3733,57 +4176,98 @@
         if (!points.length) return;
 
         if (typeof L.heatLayer === "undefined") {
-          console.error("[Citations] leaflet.heat not loaded — falling back to dots");
+          console.error(
+            "[Citations] leaflet.heat not loaded — falling back to dots",
+          );
           citationsLayer = L.layerGroup(
             points.map(([lat, lng]) =>
-              L.circleMarker([lat, lng], { radius: 5, color: "#bb44ff", weight: 2, fillColor: "#bb44ff", fillOpacity: 0.5 })
-            )
+              L.circleMarker([lat, lng], {
+                radius: 5,
+                color: "#bb44ff",
+                weight: 2,
+                fillColor: "#bb44ff",
+                fillOpacity: 0.5,
+              }),
+            ),
           ).addTo(map);
           return;
         }
 
-        console.log(`[Citations] Rendering heatmap with ${points.length} points`);
+        console.log(
+          `[Citations] Rendering heatmap with ${points.length} points`,
+        );
         citationsLayer = L.heatLayer(points, {
           radius: 28,
           blur: 20,
           maxZoom: 18,
           max: 1,
           minOpacity: 0.55,
-          gradient: { 0: "#8800ee", 0.4: "#bb44ff", 0.75: "#ee99ff", 1.0: "#ffffff" },
+          gradient: {
+            0: "#8800ee",
+            0.4: "#bb44ff",
+            0.75: "#ee99ff",
+            1.0: "#ffffff",
+          },
         }).addTo(map);
       }
 
       async function probeCitations() {
         for (const id of CITATIONS_DATASET_IDS) {
           try {
-            const resp = await fetch(`https://data.sfgov.org/resource/${id}.json?$limit=3`);
+            const resp = await fetch(
+              `https://data.sfgov.org/resource/${id}.json?$limit=3`,
+            );
             if (!resp.ok) continue;
             const rows = await resp.json();
             if (!Array.isArray(rows) || !rows.length) continue;
             CITATIONS_API = `https://data.sfgov.org/resource/${id}.json`;
             citationsProbed = true; // mark done before any detection that might throw
             const fields = Object.keys(rows[0]);
-            console.log(`[Citations] Using dataset ${id}. Fields:`, fields.join(", "));
+            console.log(
+              `[Citations] Using dataset ${id}. Fields:`,
+              fields.join(", "),
+            );
 
             for (const f of fields) {
-              if (/issued.?datetime|issue.?dt|citation.?issued|citation.?date/i.test(f)) { citationsDateField = f; break; }
+              if (
+                /issued.?datetime|issue.?dt|citation.?issued|citation.?date/i.test(
+                  f,
+                )
+              ) {
+                citationsDateField = f;
+                break;
+              }
             }
             if (!citationsDateField) {
               for (const f of fields) {
-                if (/\bdate\b/i.test(f)) { citationsDateField = f; break; }
+                if (/\bdate\b/i.test(f)) {
+                  citationsDateField = f;
+                  break;
+                }
               }
             }
             for (const f of fields) {
-              if (/violation.?desc|viol.*desc/i.test(f)) { citationsDescField = f; break; }
+              if (/violation.?desc|viol.*desc/i.test(f)) {
+                citationsDescField = f;
+                break;
+              }
             }
             for (const f of fields) {
-              if (/fine.?am|penalty/i.test(f)) { citationsFineField = f; break; }
+              if (/fine.?am|penalty/i.test(f)) {
+                citationsFineField = f;
+                break;
+              }
             }
             for (const f of fields) {
-              if (/citation.?loc/i.test(f)) { citationsLocTextField = f; break; }
+              if (/citation.?loc/i.test(f)) {
+                citationsLocTextField = f;
+                break;
+              }
             }
 
-            console.log(`[Citations] dateField=${citationsDateField} descField=${citationsDescField} locField=${citationsLocTextField}`);
+            console.log(
+              `[Citations] dateField=${citationsDateField} descField=${citationsDescField} locField=${citationsLocTextField}`,
+            );
             return true;
           } catch (e) {
             console.warn(`[Citations] Probe error for ${id}:`, e);
@@ -3816,11 +4300,14 @@
             const q = encodeURIComponent(addr + ", San Francisco, CA");
             const resp = await fetch(
               `https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1`,
-              { headers: { "User-Agent": "SF-Street-Cleaning-Map" } }
+              { headers: { "User-Agent": "SF-Street-Cleaning-Map" } },
             );
             const data = await resp.json();
             if (data.length) {
-              citationsGeoCache.set(addr, [parseFloat(data[0].lat), parseFloat(data[0].lon)]);
+              citationsGeoCache.set(addr, [
+                parseFloat(data[0].lat),
+                parseFloat(data[0].lon),
+              ]);
               geocoded++;
             } else {
               citationsGeoCache.set(addr, null);
@@ -3829,7 +4316,8 @@
             citationsGeoCache.set(addr, null);
           }
 
-          if (statusEl && citationsVisible) statusEl.textContent = `${geocoded}/${total}`;
+          if (statusEl && citationsVisible)
+            statusEl.textContent = `${geocoded}/${total}`;
           rebuildCitationsLayer();
 
           // Nominatim rate limit: 1 req/sec
@@ -3864,7 +4352,8 @@
             return;
           }
           citationsData = await resp.json();
-          if (statusEl) statusEl.textContent = `geocoding 0/${citationsData.length}`;
+          if (statusEl)
+            statusEl.textContent = `geocoding 0/${citationsData.length}`;
           citationsGeocoding = true;
           geocodeCitations();
         } catch (err) {
@@ -3873,28 +4362,33 @@
         }
       }
 
-      document.getElementById("citations-toggle").addEventListener("click", () => {
-        citationsVisible = !citationsVisible;
-        const btn = document.getElementById("citations-toggle");
-        const leg = document.getElementById("citations-legend");
-        const statusEl = document.getElementById("citations-status");
-        btn.textContent = citationsVisible ? "On" : "Off";
-        btn.classList.toggle("meters-on", citationsVisible);
-        leg.style.display = citationsVisible ? "block" : "none";
-        if (citationsVisible) {
-          // If we already have data+cache, just re-render; otherwise fetch+geocode
-          if (citationsData.length) {
-            rebuildCitationsLayer();
-            if (!citationsGeocoding) geocodeCitations();
+      document
+        .getElementById("citations-toggle")
+        .addEventListener("click", () => {
+          citationsVisible = !citationsVisible;
+          const btn = document.getElementById("citations-toggle");
+          const leg = document.getElementById("citations-legend");
+          const statusEl = document.getElementById("citations-status");
+          btn.textContent = citationsVisible ? "On" : "Off";
+          btn.classList.toggle("meters-on", citationsVisible);
+          leg.style.display = citationsVisible ? "block" : "none";
+          if (citationsVisible) {
+            // If we already have data+cache, just re-render; otherwise fetch+geocode
+            if (citationsData.length) {
+              rebuildCitationsLayer();
+              if (!citationsGeocoding) geocodeCitations();
+            } else {
+              fetchCitations();
+            }
           } else {
-            fetchCitations();
+            if (citationsLayer) {
+              map.removeLayer(citationsLayer);
+              citationsLayer = null;
+            }
+            if (statusEl) statusEl.textContent = "";
+            // citationsGeoCache kept so re-enable is instant for already-geocoded addresses
           }
-        } else {
-          if (citationsLayer) { map.removeLayer(citationsLayer); citationsLayer = null; }
-          if (statusEl) statusEl.textContent = "";
-          // citationsGeoCache kept so re-enable is instant for already-geocoded addresses
-        }
-      });
+        });
 
       // heatmap redraws itself on pan/zoom — no moveend handler needed for citations
 
@@ -3912,7 +4406,10 @@
       let permitsStatusField = "status";
 
       function renderPermits() {
-        if (permitsLayer) { map.removeLayer(permitsLayer); permitsLayer = null; }
+        if (permitsLayer) {
+          map.removeLayer(permitsLayer);
+          permitsLayer = null;
+        }
         if (!permitsVisible || !permitsData.length) return;
 
         const viewBounds = map.getBounds();
@@ -3943,7 +4440,9 @@
           const status = p[permitsStatusField] || "";
           const expires = p.expiration_date
             ? new Date(p.expiration_date).toLocaleDateString("en-US", {
-                month: "2-digit", day: "2-digit", year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                year: "numeric",
               })
             : null;
           marker.bindPopup(`
@@ -3974,7 +4473,8 @@
           const geoFs = ["location", "the_geom", "point", "geom"];
           for (const f of geoFs) {
             if (rows[0][f] && (rows[0][f].latitude || rows[0][f].lat)) {
-              permitsLocField = f; break;
+              permitsLocField = f;
+              break;
             }
           }
           if (!permitsLocField) {
@@ -3984,9 +4484,9 @@
             else if (fields.includes("lon")) permitsLngField = "lon";
           }
 
-          const typeF = fields.find(f => /permit.?type|type/i.test(f));
+          const typeF = fields.find((f) => /permit.?type|type/i.test(f));
           if (typeF) permitsTypeField = typeF;
-          const statusF = fields.find(f => /\bstatus\b/i.test(f));
+          const statusF = fields.find((f) => /\bstatus\b/i.test(f));
           if (statusF) permitsStatusField = statusF;
           return true;
         } catch (e) {
@@ -4000,10 +4500,15 @@
         const statusEl = document.getElementById("permits-status");
         const bounds = map.getBounds();
         const key = [
-          bounds.getSouth().toFixed(3), bounds.getWest().toFixed(3),
-          bounds.getNorth().toFixed(3), bounds.getEast().toFixed(3),
+          bounds.getSouth().toFixed(3),
+          bounds.getWest().toFixed(3),
+          bounds.getNorth().toFixed(3),
+          bounds.getEast().toFixed(3),
         ].join(",");
-        if (key === permitsBoundsKey) { renderPermits(); return; }
+        if (key === permitsBoundsKey) {
+          renderPermits();
+          return;
+        }
         permitsBoundsKey = key;
         if (statusEl) statusEl.textContent = "loading\u2026";
 
@@ -4017,8 +4522,10 @@
           permitsProbed = true;
         }
 
-        const s = bounds.getSouth(), w = bounds.getWest();
-        const north = bounds.getNorth(), e = bounds.getEast();
+        const s = bounds.getSouth(),
+          w = bounds.getWest();
+        const north = bounds.getNorth(),
+          e = bounds.getEast();
         let where;
         if (permitsLocField) {
           where = `within_box(${permitsLocField},${s},${w},${north},${e})`;
@@ -4045,24 +4552,29 @@
         }
       }
 
-      document.getElementById("permits-toggle").addEventListener("click", () => {
-        permitsVisible = !permitsVisible;
-        const btn = document.getElementById("permits-toggle");
-        const leg = document.getElementById("permits-legend");
-        const statusEl = document.getElementById("permits-status");
-        btn.textContent = permitsVisible ? "On" : "Off";
-        btn.classList.toggle("meters-on", permitsVisible);
-        leg.style.display = permitsVisible ? "block" : "none";
-        if (permitsVisible) {
-          fetchPermits();
-        } else {
-          if (permitsLayer) { map.removeLayer(permitsLayer); permitsLayer = null; }
-          permitsData = [];
-          permitsBoundsKey = "";
-          permitsProbed = false;
-          if (statusEl) statusEl.textContent = "";
-        }
-      });
+      document
+        .getElementById("permits-toggle")
+        .addEventListener("click", () => {
+          permitsVisible = !permitsVisible;
+          const btn = document.getElementById("permits-toggle");
+          const leg = document.getElementById("permits-legend");
+          const statusEl = document.getElementById("permits-status");
+          btn.textContent = permitsVisible ? "On" : "Off";
+          btn.classList.toggle("meters-on", permitsVisible);
+          leg.style.display = permitsVisible ? "block" : "none";
+          if (permitsVisible) {
+            fetchPermits();
+          } else {
+            if (permitsLayer) {
+              map.removeLayer(permitsLayer);
+              permitsLayer = null;
+            }
+            permitsData = [];
+            permitsBoundsKey = "";
+            permitsProbed = false;
+            if (statusEl) statusEl.textContent = "";
+          }
+        });
 
       let _permitsMoveTimer = null;
       map.on("moveend zoomend", () => {
@@ -4080,19 +4592,39 @@
       let breakinsPoints = [];
 
       function rebuildBreakinsLayer(points) {
-        if (breakinsLayer) { map.removeLayer(breakinsLayer); breakinsLayer = null; }
+        if (breakinsLayer) {
+          map.removeLayer(breakinsLayer);
+          breakinsLayer = null;
+        }
         if (!breakinsVisible || !points.length) return;
         const el = document.getElementById("cnt-breakins");
         if (el) el.textContent = points.length.toLocaleString();
         if (typeof L.heatLayer !== "undefined") {
           breakinsLayer = L.heatLayer(points, {
-            radius: 28, blur: 20, maxZoom: 18, max: 1, minOpacity: 0.55,
-            gradient: { 0: "#882200", 0.4: "#ff4400", 0.75: "#ff9900", 1.0: "#ffff00" },
+            radius: 28,
+            blur: 20,
+            maxZoom: 18,
+            max: 1,
+            minOpacity: 0.55,
+            gradient: {
+              0: "#882200",
+              0.4: "#ff4400",
+              0.75: "#ff9900",
+              1.0: "#ffff00",
+            },
           }).addTo(map);
         } else {
-          breakinsLayer = L.layerGroup(points.map(([lat, lng]) =>
-            L.circleMarker([lat, lng], { radius: 5, color: "#ff6600", weight: 1, fillColor: "#ff6600", fillOpacity: 0.5 })
-          )).addTo(map);
+          breakinsLayer = L.layerGroup(
+            points.map(([lat, lng]) =>
+              L.circleMarker([lat, lng], {
+                radius: 5,
+                color: "#ff6600",
+                weight: 1,
+                fillColor: "#ff6600",
+                fillOpacity: 0.5,
+              }),
+            ),
+          ).addTo(map);
         }
       }
 
@@ -4104,7 +4636,7 @@
         try {
           // Theft From Vehicle + Motor Vehicle Theft, most recent 1000 each
           const where = encodeURIComponent(
-            `incident_subcategory='Theft From Vehicle' OR incident_category='Motor Vehicle Theft'`
+            `incident_subcategory='Theft From Vehicle' OR incident_category='Motor Vehicle Theft'`,
           );
           const url = `${BREAKINS_API}?$where=${where}&$limit=1000&$order=incident_date DESC`;
           const resp = await fetch(url);
@@ -4113,8 +4645,8 @@
           console.log("[Break-ins] Loaded", data.length, "incidents");
 
           const points = data
-            .filter(d => d.latitude && d.longitude)
-            .map(d => [parseFloat(d.latitude), parseFloat(d.longitude)]);
+            .filter((d) => d.latitude && d.longitude)
+            .map((d) => [parseFloat(d.latitude), parseFloat(d.longitude)]);
 
           breakinsLoaded = true;
           breakinsPoints = points;
@@ -4126,32 +4658,42 @@
         }
       }
 
-      document.getElementById("breakins-toggle").addEventListener("click", () => {
-        breakinsVisible = !breakinsVisible;
-        const btn = document.getElementById("breakins-toggle");
-        const leg = document.getElementById("breakins-legend");
-        const statusEl = document.getElementById("breakins-status");
-        btn.textContent = breakinsVisible ? "On" : "Off";
-        btn.classList.toggle("meters-on", breakinsVisible);
-        leg.style.display = breakinsVisible ? "block" : "none";
-        if (breakinsVisible) {
-          if (breakinsLoaded && breakinsPoints.length) {
-            rebuildBreakinsLayer(breakinsPoints);
+      document
+        .getElementById("breakins-toggle")
+        .addEventListener("click", () => {
+          breakinsVisible = !breakinsVisible;
+          const btn = document.getElementById("breakins-toggle");
+          const leg = document.getElementById("breakins-legend");
+          const statusEl = document.getElementById("breakins-status");
+          btn.textContent = breakinsVisible ? "On" : "Off";
+          btn.classList.toggle("meters-on", breakinsVisible);
+          leg.style.display = breakinsVisible ? "block" : "none";
+          if (breakinsVisible) {
+            if (breakinsLoaded && breakinsPoints.length) {
+              rebuildBreakinsLayer(breakinsPoints);
+            } else {
+              fetchBreakIns();
+            }
           } else {
-            fetchBreakIns();
+            if (breakinsLayer) {
+              map.removeLayer(breakinsLayer);
+              breakinsLayer = null;
+            }
+            if (statusEl) statusEl.textContent = "";
           }
-        } else {
-          if (breakinsLayer) { map.removeLayer(breakinsLayer); breakinsLayer = null; }
-          if (statusEl) statusEl.textContent = "";
-        }
-      });
+        });
 
       // ── Towed Vehicles ────────────────────────────────────────────────────────
       // Source: SFMTA Tow Calls (hkjh-szjf)
       // ── Abandoned Vehicles (311) ──────────────────────────────────────────────
       // Source: SF 311 Cases filtered for Abandoned Vehicle — direct lat/lng, no geocoding
       // Probes multiple known 311 dataset IDs since the ID has changed over time
-      const TOWS_DATASET_IDS = ["vw6y-z8j6", "wr8u-xric", "i98e-djp9", "ktji-gn4e"];
+      const TOWS_DATASET_IDS = [
+        "vw6y-z8j6",
+        "wr8u-xric",
+        "i98e-djp9",
+        "ktji-gn4e",
+      ];
       let TOWS_API = `https://data.sfgov.org/resource/${TOWS_DATASET_IDS[0]}.json`;
       let towsVisible = false;
       let towsLayer = null;
@@ -4167,10 +4709,18 @@
       async function probeTows() {
         for (const id of TOWS_DATASET_IDS) {
           try {
-            const resp = await fetch(`https://data.sfgov.org/resource/${id}.json?$limit=3`);
-            if (!resp.ok) { console.log("[Tows] Probe", id, "→", resp.status); continue; }
+            const resp = await fetch(
+              `https://data.sfgov.org/resource/${id}.json?$limit=3`,
+            );
+            if (!resp.ok) {
+              console.log("[Tows] Probe", id, "→", resp.status);
+              continue;
+            }
             const rows = await resp.json();
-            if (!Array.isArray(rows) || !rows.length) { console.log("[Tows] Probe", id, "→ empty"); continue; }
+            if (!Array.isArray(rows) || !rows.length) {
+              console.log("[Tows] Probe", id, "→ empty");
+              continue;
+            }
             TOWS_API = `https://data.sfgov.org/resource/${id}.json`;
             const fields = Object.keys(rows[0]);
             console.log("[Tows] Found dataset:", id);
@@ -4178,21 +4728,50 @@
             console.log("[Tows] Sample:", JSON.stringify(rows[0]));
             for (const f of fields) {
               const fl = f.toLowerCase();
-              if (fl === "latitude"  || fl === "lat") towsLatField = f;
-              if (fl === "longitude" || fl === "lng" || fl === "lon" || fl === "long") towsLngField = f;
-              if (fl.includes("date") && (fl.includes("open") || fl.includes("request") || fl.includes("call") || fl.includes("tow"))) towsDateField = f;
-              if (fl === "address" || fl === "street_address" || fl === "location_address") towsAddrField = f;
+              if (fl === "latitude" || fl === "lat") towsLatField = f;
+              if (
+                fl === "longitude" ||
+                fl === "lng" ||
+                fl === "lon" ||
+                fl === "long"
+              )
+                towsLngField = f;
+              if (
+                fl.includes("date") &&
+                (fl.includes("open") ||
+                  fl.includes("request") ||
+                  fl.includes("call") ||
+                  fl.includes("tow"))
+              )
+                towsDateField = f;
+              if (
+                fl === "address" ||
+                fl === "street_address" ||
+                fl === "location_address"
+              )
+                towsAddrField = f;
             }
             if (!towsLatField) {
               for (const f of fields) {
-                if (rows[0][f] && typeof rows[0][f] === "object" && rows[0][f].latitude) {
+                if (
+                  rows[0][f] &&
+                  typeof rows[0][f] === "object" &&
+                  rows[0][f].latitude
+                ) {
                   towsLatField = f + ".latitude";
                   towsLngField = f + ".longitude";
                   break;
                 }
               }
             }
-            console.log("[Tows] lat:", towsLatField, "lng:", towsLngField, "addr:", towsAddrField);
+            console.log(
+              "[Tows] lat:",
+              towsLatField,
+              "lng:",
+              towsLngField,
+              "addr:",
+              towsAddrField,
+            );
             return true;
           } catch (e) {
             console.warn("[Tows] Probe error", id, e.message);
@@ -4202,14 +4781,20 @@
       }
 
       function rebuildTowsLayer() {
-        if (towsLayer) { map.removeLayer(towsLayer); towsLayer = null; }
+        if (towsLayer) {
+          map.removeLayer(towsLayer);
+          towsLayer = null;
+        }
         if (!towsVisible) return;
         const points = [];
         for (const t of towsData) {
           if (towsLatField && !towsLatField.includes(".")) {
             const lat = parseFloat(t[towsLatField]);
             const lng = parseFloat(t[towsLngField]);
-            if (!isNaN(lat) && !isNaN(lng)) { points.push([lat, lng]); continue; }
+            if (!isNaN(lat) && !isNaN(lng)) {
+              points.push([lat, lng]);
+              continue;
+            }
           }
           // Fallback: geocache by address
           const addr = t[towsAddrField];
@@ -4222,8 +4807,17 @@
         if (!points.length) return;
         console.log(`[Tows] Rendering heatmap with ${points.length} points`);
         towsLayer = L.heatLayer(points, {
-          radius: 28, blur: 20, maxZoom: 18, max: 1, minOpacity: 0.55,
-          gradient: { 0: "#664400", 0.4: "#ffaa00", 0.75: "#ffee44", 1.0: "#ffffff" },
+          radius: 28,
+          blur: 20,
+          maxZoom: 18,
+          max: 1,
+          minOpacity: 0.55,
+          gradient: {
+            0: "#664400",
+            0.4: "#ffaa00",
+            0.75: "#ffee44",
+            1.0: "#ffffff",
+          },
         }).addTo(map);
       }
 
@@ -4244,19 +4838,25 @@
             const q = encodeURIComponent(addr + ", San Francisco, CA");
             const resp = await fetch(
               `https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1`,
-              { headers: { "User-Agent": "SF-Street-Cleaning-Map" } }
+              { headers: { "User-Agent": "SF-Street-Cleaning-Map" } },
             );
             const data = await resp.json();
             if (data.length) {
-              towsGeoCache.set(addr, [parseFloat(data[0].lat), parseFloat(data[0].lon)]);
+              towsGeoCache.set(addr, [
+                parseFloat(data[0].lat),
+                parseFloat(data[0].lon),
+              ]);
               geocoded++;
             } else {
               towsGeoCache.set(addr, null);
             }
-          } catch { towsGeoCache.set(addr, null); }
-          if (statusEl && towsVisible) statusEl.textContent = `${geocoded}/${total}`;
+          } catch {
+            towsGeoCache.set(addr, null);
+          }
+          if (statusEl && towsVisible)
+            statusEl.textContent = `${geocoded}/${total}`;
           rebuildTowsLayer();
-          await new Promise(r => setTimeout(r, 1100));
+          await new Promise((r) => setTimeout(r, 1100));
         }
         towsGeocoding = false;
         if (statusEl && towsVisible) statusEl.textContent = "";
@@ -4266,7 +4866,10 @@
       async function fetchTows() {
         if (!towsVisible) return;
         const statusEl = document.getElementById("tows-status");
-        if (towsLoaded && towsData.length) { rebuildTowsLayer(); return; }
+        if (towsLoaded && towsData.length) {
+          rebuildTowsLayer();
+          return;
+        }
         if (statusEl) statusEl.textContent = "loading\u2026";
 
         const probed = await probeTows();
@@ -4288,7 +4891,8 @@
             const page = await resp.json();
             if (!page.length) break;
             towsData.push(...page);
-            if (statusEl && towsVisible) statusEl.textContent = `${towsData.length}/${TOTAL}`;
+            if (statusEl && towsVisible)
+              statusEl.textContent = `${towsData.length}/${TOTAL}`;
             rebuildTowsLayer();
           } catch (err) {
             if (statusEl) statusEl.textContent = err.message;
@@ -4313,7 +4917,10 @@
         if (towsVisible) {
           fetchTows();
         } else {
-          if (towsLayer) { map.removeLayer(towsLayer); towsLayer = null; }
+          if (towsLayer) {
+            map.removeLayer(towsLayer);
+            towsLayer = null;
+          }
           if (statusEl) statusEl.textContent = "";
         }
       });
@@ -4326,7 +4933,10 @@
       let eventsLoaded = false;
 
       function renderEvents(geojson) {
-        if (eventsLayer) { map.removeLayer(eventsLayer); eventsLayer = null; }
+        if (eventsLayer) {
+          map.removeLayer(eventsLayer);
+          eventsLayer = null;
+        }
         if (!eventsVisible || !geojson) return;
 
         eventsLayer = L.geoJSON(geojson, {
@@ -4343,29 +4953,44 @@
             }),
           onEachFeature: (feature, layer) => {
             const p = feature.properties || {};
-            const fmt = (d) => d ? new Date(d).toLocaleDateString("en-US", {
-              month: "short", day: "numeric", year: "numeric"
-            }) : null;
-            const fmtTime = (d) => d ? new Date(d).toLocaleTimeString("en-US", {
-              hour: "numeric", minute: "2-digit"
-            }) : null;
-            const impact = {
-              "all-lanes-closed": "All lanes closed",
-              "some-lanes-closed": "Some lanes closed",
-              "sidewalk-only": "Sidewalk only",
-            }[p.veh_imp] || p.veh_imp || "";
+            const fmt = (d) =>
+              d
+                ? new Date(d).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })
+                : null;
+            const fmtTime = (d) =>
+              d
+                ? new Date(d).toLocaleTimeString("en-US", {
+                    hour: "numeric",
+                    minute: "2-digit",
+                  })
+                : null;
+            const impact =
+              {
+                "all-lanes-closed": "All lanes closed",
+                "some-lanes-closed": "Some lanes closed",
+                "sidewalk-only": "Sidewalk only",
+              }[p.veh_imp] ||
+              p.veh_imp ||
+              "";
             const start = p.start_dt || p.start_date;
-            const end   = p.end_dt   || p.end_date;
+            const end = p.end_dt || p.end_date;
             layer.bindPopup(`
               <div class="popup-street">${p.case_name || p.street || "Special Event"}</div>
               <span class="popup-badge badge-event">Special Event</span><br>
               ${p.loc_desc ? `<b>Location:</b> ${p.loc_desc}<br>` : ""}
-              ${impact     ? `<b>Impact:</b> ${impact}<br>`        : ""}
+              ${impact ? `<b>Impact:</b> ${impact}<br>` : ""}
               ${fmt(start) ? `<b>From:</b> ${fmt(start)} ${fmtTime(start) || ""}<br>` : ""}
-              ${fmt(end)   ? `<b>Until:</b> ${fmt(end)} ${fmtTime(end) || ""}<br>`   : ""}
-              ${p.status   ? `<b>Status:</b> ${p.status}<br>`      : ""}
+              ${fmt(end) ? `<b>Until:</b> ${fmt(end)} ${fmtTime(end) || ""}<br>` : ""}
+              ${p.status ? `<b>Status:</b> ${p.status}<br>` : ""}
             `);
-            layer.bindTooltip(p.case_name || "Special Event", { sticky: true, direction: "top" });
+            layer.bindTooltip(p.case_name || "Special Event", {
+              sticky: true,
+              direction: "top",
+            });
           },
         }).addTo(map);
 
@@ -4385,21 +5010,31 @@
           // Active + upcoming events only — end_dt in the future
           const today = new Date().toISOString().slice(0, 10);
           const where = encodeURIComponent(
-            `type='Special Event' AND end_dt >= '${today}T00:00:00'`
+            `type='Special Event' AND end_dt >= '${today}T00:00:00'`,
           );
           const url = `${EVENTS_API}?$where=${where}&$limit=500&$order=start_dt ASC`;
           const resp = await fetch(url);
           if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
           const rows = await resp.json();
           console.log("[Events] Loaded", rows.length, "events");
-          if (rows.length) console.log("[Events] Sample:", JSON.stringify(rows[0]).slice(0, 300));
+          if (rows.length)
+            console.log(
+              "[Events] Sample:",
+              JSON.stringify(rows[0]).slice(0, 300),
+            );
 
           // Build GeoJSON from the shape field
           const features = rows
-            .filter(r => r.shape && r.shape.type && r.shape.coordinates)
-            .map(r => ({ type: "Feature", geometry: r.shape, properties: r }));
+            .filter((r) => r.shape && r.shape.type && r.shape.coordinates)
+            .map((r) => ({
+              type: "Feature",
+              geometry: r.shape,
+              properties: r,
+            }));
 
-          console.log(`[Events] ${features.length}/${rows.length} have geometry`);
+          console.log(
+            `[Events] ${features.length}/${rows.length} have geometry`,
+          );
           eventsLoaded = true;
           if (statusEl) statusEl.textContent = "";
           renderEvents({ type: "FeatureCollection", features });
@@ -4420,7 +5055,10 @@
         if (eventsVisible) {
           fetchEvents();
         } else {
-          if (eventsLayer) { map.removeLayer(eventsLayer); eventsLayer = null; }
+          if (eventsLayer) {
+            map.removeLayer(eventsLayer);
+            eventsLayer = null;
+          }
           eventsLoaded = false;
           if (statusEl) statusEl.textContent = "";
         }
@@ -4437,18 +5075,27 @@
       function rppIsActive(feature) {
         const p = feature.properties;
         const hrsBegin = parseFloat(p.hrs_begin);
-        const hrsEnd   = parseFloat(p.hrs_end);
-        const days     = (p.days || "").toUpperCase();
+        const hrsEnd = parseFloat(p.hrs_end);
+        const days = (p.days || "").toUpperCase();
         if (isNaN(hrsBegin) || isNaN(hrsEnd)) return false;
         const curHour = now.getHours() + now.getMinutes() / 60;
         const dow = now.getDay(); // 0=Sun … 6=Sat
         let dayMatch = false;
-        if (days.includes("M-F"))  dayMatch = dow >= 1 && dow <= 5;
-        if (days.includes("M-SA") || days.includes("M-SA")) dayMatch = dayMatch || (dow >= 1 && dow <= 6);
-        if (days.includes("M-SU") || days.includes("7 DAYS") || days === "DAILY") dayMatch = true;
-        if (days.includes("SA-SU") || days.includes("SA/SU")) dayMatch = dayMatch || (dow === 0 || dow === 6);
-        if (days.includes("SAT") && !days.includes("M-SA")) dayMatch = dayMatch || dow === 6;
-        if (days.includes("SUN") && !days.includes("M-SU")) dayMatch = dayMatch || dow === 0;
+        if (days.includes("M-F")) dayMatch = dow >= 1 && dow <= 5;
+        if (days.includes("M-SA") || days.includes("M-SA"))
+          dayMatch = dayMatch || (dow >= 1 && dow <= 6);
+        if (
+          days.includes("M-SU") ||
+          days.includes("7 DAYS") ||
+          days === "DAILY"
+        )
+          dayMatch = true;
+        if (days.includes("SA-SU") || days.includes("SA/SU"))
+          dayMatch = dayMatch || dow === 0 || dow === 6;
+        if (days.includes("SAT") && !days.includes("M-SA"))
+          dayMatch = dayMatch || dow === 6;
+        if (days.includes("SUN") && !days.includes("M-SU"))
+          dayMatch = dayMatch || dow === 0;
         const timeMatch = curHour >= hrsBegin && curHour < hrsEnd;
         return dayMatch && timeMatch;
       }
@@ -4464,15 +5111,21 @@
           const mm = n % 100;
           const suffix = hh >= 12 ? "PM" : "AM";
           const h12 = hh % 12 || 12;
-          return mm ? `${h12}:${String(mm).padStart(2,"0")} ${suffix}` : `${h12} ${suffix}`;
+          return mm
+            ? `${h12}:${String(mm).padStart(2, "0")} ${suffix}`
+            : `${h12} ${suffix}`;
         };
         const parts = h.split("-");
-        if (parts.length === 2) return `${d} ${fmt(parts[0].trim())}–${fmt(parts[1].trim())}`;
+        if (parts.length === 2)
+          return `${d} ${fmt(parts[0].trim())}–${fmt(parts[1].trim())}`;
         return `${d} ${h}`;
       }
 
       function buildRppLayer() {
-        if (rppLayer) { map.removeLayer(rppLayer); rppLayer = null; }
+        if (rppLayer) {
+          map.removeLayer(rppLayer);
+          rppLayer = null;
+        }
         if (!rppVisible || !rppData) return;
         rppLayer = L.geoJSON(rppData, {
           style: (feature) => {
@@ -4485,9 +5138,13 @@
           },
           onEachFeature: (feature, layer) => {
             const p = feature.properties;
-            const zone = [p.rpparea1, p.rpparea2, p.rpparea3].filter(Boolean).join(", ");
+            const zone = [p.rpparea1, p.rpparea2, p.rpparea3]
+              .filter(Boolean)
+              .join(", ");
             const active = rppIsActive(feature);
-            const limit = p.hrlimit ? `<b>Time limit:</b> ${p.hrlimit}h (RPP exempt)<br>` : "";
+            const limit = p.hrlimit
+              ? `<b>Time limit:</b> ${p.hrlimit}h (RPP exempt)<br>`
+              : "";
             const exc = p.exceptions ? `<b>Note:</b> ${p.exceptions}<br>` : "";
             layer.bindPopup(`
               <div class="popup-street">RPP Zone ${zone}</div>
@@ -4502,7 +5159,10 @@
       async function fetchRpp() {
         if (!rppVisible) return;
         const statusEl = document.getElementById("rpp-status");
-        if (rppLoaded && rppData) { buildRppLayer(); return; }
+        if (rppLoaded && rppData) {
+          buildRppLayer();
+          return;
+        }
         if (statusEl) statusEl.textContent = "loading\u2026";
         try {
           const url = `${RPP_API}?$where=${encodeURIComponent("rpparea1 IS NOT NULL")}&$limit=5000`;
@@ -4529,7 +5189,10 @@
         if (rppVisible) {
           fetchRpp();
         } else {
-          if (rppLayer) { map.removeLayer(rppLayer); rppLayer = null; }
+          if (rppLayer) {
+            map.removeLayer(rppLayer);
+            rppLayer = null;
+          }
           if (statusEl) statusEl.textContent = "";
         }
       });
@@ -4550,12 +5213,28 @@
       }
 
       // Day-of-week field names — dataset is inconsistent (friclosed vs friclose, tues vs tue, thurs vs thu)
-      const GARAGE_OPEN_FIELDS  = ["sunopen",  "monopen",  "tuesopen",  "wedopen",  "thursopen",  "friopen",    "satopen"];
-      const GARAGE_CLOSE_FIELDS = ["sunclose", "monclose", "tuesclose", "wedclose", "thursclose", "friclosed",  "satclose"];
+      const GARAGE_OPEN_FIELDS = [
+        "sunopen",
+        "monopen",
+        "tuesopen",
+        "wedopen",
+        "thursopen",
+        "friopen",
+        "satopen",
+      ];
+      const GARAGE_CLOSE_FIELDS = [
+        "sunclose",
+        "monclose",
+        "tuesclose",
+        "wedclose",
+        "thursclose",
+        "friclosed",
+        "satclose",
+      ];
 
       function garageIsOpen(row) {
         const dayIdx = viewDate.getDay();
-        const open  = parseHHMM(row[GARAGE_OPEN_FIELDS[dayIdx]]);
+        const open = parseHHMM(row[GARAGE_OPEN_FIELDS[dayIdx]]);
         const close = parseHHMM(row[GARAGE_CLOSE_FIELDS[dayIdx]]);
         if (open === null || close === null) return null;
         return activeHour >= open && activeHour < close;
@@ -4563,7 +5242,7 @@
 
       function fmtGarageHours(row) {
         const dayIdx = viewDate.getDay();
-        const openStr  = fmtHHMM(row[GARAGE_OPEN_FIELDS[dayIdx]]);
+        const openStr = fmtHHMM(row[GARAGE_OPEN_FIELDS[dayIdx]]);
         const closeStr = fmtHHMM(row[GARAGE_CLOSE_FIELDS[dayIdx]]);
         return openStr && closeStr ? `${openStr} – ${closeStr}` : "Unknown";
       }
@@ -4571,19 +5250,24 @@
       function fmtHHMM(v) {
         const n = parseInt(v);
         if (isNaN(n) || n === 0) return null;
-        const h = Math.floor(n / 100), m = n % 100;
+        const h = Math.floor(n / 100),
+          m = n % 100;
         const ampm = h < 12 ? "AM" : "PM";
-        const h12  = h === 0 ? 12 : h > 12 ? h - 12 : h;
-        return `${h12}${m ? `:${String(m).padStart(2,"0")}` : ""} ${ampm}`;
+        const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+        return `${h12}${m ? `:${String(m).padStart(2, "0")}` : ""} ${ampm}`;
       }
 
       function renderGarages() {
-        if (garagesLayer) { map.removeLayer(garagesLayer); garagesLayer = null; }
+        if (garagesLayer) {
+          map.removeLayer(garagesLayer);
+          garagesLayer = null;
+        }
         if (!garagesVisible || !garagesData.length) return;
 
         let cnt = 0;
         garagesLayer = L.layerGroup();
-        let cntOpen = 0, cntClosed = 0;
+        let cntOpen = 0,
+          cntClosed = 0;
 
         for (const row of garagesData) {
           const geom = row.the_geom;
@@ -4592,19 +5276,31 @@
           if (isNaN(lat) || isNaN(lng)) continue;
 
           const open = garageIsOpen(row);
-          const color = open === true ? "#00cc88" : open === false ? "#444" : "#888";
+          const color =
+            open === true ? "#00cc88" : open === false ? "#444" : "#888";
           const opacity = open === false ? 0.4 : 0.85;
 
           const hoursStr = fmtGarageHours(row);
 
-          const type     = row.g_l_1 === "G" ? "Garage" : row.g_l_1 === "L" ? "Lot" : "Facility";
-          const name     = row.name2_1 || row.address_1 || type;
-          const cap      = row.regcap_1 ? `${parseInt(row.regcap_1).toLocaleString()} spaces` : "";
-          const rate1hr  = row.onehr_1  ? `$${row.onehr_1}/hr`   : null;
-          const rateMax  = row.dailymax_1 ? `$${row.dailymax_1} max` : null;
+          const type =
+            row.g_l_1 === "G"
+              ? "Garage"
+              : row.g_l_1 === "L"
+                ? "Lot"
+                : "Facility";
+          const name = row.name2_1 || row.address_1 || type;
+          const cap = row.regcap_1
+            ? `${parseInt(row.regcap_1).toLocaleString()} spaces`
+            : "";
+          const rate1hr = row.onehr_1 ? `$${row.onehr_1}/hr` : null;
+          const rateMax = row.dailymax_1 ? `$${row.dailymax_1} max` : null;
           const rateMonth = row.regmonth_1 ? `$${row.regmonth_1}/mo` : null;
-          const earlybird = row.earlybird1 ? `$${row.earlybird1} early bird` : null;
-          const ratesArr = [rate1hr, rateMax, rateMonth, earlybird].filter(Boolean);
+          const earlybird = row.earlybird1
+            ? `$${row.earlybird1} early bird`
+            : null;
+          const ratesArr = [rate1hr, rateMax, rateMonth, earlybird].filter(
+            Boolean,
+          );
 
           const marker = L.circleMarker([lat, lng], {
             radius: 7,
@@ -4615,7 +5311,10 @@
             opacity,
           });
 
-          marker.bindTooltip(`${type}: ${row.address_1 || name}`, { sticky: true, direction: "top" });
+          marker.bindTooltip(`${type}: ${row.address_1 || name}`, {
+            sticky: true,
+            direction: "top",
+          });
           marker.bindPopup(`
             <div class="popup-street">${row.address_1 || name}</div>
             <span class="popup-badge ${open === true ? "badge-garage-open" : "badge-garage-closed"}">${open === true ? "Open Now" : open === false ? "Closed Now" : type}</span><br>
@@ -4629,7 +5328,8 @@
 
           garagesLayer.addLayer(marker);
           cnt++;
-          if (open === true) cntOpen++; else cntClosed++;
+          if (open === true) cntOpen++;
+          else cntClosed++;
         }
 
         garagesLayer.addTo(map);
@@ -4642,7 +5342,10 @@
       async function fetchGarages() {
         if (!garagesVisible) return;
         const statusEl = document.getElementById("garages-status");
-        if (garagesLoaded && garagesData.length) { renderGarages(); return; }
+        if (garagesLoaded && garagesData.length) {
+          renderGarages();
+          return;
+        }
         if (statusEl) statusEl.textContent = "loading\u2026";
 
         try {
@@ -4656,7 +5359,16 @@
           if (garagesData.length) {
             const sample = garagesData[0];
             console.log("[Garages] Fields:", Object.keys(sample).join(", "));
-            console.log("[Garages] monopen:", sample.monopen, "| monopen_1:", sample.monopen_1, "| friopen:", sample.friopen, "| friopen_1:", sample.friopen_1);
+            console.log(
+              "[Garages] monopen:",
+              sample.monopen,
+              "| monopen_1:",
+              sample.monopen_1,
+              "| friopen:",
+              sample.friopen,
+              "| friopen_1:",
+              sample.friopen_1,
+            );
           }
           if (statusEl) statusEl.textContent = "";
           renderGarages();
@@ -4666,21 +5378,26 @@
         }
       }
 
-      document.getElementById("garages-toggle").addEventListener("click", () => {
-        garagesVisible = !garagesVisible;
-        const btn = document.getElementById("garages-toggle");
-        const leg = document.getElementById("garages-legend");
-        const statusEl = document.getElementById("garages-status");
-        btn.textContent = garagesVisible ? "On" : "Off";
-        btn.classList.toggle("meters-on", garagesVisible);
-        leg.style.display = garagesVisible ? "block" : "none";
-        if (garagesVisible) {
-          fetchGarages();
-        } else {
-          if (garagesLayer) { map.removeLayer(garagesLayer); garagesLayer = null; }
-          if (statusEl) statusEl.textContent = "";
-        }
-      });
+      document
+        .getElementById("garages-toggle")
+        .addEventListener("click", () => {
+          garagesVisible = !garagesVisible;
+          const btn = document.getElementById("garages-toggle");
+          const leg = document.getElementById("garages-legend");
+          const statusEl = document.getElementById("garages-status");
+          btn.textContent = garagesVisible ? "On" : "Off";
+          btn.classList.toggle("meters-on", garagesVisible);
+          leg.style.display = garagesVisible ? "block" : "none";
+          if (garagesVisible) {
+            fetchGarages();
+          } else {
+            if (garagesLayer) {
+              map.removeLayer(garagesLayer);
+              garagesLayer = null;
+            }
+            if (statusEl) statusEl.textContent = "";
+          }
+        });
 
       // ── Neighborhood Parking Score Choropleth ────────────────────────────────
       // Source: SF Neighborhood boundaries (j2bu-swwd), scored from loaded data
@@ -4694,9 +5411,14 @@
       function pointInRing(lat, lng, ring) {
         let inside = false;
         for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
-          const xi = ring[i][0], yi = ring[i][1];
-          const xj = ring[j][0], yj = ring[j][1];
-          if (((yi > lat) !== (yj > lat)) && (lng < (xj - xi) * (lat - yi) / (yj - yi) + xi))
+          const xi = ring[i][0],
+            yi = ring[i][1];
+          const xj = ring[j][0],
+            yj = ring[j][1];
+          if (
+            yi > lat !== yj > lat &&
+            lng < ((xj - xi) * (lat - yi)) / (yj - yi) + xi
+          )
             inside = !inside;
         }
         return inside;
@@ -4705,7 +5427,8 @@
       function pointInGeom(lat, lng, geometry) {
         const { type, coordinates } = geometry;
         if (type === "Polygon") return pointInRing(lat, lng, coordinates[0]);
-        if (type === "MultiPolygon") return coordinates.some(poly => pointInRing(lat, lng, poly[0]));
+        if (type === "MultiPolygon")
+          return coordinates.some((poly) => pointInRing(lat, lng, poly[0]));
         return false;
       }
 
@@ -4717,39 +5440,75 @@
       }
 
       function buildNhoodLayer() {
-        if (nhoodLayer) { map.removeLayer(nhoodLayer); nhoodLayer = null; }
+        if (nhoodLayer) {
+          map.removeLayer(nhoodLayer);
+          nhoodLayer = null;
+        }
         if (!nhoodVisible || !nhoodData) return;
 
         // Pre-compute bounding boxes for fast bbox pre-reject
         const items = nhoodData.features
-          .filter(f => f.geometry)
-          .map(f => {
-            let minLat = Infinity, maxLat = -Infinity, minLng = Infinity, maxLng = -Infinity;
-            const scan = (ring) => ring.forEach(([lng, lat]) => {
-              if (lat < minLat) minLat = lat; if (lat > maxLat) maxLat = lat;
-              if (lng < minLng) minLng = lng; if (lng > maxLng) maxLng = lng;
-            });
+          .filter((f) => f.geometry)
+          .map((f) => {
+            let minLat = Infinity,
+              maxLat = -Infinity,
+              minLng = Infinity,
+              maxLng = -Infinity;
+            const scan = (ring) =>
+              ring.forEach(([lng, lat]) => {
+                if (lat < minLat) minLat = lat;
+                if (lat > maxLat) maxLat = lat;
+                if (lng < minLng) minLng = lng;
+                if (lng > maxLng) maxLng = lng;
+              });
             const geom = f.geometry;
             if (geom.type === "Polygon") geom.coordinates.forEach(scan);
-            else if (geom.type === "MultiPolygon") geom.coordinates.forEach(p => p.forEach(scan));
-            return { f, name: f.properties.nhood, minLat, maxLat, minLng, maxLng,
-                     breakins: 0, incidents: 0, cleaning: 0, citations: 0 };
+            else if (geom.type === "MultiPolygon")
+              geom.coordinates.forEach((p) => p.forEach(scan));
+            return {
+              f,
+              name: f.properties.nhood,
+              minLat,
+              maxLat,
+              minLng,
+              maxLng,
+              breakins: 0,
+              incidents: 0,
+              cleaning: 0,
+              citations: 0,
+            };
           });
 
         const byName = {};
-        items.forEach(it => { byName[it.name] = it; });
+        items.forEach((it) => {
+          byName[it.name] = it;
+        });
 
         function addPoint(lat, lng, field) {
           if (isNaN(lat) || isNaN(lng)) return;
           for (const it of items) {
-            if (lat < it.minLat || lat > it.maxLat || lng < it.minLng || lng > it.maxLng) continue;
-            if (pointInGeom(lat, lng, it.f.geometry)) { it[field]++; break; }
+            if (
+              lat < it.minLat ||
+              lat > it.maxLat ||
+              lng < it.minLng ||
+              lng > it.maxLng
+            )
+              continue;
+            if (pointInGeom(lat, lng, it.f.geometry)) {
+              it[field]++;
+              break;
+            }
           }
         }
 
         // Tally each data source
         for (const [lat, lng] of breakinsPoints) addPoint(lat, lng, "breakins");
-        for (const inc of incidentsData) addPoint(parseFloat(inc.latitude), parseFloat(inc.longitude), "incidents");
+        for (const inc of incidentsData)
+          addPoint(
+            parseFloat(inc.latitude),
+            parseFloat(inc.longitude),
+            "incidents",
+          );
         for (const feat of loadedFeatures) {
           if (!feat.properties._thisWeek) continue;
           const mid = featureMidpoint(feat);
@@ -4760,31 +5519,32 @@
         }
 
         // Normalize and weight
-        const maxB   = Math.max(1, ...items.map(it => it.breakins));
-        const maxI   = Math.max(1, ...items.map(it => it.incidents));
-        const maxC   = Math.max(1, ...items.map(it => it.cleaning));
-        const maxCit = Math.max(1, ...items.map(it => it.citations));
+        const maxB = Math.max(1, ...items.map((it) => it.breakins));
+        const maxI = Math.max(1, ...items.map((it) => it.incidents));
+        const maxC = Math.max(1, ...items.map((it) => it.cleaning));
+        const maxCit = Math.max(1, ...items.map((it) => it.citations));
 
-        const hasBreakIns  = breakinsPoints.length > 0;
+        const hasBreakIns = breakinsPoints.length > 0;
         const hasIncidents = incidentsData.length > 0;
         const hasCitations = [...citationsGeoCache.values()].some(Boolean);
 
         // Cleaning always contributes; other sources only if loaded
-        const wB   = hasBreakIns  ? 0.40 : 0;
-        const wI   = hasIncidents ? 0.20 : 0;
+        const wB = hasBreakIns ? 0.4 : 0;
+        const wI = hasIncidents ? 0.2 : 0;
         const wCit = hasCitations ? 0.15 : 0;
-        const wC   = 0.25;
-        const total = (wB + wI + wCit + wC) || 1;
+        const wC = 0.25;
+        const total = wB + wI + wCit + wC || 1;
 
         for (const it of items) {
-          it.score = (wB   / total) * (it.breakins  / maxB)   +
-                     (wI   / total) * (it.incidents / maxI)   +
-                     (wC   / total) * (it.cleaning  / maxC)   +
-                     (wCit / total) * (it.citations / maxCit);
+          it.score =
+            (wB / total) * (it.breakins / maxB) +
+            (wI / total) * (it.incidents / maxI) +
+            (wC / total) * (it.cleaning / maxC) +
+            (wCit / total) * (it.citations / maxCit);
         }
 
         const sources = ["street cleaning"];
-        if (hasBreakIns)  sources.push("break-ins");
+        if (hasBreakIns) sources.push("break-ins");
         if (hasIncidents) sources.push("incidents");
         if (hasCitations) sources.push("citations");
 
@@ -4793,8 +5553,14 @@
           style: (f) => {
             const it = byName[f.properties.nhood];
             const t = it ? it.score : 0;
-            return { fillColor: nhoodScoreColor(t), color: nhoodScoreColor(t),
-                     weight: 1, opacity: 0.45, fillOpacity: 0.28, className: "nhood-pulse" };
+            return {
+              fillColor: nhoodScoreColor(t),
+              color: nhoodScoreColor(t),
+              weight: 1,
+              opacity: 0.45,
+              fillOpacity: 0.28,
+              className: "nhood-pulse",
+            };
           },
           onEachFeature: (f, layer) => {
             const it = byName[f.properties.nhood];
@@ -4802,16 +5568,20 @@
             // Stagger shimmer so neighbourhoods don't all flash in unison
             layer.on("add", () => {
               const el = layer.getElement ? layer.getElement() : null;
-              if (el) el.style.animationDelay = (Math.random() * 5).toFixed(2) + "s";
+              if (el)
+                el.style.animationDelay = (Math.random() * 5).toFixed(2) + "s";
             });
-            layer.bindTooltip(f.properties.nhood, { sticky: true, direction: "top" });
+            layer.bindTooltip(f.properties.nhood, {
+              sticky: true,
+              direction: "top",
+            });
             layer.bindPopup(`
               <div class="popup-street">${f.properties.nhood}</div>
               <b>Parking Difficulty:</b> ${pct}/100<br>
-              ${it && it.breakins  ? `<b>Vehicle break-ins:</b> ${it.breakins}<br>`  : ""}
-              ${it && it.incidents ? `<b>Police incidents:</b> ${it.incidents}<br>`  : ""}
+              ${it && it.breakins ? `<b>Vehicle break-ins:</b> ${it.breakins}<br>` : ""}
+              ${it && it.incidents ? `<b>Police incidents:</b> ${it.incidents}<br>` : ""}
               ${it && it.citations ? `<b>Parking citations:</b> ${it.citations}<br>` : ""}
-              ${it && it.cleaning  ? `<b>Cleaning segments:</b> ${it.cleaning}<br>` : ""}
+              ${it && it.cleaning ? `<b>Cleaning segments:</b> ${it.cleaning}<br>` : ""}
               <span style="color:#555;font-size:10px">Score from: ${sources.join(", ")}</span>
             `);
           },
@@ -4819,13 +5589,19 @@
 
         // Render below street lines but above base tiles
         nhoodLayer.bringToBack();
-        console.log("[Nhood] Rendered choropleth. Sources:", sources.join(", "));
+        console.log(
+          "[Nhood] Rendered choropleth. Sources:",
+          sources.join(", "),
+        );
       }
 
       async function fetchNhood() {
         if (!nhoodVisible) return;
         const statusEl = document.getElementById("nhood-status");
-        if (nhoodLoaded && nhoodData) { buildNhoodLayer(); return; }
+        if (nhoodLoaded && nhoodData) {
+          buildNhoodLayer();
+          return;
+        }
         if (statusEl) statusEl.textContent = "loading\u2026";
         try {
           const resp = await fetch(`${NHOOD_API}?$limit=50`);
@@ -4833,7 +5609,11 @@
           nhoodData = await resp.json();
           nhoodLoaded = true;
           if (statusEl) statusEl.textContent = "";
-          console.log("[Nhood] Loaded", nhoodData.features.length, "neighborhoods");
+          console.log(
+            "[Nhood] Loaded",
+            nhoodData.features.length,
+            "neighborhoods",
+          );
           buildNhoodLayer();
         } catch (err) {
           if (statusEl) statusEl.textContent = err.message;
@@ -4852,15 +5632,22 @@
         if (nhoodVisible) {
           fetchNhood();
         } else {
-          if (nhoodLayer) { map.removeLayer(nhoodLayer); nhoodLayer = null; }
+          if (nhoodLayer) {
+            map.removeLayer(nhoodLayer);
+            nhoodLayer = null;
+          }
           if (statusEl) statusEl.textContent = "";
         }
       });
       // ── Draggable control panel ───────────────────────────────────────────
       (function () {
-        const panel  = document.getElementById("panel-wrapper");
+        const panel = document.getElementById("panel-wrapper");
         const handle = document.getElementById("panel-drag-handle");
-        let dragging = false, startX, startY, startLeft, startTop;
+        let dragging = false,
+          startX,
+          startY,
+          startLeft,
+          startTop;
 
         function beginDrag(clientX, clientY) {
           dragging = true;
@@ -4868,23 +5655,23 @@
           startY = clientY;
           const rect = panel.getBoundingClientRect();
           startLeft = rect.left;
-          startTop  = rect.top;
+          startTop = rect.top;
           // Switch from right-anchored to left-anchored so we can set left freely
           panel.style.right = "auto";
-          panel.style.left  = startLeft + "px";
-          panel.style.top   = startTop  + "px";
+          panel.style.left = startLeft + "px";
+          panel.style.top = startTop + "px";
           handle.style.cursor = "grabbing";
         }
 
         function moveDrag(clientX, clientY) {
           if (!dragging) return;
           let l = startLeft + (clientX - startX);
-          let t = startTop  + (clientY - startY);
+          let t = startTop + (clientY - startY);
           // Keep at least a sliver on-screen
-          l = Math.max(0, Math.min(window.innerWidth  - panel.offsetWidth,  l));
+          l = Math.max(0, Math.min(window.innerWidth - panel.offsetWidth, l));
           t = Math.max(0, Math.min(window.innerHeight - 40, t));
           panel.style.left = l + "px";
-          panel.style.top  = t + "px";
+          panel.style.top = t + "px";
         }
 
         function endDrag() {
@@ -4898,20 +5685,30 @@
           e.preventDefault();
           beginDrag(e.clientX, e.clientY);
         });
-        document.addEventListener("mousemove", (e) => moveDrag(e.clientX, e.clientY));
+        document.addEventListener("mousemove", (e) =>
+          moveDrag(e.clientX, e.clientY),
+        );
         document.addEventListener("mouseup", endDrag);
 
         // Touch
-        handle.addEventListener("touchstart", (e) => {
-          if (e.target.closest("button, input, a")) return;
-          const t = e.touches[0];
-          beginDrag(t.clientX, t.clientY);
-        }, { passive: true });
-        document.addEventListener("touchmove", (e) => {
-          if (!dragging) return;
-          const t = e.touches[0];
-          moveDrag(t.clientX, t.clientY);
-        }, { passive: true });
+        handle.addEventListener(
+          "touchstart",
+          (e) => {
+            if (e.target.closest("button, input, a")) return;
+            const t = e.touches[0];
+            beginDrag(t.clientX, t.clientY);
+          },
+          { passive: true },
+        );
+        document.addEventListener(
+          "touchmove",
+          (e) => {
+            if (!dragging) return;
+            const t = e.touches[0];
+            moveDrag(t.clientX, t.clientY);
+          },
+          { passive: true },
+        );
         document.addEventListener("touchend", endDrag);
 
         // Click anywhere on a popup to close it
