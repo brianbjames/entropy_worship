@@ -3498,6 +3498,7 @@
       let breakinsVisible = false;
       let breakinsLayer = null;
       let breakinsLoaded = false;
+      let breakinsPoints = [];
 
       function rebuildBreakinsLayer(points) {
         if (breakinsLayer) { map.removeLayer(breakinsLayer); breakinsLayer = null; }
@@ -3537,11 +3538,9 @@
             .map(d => [parseFloat(d.latitude), parseFloat(d.longitude)]);
 
           breakinsLoaded = true;
+          breakinsPoints = points;
           if (statusEl) statusEl.textContent = "";
           rebuildBreakinsLayer(points);
-
-          // Store for re-renders (e.g. if toggled off/on without refetch)
-          breakinsLayer._points = points;
         } catch (err) {
           if (statusEl) statusEl.textContent = err.message;
           console.error("[Break-ins]", err);
@@ -3557,8 +3556,8 @@
         btn.classList.toggle("meters-on", breakinsVisible);
         leg.style.display = breakinsVisible ? "block" : "none";
         if (breakinsVisible) {
-          if (breakinsLoaded && breakinsLayer?._points) {
-            rebuildBreakinsLayer(breakinsLayer._points);
+          if (breakinsLoaded && breakinsPoints.length) {
+            rebuildBreakinsLayer(breakinsPoints);
           } else {
             fetchBreakIns();
           }
