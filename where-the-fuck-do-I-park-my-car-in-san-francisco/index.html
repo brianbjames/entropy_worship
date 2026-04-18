@@ -1238,6 +1238,45 @@
         return `${h12}:00${ampm}`;
       }
 
+      function fmtSafeFor(hours) {
+        if (hours <= 0) return null;
+        if (hours < 1/60) return "< 1min";
+        if (hours < 1) return `${Math.round(hours * 60)}min`;
+        const h = Math.floor(hours);
+        const m = Math.round((hours - h) * 60);
+        if (m === 0) return `${h}h`;
+        return `${h}h ${m}m`;
+      }
+
+      function safeUntilHtml(verdict, active, upcoming, passed, nearbyOtherWeek) {
+        if (verdict === "active") return "";
+        if (verdict === "upcoming") {
+          const hoursLeft = parseFloat(upcoming[0].f.properties.fromhour) - activeHour;
+          const dur = fmtSafeFor(hoursLeft);
+          return dur ? `<div style="font-size:11px;color:#888;margin-top:3px">Safe to park for <span style="color:#ccc;font-weight:bold">${dur}</span></div>` : "";
+        }
+        if (verdict === "passed") {
+          const hoursLeft = 24 - activeHour;
+          const dur = fmtSafeFor(hoursLeft);
+          return dur ? `<div style="font-size:11px;color:#888;margin-top:3px">Safe for <span style="color:#ccc;font-weight:bold">${dur}</span> (rest of day)</div>` : "";
+        }
+        if (nearbyOtherWeek.length > 0) {
+          // Find next cleaning day
+          const DAY_IDX = { sunday:0, monday:1, tuesday:2, wednesday:3, thursday:4, friday:5, saturday:6 };
+          const todayIdx = now.getDay();
+          let minDays = 7;
+          for (const { f } of nearbyOtherWeek) {
+            const d = (f.properties.fullname || f.properties.weekday || "").toLowerCase();
+            const idx = DAY_IDX[d];
+            if (idx == null) continue;
+            const diff = (idx - todayIdx + 7) % 7 || 7;
+            if (diff < minDays) minDays = diff;
+          }
+          return `<div style="font-size:11px;color:#888;margin-top:3px">Next cleaning in <span style="color:#ccc;font-weight:bold">${minDays} day${minDays !== 1 ? "s" : ""}</span></div>`;
+        }
+        return "";
+      }
+
       function fmtSliderHour(h) {
         const hour = Math.floor(h) % 24;
         const min = Math.round((h - Math.floor(h)) * 60);
@@ -1716,7 +1755,7 @@
         } else if (upcoming.length > 0) {
           verdict = "upcoming";
           const p = upcoming[0].f.properties;
-          verdictHtml = `<div class="verdict verdict-upcoming">Next cleaning ${fmtHour(p.fromhour)} – ${fmtHour(p.tohour)}</div>`;
+          verdictHtml = `<div class="verdict verdict-upcoming">Next cleaning ${fmtHour(p.fromhour)}–${fmtHour(p.tohour)}</div>`;
         } else if (passed.length > 0) {
           verdict = "passed";
           verdictHtml = `<div class="verdict verdict-ok">No more cleaning ${dayLabel}</div>`;
@@ -1732,6 +1771,7 @@
             verdictHtml = `<div class="verdict verdict-passed">No street cleaning data here</div>`;
           }
         }
+        verdictHtml += safeUntilHtml(verdict, active, upcoming, passed, nearbyOtherWeek);
 
         // Detail rows — this-week entries first (active/upcoming/passed), then other-week as context
         let rows = "";
