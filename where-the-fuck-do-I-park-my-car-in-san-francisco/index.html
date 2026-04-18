@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="data:,">
     <title>WTF do I park in San Francisco?</title>
     <!-- General Meta Tags for SEO -->
     <meta
@@ -319,6 +320,11 @@
         border: 1px solid #482800;
       }
       .verdict-passed {
+        background: #1e1a00;
+        color: #ccbb00;
+        border: 1px solid #3a3000;
+      }
+      .verdict-inferred {
         background: #1e1a00;
         color: #ccbb00;
         border: 1px solid #3a3000;
@@ -1229,7 +1235,7 @@
         if (isNaN(n)) return String(h);
         const ampm = n < 12 ? "AM" : "PM";
         const h12 = n === 0 ? 12 : n > 12 ? n - 12 : n;
-        return `${h12}:00 ${ampm}`;
+        return `${h12}:00${ampm}`;
       }
 
       function fmtSliderHour(h) {
@@ -1601,6 +1607,33 @@
           </div>`;
       }
 
+      // ── Corridor schedule inference ───────────────────────────────────────
+      function inferCorridorSchedule(label) {
+        if (!label || !loadedFeatures.length) return null;
+        const raw = label.split(",")[0].trim().toUpperCase()
+          .replace(/\bSTREET\b/g, "ST").replace(/\bAVENUE\b/g, "AVE")
+          .replace(/\bBOULEVARD\b/g, "BLVD").replace(/\bDRIVE\b/g, "DR")
+          .replace(/\bCOURT\b/g, "CT").replace(/\bLANE\b/g, "LN")
+          .replace(/\bPLACE\b/g, "PL").replace(/\bROAD\b/g, "RD");
+        const matches = loadedFeatures.filter(f => {
+          const c = (f.properties.corridor || "").toUpperCase();
+          return c === raw || c.startsWith(raw) || raw.startsWith(c);
+        });
+        if (matches.length < 2) return null;
+        const tally = {};
+        for (const f of matches) {
+          const p = f.properties;
+          const day = (p.fullname || p.weekday || "").trim();
+          if (!day || p.fromhour == null || p.tohour == null) continue;
+          const key = `${day}|${p.fromhour}|${p.tohour}`;
+          if (!tally[key]) tally[key] = { day, fromhour: p.fromhour, tohour: p.tohour, n: 0 };
+          tally[key].n++;
+        }
+        const top = Object.values(tally).sort((a, b) => b.n - a.n);
+        if (!top.length) return null;
+        return { ...top[0], totalSegments: matches.length };
+      }
+
       // ── Verdict panel ─────────────────────────────────────────────────────
       function showVerdict(latlng, label) {
         lastSearchLabel = label;
@@ -1692,7 +1725,12 @@
           verdictHtml = `<div class="verdict verdict-ok">Safe — no cleaning this week</div>`;
         } else {
           verdict = "ok";
-          verdictHtml = `<div class="verdict verdict-passed">No street cleaning data here</div>`;
+          const inf = label ? inferCorridorSchedule(label) : null;
+          if (inf) {
+            verdictHtml = `<div class="verdict verdict-inferred">No street cleaning data here<br><span style="font-size:10px">Likely ${inf.day} ${fmtHour(inf.fromhour)}–${fmtHour(inf.tohour)} <span style="opacity:0.6">(inferred from ${inf.totalSegments} nearby)</span></span></div>`;
+          } else {
+            verdictHtml = `<div class="verdict verdict-passed">No street cleaning data here</div>`;
+          }
         }
 
         // Detail rows — this-week entries first (active/upcoming/passed), then other-week as context
