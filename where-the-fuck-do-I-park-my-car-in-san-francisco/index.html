@@ -2561,6 +2561,35 @@
         document.body.appendChild(el);
       }
 
+      function isApiDown(err) {
+        const m = (err && err.message || "").toLowerCase();
+        return m.includes("load failed") || m.includes("failed to fetch") ||
+               m.includes("networkerror") || m.includes("503");
+      }
+
+      function showApiDown() {
+        const el = document.getElementById("loading");
+        el.style.display = "block";
+        el.style.borderColor = "#553300";
+        el.style.color = "#ffaa44";
+        el.innerHTML = `
+          <div style="font-size:13px;letter-spacing:1px;margin-bottom:8px">DataSF API unavailable</div>
+          <div style="font-size:11px;color:#888;line-height:1.8;letter-spacing:0">
+            Street data could not be loaded.<br>
+            <a href="https://status.tylertech.cloud" target="_blank"
+               style="color:#aaa">Check status.tylertech.cloud</a>
+          </div>
+          <div style="margin-top:12px">
+            <button onclick="location.reload()"
+              style="background:#181818;border:1px solid #553300;color:#ffaa44;
+                     padding:5px 14px;font-size:11px;border-radius:2px;cursor:pointer;
+                     font-family:inherit;letter-spacing:1px">
+              Retry
+            </button>
+          </div>
+        `;
+      }
+
       // ── API setup ─────────────────────────────────────────────────────────
       // BASE, cachedWeekdayField, and fetchForDay are declared here so they are
       // accessible from both the initial load branches AND from switchToDay.
@@ -2610,8 +2639,8 @@
         }
 
         return fetchPage().catch((err) => {
-          document.getElementById("loading").textContent =
-            `Error: ${err.message}`;
+          if (isApiDown(err)) showApiDown();
+          else document.getElementById("loading").textContent = `Error: ${err.message}`;
           console.error("[SF Cleaning]", err);
         });
       }
@@ -2656,8 +2685,8 @@
             return fetchForDay(dayName);
           })
           .catch((err) => {
-            document.getElementById("loading").textContent =
-              `Error: ${err.message}`;
+            if (isApiDown(err)) showApiDown();
+            else document.getElementById("loading").textContent = `Error: ${err.message}`;
             console.error("[SF Cleaning]", err);
           });
       }
