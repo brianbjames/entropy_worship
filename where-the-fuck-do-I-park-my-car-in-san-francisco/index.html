@@ -1277,6 +1277,52 @@
         return "";
       }
 
+      function buildTimelineHtml(nearbyThisWeek) {
+        if (!nearbyThisWeek.length) return "";
+
+        // 96 quarter-hour slots across 24h
+        const SLOTS = 96;
+        const restricted = new Array(SLOTS).fill(false);
+        for (const { f } of nearbyThisWeek) {
+          const from = Math.floor(parseFloat(f.properties.fromhour) * 4);
+          const to   = Math.ceil(parseFloat(f.properties.tohour) * 4);
+          for (let i = Math.max(0, from); i < Math.min(SLOTS, to); i++) restricted[i] = true;
+        }
+
+        // Merge adjacent same-state slots into segments
+        const segments = [];
+        let i = 0;
+        while (i < SLOTS) {
+          let j = i + 1;
+          while (j < SLOTS && restricted[j] === restricted[i]) j++;
+          segments.push({ restricted: restricted[i], pct: i / SLOTS * 100, w: (j - i) / SLOTS * 100 });
+          i = j;
+        }
+
+        const bars = segments.map(s =>
+          `<div style="position:absolute;left:${s.pct.toFixed(2)}%;width:${s.w.toFixed(2)}%;height:100%;background:${s.restricted ? "#ff4444" : "#00cc88"};opacity:0.5"></div>`
+        ).join("");
+
+        const nowPct = Math.min(100, (activeHour / 24) * 100);
+        const nowLine = `<div style="position:absolute;left:${nowPct.toFixed(2)}%;top:-2px;width:2px;height:calc(100% + 4px);background:#fff;z-index:10;border-radius:1px"></div>`;
+
+        const labelHours = [0, 4, 8, 12, 16, 20, 24];
+        const labelHtml = labelHours.map(h => {
+          const pct = h / 24 * 100;
+          const txt = h === 0 || h === 24 ? "12am" : h < 12 ? `${h}am` : h === 12 ? "12pm" : `${h - 12}pm`;
+          const align = h === 0 ? "left:0%;transform:none" : h === 24 ? "right:0%;left:auto;transform:none" : `left:${pct}%;transform:translateX(-50%)`;
+          return `<span style="position:absolute;${align};font-size:8px;color:#fff">${txt}</span>`;
+        }).join("");
+
+        return `
+          <div style="margin-top:8px;margin-bottom:2px">
+            <div style="position:relative;height:10px;background:#111;border-radius:3px;overflow:visible">
+              ${bars}${nowLine}
+            </div>
+            <div style="position:relative;height:14px;margin-top:2px">${labelHtml}</div>
+          </div>`;
+      }
+
       function fmtSliderHour(h) {
         const hour = Math.floor(h) % 24;
         const min = Math.round((h - Math.floor(h)) * 60);
@@ -1866,6 +1912,7 @@
         panel.innerHTML = `
           ${label ? `<div class="result-address">${label}</div>` : ""}
           ${verdictHtml}
+          ${buildTimelineHtml(nearbyThisWeek)}
           ${rows ? `<div class="result-rows">${rows}</div>` : ""}
           ${buildRiskHtml(latlng)}
           ${recsHtml}
