@@ -1312,7 +1312,7 @@
         }
 
         const bars = segments.map(s =>
-          `<div style="position:absolute;left:${s.pct.toFixed(2)}%;width:${s.w.toFixed(2)}%;height:100%;background:${s.restricted ? "#ff4444" : "#00cc88"};opacity:0.5"></div>`
+          `<div style="position:absolute;left:${s.pct.toFixed(2)}%;width:${s.w.toFixed(2)}%;height:100%;background:${s.restricted ? "#ff3333" : "#2ecc71"};opacity:0.5"></div>`
         ).join("");
 
         const nowPct = Math.min(100, (activeHour / 24) * 100);
@@ -1323,7 +1323,7 @@
           const pct = h / 24 * 100;
           const txt = h === 0 || h === 24 ? "12am" : h < 12 ? `${h}am` : h === 12 ? "12pm" : `${h - 12}pm`;
           const align = h === 0 ? "left:0%;transform:none" : h === 24 ? "right:0%;left:auto;transform:none" : `left:${pct}%;transform:translateX(-50%)`;
-          return `<span style="position:absolute;${align};font-size:8px;color:#fff">${txt}</span>`;
+          return `<span style="position:absolute;${align};font-size:9px;color:#aaa;letter-spacing:0.5px">${txt}</span>`;
         }).join("");
 
         return `
