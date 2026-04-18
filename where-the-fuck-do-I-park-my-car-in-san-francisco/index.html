@@ -923,6 +923,15 @@
         filter: drop-shadow(0 0 4px #cc44ff) drop-shadow(0 0 10px #cc44ff) drop-shadow(0 0 22px rgba(204, 68, 255, 0.6));
       }
 
+      /* ── Neighborhood score shimmer ─────────────────────────────────────── */
+      @keyframes nhood-shimmer {
+        0%, 100% { opacity: 1; }
+        50%       { opacity: 0.3; }
+      }
+      .nhood-pulse {
+        animation: nhood-shimmer 5s ease-in-out infinite;
+      }
+
       /* ── Pulsing active streets ──────────────────────────────────────────── */
       @keyframes pulse-active {
         0%, 100% { opacity: 0.9; }
@@ -3845,7 +3854,7 @@
           }
         }
 
-        const url = `${CITATIONS_API}?$limit=1000&$order=${citationsDateField} DESC`;
+        const url = `${CITATIONS_API}?$limit=500&$order=${citationsDateField} DESC`;
         console.log("[Citations] Fetching:", url);
 
         try {
@@ -4785,11 +4794,16 @@
             const it = byName[f.properties.nhood];
             const t = it ? it.score : 0;
             return { fillColor: nhoodScoreColor(t), color: nhoodScoreColor(t),
-                     weight: 1, opacity: 0.45, fillOpacity: 0.28 };
+                     weight: 1, opacity: 0.45, fillOpacity: 0.28, className: "nhood-pulse" };
           },
           onEachFeature: (f, layer) => {
             const it = byName[f.properties.nhood];
             const pct = it ? Math.round(it.score * 100) : 0;
+            // Stagger shimmer so neighbourhoods don't all flash in unison
+            layer.on("add", () => {
+              const el = layer.getElement ? layer.getElement() : null;
+              if (el) el.style.animationDelay = (Math.random() * 5).toFixed(2) + "s";
+            });
             layer.bindTooltip(f.properties.nhood, { sticky: true, direction: "top" });
             layer.bindPopup(`
               <div class="popup-street">${f.properties.nhood}</div>
