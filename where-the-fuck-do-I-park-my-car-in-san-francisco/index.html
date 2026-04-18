@@ -857,19 +857,6 @@
         </div>
         <hr />
         <div class="legend-row" style="align-items: center">
-          <span style="font-size: 11px; color: #ccc">Parking Citations</span>
-          <span id="citations-status"></span>
-          <button class="meters-toggle" id="citations-toggle">Off</button>
-        </div>
-        <div id="citations-legend" style="display: none">
-          <div class="legend-row" style="margin-top: 4px">
-            <div class="legend-dot" style="background: transparent; border: 2px solid #bb44ff; box-sizing: border-box;"></div>
-            <span>Citation density</span>
-            <span class="legend-count" id="cnt-citations">&mdash;</span>
-          </div>
-        </div>
-        <hr />
-        <div class="legend-row" style="align-items: center">
           <span style="font-size: 11px; color: #ccc">Street Permits</span>
           <span id="permits-status"></span>
           <button class="meters-toggle" id="permits-toggle">Off</button>
@@ -879,6 +866,45 @@
             <div class="legend-dot" style="background: transparent; border: 2px solid #ff8800; box-sizing: border-box;"></div>
             <span>Street space permits</span>
             <span class="legend-count" id="cnt-permits">&mdash;</span>
+          </div>
+        </div>
+        <hr />
+        <div class="legend-row" style="align-items: center">
+          <span style="font-size: 11px; color: #ccc">Parking Citations</span>
+          <span id="citations-status"></span>
+          <button class="meters-toggle" id="citations-toggle">Off</button>
+        </div>
+        <div id="citations-legend" style="display: none">
+          <div class="legend-row" style="margin-top: 4px">
+            <div class="legend-dot" style="background: #bb44ff; border: 2px solid #bb44ff; box-sizing: border-box;"></div>
+            <span>Citation density</span>
+            <span class="legend-count" id="cnt-citations">&mdash;</span>
+          </div>
+        </div>
+        <hr />
+        <div class="legend-row" style="align-items: center">
+          <span style="font-size: 11px; color: #ccc">Car Break-ins</span>
+          <span id="breakins-status" style="font-size: 10px; color: #aaa; margin-left: 4px;"></span>
+          <button class="meters-toggle" id="breakins-toggle">Off</button>
+        </div>
+        <div id="breakins-legend" style="display: none">
+          <div class="legend-row" style="margin-top: 4px">
+            <div class="legend-dot" style="background: #ff6600; border: 2px solid #ff6600; box-sizing: border-box;"></div>
+            <span>Vehicle theft &amp; break-ins</span>
+            <span class="legend-count" id="cnt-breakins">&mdash;</span>
+          </div>
+        </div>
+        <hr />
+        <div class="legend-row" style="align-items: center">
+          <span style="font-size: 11px; color: #ccc">Abandoned Vehicles</span>
+          <span id="tows-status" style="font-size: 10px; color: #aaa; margin-left: 4px;"></span>
+          <button class="meters-toggle" id="tows-toggle">Off</button>
+        </div>
+        <div id="tows-legend" style="display: none">
+          <div class="legend-row" style="margin-top: 4px">
+            <div class="legend-dot" style="background: #ffcc00; border: 2px solid #ffcc00; box-sizing: border-box;"></div>
+            <span>311 abandoned vehicle reports</span>
+            <span class="legend-count" id="cnt-tows">&mdash;</span>
           </div>
         </div>
       </div>
@@ -3239,6 +3265,252 @@
         _permitsMoveTimer = setTimeout(fetchPermits, 400);
       });
 
+      // ── Car Break-ins / Vehicle Theft ────────────────────────────────────────
+      // Source: SF Police Incidents (wg3w-h783), filtered for vehicle crimes
+      const BREAKINS_API = "https://data.sfgov.org/resource/wg3w-h783.json";
+      let breakinsVisible = false;
+      let breakinsLayer = null;
+      let breakinsLoaded = false;
+
+      function rebuildBreakinsLayer(points) {
+        if (breakinsLayer) { map.removeLayer(breakinsLayer); breakinsLayer = null; }
+        if (!breakinsVisible || !points.length) return;
+        const el = document.getElementById("cnt-breakins");
+        if (el) el.textContent = points.length.toLocaleString();
+        if (typeof L.heatLayer !== "undefined") {
+          breakinsLayer = L.heatLayer(points, {
+            radius: 28, blur: 20, maxZoom: 18, max: 1, minOpacity: 0.55,
+            gradient: { 0: "#882200", 0.4: "#ff4400", 0.75: "#ff9900", 1.0: "#ffff00" },
+          }).addTo(map);
+        } else {
+          breakinsLayer = L.layerGroup(points.map(([lat, lng]) =>
+            L.circleMarker([lat, lng], { radius: 5, color: "#ff6600", weight: 1, fillColor: "#ff6600", fillOpacity: 0.5 })
+          )).addTo(map);
+        }
+      }
+
+      async function fetchBreakIns() {
+        if (!breakinsVisible) return;
+        const statusEl = document.getElementById("breakins-status");
+        if (statusEl) statusEl.textContent = "loading\u2026";
+
+        try {
+          // Theft From Vehicle + Motor Vehicle Theft, most recent 1000 each
+          const where = encodeURIComponent(
+            `incident_subcategory='Theft From Vehicle' OR incident_category='Motor Vehicle Theft'`
+          );
+          const url = `${BREAKINS_API}?$where=${where}&$limit=1000&$order=incident_date DESC`;
+          const resp = await fetch(url);
+          if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+          const data = await resp.json();
+          console.log("[Break-ins] Loaded", data.length, "incidents");
+
+          const points = data
+            .filter(d => d.latitude && d.longitude)
+            .map(d => [parseFloat(d.latitude), parseFloat(d.longitude)]);
+
+          breakinsLoaded = true;
+          if (statusEl) statusEl.textContent = "";
+          rebuildBreakinsLayer(points);
+
+          // Store for re-renders (e.g. if toggled off/on without refetch)
+          breakinsLayer._points = points;
+        } catch (err) {
+          if (statusEl) statusEl.textContent = err.message;
+          console.error("[Break-ins]", err);
+        }
+      }
+
+      document.getElementById("breakins-toggle").addEventListener("click", () => {
+        breakinsVisible = !breakinsVisible;
+        const btn = document.getElementById("breakins-toggle");
+        const leg = document.getElementById("breakins-legend");
+        const statusEl = document.getElementById("breakins-status");
+        btn.textContent = breakinsVisible ? "On" : "Off";
+        btn.classList.toggle("meters-on", breakinsVisible);
+        leg.style.display = breakinsVisible ? "block" : "none";
+        if (breakinsVisible) {
+          if (breakinsLoaded && breakinsLayer?._points) {
+            rebuildBreakinsLayer(breakinsLayer._points);
+          } else {
+            fetchBreakIns();
+          }
+        } else {
+          if (breakinsLayer) { map.removeLayer(breakinsLayer); breakinsLayer = null; }
+          if (statusEl) statusEl.textContent = "";
+        }
+      });
+
+      // ── Towed Vehicles ────────────────────────────────────────────────────────
+      // Source: SFMTA Tow Calls (hkjh-szjf)
+      // ── Abandoned Vehicles (311) ──────────────────────────────────────────────
+      // Source: SF 311 Cases filtered for Abandoned Vehicle — direct lat/lng, no geocoding
+      // Probes multiple known 311 dataset IDs since the ID has changed over time
+      const TOWS_DATASET_IDS = ["vw6y-z8j6", "wr8u-xric", "i98e-djp9", "ktji-gn4e"];
+      let TOWS_API = `https://data.sfgov.org/resource/${TOWS_DATASET_IDS[0]}.json`;
+      let towsVisible = false;
+      let towsLayer = null;
+      let towsData = [];
+      let towsGeoCache = new Map();
+      let towsGeocoding = false;
+      let towsLoaded = false;
+      let towsDateField = "call_date";
+      let towsAddrField = "address";
+      let towsLatField = null;
+      let towsLngField = null;
+
+      async function probeTows() {
+        for (const id of TOWS_DATASET_IDS) {
+          try {
+            const resp = await fetch(`https://data.sfgov.org/resource/${id}.json?$limit=3`);
+            if (!resp.ok) { console.log("[Tows] Probe", id, "→", resp.status); continue; }
+            const rows = await resp.json();
+            if (!Array.isArray(rows) || !rows.length) { console.log("[Tows] Probe", id, "→ empty"); continue; }
+            TOWS_API = `https://data.sfgov.org/resource/${id}.json`;
+            const fields = Object.keys(rows[0]);
+            console.log("[Tows] Found dataset:", id);
+            console.log("[Tows] Fields:", fields.join(", "));
+            console.log("[Tows] Sample:", JSON.stringify(rows[0]));
+            for (const f of fields) {
+              const fl = f.toLowerCase();
+              if (fl === "latitude"  || fl === "lat") towsLatField = f;
+              if (fl === "longitude" || fl === "lng" || fl === "lon" || fl === "long") towsLngField = f;
+              if (fl.includes("date") && (fl.includes("open") || fl.includes("request") || fl.includes("call") || fl.includes("tow"))) towsDateField = f;
+              if (fl === "address" || fl === "street_address" || fl === "location_address") towsAddrField = f;
+            }
+            if (!towsLatField) {
+              for (const f of fields) {
+                if (rows[0][f] && typeof rows[0][f] === "object" && rows[0][f].latitude) {
+                  towsLatField = f + ".latitude";
+                  towsLngField = f + ".longitude";
+                  break;
+                }
+              }
+            }
+            console.log("[Tows] lat:", towsLatField, "lng:", towsLngField, "addr:", towsAddrField);
+            return true;
+          } catch (e) {
+            console.warn("[Tows] Probe error", id, e.message);
+          }
+        }
+        return false;
+      }
+
+      function rebuildTowsLayer() {
+        if (towsLayer) { map.removeLayer(towsLayer); towsLayer = null; }
+        if (!towsVisible) return;
+        const points = [];
+        for (const t of towsData) {
+          if (towsLatField && !towsLatField.includes(".")) {
+            const lat = parseFloat(t[towsLatField]);
+            const lng = parseFloat(t[towsLngField]);
+            if (!isNaN(lat) && !isNaN(lng)) { points.push([lat, lng]); continue; }
+          }
+          // Fallback: geocache by address
+          const addr = t[towsAddrField];
+          if (!addr) continue;
+          const coords = towsGeoCache.get(addr);
+          if (coords) points.push(coords);
+        }
+        const el = document.getElementById("cnt-tows");
+        if (el) el.textContent = points.length.toLocaleString();
+        if (!points.length) return;
+        console.log(`[Tows] Rendering heatmap with ${points.length} points`);
+        towsLayer = L.heatLayer(points, {
+          radius: 28, blur: 20, maxZoom: 18, max: 1, minOpacity: 0.55,
+          gradient: { 0: "#664400", 0.4: "#ffaa00", 0.75: "#ffee44", 1.0: "#ffffff" },
+        }).addTo(map);
+      }
+
+      async function geocodeTows() {
+        const statusEl = document.getElementById("tows-status");
+        const total = towsData.length;
+        let geocoded = 0;
+        rebuildTowsLayer();
+        for (const t of towsData) {
+          if (!towsVisible) break;
+          const addr = t[towsAddrField];
+          if (!addr) continue;
+          if (towsGeoCache.has(addr)) {
+            if (towsGeoCache.get(addr)) geocoded++;
+            continue;
+          }
+          try {
+            const q = encodeURIComponent(addr + ", San Francisco, CA");
+            const resp = await fetch(
+              `https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1`,
+              { headers: { "User-Agent": "SF-Street-Cleaning-Map" } }
+            );
+            const data = await resp.json();
+            if (data.length) {
+              towsGeoCache.set(addr, [parseFloat(data[0].lat), parseFloat(data[0].lon)]);
+              geocoded++;
+            } else {
+              towsGeoCache.set(addr, null);
+            }
+          } catch { towsGeoCache.set(addr, null); }
+          if (statusEl && towsVisible) statusEl.textContent = `${geocoded}/${total}`;
+          rebuildTowsLayer();
+          await new Promise(r => setTimeout(r, 1100));
+        }
+        towsGeocoding = false;
+        if (statusEl && towsVisible) statusEl.textContent = "";
+        rebuildTowsLayer();
+      }
+
+      async function fetchTows() {
+        if (!towsVisible) return;
+        const statusEl = document.getElementById("tows-status");
+        if (towsLoaded && towsData.length) { rebuildTowsLayer(); return; }
+
+        const probed = await probeTows();
+        if (!probed) {
+          if (statusEl) statusEl.textContent = "dataset not found";
+          return;
+        }
+
+        // Fetch in pages of 100 so the heatmap builds up progressively
+        const PAGE = 100;
+        const TOTAL = 500;
+        towsData = [];
+        for (let offset = 0; offset < TOTAL; offset += PAGE) {
+          if (!towsVisible) break;
+          try {
+            const url = `${TOWS_API}?$where=${encodeURIComponent("service_name='Abandoned Vehicle'")}&$limit=${PAGE}&$offset=${offset}&$order=${towsDateField} DESC`;
+            const resp = await fetch(url);
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            const page = await resp.json();
+            if (!page.length) break;
+            towsData.push(...page);
+            if (statusEl && towsVisible) statusEl.textContent = `${towsData.length}/${TOTAL}`;
+            rebuildTowsLayer();
+          } catch (err) {
+            if (statusEl) statusEl.textContent = err.message;
+            console.error("[Tows]", err);
+            break;
+          }
+        }
+
+        towsLoaded = true;
+        if (statusEl && towsVisible) statusEl.textContent = "";
+        rebuildTowsLayer();
+      }
+
+      document.getElementById("tows-toggle").addEventListener("click", () => {
+        towsVisible = !towsVisible;
+        const btn = document.getElementById("tows-toggle");
+        const leg = document.getElementById("tows-legend");
+        const statusEl = document.getElementById("tows-status");
+        btn.textContent = towsVisible ? "On" : "Off";
+        btn.classList.toggle("meters-on", towsVisible);
+        leg.style.display = towsVisible ? "block" : "none";
+        if (towsVisible) {
+          fetchTows();
+        } else {
+          if (towsLayer) { map.removeLayer(towsLayer); towsLayer = null; }
+          if (statusEl) statusEl.textContent = "";
+        }
+      });
     </script>
   </body>
 </html>
