@@ -917,6 +917,22 @@
         </div>
         <hr />
         <div class="legend-row" style="align-items: center">
+          <span style="font-size: 11px; color: #ccc">Residential Permit Zones</span>
+          <span id="rpp-status" style="font-size: 10px; color: #aaa; margin-left: 4px;"></span>
+          <button class="meters-toggle" id="rpp-toggle">Off</button>
+        </div>
+        <div id="rpp-legend" style="display: none">
+          <div class="legend-row" style="margin-top: 4px">
+            <div class="legend-line" style="background: #ff6622"></div>
+            <span>Permit required now</span>
+          </div>
+          <div class="legend-row">
+            <div class="legend-line" style="background: #ffaa44; opacity: 0.6"></div>
+            <span>Permit required (outside hours)</span>
+          </div>
+        </div>
+        <hr />
+        <div class="legend-row" style="align-items: center">
           <span style="font-size: 11px; color: #ccc">Special Events</span>
           <span id="events-status" style="font-size: 10px; color: #aaa; margin-left: 4px;"></span>
           <button class="meters-toggle" id="events-toggle">Off</button>
@@ -3843,6 +3859,114 @@
         } else {
           if (eventsLayer) { map.removeLayer(eventsLayer); eventsLayer = null; }
           eventsLoaded = false;
+          if (statusEl) statusEl.textContent = "";
+        }
+      });
+
+      // ── RPP Zones ─────────────────────────────────────────────────────────────
+      // Source: SFMTA Parking Regulations (hi6h-neyh) — blockface segments with RPP zone + hours
+      const RPP_API = "https://data.sfgov.org/resource/hi6h-neyh.geojson";
+      let rppVisible = false;
+      let rppLayer = null;
+      let rppLoaded = false;
+      let rppData = null;
+
+      function rppIsActive(feature) {
+        const p = feature.properties;
+        const hrsBegin = parseFloat(p.hrs_begin);
+        const hrsEnd   = parseFloat(p.hrs_end);
+        const days     = (p.days || "").toUpperCase();
+        if (isNaN(hrsBegin) || isNaN(hrsEnd)) return false;
+        const curHour = now.getHours() + now.getMinutes() / 60;
+        const dow = now.getDay(); // 0=Sun … 6=Sat
+        let dayMatch = false;
+        if (days.includes("M-F"))  dayMatch = dow >= 1 && dow <= 5;
+        if (days.includes("M-SA") || days.includes("M-SA")) dayMatch = dayMatch || (dow >= 1 && dow <= 6);
+        if (days.includes("M-SU") || days.includes("7 DAYS") || days === "DAILY") dayMatch = true;
+        if (days.includes("SA-SU") || days.includes("SA/SU")) dayMatch = dayMatch || (dow === 0 || dow === 6);
+        if (days.includes("SAT") && !days.includes("M-SA")) dayMatch = dayMatch || dow === 6;
+        if (days.includes("SUN") && !days.includes("M-SU")) dayMatch = dayMatch || dow === 0;
+        const timeMatch = curHour >= hrsBegin && curHour < hrsEnd;
+        return dayMatch && timeMatch;
+      }
+
+      function fmtRppHours(p) {
+        const d = p.days || "";
+        const h = p.hours || `${p.hrs_begin || ""}–${p.hrs_end || ""}`;
+        // format HHMM → h:mm AM/PM
+        const fmt = (v) => {
+          const n = parseInt(v);
+          if (isNaN(n)) return v;
+          const hh = Math.floor(n / 100) || Math.floor(n);
+          const mm = n % 100;
+          const suffix = hh >= 12 ? "PM" : "AM";
+          const h12 = hh % 12 || 12;
+          return mm ? `${h12}:${String(mm).padStart(2,"0")} ${suffix}` : `${h12} ${suffix}`;
+        };
+        const parts = h.split("-");
+        if (parts.length === 2) return `${d} ${fmt(parts[0].trim())}–${fmt(parts[1].trim())}`;
+        return `${d} ${h}`;
+      }
+
+      function buildRppLayer() {
+        if (rppLayer) { map.removeLayer(rppLayer); rppLayer = null; }
+        if (!rppVisible || !rppData) return;
+        rppLayer = L.geoJSON(rppData, {
+          style: (feature) => {
+            const active = rppIsActive(feature);
+            return {
+              color: active ? "#ff6622" : "#ffaa44",
+              weight: 3,
+              opacity: active ? 0.85 : 0.45,
+            };
+          },
+          onEachFeature: (feature, layer) => {
+            const p = feature.properties;
+            const zone = [p.rpparea1, p.rpparea2, p.rpparea3].filter(Boolean).join(", ");
+            const active = rppIsActive(feature);
+            const limit = p.hrlimit ? `<b>Time limit:</b> ${p.hrlimit}h (RPP exempt)<br>` : "";
+            const exc = p.exceptions ? `<b>Note:</b> ${p.exceptions}<br>` : "";
+            layer.bindPopup(`
+              <b>RPP Zone ${zone}</b><br>
+              <b>Hours:</b> ${fmtRppHours(p)}<br>
+              ${limit}${exc}
+              <b>Status:</b> <span style="color:${active ? "#ff6622" : "#aaa"}">${active ? "Permit required now" : "Outside enforcement hours"}</span>
+            `);
+          },
+        }).addTo(map);
+      }
+
+      async function fetchRpp() {
+        if (!rppVisible) return;
+        const statusEl = document.getElementById("rpp-status");
+        if (rppLoaded && rppData) { buildRppLayer(); return; }
+        if (statusEl) statusEl.textContent = "loading\u2026";
+        try {
+          const url = `${RPP_API}?$where=${encodeURIComponent("rpparea1 IS NOT NULL")}&$limit=5000`;
+          const resp = await fetch(url);
+          if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+          rppData = await resp.json();
+          rppLoaded = true;
+          if (statusEl) statusEl.textContent = "";
+          buildRppLayer();
+        } catch (err) {
+          if (statusEl) statusEl.textContent = err.message;
+          console.error("[RPP]", err);
+        }
+      }
+
+      document.getElementById("rpp-toggle").addEventListener("click", () => {
+        rppVisible = !rppVisible;
+        const btn = document.getElementById("rpp-toggle");
+        const leg = document.getElementById("rpp-legend");
+        const statusEl = document.getElementById("rpp-status");
+        btn.textContent = rppVisible ? "On" : "Off";
+        btn.classList.toggle("meters-on", rppVisible);
+        leg.style.display = rppVisible ? "block" : "none";
+        if (rppVisible) {
+          fetchRpp();
+        } else {
+          if (rppLayer) { map.removeLayer(rppLayer); rppLayer = null; }
           if (statusEl) statusEl.textContent = "";
         }
       });
