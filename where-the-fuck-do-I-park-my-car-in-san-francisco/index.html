@@ -869,6 +869,16 @@
         margin-left: 6px;
       }
 
+      /* ── Pulsing route line ──────────────────────────────────────────────── */
+      @keyframes route-pulse {
+        0%, 100% { opacity: 0.9; }
+        50% { opacity: 0.12; }
+      }
+      .route-pulse {
+        animation: route-pulse 3.2s ease-in-out infinite;
+        filter: drop-shadow(0 0 4px #cc44ff) drop-shadow(0 0 10px #cc44ff) drop-shadow(0 0 22px rgba(204, 68, 255, 0.6));
+      }
+
       /* ── Pulsing active streets ──────────────────────────────────────────── */
       @keyframes pulse-active {
         0%, 100% { opacity: 0.9; }
@@ -1679,7 +1689,7 @@
         const pts = sortedRecs.map(({ f }) => featureMidpoint(f)).filter(Boolean);
         if (pts.length === 0) return;
         const waypoints = [origin, ...pts];
-        const routeStyle = { color: "#cc44ff", weight: 3, opacity: 0.85, dashArray: "8 6" };
+        const routeStyle = { color: "#cc44ff", weight: 4, opacity: 0.9, dashArray: "8 6", className: "route-pulse" };
 
         if (controller.signal.aborted) return;
 
@@ -2047,39 +2057,31 @@
         if (_lastRecs.length >= 2) drawParkingRoute(latlng, _sortedRecs);
 
         let recsHtml = "";
-        if (_lastRecs.length > 0) {
-          const hasParkWindow = parkUntilHour > activeHour;
-          const hdr = hasParkWindow ? "Try to park here" : "Try to park here";
+        if (_sortedRecs.length >= 2) {
           recsHtml = `
             <div class="recs-section">
-              <div class="verdict verdict-parksafe">${hdr}</div>
-              ${_lastRecs
-                .map(({ f, d }, i) => {
-                  const p = f.properties;
-                  const reason = parkSafeReason(p.fromhour, p.tohour);
-                  return `<div class="rec-row" data-rec-idx="${i}">
-                  <span class="rec-name">${p.corridor || "—"}</span>
-                  <span class="rec-why">${reason}</span>
-                  <span class="rec-dist">${Math.round(d)}m</span>
-                </div>`;
-                })
-                .join("")}
-            </div>
-          `;
-        }
-
-        let routeOrderHtml = "";
-        if (_sortedRecs.length >= 2) {
-          const NUMS = ["①","②","③","④","⑤","⑥","⑦","⑧"];
-          routeOrderHtml = `
-            <div class="recs-section">
-              <div class="verdict verdict-parksafe" style="color:#cc44ff;border-color:#5a2a7a;background:#1a0a2a">Recommended parking route</div>
+              <div class="verdict verdict-parksafe">Try to park here</div>
               ${_sortedRecs.map(({ f, d }, i) => {
                 const p = f.properties;
                 const reason = parkSafeReason(p.fromhour, p.tohour);
-                return `<div class="rec-row" data-route-idx="${i}">
+                return `<div class="rec-row" data-rec-idx="${i}">
                   <span style="color:#cc44ff;flex-shrink:0;min-width:14px">${i + 1}.</span>
                   <span class="rec-name" style="color:#cc44ff">${p.corridor || "—"}</span>
+                  <span class="rec-why">${reason}</span>
+                  <span class="rec-dist">${Math.round(d)}m</span>
+                </div>`;
+              }).join("")}
+            </div>
+          `;
+        } else if (_lastRecs.length > 0) {
+          recsHtml = `
+            <div class="recs-section">
+              <div class="verdict verdict-parksafe">Try to park here</div>
+              ${_lastRecs.map(({ f, d }, i) => {
+                const p = f.properties;
+                const reason = parkSafeReason(p.fromhour, p.tohour);
+                return `<div class="rec-row" data-rec-idx="${i}">
+                  <span class="rec-name">${p.corridor || "—"}</span>
                   <span class="rec-why">${reason}</span>
                   <span class="rec-dist">${Math.round(d)}m</span>
                 </div>`;
@@ -2096,7 +2098,6 @@
           ${rows ? `<div class="result-rows">${rows}</div>` : ""}
           ${buildRiskHtml(latlng)}
           ${recsHtml}
-          ${routeOrderHtml}
         `;
         panel.style.display = "block";
 
@@ -2104,7 +2105,8 @@
         panel.querySelectorAll(".rec-row").forEach((row) => {
           row.addEventListener("click", () => {
             const idx = parseInt(row.dataset.recIdx, 10);
-            const rec = _lastRecs[idx];
+            const list = _sortedRecs.length >= 2 ? _sortedRecs : _lastRecs;
+            const rec = list[idx];
             if (!rec) return;
             const mid = featureMidpoint(rec.f);
             if (mid) map.setView(mid, Math.max(map.getZoom(), 17));
