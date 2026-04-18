@@ -554,6 +554,14 @@
         background: #2ecc71;
         color: #000;
       }
+      .badge-garage-open {
+        background: #00cc88;
+        color: #000;
+      }
+      .badge-garage-closed {
+        background: #555;
+        color: #aaa;
+      }
 
       .leaflet-tooltip {
         background: rgba(8, 8, 8, 0.88) !important;
@@ -918,6 +926,23 @@
             <div class="legend-line" style="background: #ff2200; height: 3px; width: 18px; border-radius: 2px; flex-shrink: 0;"></div>
             <span>Street closures &amp; events</span>
             <span class="legend-count" id="cnt-events">&mdash;</span>
+          </div>
+        </div>
+        <hr />
+        <div class="legend-row" style="align-items: center">
+          <span style="font-size: 11px; color: #ccc">Parking Garages</span>
+          <span id="garages-status" style="font-size: 10px; color: #aaa; margin-left: 4px;"></span>
+          <button class="meters-toggle" id="garages-toggle">Off</button>
+        </div>
+        <div id="garages-legend" style="display: none">
+          <div class="legend-row" style="margin-top: 4px">
+            <div class="legend-dot" style="background: #00cc88; border: 2px solid #00cc88; box-sizing: border-box;"></div>
+            <span>Open now</span>
+          </div>
+          <div class="legend-row" style="margin-top: 2px">
+            <div class="legend-dot" style="background: transparent; border: 2px solid #555; box-sizing: border-box;"></div>
+            <span>Closed / unknown</span>
+            <span class="legend-count" id="cnt-garages">&mdash;</span>
           </div>
         </div>
       </div>
@@ -1944,6 +1969,7 @@
 
         // Re-render meters if visible (active hours may change with time)
         if (metersVisible) renderMeters();
+        if (garagesLoaded && garagesVisible) renderGarages();
 
         // Refresh verdict if a location is pinned
         if (checkMarker) showVerdict(checkMarker.getLatLng(), lastSearchLabel);
@@ -1983,6 +2009,7 @@
           });
         }
         if (checkMarker) showVerdict(checkMarker.getLatLng(), lastSearchLabel);
+        if (garagesLoaded && garagesVisible) renderGarages();
       }
 
       document
@@ -3710,6 +3737,150 @@
         } else {
           if (eventsLayer) { map.removeLayer(eventsLayer); eventsLayer = null; }
           eventsLoaded = false;
+          if (statusEl) statusEl.textContent = "";
+        }
+      });
+
+      // ── Parking Garages & Lots ────────────────────────────────────────────────
+      // Source: SFMTA Off-Street Parking (mizu-nf6z) — 1,400+ locations with rates & hours
+      const GARAGES_API = "https://data.sfgov.org/resource/mizu-nf6z.json";
+      let garagesVisible = false;
+      let garagesLayer = null;
+      let garagesLoaded = false;
+      let garagesData = [];
+
+      // Parse HHMM integer (e.g. 830 = 8:30 AM) → fractional hour
+      function parseHHMM(v) {
+        const n = parseInt(v);
+        if (isNaN(n) || n === 0) return null;
+        return Math.floor(n / 100) + (n % 100) / 60;
+      }
+
+      // Day-of-week field names — dataset is inconsistent (friclosed vs friclose, tues vs tue, thurs vs thu)
+      const GARAGE_OPEN_FIELDS  = ["sunopen",  "monopen",  "tuesopen",  "wedopen",  "thursopen",  "friopen",    "satopen"];
+      const GARAGE_CLOSE_FIELDS = ["sunclose", "monclose", "tuesclose", "wedclose", "thursclose", "friclosed",  "satclose"];
+
+      function garageIsOpen(row) {
+        const dayIdx = viewDate.getDay();
+        const open  = parseHHMM(row[GARAGE_OPEN_FIELDS[dayIdx]]);
+        const close = parseHHMM(row[GARAGE_CLOSE_FIELDS[dayIdx]]);
+        if (open === null || close === null) return null;
+        return activeHour >= open && activeHour < close;
+      }
+
+      function fmtGarageHours(row) {
+        const dayIdx = viewDate.getDay();
+        const openStr  = fmtHHMM(row[GARAGE_OPEN_FIELDS[dayIdx]]);
+        const closeStr = fmtHHMM(row[GARAGE_CLOSE_FIELDS[dayIdx]]);
+        return openStr && closeStr ? `${openStr} – ${closeStr}` : "Unknown";
+      }
+
+      function fmtHHMM(v) {
+        const n = parseInt(v);
+        if (isNaN(n) || n === 0) return null;
+        const h = Math.floor(n / 100), m = n % 100;
+        const ampm = h < 12 ? "AM" : "PM";
+        const h12  = h === 0 ? 12 : h > 12 ? h - 12 : h;
+        return `${h12}${m ? `:${String(m).padStart(2,"0")}` : ""} ${ampm}`;
+      }
+
+      function renderGarages() {
+        if (garagesLayer) { map.removeLayer(garagesLayer); garagesLayer = null; }
+        if (!garagesVisible || !garagesData.length) return;
+
+        let cnt = 0;
+        garagesLayer = L.layerGroup();
+
+        for (const row of garagesData) {
+          const geom = row.the_geom;
+          if (!geom || !geom.coordinates) continue;
+          const [lng, lat] = geom.coordinates;
+          if (isNaN(lat) || isNaN(lng)) continue;
+
+          const open = garageIsOpen(row);
+          const color = open === true ? "#00cc88" : open === false ? "#444" : "#888";
+          const opacity = open === false ? 0.4 : 0.85;
+
+          const hoursStr = fmtGarageHours(row);
+
+          const type     = row.g_l_1 === "G" ? "Garage" : row.g_l_1 === "L" ? "Lot" : "Facility";
+          const name     = row.name2_1 || row.address_1 || type;
+          const cap      = row.regcap_1 ? `${parseInt(row.regcap_1).toLocaleString()} spaces` : "";
+          const rate1hr  = row.onehr_1  ? `$${row.onehr_1}/hr`   : null;
+          const rateMax  = row.dailymax_1 ? `$${row.dailymax_1} max` : null;
+          const rateMonth = row.regmonth_1 ? `$${row.regmonth_1}/mo` : null;
+          const earlybird = row.earlybird1 ? `$${row.earlybird1} early bird` : null;
+          const ratesArr = [rate1hr, rateMax, rateMonth, earlybird].filter(Boolean);
+
+          const marker = L.circleMarker([lat, lng], {
+            radius: 7,
+            color,
+            weight: 2,
+            fillColor: color,
+            fillOpacity: open === true ? 0.25 : 0.05,
+            opacity,
+          });
+
+          marker.bindTooltip(`${type}: ${row.address_1 || name}`, { sticky: true, direction: "top" });
+          marker.bindPopup(`
+            <div class="popup-street">${row.address_1 || name}</div>
+            <span class="popup-badge ${open === true ? "badge-garage-open" : "badge-garage-closed"}">${open === true ? "Open Now" : open === false ? "Closed Now" : type}</span><br>
+            ${name !== row.address_1 ? `<b>Operator:</b> ${name}<br>` : ""}
+            <b>Type:</b> ${type}<br>
+            ${cap ? `<b>Capacity:</b> ${cap}<br>` : ""}
+            <b>Today's hours:</b> ${hoursStr}<br>
+            ${ratesArr.length ? `<b>Rates:</b> ${ratesArr.join(" &nbsp;·&nbsp; ")}<br>` : ""}
+            ${row.notes_1 ? `<b>Notes:</b> <span style="font-size:11px">${row.notes_1}</span><br>` : ""}
+          `);
+
+          garagesLayer.addLayer(marker);
+          cnt++;
+        }
+
+        garagesLayer.addTo(map);
+        const el = document.getElementById("cnt-garages");
+        if (el) el.textContent = cnt.toLocaleString();
+      }
+
+      async function fetchGarages() {
+        if (!garagesVisible) return;
+        const statusEl = document.getElementById("garages-status");
+        if (garagesLoaded && garagesData.length) { renderGarages(); return; }
+        if (statusEl) statusEl.textContent = "loading\u2026";
+
+        try {
+          // Exclude facilities marked as gone
+          const url = `${GARAGES_API}?$where=${encodeURIComponent("lotgone='0' OR lotgone IS NULL")}&$limit=2000`;
+          const resp = await fetch(url);
+          if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+          garagesData = await resp.json();
+          garagesLoaded = true;
+          console.log("[Garages] Loaded", garagesData.length, "facilities");
+          if (garagesData.length) {
+            const sample = garagesData[0];
+            console.log("[Garages] Fields:", Object.keys(sample).join(", "));
+            console.log("[Garages] monopen:", sample.monopen, "| monopen_1:", sample.monopen_1, "| friopen:", sample.friopen, "| friopen_1:", sample.friopen_1);
+          }
+          if (statusEl) statusEl.textContent = "";
+          renderGarages();
+        } catch (err) {
+          if (statusEl) statusEl.textContent = err.message;
+          console.error("[Garages]", err);
+        }
+      }
+
+      document.getElementById("garages-toggle").addEventListener("click", () => {
+        garagesVisible = !garagesVisible;
+        const btn = document.getElementById("garages-toggle");
+        const leg = document.getElementById("garages-legend");
+        const statusEl = document.getElementById("garages-status");
+        btn.textContent = garagesVisible ? "On" : "Off";
+        btn.classList.toggle("meters-on", garagesVisible);
+        leg.style.display = garagesVisible ? "block" : "none";
+        if (garagesVisible) {
+          fetchGarages();
+        } else {
+          if (garagesLayer) { map.removeLayer(garagesLayer); garagesLayer = null; }
           if (statusEl) statusEl.textContent = "";
         }
       });
