@@ -547,9 +547,9 @@
 
       /* ── Popups / tooltips ───────────────────────────────────────────────── */
       .leaflet-popup-content-wrapper {
-        background: rgba(8, 8, 8, 0.96);
-        color: #bbb;
-        border: 1px solid #333;
+        background: rgba(6, 8, 14, 0.97);
+        color: #ccc;
+        border: 1px solid #1e3a4a;
         border-radius: 3px;
         font-family:
           "Inter",
@@ -558,64 +558,115 @@
           "Segoe UI",
           sans-serif;
         font-size: 12px;
-        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6);
+        box-shadow:
+          0 0 18px rgba(68, 153, 255, 0.14),
+          0 0 40px rgba(68, 153, 255, 0.06),
+          inset 0 0 20px rgba(0, 0, 0, 0.5);
+      }
+
+      .leaflet-popup-tip-container {
+        filter: drop-shadow(0 0 4px rgba(68, 153, 255, 0.12));
       }
 
       .leaflet-popup-tip {
-        background: rgba(8, 8, 8, 0.96);
+        background: rgba(6, 8, 14, 0.97);
       }
+
       .leaflet-popup-content {
         margin: 11px 14px;
-        line-height: 1.8;
+        line-height: 1.9;
+      }
+
+      .leaflet-popup-close-button {
+        display: none !important;
+      }
+
+      .leaflet-popup-content-wrapper {
+        cursor: pointer;
+      }
+
+      .leaflet-popup-content b {
+        color: #4a5a6a;
+        font-size: 10px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-weight: normal;
       }
 
       .popup-street {
-        font-size: 14px;
+        font-size: 12px;
         color: #fff;
         font-weight: bold;
-        margin-bottom: 6px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 8px;
+        padding-bottom: 7px;
+        border-bottom: 1px solid #1e3a4a;
       }
 
       .popup-badge {
         display: inline-block;
-        padding: 2px 7px;
+        padding: 2px 8px;
         border-radius: 2px;
         font-size: 10px;
         font-weight: bold;
         letter-spacing: 1px;
         text-transform: uppercase;
         margin-bottom: 8px;
+        border: 1px solid transparent;
       }
 
       .badge-active {
-        background: #ff3333;
-        color: #fff;
+        background: #280808;
+        color: #ff4444;
+        border-color: #481010;
+        box-shadow: 0 0 6px rgba(255, 68, 68, 0.3);
       }
       .badge-upcoming {
-        background: #ff9900;
-        color: #000;
+        background: #281500;
+        color: #ff9922;
+        border-color: #482800;
+        box-shadow: 0 0 6px rgba(255, 153, 34, 0.3);
       }
       .badge-passed {
-        background: #2ecc71;
-        color: #000;
+        background: #0c2010;
+        color: #44bb55;
+        border-color: #1a4020;
+        box-shadow: 0 0 6px rgba(68, 187, 85, 0.3);
       }
       .badge-garage-open {
-        background: #00cc88;
-        color: #000;
+        background: #0c2010;
+        color: #44bb55;
+        border-color: #1a4020;
+        box-shadow: 0 0 6px rgba(68, 187, 85, 0.3);
       }
       .badge-garage-closed {
-        background: #555;
-        color: #aaa;
+        background: #141414;
+        color: #555;
+        border-color: #2a2a2a;
+      }
+      .badge-permit {
+        background: #1e0e00;
+        color: #ffaa44;
+        border-color: #3a2000;
+        box-shadow: 0 0 6px rgba(255, 153, 34, 0.2);
+      }
+      .badge-rpp {
+        background: #1a0c20;
+        color: #cc44ff;
+        border-color: #3a1a50;
+        box-shadow: 0 0 6px rgba(204, 68, 255, 0.25);
       }
 
       .leaflet-tooltip {
-        background: rgba(8, 8, 8, 0.88) !important;
-        border: 1px solid #333 !important;
-        color: #aaa !important;
-        font-family: "Courier New", monospace !important;
+        background: rgba(6, 8, 14, 0.95) !important;
+        border: 1px solid #1e3a4a !important;
+        color: #ccc !important;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
         font-size: 11px !important;
+        letter-spacing: 0.5px !important;
         border-radius: 2px !important;
-        box-shadow: none !important;
+        box-shadow: 0 0 10px rgba(68, 153, 255, 0.1) !important;
         padding: 3px 8px !important;
       }
 
@@ -3771,7 +3822,7 @@
             : null;
           marker.bindPopup(`
             <div class="popup-street">${p.street_name || p.location_desc || "Street Construction"}</div>
-            <span class="popup-badge" style="background:#552200;color:#ffaa44">${permitType}</span><br>
+            <span class="popup-badge badge-permit">${permitType}</span><br>
             ${status ? `<b>Status:</b> ${status}<br>` : ""}
             ${p.permit_number ? `<b>Permit #:</b> ${p.permit_number}<br>` : ""}
             ${expires ? `<b>Expires:</b> ${expires}<br>` : ""}
@@ -4313,10 +4364,10 @@
             const limit = p.hrlimit ? `<b>Time limit:</b> ${p.hrlimit}h (RPP exempt)<br>` : "";
             const exc = p.exceptions ? `<b>Note:</b> ${p.exceptions}<br>` : "";
             layer.bindPopup(`
-              <b>RPP Zone ${zone}</b><br>
+              <div class="popup-street">RPP Zone ${zone}</div>
+              <span class="popup-badge badge-rpp">${active ? "Permit Required Now" : "Outside Hours"}</span><br>
               <b>Hours:</b> ${fmtRppHours(p)}<br>
               ${limit}${exc}
-              <b>Status:</b> <span style="color:${active ? "#ff6622" : "#aaa"}">${active ? "Permit required now" : "Outside enforcement hours"}</span>
             `);
           },
         }).addTo(map);
@@ -4731,6 +4782,13 @@
           moveDrag(t.clientX, t.clientY);
         }, { passive: true });
         document.addEventListener("touchend", endDrag);
+
+        // Click anywhere on a popup to close it
+        document.addEventListener("click", (e) => {
+          if (e.target.closest(".leaflet-popup-content-wrapper")) {
+            map.closePopup();
+          }
+        });
       })();
     </script>
   </body>
