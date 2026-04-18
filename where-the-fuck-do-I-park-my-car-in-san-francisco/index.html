@@ -970,6 +970,10 @@
           <span>No cleaning for full window</span>
           <span class="legend-count" id="cnt-parksafe">&mdash;</span>
         </div>
+        <div class="legend-row">
+          <div class="legend-line" style="background: repeating-linear-gradient(90deg, #4499ff 0px, #4499ff 6px, transparent 6px, transparent 10px)"></div>
+          <span>Recommended parking route</span>
+        </div>
         <hr />
         <div style="margin-top: 6px; text-align: right">
           <span style="font-size:10px;color:#666">Data is fetched from <a href="https://datasf.org/opendata/" target="_blank" style="color:#888">DataSF</a></span>
@@ -1313,11 +1317,111 @@
       // ── Parking recommendations ───────────────────────────────────────────
       let _lastRecs = [];
       let _recMarkers = [];
+      let _routeLayer = null;
+      let _routeAbort = null;
       let _postSwitchOverride = null; // { activeHour, parkUntilHour } applied after next renderGeoJSON
 
       function clearRecMarkers() {
         _recMarkers.forEach((m) => map.removeLayer(m));
         _recMarkers = [];
+        if (_routeAbort) { _routeAbort.abort(); _routeAbort = null; }
+        if (_routeLayer) { map.removeLayer(_routeLayer); _routeLayer = null; }
+      }
+
+      // Precision-6 polyline decoder for Valhalla responses
+      function decodePolyline6(str) {
+        const coords = [];
+        let lat = 0, lng = 0, i = 0;
+        while (i < str.length) {
+          let b, shift = 0, result = 0;
+          do { b = str.charCodeAt(i++) - 63; result |= (b & 0x1f) << shift; shift += 5; } while (b >= 0x20);
+          lat += (result & 1) ? ~(result >> 1) : (result >> 1);
+          shift = 0; result = 0;
+          do { b = str.charCodeAt(i++) - 63; result |= (b & 0x1f) << shift; shift += 5; } while (b >= 0x20);
+          lng += (result & 1) ? ~(result >> 1) : (result >> 1);
+          coords.push([lng / 1e6, lat / 1e6]); // [lon, lat] for GeoJSON
+        }
+        return coords;
+      }
+
+      async function drawParkingRoute(origin, recs) {
+        if (_routeAbort) { _routeAbort.abort(); }
+        if (_routeLayer) { map.removeLayer(_routeLayer); _routeLayer = null; }
+        const controller = new AbortController();
+        _routeAbort = controller;
+
+        // Greedy nearest-neighbor sort from origin to avoid triangle artifacts
+        const pts = recs.map(({ f }) => featureMidpoint(f)).filter(Boolean);
+        if (pts.length === 0) return;
+        const sorted = [];
+        const remaining = [...pts];
+        let cur = origin;
+        while (remaining.length) {
+          let bestIdx = 0, bestDist = Infinity;
+          remaining.forEach((p, i) => {
+            const d = Math.hypot(p.lat - cur.lat, p.lng - cur.lng);
+            if (d < bestDist) { bestDist = d; bestIdx = i; }
+          });
+          sorted.push(remaining.splice(bestIdx, 1)[0]);
+          cur = sorted[sorted.length - 1];
+        }
+        const waypoints = [origin, ...sorted];
+        const routeStyle = { color: "#4499ff", weight: 3, opacity: 0.85, dashArray: "8 6" };
+
+        if (controller.signal.aborted) return;
+
+        // 1) Try OSRM hosts (GET, GeoJSON geometry)
+        const osrmCoords = waypoints.map(p => `${p.lng},${p.lat}`).join(";");
+        const OSRM_HOSTS = [
+          "https://routing.openstreetmap.de/routed-car",
+          "https://router.project-osrm.org",
+        ];
+        for (const host of OSRM_HOSTS) {
+          if (controller.signal.aborted) return;
+          try {
+            const url = `${host}/route/v1/driving/${osrmCoords}?overview=full&geometries=geojson`;
+            const resp = await fetch(url, { signal: controller.signal });
+            if (!resp.ok) continue;
+            const data = await resp.json();
+            if (controller.signal.aborted) return;
+            const geom = data.routes?.[0]?.geometry;
+            if (!geom) continue;
+            if (_routeLayer) map.removeLayer(_routeLayer);
+            _routeLayer = L.geoJSON(geom, { style: routeStyle }).addTo(map);
+            return;
+          } catch (e) {
+            if (e.name === "AbortError") return;
+          }
+        }
+
+        // 2) Fallback: Valhalla (POST, precision-6 encoded polyline)
+        if (controller.signal.aborted) return;
+        try {
+          const body = {
+            locations: waypoints.map(p => ({ lon: p.lng, lat: p.lat, type: "break" })),
+            costing: "auto",
+          };
+          const resp = await fetch("https://valhalla1.openstreetmap.de/route", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+            signal: controller.signal,
+          });
+          if (resp.ok) {
+            const data = await resp.json();
+            if (controller.signal.aborted) return;
+            const allCoords = (data.trip?.legs ?? []).flatMap(leg => decodePolyline6(leg.shape));
+            if (allCoords.length > 0) {
+              if (_routeLayer) map.removeLayer(_routeLayer);
+              _routeLayer = L.geoJSON(
+                { type: "LineString", coordinates: allCoords },
+                { style: routeStyle }
+              ).addTo(map);
+            }
+          }
+        } catch (e) {
+          if (e.name !== "AbortError") console.warn("[Route/Valhalla]", e);
+        }
       }
 
       function featureMidpoint(feature) {
@@ -1528,6 +1632,8 @@
           }).addTo(map);
           _recMarkers.push(m);
         });
+
+        if (_lastRecs.length >= 2) drawParkingRoute(latlng, _lastRecs);
 
         let recsHtml = "";
         if (_lastRecs.length > 0) {
