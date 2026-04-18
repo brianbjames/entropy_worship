@@ -661,15 +661,21 @@
         box-shadow: 0 0 6px rgba(68, 187, 85, 0.3);
       }
       .badge-garage-open {
-        background: #0c2010;
-        color: #44bb55;
-        border-color: #1a4020;
-        box-shadow: 0 0 6px rgba(68, 187, 85, 0.3);
+        background: #001e14;
+        color: #00cc88;
+        border-color: #003a26;
+        box-shadow: 0 0 6px rgba(0, 204, 136, 0.3);
       }
       .badge-garage-closed {
         background: #141414;
         color: #555;
         border-color: #2a2a2a;
+      }
+      .badge-crash {
+        background: #1e1800;
+        color: #ffcc00;
+        border-color: #3a3000;
+        box-shadow: 0 0 6px rgba(255, 204, 0, 0.3);
       }
       .badge-permit {
         background: #1e0e00;
@@ -678,10 +684,28 @@
         box-shadow: 0 0 6px rgba(255, 153, 34, 0.2);
       }
       .badge-rpp {
-        background: #1a0c20;
-        color: #cc44ff;
-        border-color: #3a1a50;
-        box-shadow: 0 0 6px rgba(204, 68, 255, 0.25);
+        background: #1e0a00;
+        color: #ff6622;
+        border-color: #3a1500;
+        box-shadow: 0 0 6px rgba(255, 102, 34, 0.3);
+      }
+      .badge-incident {
+        background: #1e0810;
+        color: #ff4466;
+        border-color: #3a1022;
+        box-shadow: 0 0 6px rgba(255, 68, 102, 0.3);
+      }
+      .badge-event {
+        background: #1e0818;
+        color: #ff44aa;
+        border-color: #3a1035;
+        box-shadow: 0 0 6px rgba(255, 68, 170, 0.3);
+      }
+      .badge-meter-active {
+        background: #081e0e;
+        color: #44ee66;
+        border-color: #0e3a1a;
+        box-shadow: 0 0 6px rgba(68, 238, 102, 0.3);
       }
 
       .leaflet-tooltip {
@@ -3114,7 +3138,7 @@
 
           marker.bindPopup(`
             <div class="popup-street">Parking Meter</div>
-            <span class="popup-badge ${active ? "badge-active" : "badge-passed"}">${active ? "Pay Required" : "Free Now"}</span>
+            <span class="popup-badge ${active ? "badge-meter-active" : "badge-passed"}">${active ? "Pay Required" : "Free Now"}</span>
             <br>
             ${
               regs.length
@@ -3317,7 +3341,7 @@
 
           marker.bindPopup(`
             <div class="popup-street">${inc.incident_category || "Incident"}</div>
-            <span class="popup-badge badge-active">${inc.incident_subcategory || inc.incident_category || "—"}</span><br>
+            <span class="popup-badge badge-incident">${inc.incident_subcategory || inc.incident_category || "—"}</span><br>
             ${inc.incident_description ? `<b>Description:</b> ${inc.incident_description}<br>` : ""}
             ${inc.incident_time ? `<b>Time:</b> ${inc.incident_time}<br>` : ""}
             ${inc.incident_day_of_week ? `<b>Day:</b> ${inc.incident_day_of_week}<br>` : ""}
@@ -3479,7 +3503,7 @@
 
           marker.bindPopup(`
             <div class="popup-street">${crossStreet}</div>
-            <span class="popup-badge badge-active">${c.type_of_collision || "Traffic Crash"}</span><br>
+            <span class="popup-badge badge-crash">${c.type_of_collision || "Traffic Crash"}</span><br>
             ${killed  ? `<b>Fatalities:</b> ${killed}<br>`  : ""}
             ${injured ? `<b>Injured:</b> ${injured}<br>`    : ""}
             ${flags.length ? `<b>Involved:</b> ${flags.join(", ")}<br>` : ""}
@@ -4261,7 +4285,7 @@
             const end   = p.end_dt   || p.end_date;
             layer.bindPopup(`
               <div class="popup-street">${p.case_name || p.street || "Special Event"}</div>
-              <span class="popup-badge badge-active">Special Event</span><br>
+              <span class="popup-badge badge-event">Special Event</span><br>
               ${p.loc_desc ? `<b>Location:</b> ${p.loc_desc}<br>` : ""}
               ${impact     ? `<b>Impact:</b> ${impact}<br>`        : ""}
               ${fmt(start) ? `<b>From:</b> ${fmt(start)} ${fmtTime(start) || ""}<br>` : ""}
@@ -4394,7 +4418,7 @@
             const exc = p.exceptions ? `<b>Note:</b> ${p.exceptions}<br>` : "";
             layer.bindPopup(`
               <div class="popup-street">RPP Zone ${zone}</div>
-              <span class="popup-badge badge-rpp">${active ? "Permit Required Now" : "Outside Hours"}</span><br>
+              <span class="popup-badge ${active ? "badge-rpp" : "badge-garage-closed"}">${active ? "Permit Required Now" : "Outside Hours"}</span><br>
               <b>Hours:</b> ${fmtRppHours(p)}<br>
               ${limit}${exc}
             `);
