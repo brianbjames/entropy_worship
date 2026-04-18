@@ -855,6 +855,32 @@
             <span class="legend-count" id="cnt-crashes">&mdash;</span>
           </div>
         </div>
+        <hr />
+        <div class="legend-row" style="align-items: center">
+          <span style="font-size: 11px; color: #ccc">Parking Citations</span>
+          <span id="citations-status"></span>
+          <button class="meters-toggle" id="citations-toggle">Off</button>
+        </div>
+        <div id="citations-legend" style="display: none">
+          <div class="legend-row" style="margin-top: 4px">
+            <div class="legend-dot" style="background: transparent; border: 2px solid #bb44ff; box-sizing: border-box;"></div>
+            <span>Citation density</span>
+            <span class="legend-count" id="cnt-citations">&mdash;</span>
+          </div>
+        </div>
+        <hr />
+        <div class="legend-row" style="align-items: center">
+          <span style="font-size: 11px; color: #ccc">Street Permits</span>
+          <span id="permits-status"></span>
+          <button class="meters-toggle" id="permits-toggle">Off</button>
+        </div>
+        <div id="permits-legend" style="display: none">
+          <div class="legend-row" style="margin-top: 4px">
+            <div class="legend-dot" style="background: transparent; border: 2px solid #ff8800; box-sizing: border-box;"></div>
+            <span>Street space permits</span>
+            <span class="legend-count" id="cnt-permits">&mdash;</span>
+          </div>
+        </div>
       </div>
 
       <!-- Street cleaning color key -->
@@ -887,6 +913,7 @@
     </div>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
     <script>
       // ── Map init ──────────────────────────────────────────────────────────
       const map = L.map("map", {
@@ -2840,6 +2867,378 @@
         clearTimeout(_crashesMoveTimer);
         _crashesMoveTimer = setTimeout(renderCrashes, 100);
       });
+
+      // ── Parking Citations ─────────────────────────────────────────────────
+      const CITATIONS_DATASET_IDS = ["ab4h-6ztd", "pvgt-pd5y", "wwf5-khdm"];
+      let CITATIONS_API = `https://data.sfgov.org/resource/${CITATIONS_DATASET_IDS[0]}.json`;
+      let citationsVisible = false;
+      let citationsLayer = null;
+      let citationsData = [];
+      let citationsGeoCache = new Map(); // address → [lat,lng] or null
+      let citationsGeocoding = false;
+      let citationsProbed = false;
+      let citationsDateField = "citation_issued_datetime";
+      let citationsDescField = "violation_desc";
+      let citationsFineField = "fine_amount";
+      let citationsLocTextField = "citation_location";
+
+      function rebuildCitationsLayer() {
+        if (citationsLayer) { map.removeLayer(citationsLayer); citationsLayer = null; }
+        if (!citationsVisible) return;
+
+        const points = [];
+        for (const c of citationsData) {
+          const addr = c[citationsLocTextField];
+          if (!addr) continue;
+          const coords = citationsGeoCache.get(addr);
+          if (!coords) continue;
+          points.push(coords); // [lat, lng]
+        }
+
+        const el = document.getElementById("cnt-citations");
+        if (el) el.textContent = points.length.toLocaleString();
+
+        if (!points.length) return;
+
+        if (typeof L.heatLayer === "undefined") {
+          console.error("[Citations] leaflet.heat not loaded — falling back to dots");
+          citationsLayer = L.layerGroup(
+            points.map(([lat, lng]) =>
+              L.circleMarker([lat, lng], { radius: 5, color: "#bb44ff", weight: 2, fillColor: "#bb44ff", fillOpacity: 0.5 })
+            )
+          ).addTo(map);
+          return;
+        }
+
+        console.log(`[Citations] Rendering heatmap with ${points.length} points`);
+        citationsLayer = L.heatLayer(points, {
+          radius: 28,
+          blur: 20,
+          maxZoom: 18,
+          max: 1,
+          minOpacity: 0.55,
+          gradient: { 0: "#8800ee", 0.4: "#bb44ff", 0.75: "#ee99ff", 1.0: "#ffffff" },
+        }).addTo(map);
+      }
+
+      async function probeCitations() {
+        for (const id of CITATIONS_DATASET_IDS) {
+          try {
+            const resp = await fetch(`https://data.sfgov.org/resource/${id}.json?$limit=3`);
+            if (!resp.ok) continue;
+            const rows = await resp.json();
+            if (!Array.isArray(rows) || !rows.length) continue;
+            CITATIONS_API = `https://data.sfgov.org/resource/${id}.json`;
+            citationsProbed = true; // mark done before any detection that might throw
+            const fields = Object.keys(rows[0]);
+            console.log(`[Citations] Using dataset ${id}. Fields:`, fields.join(", "));
+
+            for (const f of fields) {
+              if (/issued.?datetime|issue.?dt|citation.?issued|citation.?date/i.test(f)) { citationsDateField = f; break; }
+            }
+            if (!citationsDateField) {
+              for (const f of fields) {
+                if (/\bdate\b/i.test(f)) { citationsDateField = f; break; }
+              }
+            }
+            for (const f of fields) {
+              if (/violation.?desc|viol.*desc/i.test(f)) { citationsDescField = f; break; }
+            }
+            for (const f of fields) {
+              if (/fine.?am|penalty/i.test(f)) { citationsFineField = f; break; }
+            }
+            for (const f of fields) {
+              if (/citation.?loc/i.test(f)) { citationsLocTextField = f; break; }
+            }
+
+            console.log(`[Citations] dateField=${citationsDateField} descField=${citationsDescField} locField=${citationsLocTextField}`);
+            return true;
+          } catch (e) {
+            console.warn(`[Citations] Probe error for ${id}:`, e);
+            if (citationsProbed) return true; // dataset was confirmed, detection just failed
+          }
+        }
+        return false;
+      }
+
+      async function geocodeCitations() {
+        const statusEl = document.getElementById("citations-status");
+        const total = citationsData.length;
+        let geocoded = 0;
+
+        // First pass: render anything already in cache
+        rebuildCitationsLayer();
+
+        for (const c of citationsData) {
+          if (!citationsVisible) break;
+
+          const addr = c[citationsLocTextField];
+          if (!addr) continue;
+
+          if (citationsGeoCache.has(addr)) {
+            if (citationsGeoCache.get(addr)) geocoded++;
+            continue; // already done, no request needed
+          }
+
+          try {
+            const q = encodeURIComponent(addr + ", San Francisco, CA");
+            const resp = await fetch(
+              `https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1`,
+              { headers: { "User-Agent": "SF-Street-Cleaning-Map" } }
+            );
+            const data = await resp.json();
+            if (data.length) {
+              citationsGeoCache.set(addr, [parseFloat(data[0].lat), parseFloat(data[0].lon)]);
+              geocoded++;
+            } else {
+              citationsGeoCache.set(addr, null);
+            }
+          } catch {
+            citationsGeoCache.set(addr, null);
+          }
+
+          if (statusEl && citationsVisible) statusEl.textContent = `${geocoded}/${total}`;
+          rebuildCitationsLayer();
+
+          // Nominatim rate limit: 1 req/sec
+          await new Promise((r) => setTimeout(r, 1100));
+        }
+
+        citationsGeocoding = false;
+        if (statusEl && citationsVisible) statusEl.textContent = "";
+        rebuildCitationsLayer();
+      }
+
+      async function fetchCitations() {
+        if (!citationsVisible) return;
+        const statusEl = document.getElementById("citations-status");
+        if (statusEl) statusEl.textContent = "loading\u2026";
+
+        if (!citationsProbed) {
+          const ok = await probeCitations();
+          if (!ok) {
+            if (statusEl) statusEl.textContent = "dataset not found";
+            return;
+          }
+        }
+
+        const url = `${CITATIONS_API}?$limit=1000&$order=${citationsDateField} DESC`;
+        console.log("[Citations] Fetching:", url);
+
+        try {
+          const resp = await fetch(url);
+          if (!resp.ok) {
+            if (statusEl) statusEl.textContent = `HTTP ${resp.status}`;
+            return;
+          }
+          citationsData = await resp.json();
+          if (statusEl) statusEl.textContent = `geocoding 0/${citationsData.length}`;
+          citationsGeocoding = true;
+          geocodeCitations();
+        } catch (err) {
+          if (statusEl) statusEl.textContent = err.message || "fetch failed";
+          console.error("[Citations]", err);
+        }
+      }
+
+      document.getElementById("citations-toggle").addEventListener("click", () => {
+        citationsVisible = !citationsVisible;
+        const btn = document.getElementById("citations-toggle");
+        const leg = document.getElementById("citations-legend");
+        const statusEl = document.getElementById("citations-status");
+        btn.textContent = citationsVisible ? "On" : "Off";
+        btn.classList.toggle("meters-on", citationsVisible);
+        leg.style.display = citationsVisible ? "block" : "none";
+        if (citationsVisible) {
+          // If we already have data+cache, just re-render; otherwise fetch+geocode
+          if (citationsData.length) {
+            rebuildCitationsLayer();
+            if (!citationsGeocoding) geocodeCitations();
+          } else {
+            fetchCitations();
+          }
+        } else {
+          if (citationsLayer) { map.removeLayer(citationsLayer); citationsLayer = null; }
+          if (statusEl) statusEl.textContent = "";
+          // citationsGeoCache kept so re-enable is instant for already-geocoded addresses
+        }
+      });
+
+      // heatmap redraws itself on pan/zoom — no moveend handler needed for citations
+
+      // ── Street Construction Permits ───────────────────────────────────────
+      const PERMITS_API = "https://data.sfgov.org/resource/sftu-nd43.json";
+      let permitsVisible = false;
+      let permitsLayer = null;
+      let permitsData = [];
+      let permitsBoundsKey = "";
+      let permitsProbed = false;
+      let permitsLocField = null;
+      let permitsLatField = "latitude";
+      let permitsLngField = "longitude";
+      let permitsTypeField = "permit_type";
+      let permitsStatusField = "status";
+
+      function renderPermits() {
+        if (permitsLayer) { map.removeLayer(permitsLayer); permitsLayer = null; }
+        if (!permitsVisible || !permitsData.length) return;
+
+        const viewBounds = map.getBounds();
+        const markers = [];
+
+        for (const p of permitsData) {
+          let lat, lng;
+          if (permitsLocField && p[permitsLocField]) {
+            const loc = p[permitsLocField];
+            lat = parseFloat(loc.latitude || loc.lat);
+            lng = parseFloat(loc.longitude || loc.lon || loc.long);
+          } else {
+            lat = parseFloat(p[permitsLatField]);
+            lng = parseFloat(p[permitsLngField]);
+          }
+          if (isNaN(lat) || isNaN(lng)) continue;
+          if (!viewBounds.contains([lat, lng])) continue;
+
+          const marker = L.circleMarker([lat, lng], {
+            radius: 5,
+            color: "#ff8800",
+            weight: 2,
+            fillColor: "#ff8800",
+            fillOpacity: 0.15,
+          });
+
+          const permitType = p[permitsTypeField] || "Permit";
+          const status = p[permitsStatusField] || "";
+          const expires = p.expiration_date
+            ? new Date(p.expiration_date).toLocaleDateString("en-US", {
+                month: "2-digit", day: "2-digit", year: "numeric",
+              })
+            : null;
+          marker.bindPopup(`
+            <div class="popup-street">${p.street_name || p.location_desc || "Street Construction"}</div>
+            <span class="popup-badge" style="background:#552200;color:#ffaa44">${permitType}</span><br>
+            ${status ? `<b>Status:</b> ${status}<br>` : ""}
+            ${p.permit_number ? `<b>Permit #:</b> ${p.permit_number}<br>` : ""}
+            ${expires ? `<b>Expires:</b> ${expires}<br>` : ""}
+          `);
+          markers.push(marker);
+        }
+
+        permitsLayer = L.layerGroup(markers).addTo(map);
+        const el = document.getElementById("cnt-permits");
+        if (el) el.textContent = markers.length.toLocaleString();
+      }
+
+      async function probePermits() {
+        try {
+          const resp = await fetch(`${PERMITS_API}?$limit=5`);
+          if (!resp.ok) return false;
+          const rows = await resp.json();
+          if (!Array.isArray(rows) || !rows.length) return false;
+          const fields = Object.keys(rows[0]);
+          console.log("[Permits] Fields:", fields.join(", "));
+          console.log("[Permits] Sample:", rows[0]);
+
+          const geoFs = ["location", "the_geom", "point", "geom"];
+          for (const f of geoFs) {
+            if (rows[0][f] && (rows[0][f].latitude || rows[0][f].lat)) {
+              permitsLocField = f; break;
+            }
+          }
+          if (!permitsLocField) {
+            if (fields.includes("latitude")) permitsLatField = "latitude";
+            else if (fields.includes("lat")) permitsLatField = "lat";
+            if (fields.includes("longitude")) permitsLngField = "longitude";
+            else if (fields.includes("lon")) permitsLngField = "lon";
+          }
+
+          const typeF = fields.find(f => /permit.?type|type/i.test(f));
+          if (typeF) permitsTypeField = typeF;
+          const statusF = fields.find(f => /\bstatus\b/i.test(f));
+          if (statusF) permitsStatusField = statusF;
+          return true;
+        } catch (e) {
+          console.error("[Permits] Probe error:", e);
+          return false;
+        }
+      }
+
+      async function fetchPermits() {
+        if (!permitsVisible) return;
+        const statusEl = document.getElementById("permits-status");
+        const bounds = map.getBounds();
+        const key = [
+          bounds.getSouth().toFixed(3), bounds.getWest().toFixed(3),
+          bounds.getNorth().toFixed(3), bounds.getEast().toFixed(3),
+        ].join(",");
+        if (key === permitsBoundsKey) { renderPermits(); return; }
+        permitsBoundsKey = key;
+        if (statusEl) statusEl.textContent = "loading\u2026";
+
+        if (!permitsProbed) {
+          const ok = await probePermits();
+          if (!ok) {
+            if (statusEl) statusEl.textContent = "dataset not found";
+            permitsBoundsKey = "";
+            return;
+          }
+          permitsProbed = true;
+        }
+
+        const s = bounds.getSouth(), w = bounds.getWest();
+        const north = bounds.getNorth(), e = bounds.getEast();
+        let where;
+        if (permitsLocField) {
+          where = `within_box(${permitsLocField},${s},${w},${north},${e})`;
+        } else {
+          where = `${permitsLatField} > ${s} AND ${permitsLatField} < ${north} AND ${permitsLngField} > ${w} AND ${permitsLngField} < ${e}`;
+        }
+        const url = `${PERMITS_API}?$where=${encodeURIComponent(where)}&$limit=500`;
+        console.log("[Permits] Fetching:", url);
+
+        try {
+          const resp = await fetch(url);
+          if (!resp.ok) {
+            if (statusEl) statusEl.textContent = `HTTP ${resp.status}`;
+            permitsBoundsKey = "";
+            return;
+          }
+          permitsData = await resp.json();
+          if (statusEl) statusEl.textContent = "";
+          renderPermits();
+        } catch (err) {
+          if (statusEl) statusEl.textContent = err.message || "fetch failed";
+          console.error("[Permits]", err);
+          permitsBoundsKey = "";
+        }
+      }
+
+      document.getElementById("permits-toggle").addEventListener("click", () => {
+        permitsVisible = !permitsVisible;
+        const btn = document.getElementById("permits-toggle");
+        const leg = document.getElementById("permits-legend");
+        const statusEl = document.getElementById("permits-status");
+        btn.textContent = permitsVisible ? "On" : "Off";
+        btn.classList.toggle("meters-on", permitsVisible);
+        leg.style.display = permitsVisible ? "block" : "none";
+        if (permitsVisible) {
+          fetchPermits();
+        } else {
+          if (permitsLayer) { map.removeLayer(permitsLayer); permitsLayer = null; }
+          permitsData = [];
+          permitsBoundsKey = "";
+          permitsProbed = false;
+          if (statusEl) statusEl.textContent = "";
+        }
+      });
+
+      let _permitsMoveTimer = null;
+      map.on("moveend zoomend", () => {
+        if (!permitsVisible) return;
+        clearTimeout(_permitsMoveTimer);
+        _permitsMoveTimer = setTimeout(fetchPermits, 400);
+      });
+
     </script>
   </body>
 </html>
