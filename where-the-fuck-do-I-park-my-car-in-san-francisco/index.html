@@ -818,7 +818,7 @@
         <hr />
         <div class="legend-row" style="align-items: center">
           <span style="font-size: 11px; color: #ccc">Police Incidents</span>
-          <span id="incidents-status"></span>
+          <span id="incidents-status" style="font-size: 10px; color: #aaa; margin-left: 4px;"></span>
           <button class="meters-toggle" id="incidents-toggle">Off</button>
         </div>
         <div id="incidents-legend" style="display: none">
@@ -838,7 +838,7 @@
         <hr />
         <div class="legend-row" style="align-items: center">
           <span style="font-size: 11px; color: #ccc">Traffic Crashes</span>
-          <span id="crashes-status"></span>
+          <span id="crashes-status" style="font-size: 10px; color: #aaa; margin-left: 4px;"></span>
           <button class="meters-toggle" id="crashes-toggle">Off</button>
         </div>
         <div id="crashes-legend" style="display: none">
@@ -858,7 +858,7 @@
         <hr />
         <div class="legend-row" style="align-items: center">
           <span style="font-size: 11px; color: #ccc">Street Permits</span>
-          <span id="permits-status"></span>
+          <span id="permits-status" style="font-size: 10px; color: #aaa; margin-left: 4px;"></span>
           <button class="meters-toggle" id="permits-toggle">Off</button>
         </div>
         <div id="permits-legend" style="display: none">
@@ -871,7 +871,7 @@
         <hr />
         <div class="legend-row" style="align-items: center">
           <span style="font-size: 11px; color: #ccc">Parking Citations</span>
-          <span id="citations-status"></span>
+          <span id="citations-status" style="font-size: 10px; color: #aaa; margin-left: 4px;"></span>
           <button class="meters-toggle" id="citations-toggle">Off</button>
         </div>
         <div id="citations-legend" style="display: none">
@@ -905,6 +905,19 @@
             <div class="legend-dot" style="background: #ffcc00; border: 2px solid #ffcc00; box-sizing: border-box;"></div>
             <span>311 abandoned vehicle reports</span>
             <span class="legend-count" id="cnt-tows">&mdash;</span>
+          </div>
+        </div>
+        <hr />
+        <div class="legend-row" style="align-items: center">
+          <span style="font-size: 11px; color: #ccc">Special Events</span>
+          <span id="events-status" style="font-size: 10px; color: #aaa; margin-left: 4px;"></span>
+          <button class="meters-toggle" id="events-toggle">Off</button>
+        </div>
+        <div id="events-legend" style="display: none">
+          <div class="legend-row" style="margin-top: 4px">
+            <div class="legend-line" style="background: #ff2200; height: 3px; width: 18px; border-radius: 2px; flex-shrink: 0;"></div>
+            <span>Street closures &amp; events</span>
+            <span class="legend-count" id="cnt-events">&mdash;</span>
           </div>
         </div>
       </div>
@@ -999,11 +1012,68 @@
 
       // ── Status + colors ───────────────────────────────────────────────────
       const COLORS = {
-        active: "#ff3333", // red   — do not park
-        upcoming: "#ff9900", // orange — restriction coming up
-        passed: "#2ecc71", // green  — safe to park now
+        active: "#ff2200",   // bright red  — being cleaned right now
+        upcoming: "#ff9900", // orange      — restriction coming up today
+        passed: "#2ecc71",   // green       — safe to park now
       };
       const PARK_SAFE_COLOR = "#4499ff"; // blue — safe for your full window
+
+      // Urgency color for upcoming streets based on hours until cleaning
+      function urgencyColor(hoursUntil) {
+        if (hoursUntil <= 0.5) return "#ff2200"; // < 30 min — critical
+        if (hoursUntil <= 1)   return "#ff5500"; // < 1 hr   — urgent
+        if (hoursUntil <= 2)   return "#ff9900"; // < 2 hr   — warning
+        return "#ffcc00";                         // > 2 hr   — heads-up
+      }
+
+      // Next-occurrence line for popups — works for any viewed day
+      function fmtNextOccurrence(fromhour, tohour, cleaningDayName) {
+        const cleaningIdx = DAY_NAMES.findIndex(
+          d => d.toLowerCase() === (cleaningDayName || "").toLowerCase()
+        );
+        const cur = now.getHours() + now.getMinutes() / 60;
+        const todayIdx = now.getDay();
+
+        // If cleaning day is unknown, fall back to simple countdown (must be today's view)
+        if (cleaningIdx === -1) return isViewingToday() ? fmtCountdown(fromhour, tohour) : "";
+
+        let daysUntil = (cleaningIdx - todayIdx + 7) % 7;
+        // If today IS the cleaning day but it's already past, next is in 7 days
+        if (daysUntil === 0 && cur >= parseFloat(tohour)) daysUntil = 7;
+
+        if (daysUntil === 0) {
+          // Today — show live countdown
+          return fmtCountdown(fromhour, tohour);
+        }
+
+        const nextDate = new Date(now);
+        nextDate.setDate(now.getDate() + daysUntil);
+        const dateStr = nextDate.toLocaleDateString("en-US", {
+          weekday: "short", month: "short", day: "numeric"
+        });
+        return `<span style="color:#aaa">Next: ${dateStr} &nbsp;${fmtHour(fromhour)}–${fmtHour(tohour)}</span>`;
+      }
+
+      // Countdown string based on real clock (not slider) — used in popups
+      function fmtCountdown(fromhour, tohour) {
+        const cur = now.getHours() + now.getMinutes() / 60;
+        const from = parseFloat(fromhour);
+        const to   = parseFloat(tohour);
+        if (cur >= from && cur < to) {
+          const m = Math.round((to - cur) * 60);
+          return `<span style="color:#ff4444">&#9888; Cleaning now &mdash; ends in ${m}m</span>`;
+        }
+        if (cur < from) {
+          const total = Math.round((from - cur) * 60);
+          const h = Math.floor(total / 60), m = total % 60;
+          const txt = h ? `${h}h ${m}m` : `${m}m`;
+          const color = total <= 60 ? "#ff7700" : total <= 120 ? "#ffaa00" : "#aaaaaa";
+          return `<span style="color:${color}">Cleaning in ${txt}</span>`;
+        }
+        const ago = Math.round((cur - to) * 60);
+        const h = Math.floor(ago / 60), m = ago % 60;
+        return `<span style="color:#888">Cleaned ${h ? `${h}h ` : ""}${m}m ago</span>`;
+      }
 
       let parkUntilHour = 0; // set when data loads; 0 = feature inactive
       let parkUntilDayOffset = 0; // 0 = same day as viewed, 1 = next day, etc.
@@ -1060,6 +1130,14 @@
           };
         }
         const status = getStatusAtHour(p.fromhour, p.tohour, activeHour);
+        if (status === "upcoming") {
+          const hoursUntil = parseFloat(p.fromhour) - activeHour;
+          return {
+            color: urgencyColor(hoursUntil),
+            weight: lineWeight(isLeft),
+            opacity: 0.9,
+          };
+        }
         return {
           color: COLORS[status],
           weight: lineWeight(isLeft),
@@ -1591,6 +1669,7 @@
                 <b>Cross streets:</b> ${p.limits || "—"}<br>
                 <b>Block side:</b>    ${p.blockside || "—"}<br>
                 <b>Hours:</b>         ${fmtHour(p.fromhour)} – ${fmtHour(p.tohour)}<br>
+                ${p._thisWeek ? fmtNextOccurrence(p.fromhour, p.tohour, p.weekday || viewDayName) + "<br>" : ""}
                 <b>Schedule:</b>      ${p.weekday || viewDayName}${weekNums ? `, week${weekNums.length > 1 ? "s" : ""} ${weekNums}` : ""}
               `;
               });
@@ -2159,7 +2238,21 @@
 
         probeAndFetch(viewDayName);
       }
-      // ── Parking Meters ────────────────────────────────────────────────────
+
+      // ── Live clock: re-style streets every minute when viewing today ──────────
+      setInterval(() => {
+        if (!isViewingToday() || !geoLayer) return;
+        const now = new Date();
+        const realHour = now.getHours() + now.getMinutes() / 60;
+        if (Math.abs(realHour - activeHour) < 1 / 60) return; // < 1 min drift, skip
+        activeHour = realHour;
+        geoLayer.eachLayer((layer) => {
+          const p = layer.feature?.properties;
+          if (!p || !layer.setStyle) return;
+          const isLeft = (p.cnnrightleft || "").toUpperCase() === "L";
+          layer.setStyle(getFeatureStyle(p, isLeft));
+        });
+      }, 60_000);
       // Dataset IDs to try in order (probe picks the first that responds with data)
       const METER_DATASET_IDS = ["nwbb-fxhp", "28et-5khy", "rqzj-sfat"];
       let METER_API = `https://data.sfgov.org/resource/${METER_DATASET_IDS[0]}.json`;
@@ -3462,6 +3555,7 @@
         if (!towsVisible) return;
         const statusEl = document.getElementById("tows-status");
         if (towsLoaded && towsData.length) { rebuildTowsLayer(); return; }
+        if (statusEl) statusEl.textContent = "loading\u2026";
 
         const probed = await probeTows();
         if (!probed) {
@@ -3508,6 +3602,114 @@
           fetchTows();
         } else {
           if (towsLayer) { map.removeLayer(towsLayer); towsLayer = null; }
+          if (statusEl) statusEl.textContent = "";
+        }
+      });
+
+      // ── Special Events ────────────────────────────────────────────────────────
+      // Source: SFMTA Temporary Street Closures (8x25-yybr), filtered to Special Events
+      const EVENTS_API = "https://data.sfgov.org/resource/8x25-yybr.json";
+      let eventsVisible = false;
+      let eventsLayer = null;
+      let eventsLoaded = false;
+
+      function renderEvents(geojson) {
+        if (eventsLayer) { map.removeLayer(eventsLayer); eventsLayer = null; }
+        if (!eventsVisible || !geojson) return;
+
+        eventsLayer = L.geoJSON(geojson, {
+          style: () => ({
+            color: "#ff2200",
+          }),
+          pointToLayer: (feature, latlng) =>
+            L.circleMarker(latlng, {
+              radius: 7,
+              color: "#ff2200",
+              weight: 2,
+              fillColor: "#ff2200",
+              fillOpacity: 0.3,
+            }),
+          onEachFeature: (feature, layer) => {
+            const p = feature.properties || {};
+            const fmt = (d) => d ? new Date(d).toLocaleDateString("en-US", {
+              month: "short", day: "numeric", year: "numeric"
+            }) : null;
+            const fmtTime = (d) => d ? new Date(d).toLocaleTimeString("en-US", {
+              hour: "numeric", minute: "2-digit"
+            }) : null;
+            const impact = {
+              "all-lanes-closed": "All lanes closed",
+              "some-lanes-closed": "Some lanes closed",
+              "sidewalk-only": "Sidewalk only",
+            }[p.veh_imp] || p.veh_imp || "";
+            const start = p.start_dt || p.start_date;
+            const end   = p.end_dt   || p.end_date;
+            layer.bindPopup(`
+              <div class="popup-street">${p.case_name || p.street || "Special Event"}</div>
+              <span class="popup-badge badge-active">Special Event</span><br>
+              ${p.loc_desc ? `<b>Location:</b> ${p.loc_desc}<br>` : ""}
+              ${impact     ? `<b>Impact:</b> ${impact}<br>`        : ""}
+              ${fmt(start) ? `<b>From:</b> ${fmt(start)} ${fmtTime(start) || ""}<br>` : ""}
+              ${fmt(end)   ? `<b>Until:</b> ${fmt(end)} ${fmtTime(end) || ""}<br>`   : ""}
+              ${p.status   ? `<b>Status:</b> ${p.status}<br>`      : ""}
+            `);
+            layer.bindTooltip(p.case_name || "Special Event", { sticky: true, direction: "top" });
+          },
+        }).addTo(map);
+
+        let cnt = 0;
+        eventsLayer.eachLayer(() => cnt++);
+        const el = document.getElementById("cnt-events");
+        if (el) el.textContent = cnt.toLocaleString();
+      }
+
+      async function fetchEvents() {
+        if (!eventsVisible) return;
+        const statusEl = document.getElementById("events-status");
+        if (eventsLoaded && eventsLayer) return;
+        if (statusEl) statusEl.textContent = "loading\u2026";
+
+        try {
+          // Active + upcoming events only — end_dt in the future
+          const today = new Date().toISOString().slice(0, 10);
+          const where = encodeURIComponent(
+            `type='Special Event' AND end_dt >= '${today}T00:00:00'`
+          );
+          const url = `${EVENTS_API}?$where=${where}&$limit=500&$order=start_dt ASC`;
+          const resp = await fetch(url);
+          if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+          const rows = await resp.json();
+          console.log("[Events] Loaded", rows.length, "events");
+          if (rows.length) console.log("[Events] Sample:", JSON.stringify(rows[0]).slice(0, 300));
+
+          // Build GeoJSON from the shape field
+          const features = rows
+            .filter(r => r.shape && r.shape.type && r.shape.coordinates)
+            .map(r => ({ type: "Feature", geometry: r.shape, properties: r }));
+
+          console.log(`[Events] ${features.length}/${rows.length} have geometry`);
+          eventsLoaded = true;
+          if (statusEl) statusEl.textContent = "";
+          renderEvents({ type: "FeatureCollection", features });
+        } catch (err) {
+          if (statusEl) statusEl.textContent = err.message;
+          console.error("[Events]", err);
+        }
+      }
+
+      document.getElementById("events-toggle").addEventListener("click", () => {
+        eventsVisible = !eventsVisible;
+        const btn = document.getElementById("events-toggle");
+        const leg = document.getElementById("events-legend");
+        const statusEl = document.getElementById("events-status");
+        btn.textContent = eventsVisible ? "On" : "Off";
+        btn.classList.toggle("meters-on", eventsVisible);
+        leg.style.display = eventsVisible ? "block" : "none";
+        if (eventsVisible) {
+          fetchEvents();
+        } else {
+          if (eventsLayer) { map.removeLayer(eventsLayer); eventsLayer = null; }
+          eventsLoaded = false;
           if (statusEl) statusEl.textContent = "";
         }
       });
