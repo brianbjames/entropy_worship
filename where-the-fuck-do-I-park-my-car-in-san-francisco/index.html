@@ -107,7 +107,7 @@
 
       /* ── Combined control panel ──────────────────────────────────────────── */
       #control-panel {
-        position: absolute;
+        position: fixed;
         top: 10px;
         right: 10px;
         z-index: 1000;
@@ -119,6 +119,35 @@
         max-height: calc(100dvh - 50px);
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
+      }
+
+      #panel-drag-handle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: grab;
+        user-select: none;
+      }
+
+      #panel-drag-handle:active {
+        cursor: grabbing;
+      }
+
+      .drag-grip {
+        display: flex;
+        flex-direction: column;
+        gap: 3px;
+        opacity: 0.3;
+        flex-shrink: 0;
+        padding: 2px 0;
+      }
+
+      .drag-grip span {
+        display: block;
+        width: 16px;
+        height: 2px;
+        background: #fff;
+        border-radius: 1px;
       }
 
       .panel-section {
@@ -790,7 +819,12 @@
     <div id="control-panel">
       <!-- Legend -->
       <div class="panel-section legend">
-        <h4>WTF Do I Park in SF?</h4>
+        <div id="panel-drag-handle">
+          <h4 style="margin:0">WTF Do I Park in SF?</h4>
+          <div class="drag-grip">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
         <div class="subtitle" id="legend-subtitle"></div>
         <form id="search-form" autocomplete="off" style="display:flex;gap:6px;margin-top:8px">
           <input
@@ -4560,6 +4594,64 @@
           if (statusEl) statusEl.textContent = "";
         }
       });
+      // ── Draggable control panel ───────────────────────────────────────────
+      (function () {
+        const panel  = document.getElementById("control-panel");
+        const handle = document.getElementById("panel-drag-handle");
+        let dragging = false, startX, startY, startLeft, startTop;
+
+        function beginDrag(clientX, clientY) {
+          dragging = true;
+          startX = clientX;
+          startY = clientY;
+          const rect = panel.getBoundingClientRect();
+          startLeft = rect.left;
+          startTop  = rect.top;
+          // Switch from right-anchored to left-anchored so we can set left freely
+          panel.style.right = "auto";
+          panel.style.left  = startLeft + "px";
+          panel.style.top   = startTop  + "px";
+          handle.style.cursor = "grabbing";
+        }
+
+        function moveDrag(clientX, clientY) {
+          if (!dragging) return;
+          let l = startLeft + (clientX - startX);
+          let t = startTop  + (clientY - startY);
+          // Keep at least a sliver on-screen
+          l = Math.max(0, Math.min(window.innerWidth  - panel.offsetWidth,  l));
+          t = Math.max(0, Math.min(window.innerHeight - 40, t));
+          panel.style.left = l + "px";
+          panel.style.top  = t + "px";
+        }
+
+        function endDrag() {
+          dragging = false;
+          handle.style.cursor = "grab";
+        }
+
+        // Mouse
+        handle.addEventListener("mousedown", (e) => {
+          if (e.target.closest("button, input, a")) return;
+          e.preventDefault();
+          beginDrag(e.clientX, e.clientY);
+        });
+        document.addEventListener("mousemove", (e) => moveDrag(e.clientX, e.clientY));
+        document.addEventListener("mouseup", endDrag);
+
+        // Touch
+        handle.addEventListener("touchstart", (e) => {
+          if (e.target.closest("button, input, a")) return;
+          const t = e.touches[0];
+          beginDrag(t.clientX, t.clientY);
+        }, { passive: true });
+        document.addEventListener("touchmove", (e) => {
+          if (!dragging) return;
+          const t = e.touches[0];
+          moveDrag(t.clientX, t.clientY);
+        }, { passive: true });
+        document.addEventListener("touchend", endDrag);
+      })();
     </script>
   </body>
 </html>
