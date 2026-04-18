@@ -3696,8 +3696,8 @@
           return;
         }
 
-        // Fetch in pages of 100 so the heatmap builds up progressively
-        const PAGE = 100;
+        // Fetch in pages of 25 so the heatmap builds up progressively
+        const PAGE = 25;
         const TOTAL = 500;
         towsData = [];
         for (let offset = 0; offset < TOTAL; offset += PAGE) {
