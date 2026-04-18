@@ -111,14 +111,18 @@
         top: 10px;
         right: 10px;
         z-index: 1000;
-        background: rgba(8, 8, 8, 0.65);
-        border: 1px solid #2a2a2a;
+        background: rgba(8, 8, 8, 0.75);
+        border: 1px solid #1e3a4a;
         border-radius: 3px;
         width: 280px;
         color: #fff;
         max-height: calc(100dvh - 50px);
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
+        box-shadow:
+          0 0 18px rgba(68, 153, 255, 0.18),
+          0 0 40px rgba(68, 153, 255, 0.07),
+          inset 0 0 30px rgba(0, 0, 0, 0.4);
       }
 
       #panel-drag-handle {
@@ -337,31 +341,37 @@
         background: #0c2010;
         color: #44bb55;
         border: 1px solid #1a4020;
+        box-shadow: 0 0 8px rgba(68, 187, 85, 0.35), inset 0 0 8px rgba(68, 187, 85, 0.05);
       }
       .verdict-active {
         background: #280808;
         color: #ff4444;
         border: 1px solid #481010;
+        box-shadow: 0 0 8px rgba(255, 68, 68, 0.4), inset 0 0 8px rgba(255, 68, 68, 0.06);
       }
       .verdict-upcoming {
         background: #281500;
         color: #ff9922;
         border: 1px solid #482800;
+        box-shadow: 0 0 8px rgba(255, 153, 34, 0.35), inset 0 0 8px rgba(255, 153, 34, 0.05);
       }
       .verdict-passed {
         background: #1e1a00;
         color: #ccbb00;
         border: 1px solid #3a3000;
+        box-shadow: 0 0 8px rgba(204, 187, 0, 0.3), inset 0 0 8px rgba(204, 187, 0, 0.04);
       }
       .verdict-inferred {
         background: #1e1a00;
         color: #ccbb00;
         border: 1px solid #3a3000;
+        box-shadow: 0 0 8px rgba(204, 187, 0, 0.3), inset 0 0 8px rgba(204, 187, 0, 0.04);
       }
       .verdict-parksafe {
         background: #091828;
         color: #4499ff;
         border: 1px solid #1a3a5e;
+        box-shadow: 0 0 8px rgba(68, 153, 255, 0.35), inset 0 0 8px rgba(68, 153, 255, 0.05);
       }
 
       .result-address {
@@ -806,6 +816,44 @@
         color: #555;
         font-size: 10px;
         margin-left: 6px;
+      }
+
+      /* ── Pulsing active streets ──────────────────────────────────────────── */
+      @keyframes pulse-active {
+        0%, 100% { opacity: 0.9; }
+        50% { opacity: 0.18; }
+      }
+      .active-street {
+        animation: pulse-active 1.4s ease-in-out infinite;
+      }
+
+      /* ── User location pin ───────────────────────────────────────────────── */
+      @keyframes pin-ring-pulse {
+        0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+        100% { transform: translate(-50%, -50%) scale(2.8); opacity: 0; }
+      }
+      .user-pin {
+        position: relative;
+        width: 28px;
+        height: 28px;
+      }
+      .user-pin-core {
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        width: 13px; height: 13px;
+        border-radius: 50%;
+        background: var(--pin-color, #fff);
+        box-shadow: 0 0 6px var(--pin-color, #fff), 0 0 14px var(--pin-color, #fff);
+      }
+      .user-pin-ring {
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        width: 13px; height: 13px;
+        border-radius: 50%;
+        border: 2px solid var(--pin-color, #fff);
+        animation: pin-ring-pulse 1.6s ease-out infinite;
       }
     </style>
   </head>
@@ -1274,6 +1322,29 @@
           weight: lineWeight(isLeft),
           opacity: status === "passed" ? 0.65 : 0.9,
         };
+      }
+
+      // Applies style to a street layer and toggles the pulse class for active streets
+      function applyFeatureStyle(layer, p, isLeft) {
+        layer.setStyle(getFeatureStyle(p, isLeft));
+        const el = layer.getElement ? layer.getElement() : null;
+        if (!el) return;
+        const isActive =
+          p._thisWeek &&
+          !isWeekendView &&
+          !isParkSafe(p.fromhour, p.tohour) &&
+          getStatusAtHour(p.fromhour, p.tohour, activeHour) === "active";
+        el.classList.toggle("active-street", !!isActive);
+      }
+
+      // Creates the pulsing DivIcon for the user's location pin
+      function makeUserPin(color) {
+        return L.divIcon({
+          html: `<div class="user-pin" style="--pin-color:${color}"><div class="user-pin-core"></div><div class="user-pin-ring"></div></div>`,
+          className: "",
+          iconSize: [28, 28],
+          iconAnchor: [14, 14],
+        });
       }
 
       function fmtHour(h) {
@@ -1781,13 +1852,7 @@
         // Weekends: all streets are safe, no data needed
         if (isWeekendView) {
           if (checkMarker) map.removeLayer(checkMarker);
-          checkMarker = L.circleMarker(latlng, {
-            radius: 7,
-            color: PARK_SAFE_COLOR,
-            weight: 3,
-            fillColor: PARK_SAFE_COLOR,
-            fillOpacity: 0.25,
-          }).addTo(map);
+          checkMarker = L.marker(latlng, { icon: makeUserPin(PARK_SAFE_COLOR), zIndexOffset: 1000 }).addTo(map);
           const panel = document.getElementById("result-panel");
           panel.innerHTML = `
             ${label ? `<div class="result-address">${label}</div>` : ""}
@@ -1908,13 +1973,7 @@
           passed: "#2ecc71",
         }[verdict];
         if (checkMarker) map.removeLayer(checkMarker);
-        checkMarker = L.circleMarker(latlng, {
-          radius: 7,
-          color: mColor,
-          weight: 3,
-          fillColor: mColor,
-          fillOpacity: 0.25,
-        }).addTo(map);
+        checkMarker = L.marker(latlng, { icon: makeUserPin(mColor), zIndexOffset: 1000 }).addTo(map);
 
         // Build recommendations
         _lastRecs = findRecommendations(latlng);
@@ -2201,7 +2260,7 @@
             const p = layer.feature && layer.feature.properties;
             if (!p) return;
             const isLeft = (p.cnnrightleft || "").toUpperCase() === "L";
-            layer.setStyle(getFeatureStyle(p, isLeft));
+            applyFeatureStyle(layer, p, isLeft);
           });
           updateCounts(ovHour);
           if (checkMarker) showVerdict(checkMarker.getLatLng(), lastSearchLabel);
@@ -2341,7 +2400,7 @@
               const p = layer.feature && layer.feature.properties;
               if (!p) return;
               const isLeft = (p.cnnrightleft || "").toUpperCase() === "L";
-              layer.setStyle(getFeatureStyle(p, isLeft));
+              applyFeatureStyle(layer, p, isLeft);
             });
             updateCounts(activeHour);
           } else {
@@ -2390,7 +2449,7 @@
             const p = layer.feature && layer.feature.properties;
             if (!p) return;
             const isLeft = (p.cnnrightleft || "").toUpperCase() === "L";
-            layer.setStyle(getFeatureStyle(p, isLeft));
+            applyFeatureStyle(layer, p, isLeft);
           });
         }
 
@@ -2434,7 +2493,7 @@
             const p = layer.feature && layer.feature.properties;
             if (!p) return;
             const isLeft = (p.cnnrightleft || "").toUpperCase() === "L";
-            layer.setStyle(getFeatureStyle(p, isLeft));
+            applyFeatureStyle(layer, p, isLeft);
           });
         }
         if (checkMarker) showVerdict(checkMarker.getLatLng(), lastSearchLabel);
@@ -2706,13 +2765,7 @@
         // Weekday: place City Hall pin and load today's cleaning data
         const CITY_HALL = L.latLng(37.7793, -122.4193);
         lastSearchLabel = "SF City Hall";
-        checkMarker = L.circleMarker(CITY_HALL, {
-          radius: 7,
-          color: "#555",
-          weight: 3,
-          fillColor: "#555",
-          fillOpacity: 0.25,
-        }).addTo(map);
+        checkMarker = L.marker(CITY_HALL, { icon: makeUserPin("#555"), zIndexOffset: 1000 }).addTo(map);
         document.getElementById("result-panel").innerHTML = `
           <div class="result-address">SF City Hall</div>
           <div style="color:#ccc;font-size:11px;margin-top:4px">Loading cleaning data…</div>
@@ -2733,7 +2786,7 @@
           const p = layer.feature?.properties;
           if (!p || !layer.setStyle) return;
           const isLeft = (p.cnnrightleft || "").toUpperCase() === "L";
-          layer.setStyle(getFeatureStyle(p, isLeft));
+          applyFeatureStyle(layer, p, isLeft);
         });
       }, 60_000);
       // Dataset IDs to try in order (probe picks the first that responds with data)
