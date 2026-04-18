@@ -186,6 +186,17 @@
         user-select: none;
       }
 
+      #panel-title {
+        margin: 0;
+        font-family: "Courier New", Courier, monospace;
+        font-size: 31px;
+        font-weight: 700;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: #78d2ff;
+        text-shadow: 0 0 6px #4499ff, 0 0 18px rgba(68,153,255,0.5);
+      }
+
       #panel-drag-handle:active {
         cursor: grabbing;
       }
@@ -398,6 +409,11 @@
           0 0 8px rgba(68, 187, 85, 0.35),
           inset 0 0 8px rgba(68, 187, 85, 0.05);
       }
+      @keyframes verdict-alert-strobe {
+        0%, 40%  { background: #280808; box-shadow: 0 0 8px rgba(255, 68, 68, 0.4), inset 0 0 8px rgba(255, 68, 68, 0.06); }
+        45%, 55% { background: #5a0808; box-shadow: 0 0 18px rgba(255, 68, 68, 0.9), inset 0 0 14px rgba(255, 68, 68, 0.2); }
+        60%, 100%{ background: #280808; box-shadow: 0 0 8px rgba(255, 68, 68, 0.4), inset 0 0 8px rgba(255, 68, 68, 0.06); }
+      }
       .verdict-active {
         background: #280808;
         color: #ff4444;
@@ -405,6 +421,7 @@
         box-shadow:
           0 0 8px rgba(255, 68, 68, 0.4),
           inset 0 0 8px rgba(255, 68, 68, 0.06);
+        animation: verdict-alert-strobe 2.4s ease-in-out infinite;
       }
       .verdict-upcoming {
         background: #281500;
@@ -979,11 +996,6 @@
           opacity: 0.12;
         }
       }
-      .route-pulse {
-        animation: route-pulse 3.2s ease-in-out infinite;
-        filter: drop-shadow(0 0 4px #cc44ff) drop-shadow(0 0 10px #cc44ff)
-          drop-shadow(0 0 22px rgba(204, 68, 255, 0.6));
-      }
 
       /* ── Neighborhood score shimmer ─────────────────────────────────────── */
       @keyframes nhood-shimmer {
@@ -1001,13 +1013,8 @@
 
       /* ── Pulsing active streets ──────────────────────────────────────────── */
       @keyframes pulse-active {
-        0%,
-        100% {
-          opacity: 0.9;
-        }
-        50% {
-          opacity: 0.18;
-        }
+        0%, 100% { opacity: 0.9; }
+        50%       { opacity: 0.18; }
       }
       .active-street {
         animation: pulse-active 1.4s ease-in-out infinite;
@@ -1053,6 +1060,29 @@
         border: 2px solid var(--pin-color, #fff);
         animation: pin-ring-pulse 1.6s ease-out infinite;
       }
+      /* Orbiting satellite dot */
+      @keyframes pin-orbit {
+        to { transform: translate(-50%, -50%) rotate(360deg); }
+      }
+      .user-pin-orbit {
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        width: 26px; height: 26px;
+        border-radius: 50%;
+        animation: pin-orbit 2.4s linear infinite;
+        pointer-events: none;
+      }
+      .user-pin-orbit::before {
+        content: "";
+        position: absolute;
+        top: 1px; left: 50%;
+        transform: translateX(-50%);
+        width: 4px; height: 4px;
+        border-radius: 50%;
+        background: var(--pin-color, #fff);
+        box-shadow: 0 0 5px var(--pin-color, #fff);
+      }
 
       /* ── Free meter pulse pin ────────────────────────────────────────────── */
       @keyframes meter-ring-pulse {
@@ -1094,6 +1124,85 @@
         border: 2px solid #1e7a38;
         animation: meter-ring-pulse 2s ease-out infinite;
       }
+
+      /* ── Flowing route line dashes ───────────────────────────────────────── */
+      @keyframes route-flow {
+        to { stroke-dashoffset: -14; }
+      }
+      .route-pulse {
+        animation: route-pulse 3.2s ease-in-out infinite, route-flow 0.55s linear infinite;
+        filter: drop-shadow(0 0 4px #cc44ff) drop-shadow(0 0 10px #cc44ff) drop-shadow(0 0 22px rgba(204, 68, 255, 0.6));
+      }
+
+      /* ── Crash hazard strobe ─────────────────────────────────────────────── */
+      @keyframes hazard-strobe {
+        0%, 44%  { opacity: 1; }
+        45%, 54% { opacity: 0.08; }
+        55%, 100%{ opacity: 1; }
+      }
+      .crash-strobe-pin {
+        position: relative;
+        width: 16px; height: 16px;
+        animation: hazard-strobe 0.85s ease-in-out infinite;
+      }
+      .crash-dot {
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        width: 8px; height: 8px;
+        border-radius: 50%;
+        background: var(--crash-color, #ffcc00);
+        box-shadow: 0 0 5px var(--crash-color, #ffcc00), 0 0 12px var(--crash-color, #ffcc00);
+      }
+      .crash-ring {
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        width: 14px; height: 14px;
+        border-radius: 50%;
+        border: 1.5px solid var(--crash-color, #ffcc00);
+        opacity: 0.5;
+      }
+
+      /* ── Incident radar ping ─────────────────────────────────────────────── */
+      @keyframes radar-ping {
+        0%   { transform: translate(-50%, -50%) scale(0.4); opacity: 0.9; }
+        100% { transform: translate(-50%, -50%) scale(5);   opacity: 0; }
+      }
+      .incident-ping-pin {
+        position: relative;
+        width: 18px; height: 18px;
+      }
+      .incident-dot {
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        background: #ff4466;
+        box-shadow: 0 0 4px #ff4466, 0 0 10px rgba(255, 68, 102, 0.6);
+      }
+      .incident-ring {
+        position: absolute;
+        top: 50%; left: 50%;
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        border: 1.5px solid #ff4466;
+        animation: radar-ping 2.1s ease-out infinite;
+      }
+      .incident-ring:nth-child(3) { animation-delay: 0.7s; }
+      .incident-ring:nth-child(4) { animation-delay: 1.4s; }
+
+      /* ── Marching ants (events + RPP) ───────────────────────────────────── */
+      @keyframes march-ants {
+        to { stroke-dashoffset: -20; }
+      }
+      @keyframes rpp-march {
+        to { stroke-dashoffset: -12; }
+      }
+      .events-march { animation: march-ants 0.7s linear infinite; }
+      .rpp-march    { animation: rpp-march  0.5s linear infinite; }
+
     </style>
   </head>
   <body>
@@ -1108,7 +1217,7 @@
         <!-- Legend -->
         <div class="panel-section legend">
           <div id="panel-drag-handle">
-            <h4 style="margin: 0">WTFDIPINSF?</h4>
+            <h4 id="panel-title">WTFDIPISF?</h4>
             <div class="drag-grip"><span></span><span></span><span></span></div>
           </div>
           <div class="subtitle" id="legend-subtitle"></div>
@@ -1732,6 +1841,13 @@
           !isParkSafe(p.fromhour, p.tohour) &&
           getStatusAtHour(p.fromhour, p.tohour, activeHour) === "active";
         el.classList.toggle("active-street", !!isActive);
+        if (isActive) {
+          // Sync all active streets to the same animation phase
+          const DURATION = 1400; // ms — must match CSS animation duration
+          el.style.animationDelay = `-${(Date.now() % DURATION) / 1000}s`;
+        } else {
+          el.style.animationDelay = "";
+        }
       }
 
       // Creates the pulsing DivIcon for the user's location pin
@@ -3810,12 +3926,13 @@
               })
             : "Unknown";
 
-          const marker = L.circleMarker([lat, lng], {
-            radius: 5,
-            color: "#ff4466",
-            weight: 2,
-            fillColor: "#ff4466",
-            fillOpacity: 0.15,
+          const marker = L.marker([lat, lng], {
+            icon: L.divIcon({
+              html: `<div class="incident-ping-pin"><div class="incident-dot"></div><div class="incident-ring"></div><div class="incident-ring"></div><div class="incident-ring"></div></div>`,
+              className: "",
+              iconSize: [18, 18],
+              iconAnchor: [9, 9],
+            }),
           });
 
           marker.bindPopup(`
@@ -3969,12 +4086,13 @@
           const severity =
             killed > 0 ? "#ff3333" : injured > 1 ? "#ffaa00" : "#ffcc00";
 
-          const marker = L.circleMarker([lat, lng], {
-            radius: 5,
-            color: severity,
-            weight: 2,
-            fillColor: severity,
-            fillOpacity: 0.15,
+          const marker = L.marker([lat, lng], {
+            icon: L.divIcon({
+              html: `<div class="crash-strobe-pin" style="--crash-color:${severity}"><div class="crash-dot"></div><div class="crash-ring"></div></div>`,
+              className: "",
+              iconSize: [16, 16],
+              iconAnchor: [8, 8],
+            }),
           });
 
           const crossStreet =
@@ -4942,6 +5060,8 @@
         eventsLayer = L.geoJSON(geojson, {
           style: () => ({
             color: "#ff44aa",
+            dashArray: "10 8",
+            className: "events-march",
           }),
           pointToLayer: (feature, latlng) =>
             L.circleMarker(latlng, {
@@ -5134,6 +5254,8 @@
               color: active ? "#ff6622" : "#ffaa44",
               weight: 3,
               opacity: active ? 0.85 : 0.45,
+              dashArray: active ? "6 5" : null,
+              className: active ? "rpp-march" : "",
             };
           },
           onEachFeature: (feature, layer) => {
