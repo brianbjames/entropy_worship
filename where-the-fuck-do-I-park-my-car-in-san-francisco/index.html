@@ -121,23 +121,6 @@
           drop-shadow(0 0 24px rgba(68, 153, 255, 0.12));
       }
 
-      /* Bright accent at the cut corner */
-      #panel-wrapper::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 14px;
-        height: 14px;
-        background: linear-gradient(
-          135deg,
-          rgba(120, 210, 255, 0.75) 0%,
-          rgba(68, 153, 255, 0.2) 60%,
-          transparent 100%
-        );
-        pointer-events: none;
-        z-index: 10001;
-      }
 
       #control-panel {
         position: relative;
@@ -149,6 +132,22 @@
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
         box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.4);
+        scrollbar-width: thin;
+        scrollbar-color: #1e3a4a transparent;
+      }
+
+      #control-panel::-webkit-scrollbar {
+        width: 4px;
+      }
+      #control-panel::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      #control-panel::-webkit-scrollbar-thumb {
+        background: #1e3a4a;
+        border-radius: 2px;
+      }
+      #control-panel::-webkit-scrollbar-thumb:hover {
+        background: #2a5070;
       }
 
       #panel-drag-handle {
@@ -479,33 +478,56 @@
         letter-spacing: 1px;
       }
 
-      #time-slider {
-        width: 100%;
-        -webkit-appearance: none;
-        appearance: none;
+      /* ── Custom slider (native input invisible on top, custom div below) ─── */
+      .custom-slider-wrap {
+        position: relative;
+        height: 13px;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+      }
+      .custom-slider-track {
+        position: absolute;
+        left: 0; right: 0;
         height: 3px;
         background: #2a2a2a;
         border-radius: 2px;
-        outline: none;
+        pointer-events: none;
       }
-
-      #time-slider::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        width: 13px;
-        height: 13px;
+      #park-slider-wrap .custom-slider-track {
+        background: #444;
+      }
+      .custom-slider-fill {
+        height: 100%;
+        width: 0%;
+        background: #555;
+        border-radius: 2px;
+      }
+      .custom-slider-thumb {
+        position: absolute;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        width: 13px; height: 13px;
         border-radius: 50%;
         background: #ddd;
-        cursor: pointer;
         box-shadow: 0 0 5px rgba(255, 255, 255, 0.25);
+        transition: background 0.1s, box-shadow 0.1s;
       }
-
-      #time-slider::-moz-range-thumb {
-        width: 13px;
-        height: 13px;
-        border: none;
-        border-radius: 50%;
-        background: #ddd;
+      .custom-slider-wrap:hover .custom-slider-thumb {
+        background: #fff;
+        box-shadow: 0 0 7px rgba(255, 255, 255, 0.5);
+      }
+      #time-slider,
+      #park-slider {
+        position: absolute;
+        left: 0; top: 0;
+        width: 100%; height: 100%;
+        opacity: 0;
         cursor: pointer;
+        margin: 0;
+        z-index: 1;
+        -webkit-appearance: none;
+        appearance: none;
       }
 
       .time-ticks {
@@ -542,34 +564,6 @@
         margin-bottom: 10px;
       }
 
-      #park-slider {
-        width: 100%;
-        -webkit-appearance: none;
-        appearance: none;
-        height: 3px;
-        background: #444;
-        border-radius: 2px;
-        outline: none;
-      }
-
-      #park-slider::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        width: 13px;
-        height: 13px;
-        border-radius: 50%;
-        background: #fff;
-        cursor: pointer;
-        box-shadow: 0 0 5px rgba(255, 255, 255, 0.25);
-      }
-
-      #park-slider::-moz-range-thumb {
-        width: 13px;
-        height: 13px;
-        border: none;
-        border-radius: 50%;
-        background: #fff;
-        cursor: pointer;
-      }
 
       /* ── Popups / tooltips ───────────────────────────────────────────────── */
       .leaflet-popup-content-wrapper {
@@ -966,6 +960,34 @@
         border: 2px solid var(--pin-color, #fff);
         animation: pin-ring-pulse 1.6s ease-out infinite;
       }
+
+      /* ── Free meter pulse pin ────────────────────────────────────────────── */
+      @keyframes meter-ring-pulse {
+        0%   { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+        100% { transform: translate(-50%, -50%) scale(3.2); opacity: 0; }
+      }
+      .meter-free-pin {
+        position: relative;
+        width: 18px; height: 18px;
+      }
+      .meter-free-dot {
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        width: 7px; height: 7px;
+        border-radius: 50%;
+        background: #1e7a38;
+        box-shadow: 0 0 4px #1e7a38, 0 0 10px rgba(30,122,56,0.7);
+      }
+      .meter-free-ring {
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        width: 7px; height: 7px;
+        border-radius: 50%;
+        border: 2px solid #1e7a38;
+        animation: meter-ring-pulse 2s ease-out infinite;
+      }
     </style>
   </head>
   <body>
@@ -1012,7 +1034,13 @@
           <span id="time-label"></span>
         </div>
         <div id="day-selector"></div>
-        <input type="range" id="time-slider" min="0" max="24" step="0.5" />
+        <div class="custom-slider-wrap">
+          <div class="custom-slider-track">
+            <div class="custom-slider-fill" id="time-slider-fill"></div>
+            <div class="custom-slider-thumb" id="time-slider-thumb"></div>
+          </div>
+          <input type="range" id="time-slider" min="0" max="24" step="0.5" title="" />
+        </div>
         <div class="time-ticks">
           <span>12 AM</span><span>6 AM</span><span>12 PM</span><span>6 PM</span
           ><span>12 AM</span>
@@ -1022,7 +1050,13 @@
             <span id="park-label">Park until: &mdash;</span>
           </div>
           <div id="park-day-selector"></div>
-          <input type="range" id="park-slider" min="0" max="24" step="0.5" />
+          <div class="custom-slider-wrap">
+            <div class="custom-slider-track">
+              <div class="custom-slider-fill" id="park-slider-fill"></div>
+              <div class="custom-slider-thumb" id="park-slider-thumb"></div>
+            </div>
+            <input type="range" id="park-slider" min="0" max="24" step="0.5" title="" />
+          </div>
           <div class="time-ticks">
             <span>12 AM</span><span>6 AM</span><span>12 PM</span
             ><span>6 PM</span><span>12 AM</span>
@@ -1037,6 +1071,22 @@
 
       <!-- Data overlays -->
       <div class="panel-section legend">
+        <div class="legend-row" style="align-items: center">
+          <span style="font-size: 12px; color: #fff">Residential Permit Zones</span>
+          <span id="rpp-status" style="font-size: 10px; color: #bbb; margin-left: 4px;"></span>
+          <button class="meters-toggle" id="rpp-toggle">Off</button>
+        </div>
+        <div id="rpp-legend" style="display: none">
+          <div class="legend-row" style="margin-top: 4px">
+            <div class="legend-line" style="background: #ff6622"></div>
+            <span>Permit required now</span>
+          </div>
+          <div class="legend-row">
+            <div class="legend-line" style="background: #ffaa44; opacity: 0.6"></div>
+            <span>Permit required (outside hours)</span>
+          </div>
+        </div>
+        <hr />
         <div class="legend-row" style="align-items: center">
           <span style="font-size: 12px; color: #fff">Parking Meters</span>
           <span id="meters-status"></span>
@@ -1058,46 +1108,6 @@
         </div>
         <hr />
         <div class="legend-row" style="align-items: center">
-          <span style="font-size: 12px; color: #fff">Police Incidents</span>
-          <span id="incidents-status" style="font-size: 10px; color: #bbb; margin-left: 4px;"></span>
-          <button class="meters-toggle" id="incidents-toggle">Off</button>
-        </div>
-        <div id="incidents-legend" style="display: none">
-          <div class="legend-row" style="margin-top: 4px">
-            <div
-              class="legend-dot"
-              style="
-                background: transparent;
-                border: 2px solid #ff4466;
-                box-sizing: border-box;
-              "
-            ></div>
-            <span>Recent incidents within 24 hours</span>
-            <span class="legend-count" id="cnt-incidents">&mdash;</span>
-          </div>
-        </div>
-        <hr />
-        <div class="legend-row" style="align-items: center">
-          <span style="font-size: 12px; color: #fff">Traffic Crashes</span>
-          <span id="crashes-status" style="font-size: 10px; color: #bbb; margin-left: 4px;"></span>
-          <button class="meters-toggle" id="crashes-toggle">Off</button>
-        </div>
-        <div id="crashes-legend" style="display: none">
-          <div class="legend-row" style="margin-top: 4px">
-            <div
-              class="legend-dot"
-              style="
-                background: transparent;
-                border: 2px solid #ffcc00;
-                box-sizing: border-box;
-              "
-            ></div>
-            <span>Recent crash incidents</span>
-            <span class="legend-count" id="cnt-crashes">&mdash;</span>
-          </div>
-        </div>
-        <hr />
-        <div class="legend-row" style="align-items: center">
           <span style="font-size: 12px; color: #fff">Street Permits</span>
           <span id="permits-status" style="font-size: 10px; color: #bbb; margin-left: 4px;"></span>
           <button class="meters-toggle" id="permits-toggle">Off</button>
@@ -1107,6 +1117,24 @@
             <div class="legend-dot" style="background: transparent; border: 2px solid #ff8800; box-sizing: border-box;"></div>
             <span>Street space permits</span>
             <span class="legend-count" id="cnt-permits">&mdash;</span>
+          </div>
+        </div>
+        <hr />
+        <div class="legend-row" style="align-items: center">
+          <span style="font-size: 12px; color: #fff">Parking Garages</span>
+          <span id="garages-status" style="font-size: 10px; color: #bbb; margin-left: 4px;"></span>
+          <button class="meters-toggle" id="garages-toggle">Off</button>
+        </div>
+        <div id="garages-legend" style="display: none">
+          <div class="legend-row" style="margin-top: 4px">
+            <div class="legend-dot" style="background: #00cc88; border: 2px solid #00cc88; box-sizing: border-box;"></div>
+            <span>Open now</span>
+            <span class="legend-count" id="cnt-garages-open">&mdash;</span>
+          </div>
+          <div class="legend-row" style="margin-top: 2px">
+            <div class="legend-dot" style="background: transparent; border: 2px solid #555; box-sizing: border-box;"></div>
+            <span>Closed / unknown</span>
+            <span class="legend-count" id="cnt-garages-closed">&mdash;</span>
           </div>
         </div>
         <hr />
@@ -1137,6 +1165,46 @@
         </div>
         <hr />
         <div class="legend-row" style="align-items: center">
+          <span style="font-size: 12px; color: #fff">Traffic Crashes</span>
+          <span id="crashes-status" style="font-size: 10px; color: #bbb; margin-left: 4px;"></span>
+          <button class="meters-toggle" id="crashes-toggle">Off</button>
+        </div>
+        <div id="crashes-legend" style="display: none">
+          <div class="legend-row" style="margin-top: 4px">
+            <div
+              class="legend-dot"
+              style="
+                background: transparent;
+                border: 2px solid #ffcc00;
+                box-sizing: border-box;
+              "
+            ></div>
+            <span>Recent crash incidents</span>
+            <span class="legend-count" id="cnt-crashes">&mdash;</span>
+          </div>
+        </div>
+        <hr />
+        <div class="legend-row" style="align-items: center">
+          <span style="font-size: 12px; color: #fff">Police Incidents</span>
+          <span id="incidents-status" style="font-size: 10px; color: #bbb; margin-left: 4px;"></span>
+          <button class="meters-toggle" id="incidents-toggle">Off</button>
+        </div>
+        <div id="incidents-legend" style="display: none">
+          <div class="legend-row" style="margin-top: 4px">
+            <div
+              class="legend-dot"
+              style="
+                background: transparent;
+                border: 2px solid #ff4466;
+                box-sizing: border-box;
+              "
+            ></div>
+            <span>Recent incidents within 24 hours</span>
+            <span class="legend-count" id="cnt-incidents">&mdash;</span>
+          </div>
+        </div>
+        <hr />
+        <div class="legend-row" style="align-items: center">
           <span style="font-size: 12px; color: #fff">Abandoned Vehicles</span>
           <span id="tows-status" style="font-size: 10px; color: #bbb; margin-left: 4px;"></span>
           <button class="meters-toggle" id="tows-toggle">Off</button>
@@ -1150,22 +1218,6 @@
         </div>
         <hr />
         <div class="legend-row" style="align-items: center">
-          <span style="font-size: 12px; color: #fff">Residential Permit Zones</span>
-          <span id="rpp-status" style="font-size: 10px; color: #bbb; margin-left: 4px;"></span>
-          <button class="meters-toggle" id="rpp-toggle">Off</button>
-        </div>
-        <div id="rpp-legend" style="display: none">
-          <div class="legend-row" style="margin-top: 4px">
-            <div class="legend-line" style="background: #ff6622"></div>
-            <span>Permit required now</span>
-          </div>
-          <div class="legend-row">
-            <div class="legend-line" style="background: #ffaa44; opacity: 0.6"></div>
-            <span>Permit required (outside hours)</span>
-          </div>
-        </div>
-        <hr />
-        <div class="legend-row" style="align-items: center">
           <span style="font-size: 12px; color: #fff">Special Events</span>
           <span id="events-status" style="font-size: 10px; color: #bbb; margin-left: 4px;"></span>
           <button class="meters-toggle" id="events-toggle">Off</button>
@@ -1175,24 +1227,6 @@
             <div class="legend-line" style="background: #ff44aa; height: 3px; width: 18px; border-radius: 2px; flex-shrink: 0;"></div>
             <span>Street closures &amp; events</span>
             <span class="legend-count" id="cnt-events">&mdash;</span>
-          </div>
-        </div>
-        <hr />
-        <div class="legend-row" style="align-items: center">
-          <span style="font-size: 12px; color: #fff">Parking Garages</span>
-          <span id="garages-status" style="font-size: 10px; color: #bbb; margin-left: 4px;"></span>
-          <button class="meters-toggle" id="garages-toggle">Off</button>
-        </div>
-        <div id="garages-legend" style="display: none">
-          <div class="legend-row" style="margin-top: 4px">
-            <div class="legend-dot" style="background: #00cc88; border: 2px solid #00cc88; box-sizing: border-box;"></div>
-            <span>Open now</span>
-            <span class="legend-count" id="cnt-garages-open">&mdash;</span>
-          </div>
-          <div class="legend-row" style="margin-top: 2px">
-            <div class="legend-dot" style="background: transparent; border: 2px solid #555; box-sizing: border-box;"></div>
-            <span>Closed / unknown</span>
-            <span class="legend-count" id="cnt-garages-closed">&mdash;</span>
           </div>
         </div>
         <hr />
@@ -2329,8 +2363,7 @@
         const parkSlider = document.getElementById("park-slider");
         parkSlider.value = parkUntilHour;
         updateParkLabel(parkUntilHour);
-
-        // Build day selector once
+        syncSlider("park");
         if (!daySelectorBuilt) {
           buildDaySelector();
           daySelectorBuilt = true;
@@ -2357,9 +2390,11 @@
           const timeSlider = document.getElementById("time-slider");
           timeSlider.value = ovHour;
           setTimeLabel(ovHour);
+          syncSlider("time");
           const parkSlider = document.getElementById("park-slider");
           parkSlider.value = ovPark;
           updateParkLabel(ovPark);
+          syncSlider("park");
           geoLayer.eachLayer((layer) => {
             const p = layer.feature && layer.feature.properties;
             if (!p) return;
@@ -2485,12 +2520,14 @@
         const slider = document.getElementById("time-slider");
         slider.value = Math.min(24, Math.max(0, targetHour));
         setTimeLabel(targetHour);
+        syncSlider("time");
 
         // Reset park-until to 2 h ahead
         parkUntilDayOffset = 0;
         parkUntilHour = Math.min(24, targetHour + 2);
         const parkSlider = document.getElementById("park-slider");
         parkSlider.value = parkUntilHour;
+        syncSlider("park");
         updateParkLabel(parkUntilHour);
         buildParkDaySelector();
 
@@ -2567,9 +2604,21 @@
         if (checkMarker) showVerdict(checkMarker.getLatLng(), lastSearchLabel);
       }
 
+      // ── Custom slider visual sync ─────────────────────────────────────────
+      function syncSlider(which) {
+        const input = document.getElementById(which + "-slider");
+        const fill  = document.getElementById(which + "-slider-fill");
+        const thumb = document.getElementById(which + "-slider-thumb");
+        if (!input || !fill || !thumb) return;
+        const pct = ((input.value - input.min) / (input.max - input.min)) * 100;
+        fill.style.width = pct + "%";
+        thumb.style.left = pct + "%";
+      }
+
       document
         .getElementById("time-slider")
         .addEventListener("input", function () {
+          syncSlider("time");
           updateForHour(parseFloat(this.value));
         });
 
@@ -2607,6 +2656,7 @@
       document
         .getElementById("park-slider")
         .addEventListener("input", function () {
+          syncSlider("park");
           const sliderVal = parseFloat(this.value);
           updateParkUntil(parkUntilDayOffset * 24 + sliderVal);
         });
@@ -2856,6 +2906,8 @@
       const slider = document.getElementById("time-slider");
       slider.value = Math.min(24, Math.max(0, currentHour));
       setTimeLabel(currentHour);
+      syncSlider("time");
+      syncSlider("park");
 
       // ── Initial load ──────────────────────────────────────────────────────
       if (dayIndex === 0 || dayIndex === 6) {
@@ -3110,13 +3162,25 @@
           const color = active ? METER_ACTIVE_COLOR : METER_FREE_COLOR;
           const stroke = active ? "#22aa44" : "#145528";
 
-          const marker = L.circleMarker([lat, lng], {
-            radius: r,
-            color: color,
-            weight: 2,
-            fillColor: color,
-            fillOpacity: 0.85,
-          });
+          let marker;
+          if (!active) {
+            marker = L.marker([lat, lng], {
+              icon: L.divIcon({
+                html: `<div class="meter-free-pin"><div class="meter-free-dot"></div><div class="meter-free-ring"></div></div>`,
+                className: "",
+                iconSize: [18, 18],
+                iconAnchor: [9, 9],
+              }),
+            });
+          } else {
+            marker = L.circleMarker([lat, lng], {
+              radius: r,
+              color: color,
+              weight: 2,
+              fillColor: color,
+              fillOpacity: 0.85,
+            });
+          }
 
           const regs = [
             m.parking_regs_1,
