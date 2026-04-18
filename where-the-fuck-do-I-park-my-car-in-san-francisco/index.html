@@ -1581,6 +1581,18 @@
           }
         }
 
+        // Police incidents (200m radius)
+        if (incidentsData.length) {
+          const incPts = incidentsData
+            .filter(i => i.latitude && i.longitude)
+            .map(i => [parseFloat(i.latitude), parseFloat(i.longitude)]);
+          if (incPts.length) {
+            const n = countNearby(latlng, incPts, 200);
+            const level = n >= 8 ? "HIGH" : n >= 3 ? "MEDIUM" : "LOW";
+            rows.push(`<div class="risk-row"><span>Police incidents nearby</span>${riskBadge(level)}</div>`);
+          }
+        }
+
         if (!rows.length) return "";
         return `
           <div class="risk-section">
