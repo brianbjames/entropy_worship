@@ -660,6 +660,39 @@
         border-top: 1px solid #1e1e1e;
       }
 
+      /* ── Risk factors ────────────────────────────────────────────────────── */
+      .risk-section {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #1e1e1e;
+      }
+      .risk-section-label {
+        font-size: 9px;
+        color: #555;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+      }
+      .risk-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 11px;
+        color: #aaa;
+        margin-bottom: 3px;
+      }
+      .risk-badge {
+        font-size: 9px;
+        font-weight: bold;
+        border-radius: 3px;
+        padding: 1px 5px;
+        color: #000;
+        flex-shrink: 0;
+      }
+      .risk-low    { background: #00cc88; }
+      .risk-medium { background: #ffaa00; }
+      .risk-high   { background: #ff4444; }
+
       .recs-header {
         color: #666;
         font-size: 9px;
@@ -1492,6 +1525,70 @@
         return unique;
       }
 
+      // ── Composite risk scoring ────────────────────────────────────────────
+      function countNearby(latlng, points, radiusM) {
+        // points: array of [lat, lng] or [lat, lng, ...]
+        const lat1 = latlng.lat * Math.PI / 180;
+        const lng1 = latlng.lng * Math.PI / 180;
+        let count = 0;
+        for (const p of points) {
+          const lat2 = p[0] * Math.PI / 180;
+          const dlat = lat2 - lat1;
+          const dlng = (p[1] * Math.PI / 180) - lng1;
+          const a = Math.sin(dlat / 2) ** 2 + Math.cos(lat1) * Math.cos(lat2) * Math.sin(dlng / 2) ** 2;
+          if (6371000 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)) <= radiusM) count++;
+        }
+        return count;
+      }
+
+      function riskBadge(level) {
+        const cls = { LOW: "risk-low", MEDIUM: "risk-medium", HIGH: "risk-high" };
+        return `<span class="risk-badge ${cls[level]}">${level}</span>`;
+      }
+
+      function buildRiskHtml(latlng) {
+        const rows = [];
+
+        // Break-in risk (200m radius)
+        if (breakinsLoaded && breakinsPoints.length) {
+          const n = countNearby(latlng, breakinsPoints, 200);
+          const level = n >= 6 ? "HIGH" : n >= 3 ? "MEDIUM" : "LOW";
+          rows.push(`<div class="risk-row"><span>Vehicle break-ins nearby</span>${riskBadge(level)}</div>`);
+        }
+
+        // Citation risk — build coordinate list from geocache (200m radius)
+        if (citationsData.length && citationsGeoCache.size) {
+          const citPts = [];
+          for (const coords of citationsGeoCache.values()) {
+            if (coords) citPts.push(coords);
+          }
+          if (citPts.length) {
+            const n = countNearby(latlng, citPts, 200);
+            const level = n >= 10 ? "HIGH" : n >= 4 ? "MEDIUM" : "LOW";
+            rows.push(`<div class="risk-row"><span>Parking citations nearby</span>${riskBadge(level)}</div>`);
+          }
+        }
+
+        // Abandoned vehicle density (200m radius)
+        if (towsData.length) {
+          const towsPts = towsData
+            .filter(t => t[towsLatField] && t[towsLngField])
+            .map(t => [parseFloat(t[towsLatField]), parseFloat(t[towsLngField])]);
+          if (towsPts.length) {
+            const n = countNearby(latlng, towsPts, 200);
+            const level = n >= 4 ? "HIGH" : n >= 2 ? "MEDIUM" : "LOW";
+            rows.push(`<div class="risk-row"><span>Abandoned vehicles nearby</span>${riskBadge(level)}</div>`);
+          }
+        }
+
+        if (!rows.length) return "";
+        return `
+          <div class="risk-section">
+            <div class="risk-section-label">Area risk</div>
+            ${rows.join("")}
+          </div>`;
+      }
+
       // ── Verdict panel ─────────────────────────────────────────────────────
       function showVerdict(latlng, label) {
         lastSearchLabel = label;
@@ -1680,6 +1777,7 @@
           ${label ? `<div class="result-address">${label}</div>` : ""}
           ${verdictHtml}
           ${rows ? `<div class="result-rows">${rows}</div>` : ""}
+          ${buildRiskHtml(latlng)}
           ${recsHtml}
         `;
         panel.style.display = "block";
