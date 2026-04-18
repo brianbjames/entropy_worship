@@ -1456,6 +1456,7 @@
 
       // ── Parking recommendations ───────────────────────────────────────────
       let _lastRecs = [];
+      let _sortedRecs = [];
       let _recMarkers = [];
       let _routeLayer = null;
       let _routeAbort = null;
@@ -1484,28 +1485,32 @@
         return coords;
       }
 
-      async function drawParkingRoute(origin, recs) {
+      function greedySortRecs(origin, recs) {
+        const items = recs.map((r, i) => ({ r, pt: featureMidpoint(r.f), i })).filter(x => x.pt);
+        const sorted = [];
+        let cur = origin;
+        while (items.length) {
+          let bestIdx = 0, bestDist = Infinity;
+          items.forEach((x, i) => {
+            const d = Math.hypot(x.pt.lat - cur.lat, x.pt.lng - cur.lng);
+            if (d < bestDist) { bestDist = d; bestIdx = i; }
+          });
+          const best = items.splice(bestIdx, 1)[0];
+          sorted.push(best.r);
+          cur = best.pt;
+        }
+        return sorted;
+      }
+
+      async function drawParkingRoute(origin, sortedRecs) {
         if (_routeAbort) { _routeAbort.abort(); }
         if (_routeLayer) { map.removeLayer(_routeLayer); _routeLayer = null; }
         const controller = new AbortController();
         _routeAbort = controller;
 
-        // Greedy nearest-neighbor sort from origin to avoid triangle artifacts
-        const pts = recs.map(({ f }) => featureMidpoint(f)).filter(Boolean);
+        const pts = sortedRecs.map(({ f }) => featureMidpoint(f)).filter(Boolean);
         if (pts.length === 0) return;
-        const sorted = [];
-        const remaining = [...pts];
-        let cur = origin;
-        while (remaining.length) {
-          let bestIdx = 0, bestDist = Infinity;
-          remaining.forEach((p, i) => {
-            const d = Math.hypot(p.lat - cur.lat, p.lng - cur.lng);
-            if (d < bestDist) { bestDist = d; bestIdx = i; }
-          });
-          sorted.push(remaining.splice(bestIdx, 1)[0]);
-          cur = sorted[sorted.length - 1];
-        }
-        const waypoints = [origin, ...sorted];
+        const waypoints = [origin, ...pts];
         const routeStyle = { color: "#cc44ff", weight: 3, opacity: 0.85, dashArray: "8 6" };
 
         if (controller.signal.aborted) return;
@@ -1867,6 +1872,7 @@
 
         // Build recommendations
         _lastRecs = findRecommendations(latlng);
+        _sortedRecs = greedySortRecs(latlng, _lastRecs);
 
         // Place blue pins at each recommended location
         _lastRecs.forEach(({ f }) => {
@@ -1882,14 +1888,12 @@
           _recMarkers.push(m);
         });
 
-        if (_lastRecs.length >= 2) drawParkingRoute(latlng, _lastRecs);
+        if (_lastRecs.length >= 2) drawParkingRoute(latlng, _sortedRecs);
 
         let recsHtml = "";
         if (_lastRecs.length > 0) {
           const hasParkWindow = parkUntilHour > activeHour;
-          const hdr = hasParkWindow
-            ? "Try to park here"
-            : "Try to park here";
+          const hdr = hasParkWindow ? "Try to park here" : "Try to park here";
           recsHtml = `
             <div class="recs-section">
               <div class="verdict verdict-parksafe">${hdr}</div>
@@ -1908,6 +1912,26 @@
           `;
         }
 
+        let routeOrderHtml = "";
+        if (_sortedRecs.length >= 2) {
+          const NUMS = ["①","②","③","④","⑤","⑥","⑦","⑧"];
+          routeOrderHtml = `
+            <div class="recs-section">
+              <div class="verdict verdict-parksafe" style="color:#cc44ff;border-color:#5a2a7a;background:#1a0a2a">Recommended parking route</div>
+              ${_sortedRecs.map(({ f, d }, i) => {
+                const p = f.properties;
+                const reason = parkSafeReason(p.fromhour, p.tohour);
+                return `<div class="rec-row" data-route-idx="${i}">
+                  <span style="color:#cc44ff;flex-shrink:0;min-width:14px">${i + 1}.</span>
+                  <span class="rec-name" style="color:#cc44ff">${p.corridor || "—"}</span>
+                  <span class="rec-why">${reason}</span>
+                  <span class="rec-dist">${Math.round(d)}m</span>
+                </div>`;
+              }).join("")}
+            </div>
+          `;
+        }
+
         const panel = document.getElementById("result-panel");
         panel.innerHTML = `
           ${label ? `<div class="result-address">${label}</div>` : ""}
@@ -1916,6 +1940,7 @@
           ${rows ? `<div class="result-rows">${rows}</div>` : ""}
           ${buildRiskHtml(latlng)}
           ${recsHtml}
+          ${routeOrderHtml}
         `;
         panel.style.display = "block";
 
