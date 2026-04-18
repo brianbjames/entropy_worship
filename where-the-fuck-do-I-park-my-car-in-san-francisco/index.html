@@ -172,8 +172,8 @@
       }
 
       .legend .subtitle {
-        color: #ccc;
-        font-size: 11px;
+        color: #e0e0e0;
+        font-size: 12px;
         margin-bottom: 12px;
       }
 
@@ -187,7 +187,7 @@
         display: flex;
         align-items: center;
         gap: 9px;
-        font-size: 12px;
+        font-size: 13px;
         margin: 5px 0;
       }
 
@@ -199,9 +199,9 @@
       }
 
       .legend-count {
-        color: #ccc;
+        color: #e0e0e0;
         margin-left: auto;
-        font-size: 11px;
+        font-size: 12px;
         min-width: 28px;
         text-align: right;
       }
@@ -261,16 +261,16 @@
       }
 
       #search-input::placeholder {
-        color: #666;
+        color: #999;
       }
       #search-input:focus {
-        border-color: #666;
+        border-color: #888;
       }
 
       #search-btn {
         background: #181818;
         border: 1px solid #3a3a3a;
-        color: #ddd;
+        color: #fff;
         padding: 6px 10px;
         font-family:
           "Inter",
@@ -278,7 +278,7 @@
           BlinkMacSystemFont,
           "Segoe UI",
           sans-serif;
-        font-size: 11px;
+        font-size: 12px;
         border-radius: 2px;
         cursor: pointer;
         letter-spacing: 1px;
@@ -303,9 +303,9 @@
       #locate-btn {
         background: #181818;
         border: 1px solid #3a3a3a;
-        color: #ddd;
+        color: #fff;
         padding: 6px 10px;
-        font-size: 11px;
+        font-size: 12px;
         border-radius: 2px;
         cursor: pointer;
         letter-spacing: 1px;
@@ -324,7 +324,7 @@
       }
 
       .verdict {
-        font-size: 10px;
+        font-size: 11px;
         font-weight: bold;
         letter-spacing: 1px;
         text-transform: uppercase;
@@ -365,8 +365,8 @@
       }
 
       .result-address {
-        color: #ddd;
-        font-size: 11px;
+        color: #fff;
+        font-size: 12px;
         margin-bottom: 6px;
         white-space: nowrap;
         overflow: hidden;
@@ -374,7 +374,7 @@
       }
 
       .result-rows {
-        font-size: 11px;
+        font-size: 12px;
         line-height: 1.9;
       }
       .result-rows .r-active {
@@ -387,7 +387,7 @@
         color: #44bb55;
       }
       .result-rows .r-dim {
-        color: #aaa;
+        color: #bbb;
       }
 
       /* ── Time section ────────────────────────────────────────────────────── */
@@ -403,14 +403,14 @@
       .day-btn {
         background: #111;
         border: 1px solid #2e2e2e;
-        color: #ccc;
+        color: #eee;
         font-family:
           "Inter",
           -apple-system,
           BlinkMacSystemFont,
           "Segoe UI",
           sans-serif;
-        font-size: 10px;
+        font-size: 11px;
         padding: 3px 8px;
         border-radius: 2px;
         cursor: pointer;
@@ -474,8 +474,8 @@
       .time-ticks {
         display: flex;
         justify-content: space-between;
-        color: #aaa;
-        font-size: 9px;
+        color: #ccc;
+        font-size: 10px;
         margin-top: 5px;
         letter-spacing: 0.5px;
       }
@@ -702,8 +702,8 @@
         border-top: 1px solid #1e1e1e;
       }
       .risk-section-label {
-        font-size: 9px;
-        color: #555;
+        font-size: 10px;
+        color: #999;
         letter-spacing: 2px;
         text-transform: uppercase;
         margin-bottom: 5px;
@@ -712,12 +712,12 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        font-size: 11px;
-        color: #aaa;
+        font-size: 12px;
+        color: #ccc;
         margin-bottom: 3px;
       }
       .risk-badge {
-        font-size: 9px;
+        font-size: 10px;
         font-weight: bold;
         border-radius: 3px;
         padding: 1px 5px;
@@ -740,7 +740,7 @@
         display: flex;
         align-items: baseline;
         gap: 5px;
-        font-size: 11px;
+        font-size: 12px;
         line-height: 1.9;
         cursor: pointer;
         color: #4499ff;
@@ -751,15 +751,15 @@
       }
 
       .rec-dist {
-        color: #555;
-        font-size: 10px;
+        color: #999;
+        font-size: 11px;
         margin-left: auto;
         white-space: nowrap;
       }
 
       .rec-why {
-        color: #555;
-        font-size: 10px;
+        color: #999;
+        font-size: 11px;
         white-space: nowrap;
       }
 
@@ -767,14 +767,14 @@
       .meters-toggle {
         background: #111;
         border: 1px solid #2e2e2e;
-        color: #666;
+        color: #bbb;
         font-family:
           "Inter",
           -apple-system,
           BlinkMacSystemFont,
           "Segoe UI",
           sans-serif;
-        font-size: 9px;
+        font-size: 10px;
         padding: 2px 7px;
         border-radius: 2px;
         cursor: pointer;
@@ -785,8 +785,8 @@
       }
 
       .meters-toggle:hover {
-        border-color: #555;
-        color: #ccc;
+        border-color: #666;
+        color: #fff;
       }
 
       .meters-toggle.meters-on {
@@ -878,7 +878,7 @@
       <!-- Data overlays -->
       <div class="panel-section legend">
         <div class="legend-row" style="align-items: center">
-          <span style="font-size: 11px; color: #ccc">Parking Meters</span>
+          <span style="font-size: 12px; color: #fff">Parking Meters</span>
           <span id="meters-status"></span>
           <button class="meters-toggle" id="meters-toggle">Off</button>
         </div>
@@ -898,8 +898,8 @@
         </div>
         <hr />
         <div class="legend-row" style="align-items: center">
-          <span style="font-size: 11px; color: #ccc">Police Incidents</span>
-          <span id="incidents-status" style="font-size: 10px; color: #aaa; margin-left: 4px;"></span>
+          <span style="font-size: 12px; color: #fff">Police Incidents</span>
+          <span id="incidents-status" style="font-size: 10px; color: #bbb; margin-left: 4px;"></span>
           <button class="meters-toggle" id="incidents-toggle">Off</button>
         </div>
         <div id="incidents-legend" style="display: none">
@@ -918,8 +918,8 @@
         </div>
         <hr />
         <div class="legend-row" style="align-items: center">
-          <span style="font-size: 11px; color: #ccc">Traffic Crashes</span>
-          <span id="crashes-status" style="font-size: 10px; color: #aaa; margin-left: 4px;"></span>
+          <span style="font-size: 12px; color: #fff">Traffic Crashes</span>
+          <span id="crashes-status" style="font-size: 10px; color: #bbb; margin-left: 4px;"></span>
           <button class="meters-toggle" id="crashes-toggle">Off</button>
         </div>
         <div id="crashes-legend" style="display: none">
@@ -938,8 +938,8 @@
         </div>
         <hr />
         <div class="legend-row" style="align-items: center">
-          <span style="font-size: 11px; color: #ccc">Street Permits</span>
-          <span id="permits-status" style="font-size: 10px; color: #aaa; margin-left: 4px;"></span>
+          <span style="font-size: 12px; color: #fff">Street Permits</span>
+          <span id="permits-status" style="font-size: 10px; color: #bbb; margin-left: 4px;"></span>
           <button class="meters-toggle" id="permits-toggle">Off</button>
         </div>
         <div id="permits-legend" style="display: none">
@@ -951,8 +951,8 @@
         </div>
         <hr />
         <div class="legend-row" style="align-items: center">
-          <span style="font-size: 11px; color: #ccc">Parking Citations</span>
-          <span id="citations-status" style="font-size: 10px; color: #aaa; margin-left: 4px;"></span>
+          <span style="font-size: 12px; color: #fff">Parking Citations</span>
+          <span id="citations-status" style="font-size: 10px; color: #bbb; margin-left: 4px;"></span>
           <button class="meters-toggle" id="citations-toggle">Off</button>
         </div>
         <div id="citations-legend" style="display: none">
@@ -964,8 +964,8 @@
         </div>
         <hr />
         <div class="legend-row" style="align-items: center">
-          <span style="font-size: 11px; color: #ccc">Car Break-ins</span>
-          <span id="breakins-status" style="font-size: 10px; color: #aaa; margin-left: 4px;"></span>
+          <span style="font-size: 12px; color: #fff">Car Break-ins</span>
+          <span id="breakins-status" style="font-size: 10px; color: #bbb; margin-left: 4px;"></span>
           <button class="meters-toggle" id="breakins-toggle">Off</button>
         </div>
         <div id="breakins-legend" style="display: none">
@@ -977,8 +977,8 @@
         </div>
         <hr />
         <div class="legend-row" style="align-items: center">
-          <span style="font-size: 11px; color: #ccc">Abandoned Vehicles</span>
-          <span id="tows-status" style="font-size: 10px; color: #aaa; margin-left: 4px;"></span>
+          <span style="font-size: 12px; color: #fff">Abandoned Vehicles</span>
+          <span id="tows-status" style="font-size: 10px; color: #bbb; margin-left: 4px;"></span>
           <button class="meters-toggle" id="tows-toggle">Off</button>
         </div>
         <div id="tows-legend" style="display: none">
@@ -990,8 +990,8 @@
         </div>
         <hr />
         <div class="legend-row" style="align-items: center">
-          <span style="font-size: 11px; color: #ccc">Residential Permit Zones</span>
-          <span id="rpp-status" style="font-size: 10px; color: #aaa; margin-left: 4px;"></span>
+          <span style="font-size: 12px; color: #fff">Residential Permit Zones</span>
+          <span id="rpp-status" style="font-size: 10px; color: #bbb; margin-left: 4px;"></span>
           <button class="meters-toggle" id="rpp-toggle">Off</button>
         </div>
         <div id="rpp-legend" style="display: none">
@@ -1006,8 +1006,8 @@
         </div>
         <hr />
         <div class="legend-row" style="align-items: center">
-          <span style="font-size: 11px; color: #ccc">Special Events</span>
-          <span id="events-status" style="font-size: 10px; color: #aaa; margin-left: 4px;"></span>
+          <span style="font-size: 12px; color: #fff">Special Events</span>
+          <span id="events-status" style="font-size: 10px; color: #bbb; margin-left: 4px;"></span>
           <button class="meters-toggle" id="events-toggle">Off</button>
         </div>
         <div id="events-legend" style="display: none">
@@ -1019,8 +1019,8 @@
         </div>
         <hr />
         <div class="legend-row" style="align-items: center">
-          <span style="font-size: 11px; color: #ccc">Parking Garages</span>
-          <span id="garages-status" style="font-size: 10px; color: #aaa; margin-left: 4px;"></span>
+          <span style="font-size: 12px; color: #fff">Parking Garages</span>
+          <span id="garages-status" style="font-size: 10px; color: #bbb; margin-left: 4px;"></span>
           <button class="meters-toggle" id="garages-toggle">Off</button>
         </div>
         <div id="garages-legend" style="display: none">
@@ -1037,8 +1037,8 @@
         </div>
         <hr />
         <div class="legend-row" style="align-items: center">
-          <span style="font-size: 11px; color: #ccc">Neighborhood Score</span>
-          <span id="nhood-status" style="font-size: 10px; color: #aaa; margin-left: 4px;"></span>
+          <span style="font-size: 12px; color: #fff">Neighborhood Score</span>
+          <span id="nhood-status" style="font-size: 10px; color: #bbb; margin-left: 4px;"></span>
           <button class="meters-toggle" id="nhood-toggle">Off</button>
         </div>
         <div id="nhood-legend" style="display: none">
@@ -2573,7 +2573,7 @@
         el.style.borderColor = "#553300";
         el.style.color = "#ffaa44";
         el.innerHTML = `
-          <div style="font-size:13px;letter-spacing:1px;margin-bottom:8px">DataSF API unavailable</div>
+          <div style="font-size:13px;letter-spacing:1px;margin-bottom:8px">DataSF API may be down</div>
           <div style="font-size:11px;color:#888;line-height:1.8;letter-spacing:0">
             Street data could not be loaded.<br>Try again in a few minutes.
           </div>
