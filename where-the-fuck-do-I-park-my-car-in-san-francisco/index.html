@@ -106,23 +106,49 @@
       }
 
       /* ── Combined control panel ──────────────────────────────────────────── */
-      #control-panel {
+      #panel-wrapper {
         position: fixed;
         top: 10px;
         right: 10px;
         z-index: 1000;
+        clip-path: polygon(
+          14px 0%, 100% 0%,
+          100% calc(100% - 14px), calc(100% - 14px) 100%,
+          0% 100%, 0% 14px
+        );
+        filter:
+          drop-shadow(0 0 8px rgba(68, 153, 255, 0.28))
+          drop-shadow(0 0 24px rgba(68, 153, 255, 0.12));
+      }
+
+      /* Bright accent at the cut corner */
+      #panel-wrapper::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 14px;
+        height: 14px;
+        background: linear-gradient(
+          135deg,
+          rgba(120, 210, 255, 0.75) 0%,
+          rgba(68, 153, 255, 0.2) 60%,
+          transparent 100%
+        );
+        pointer-events: none;
+        z-index: 10001;
+      }
+
+      #control-panel {
+        position: relative;
         background: rgba(8, 8, 8, 0.75);
         border: 1px solid #1e3a4a;
-        border-radius: 3px;
         width: 280px;
         color: #fff;
         max-height: calc(100dvh - 50px);
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
-        box-shadow:
-          0 0 18px rgba(68, 153, 255, 0.18),
-          0 0 40px rgba(68, 153, 255, 0.07),
-          inset 0 0 30px rgba(0, 0, 0, 0.4);
+        box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.4);
       }
 
       #panel-drag-handle {
@@ -405,9 +431,8 @@
       /* ── Day selector ────────────────────────────────────────────────────── */
       #day-selector {
         display: flex;
-        gap: 4px;
+        gap: 3px;
         margin-bottom: 10px;
-        flex-wrap: wrap;
       }
 
       .day-btn {
@@ -420,12 +445,14 @@
           BlinkMacSystemFont,
           "Segoe UI",
           sans-serif;
-        font-size: 11px;
-        padding: 3px 8px;
+        font-size: 10px;
+        padding: 3px 2px;
         border-radius: 2px;
         cursor: pointer;
         letter-spacing: 0.5px;
         white-space: nowrap;
+        flex: 1;
+        text-align: center;
       }
 
       .day-btn:hover {
@@ -511,9 +538,8 @@
 
       #park-day-selector {
         display: flex;
-        gap: 4px;
+        gap: 3px;
         margin-bottom: 10px;
-        flex-wrap: wrap;
       }
 
       #park-slider {
@@ -925,6 +951,7 @@
     </div>
     <div id="loading">Loading street cleaning data&hellip;</div>
 
+    <div id="panel-wrapper">
     <div id="control-panel">
       <!-- Legend -->
       <div class="panel-section legend">
@@ -1189,8 +1216,8 @@
           <span style="font-size:10px;color:#666">Data is fetched from <a href="https://datasf.org/opendata/" target="_blank" style="color:#888">DataSF</a></span>
         </div>
       </div>
-    </div>
-
+    </div><!-- /#control-panel -->
+    </div><!-- /#panel-wrapper -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
     <script>
@@ -2334,7 +2361,7 @@
           const di = d.getDay();
           let label;
           if (i === 0) label = "Today";
-          else label = DAY_NAMES[di];
+          else label = DAY_ABBR[di];
           options.push({ date: d, label, offset: i });
         }
 
@@ -2370,7 +2397,7 @@
           const btn = document.createElement("button");
           btn.className =
             "day-btn" + (i === parkUntilDayOffset ? " active" : "");
-          btn.textContent = DAY_NAMES[d.getDay()];
+          btn.textContent = DAY_ABBR[d.getDay()];
           btn.dataset.offset = i;
           btn.addEventListener("click", () => {
             document
@@ -4729,7 +4756,7 @@
       });
       // ── Draggable control panel ───────────────────────────────────────────
       (function () {
-        const panel  = document.getElementById("control-panel");
+        const panel  = document.getElementById("panel-wrapper");
         const handle = document.getElementById("panel-drag-handle");
         let dragging = false, startX, startY, startLeft, startTop;
 
