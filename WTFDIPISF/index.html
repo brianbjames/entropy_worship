@@ -188,15 +188,18 @@
 
       #panel-title {
         margin: 0;
-        font-family: "Courier New", Courier, monospace;
-        font-size: 35px;
-        font-weight: 700;
-        letter-spacing: 3px;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+        font-size: 28px;
+        font-weight: 900;
+        letter-spacing: 4px;
         text-transform: uppercase;
         color: #78d2ff;
         text-shadow:
-          0 0 6px #4499ff,
-          0 0 18px rgba(68, 153, 255, 0.5);
+          0 0 4px rgba(68, 153, 255, 0.4),
+          0 0 10px rgba(68, 153, 255, 0.15);
+        padding: 4px 10px 4px 8px;
+        border-bottom: 1px solid rgba(68, 153, 255, 0.2);
+        background: rgba(68, 153, 255, 0.05);
       }
 
       #panel-drag-handle:active {
@@ -1165,16 +1168,19 @@
 
       /* ── Flowing route line dashes ───────────────────────────────────────── */
       @keyframes route-flow {
-        to {
-          stroke-dashoffset: -14;
-        }
+        to { stroke-dashoffset: -14; }
+      }
+      @keyframes route-glow-pulse {
+        0%, 100% { opacity: 0.08; }
+        50%       { opacity: 0.38; }
+      }
+      .route-glow-layer {
+        animation: route-glow-pulse 1.6s ease-in-out infinite;
       }
       .route-pulse {
         animation:
           route-pulse 3.2s ease-in-out infinite,
           route-flow 0.55s linear infinite;
-        filter: drop-shadow(0 0 4px #cc44ff) drop-shadow(0 0 10px #cc44ff)
-          drop-shadow(0 0 22px rgba(204, 68, 255, 0.6));
       }
 
       /* ── Crash hazard strobe ─────────────────────────────────────────────── */
@@ -1223,7 +1229,17 @@
         opacity: 0.5;
       }
 
-      /* ── Incident radar ping ─────────────────────────────────────────────── */
+      /* ── Incident flash glow ─────────────────────────────────────────────── */
+      @keyframes incident-flash {
+        0%, 100% {
+          box-shadow: 0 0 4px #ff4466, 0 0 10px rgba(255,68,102,0.6);
+          opacity: 1;
+        }
+        50% {
+          box-shadow: 0 0 12px #ff4466, 0 0 28px rgba(255,68,102,0.9), 0 0 48px rgba(255,68,102,0.4);
+          opacity: 0.4;
+        }
+      }
       @keyframes radar-ping {
         0% {
           transform: translate(-50%, -50%) scale(0.4);
@@ -1236,37 +1252,21 @@
       }
       .incident-ping-pin {
         position: relative;
-        width: 18px;
-        height: 18px;
+        width: 36px;
+        height: 36px;
       }
       .incident-dot {
         position: absolute;
-        top: 50%;
-        left: 50%;
+        top: 50%; left: 50%;
         transform: translate(-50%, -50%);
-        width: 6px;
-        height: 6px;
+        width: 28px; height: 28px;
         border-radius: 50%;
         background: #ff4466;
-        box-shadow:
-          0 0 4px #ff4466,
-          0 0 10px rgba(255, 68, 102, 0.6);
+        box-shadow: 0 0 4px #ff4466, 0 0 10px rgba(255,68,102,0.6);
+        animation: incident-flash 1.2s ease-in-out infinite;
       }
       .incident-ring {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        border: 1.5px solid #ff4466;
-        animation: radar-ping 2.1s ease-out infinite;
-      }
-      .incident-ring:nth-child(3) {
-        animation-delay: 0.7s;
-      }
-      .incident-ring:nth-child(4) {
-        animation-delay: 1.4s;
+        display: none;
       }
 
       /* ── Marching ants (events + RPP) ───────────────────────────────────── */
@@ -1500,8 +1500,8 @@
               <div
                 class="legend-dot"
                 style="
-                  background: #bb44ff;
-                  border: 2px solid #bb44ff;
+                  background: #ffaa00;
+                  border: 2px solid #ffaa00;
                   box-sizing: border-box;
                 "
               ></div>
@@ -1574,7 +1574,7 @@
                   box-sizing: border-box;
                 "
               ></div>
-              <span>Recent incidents within 24 hours</span>
+              <span>Recent within 24 hours</span>
               <span class="legend-count" id="cnt-incidents">&mdash;</span>
             </div>
           </div>
@@ -1628,7 +1628,7 @@
           </div>
           <hr />
           <div class="legend-row" style="align-items: center">
-            <span style="font-size: 12px; color: #fff">Neighborhood Score</span>
+            <span style="font-size: 12px; color: #fff">Neighborhood Score Overlay</span>
             <span
               id="nhood-status"
               style="font-size: 10px; color: #bbb; margin-left: 4px"
@@ -2217,6 +2217,7 @@
       let _sortedRecs = [];
       let _recMarkers = [];
       let _routeLayer = null;
+      let _routeGlowLayer = null;
       let _routeAbort = null;
       let _postSwitchOverride = null; // { activeHour, parkUntilHour } applied after next renderGeoJSON
 
@@ -2231,9 +2232,11 @@
           map.removeLayer(_routeLayer);
           _routeLayer = null;
         }
+        if (_routeGlowLayer) {
+          map.removeLayer(_routeGlowLayer);
+          _routeGlowLayer = null;
+        }
       }
-
-      // Precision-6 polyline decoder for Valhalla responses
       function decodePolyline6(str) {
         const coords = [];
         let lat = 0,
@@ -2293,6 +2296,10 @@
           map.removeLayer(_routeLayer);
           _routeLayer = null;
         }
+        if (_routeGlowLayer) {
+          map.removeLayer(_routeGlowLayer);
+          _routeGlowLayer = null;
+        }
         const controller = new AbortController();
         _routeAbort = controller;
 
@@ -2307,6 +2314,12 @@
           opacity: 0.9,
           dashArray: "8 6",
           className: "route-pulse",
+        };
+        const glowStyle = {
+          color: "#cc44ff",
+          weight: 22,
+          opacity: 0,
+          className: "route-glow-layer",
         };
 
         if (controller.signal.aborted) return;
@@ -2328,6 +2341,8 @@
             const geom = data.routes?.[0]?.geometry;
             if (!geom) continue;
             if (_routeLayer) map.removeLayer(_routeLayer);
+            if (_routeGlowLayer) map.removeLayer(_routeGlowLayer);
+            _routeGlowLayer = L.geoJSON(geom, { style: glowStyle }).addTo(map);
             _routeLayer = L.geoJSON(geom, { style: routeStyle }).addTo(map);
             return;
           } catch (e) {
@@ -2360,6 +2375,11 @@
             );
             if (allCoords.length > 0) {
               if (_routeLayer) map.removeLayer(_routeLayer);
+              if (_routeGlowLayer) map.removeLayer(_routeGlowLayer);
+              _routeGlowLayer = L.geoJSON(
+                { type: "LineString", coordinates: allCoords },
+                { style: glowStyle },
+              ).addTo(map);
               _routeLayer = L.geoJSON(
                 { type: "LineString", coordinates: allCoords },
                 { style: routeStyle },
@@ -4013,8 +4033,8 @@
             icon: L.divIcon({
               html: `<div class="incident-ping-pin"><div class="incident-dot"></div><div class="incident-ring"></div><div class="incident-ring"></div><div class="incident-ring"></div></div>`,
               className: "",
-              iconSize: [18, 18],
-              iconAnchor: [9, 9],
+              iconSize: [36, 36],
+              iconAnchor: [18, 18],
             }),
           });
 
@@ -4384,9 +4404,9 @@
             points.map(([lat, lng]) =>
               L.circleMarker([lat, lng], {
                 radius: 5,
-                color: "#bb44ff",
+                color: "#ffaa00",
                 weight: 2,
-                fillColor: "#bb44ff",
+                fillColor: "#ffaa00",
                 fillOpacity: 0.5,
               }),
             ),
@@ -4404,9 +4424,9 @@
           max: 1,
           minOpacity: 0.55,
           gradient: {
-            0: "#8800ee",
-            0.4: "#bb44ff",
-            0.75: "#ee99ff",
+            0: "#cc6600",
+            0.4: "#ffaa00",
+            0.75: "#ffdd88",
             1.0: "#ffffff",
           },
         }).addTo(map);
@@ -5775,6 +5795,10 @@
               const el = layer.getElement ? layer.getElement() : null;
               if (el)
                 el.style.animationDelay = (Math.random() * 5).toFixed(2) + "s";
+            });
+            // Forward click to map so pin-drop still works
+            layer.on("click", (e) => {
+              showVerdict(e.latlng, null);
             });
             layer.bindTooltip(f.properties.nhood, {
               sticky: true,
