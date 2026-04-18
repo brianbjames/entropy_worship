@@ -814,7 +814,7 @@
             <div
               class="legend-dot"
               style="
-                background: transparent;
+                background: #1e7a38;
                 border: 2px solid #1e7a38;
                 box-sizing: border-box;
               "
@@ -923,7 +923,7 @@
         </div>
         <div id="events-legend" style="display: none">
           <div class="legend-row" style="margin-top: 4px">
-            <div class="legend-line" style="background: #ff2200; height: 3px; width: 18px; border-radius: 2px; flex-shrink: 0;"></div>
+            <div class="legend-line" style="background: #ff44aa; height: 3px; width: 18px; border-radius: 2px; flex-shrink: 0;"></div>
             <span>Street closures &amp; events</span>
             <span class="legend-count" id="cnt-events">&mdash;</span>
           </div>
@@ -938,11 +938,12 @@
           <div class="legend-row" style="margin-top: 4px">
             <div class="legend-dot" style="background: #00cc88; border: 2px solid #00cc88; box-sizing: border-box;"></div>
             <span>Open now</span>
+            <span class="legend-count" id="cnt-garages-open">&mdash;</span>
           </div>
           <div class="legend-row" style="margin-top: 2px">
             <div class="legend-dot" style="background: transparent; border: 2px solid #555; box-sizing: border-box;"></div>
             <span>Closed / unknown</span>
-            <span class="legend-count" id="cnt-garages">&mdash;</span>
+            <span class="legend-count" id="cnt-garages-closed">&mdash;</span>
           </div>
         </div>
       </div>
@@ -2502,7 +2503,7 @@
             color: color,
             weight: 2,
             fillColor: color,
-            fillOpacity: 0.15,
+            fillOpacity: 0.85,
           });
 
           const regs = [
@@ -3646,14 +3647,14 @@
 
         eventsLayer = L.geoJSON(geojson, {
           style: () => ({
-            color: "#ff2200",
+            color: "#ff44aa",
           }),
           pointToLayer: (feature, latlng) =>
             L.circleMarker(latlng, {
               radius: 7,
-              color: "#ff2200",
+              color: "#ff44aa",
               weight: 2,
-              fillColor: "#ff2200",
+              fillColor: "#ff44aa",
               fillOpacity: 0.3,
             }),
           onEachFeature: (feature, layer) => {
@@ -3790,6 +3791,7 @@
 
         let cnt = 0;
         garagesLayer = L.layerGroup();
+        let cntOpen = 0, cntClosed = 0;
 
         for (const row of garagesData) {
           const geom = row.the_geom;
@@ -3817,7 +3819,7 @@
             color,
             weight: 2,
             fillColor: color,
-            fillOpacity: open === true ? 0.25 : 0.05,
+            fillOpacity: open === true ? 0.85 : 0.05,
             opacity,
           });
 
@@ -3835,11 +3837,14 @@
 
           garagesLayer.addLayer(marker);
           cnt++;
+          if (open === true) cntOpen++; else cntClosed++;
         }
 
         garagesLayer.addTo(map);
-        const el = document.getElementById("cnt-garages");
-        if (el) el.textContent = cnt.toLocaleString();
+        const elOpen = document.getElementById("cnt-garages-open");
+        const elClosed = document.getElementById("cnt-garages-closed");
+        if (elOpen) elOpen.textContent = cntOpen.toLocaleString();
+        if (elClosed) elClosed.textContent = cntClosed.toLocaleString();
       }
 
       async function fetchGarages() {
