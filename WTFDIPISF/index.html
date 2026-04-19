@@ -7237,8 +7237,10 @@
             controlPanel.classList.remove("panel-collapsed");
           }
         }
+        let _justDoubleTapped = false;
         handle.addEventListener("dblclick", (e) => {
           if (_dragMoved) return;
+          if (_justDoubleTapped) { _justDoubleTapped = false; return; }
           e.preventDefault();
           toggleCollapsed();
         });
@@ -7249,6 +7251,8 @@
           const now = Date.now();
           if (now - _lastTap < 350) {
             e.preventDefault();
+            _justDoubleTapped = true;
+            setTimeout(() => { _justDoubleTapped = false; }, 600);
             toggleCollapsed();
             _lastTap = 0;
           } else {
