@@ -7285,10 +7285,11 @@
           "touchmove",
           (e) => {
             if (!dragging) return;
+            e.preventDefault();
             const t = e.touches[0];
             moveDrag(t.clientX, t.clientY);
           },
-          { passive: true },
+          { passive: false },
         );
         document.addEventListener("touchend", endDrag);
 
