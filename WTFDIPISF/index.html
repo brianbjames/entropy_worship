@@ -3290,6 +3290,9 @@
       });
 
       // ── Map click → verdict ───────────────────────────────────────────────
+      // Stamp _lastLayerClick whenever any popup opens so the debounce covers all layers
+      map.on("popupopen", () => { _lastLayerClick = Date.now(); });
+
       map.on("click", async (e) => {
         if (Date.now() - _lastLayerClick < 400) return; // layer already handled this (400ms covers mobile synthetic click delay)
         showVerdict(e.latlng, null);
