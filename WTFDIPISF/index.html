@@ -980,7 +980,7 @@
         font-size: 12px;
         line-height: 1.9;
         cursor: pointer;
-        color: #4499ff;
+        color: #cc44ff;
       }
 
       .rec-row:hover .rec-name {
@@ -2770,15 +2770,15 @@
         _lastRecs = findRecommendations(latlng);
         _sortedRecs = greedySortRecs(latlng, _lastRecs);
 
-        // Place blue pins at each recommended location
+        // Place purple pins at each recommended location
         _lastRecs.forEach(({ f }) => {
           const mid = featureMidpoint(f);
           if (!mid) return;
           const m = L.circleMarker(mid, {
             radius: 6,
-            color: PARK_SAFE_COLOR,
+            color: "#cc44ff",
             weight: 2,
-            fillColor: PARK_SAFE_COLOR,
+            fillColor: "#cc44ff",
             fillOpacity: 0.35,
           }).addTo(map);
           _recMarkers.push(m);
@@ -2814,7 +2814,7 @@
                   const p = f.properties;
                   const reason = parkSafeReason(p.fromhour, p.tohour);
                   return `<div class="rec-row" data-rec-idx="${i}">
-                  <span class="rec-name">${stripSuffix(p.corridor) || "—"}</span>
+                  <span class="rec-name" style="color:#cc44ff">${stripSuffix(p.corridor) || "—"}</span>
                   <span class="rec-why">${reason}</span>
                   <span class="rec-dist">${Math.round(d)}m</span>
                 </div>`;
