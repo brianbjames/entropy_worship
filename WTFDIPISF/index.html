@@ -151,7 +151,7 @@
         border: 1px solid #1e3a4a;
         width: 280px;
         color: #fff;
-        max-height: calc(100dvh - 50px);
+        max-height: calc(50dvh - 25px);
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
         box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.4);
@@ -186,6 +186,7 @@
         align-items: center;
         cursor: grab;
         user-select: none;
+        -webkit-user-select: none;
         position: relative;
         padding: 9px 12px 9px 14px;
         gap: 10px;
@@ -1525,6 +1526,73 @@
       }
       .incident-ring {
         display: none;
+      }
+
+      /* ── HUD Intel Panel ─────────────────────────────────────────────────── */
+      .hud-intel {
+        margin-top: 8px;
+        padding: 8px 10px 6px;
+        background: rgba(68, 153, 255, 0.04);
+        border: 1px solid rgba(68, 153, 255, 0.15);
+        border-left: 2px solid rgba(68, 153, 255, 0.5);
+        border-radius: 2px;
+      }
+      .hud-intel-header {
+        font-size: 9px;
+        letter-spacing: 3px;
+        color: rgba(68, 153, 255, 0.6);
+        text-transform: uppercase;
+        margin-bottom: 6px;
+      }
+      .hud-intel-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 11px;
+        margin: 4px 0;
+        gap: 8px;
+      }
+      .hud-intel-key {
+        color: #4a6a7a;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-size: 10px;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+      .hud-intel-val {
+        font-weight: bold;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        text-align: right;
+      }
+      .hud-week-row {
+        display: flex;
+        gap: 4px;
+        margin-top: 6px;
+        padding-top: 5px;
+      }
+      .hud-week-day {
+        flex: 1;
+        text-align: center;
+        font-size: 9px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        padding: 2px 0;
+        border-radius: 1px;
+      }
+      .hud-week-day.has-sweep {
+        color: #ff4444;
+        border: 1px solid rgba(255, 68, 68, 0.4);
+        background: rgba(255, 68, 68, 0.08);
+      }
+      .hud-week-day.no-sweep {
+        color: rgba(255, 68, 68, 0.3);
+        border: 1px solid rgba(255, 68, 68, 0.1);
+      }
+      .hud-week-day.today-col {
+        border-color: rgba(120, 210, 255, 0.5);
+        color: rgba(120, 210, 255, 0.9);
       }
 
       /* ── Marching ants (events + RPP) ───────────────────────────────────── */
@@ -3267,6 +3335,135 @@
       // Background fetch: cleaning citations for inference (runs ~5s after load)
       setTimeout(fetchCleaningCitationsForInference, 1000);
 
+      // ── HUD Intel helpers ─────────────────────────────────────────────────
+
+      function pointInLeafletRing(pt, ring) {
+        let inside = false;
+        const x = pt.lng, y = pt.lat;
+        for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+          const xi = ring[i].lng, yi = ring[i].lat;
+          const xj = ring[j].lng, yj = ring[j].lat;
+          if (((yi > y) !== (yj > y)) && x < (xj - xi) * (y - yi) / (yj - yi) + xi)
+            inside = !inside;
+        }
+        return inside;
+      }
+
+      function rppContainsPin(latlng) {
+        if (!rppVisible || !rppLayer) return null;
+        let found = null;
+        rppLayer.eachLayer(layer => {
+          if (found) return;
+          const lls = layer.getLatLngs?.();
+          if (!lls) return;
+          const ring = Array.isArray(lls[0]) ? lls[0] : lls;
+          if (pointInLeafletRing(latlng, ring)) found = layer.feature?.properties;
+        });
+        return found;
+      }
+
+      function rppHoursInfo(props) {
+        const toD = v => { const n = parseFloat(v); return isNaN(n) ? NaN : Math.floor(n / 100) + (n % 100) / 60; };
+        const begin = toD(props.hrs_begin), end = toD(props.hrs_end);
+        if (isNaN(begin) || isNaN(end)) return null;
+        const days = (props.days || '').toUpperCase();
+        const dow = viewDate.getDay();
+        const dayMatch = (days.includes('M-F') && dow >= 1 && dow <= 5)
+          || (days.includes('M-SA') && dow >= 1 && dow <= 6)
+          || days.includes('7 DAYS') || days.includes('M-SU') || days === 'DAILY';
+        if (!dayMatch) return null;
+        const fmtD = h => { const hh = Math.floor(h), mm = Math.round((h - hh) * 60); return hh > 0 ? `${hh}H ${mm}M` : `${mm}M`; };
+        if (activeHour >= begin && activeHour < end)
+          return { active: true, text: `ACTIVE · ENDS IN ${fmtD(end - activeHour)}`, zone: props.rpparea1 || '' };
+        if (activeHour < begin)
+          return { active: false, text: `STARTS IN ${fmtD(begin - activeHour)}`, zone: props.rpparea1 || '' };
+        return null;
+      }
+
+      function calcTowRisk(verdict, upcoming, latlng) {
+        let score = 0;
+        if (verdict === 'active') score += 4;
+        else if (verdict === 'upcoming' && upcoming.length) {
+          const h = parseFloat(upcoming[0].f.properties.fromhour) - activeHour;
+          score += h < 1 ? 3 : h < 2 ? 2 : 1;
+        }
+        const rpp = rppContainsPin(latlng);
+        if (rpp) { const ri = rppHoursInfo(rpp); if (ri?.active) score += 2; }
+        if (citationsData.length && citationsGeoCache.size) {
+          const citPts = [...citationsGeoCache.values()].filter(Boolean);
+          const cn = countNearby(latlng, citPts, 200);
+          score += cn >= 10 ? 2 : cn >= 4 ? 1 : 0;
+        }
+        if (breakinsLoaded && breakinsPoints.length) {
+          if (countNearby(latlng, breakinsPoints, 200) >= 6) score += 1;
+        }
+        return score >= 7 ? 'CRITICAL' : score >= 4 ? 'HIGH' : score >= 2 ? 'MEDIUM' : 'LOW';
+      }
+
+      function getWeekForecastHtml(label, nearby) {
+        let streetName = null;
+        if (nearby.length) streetName = normCitationStreet(nearby[0].f.properties.corridor);
+        if (!streetName && label) streetName = normCitationStreet(label.split(',')[0].trim());
+        if (!streetName) return '';
+        const today = viewDate.getDay();
+        const abbr = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
+        const dots = abbr.map((a, di) => {
+          const sweep = citationsCleaningMap.has(`${streetName}_${di}`) || (di === today && nearby.length > 0);
+          const cls = `hud-week-day${sweep ? ' has-sweep' : ' no-sweep'}${di === today ? ' today-col' : ''}`;
+          return `<div class="${cls}">${a}</div>`;
+        }).join('');
+        return `<div style="font-size:9px;color:#4a6a7a;letter-spacing:1px;text-transform:uppercase;margin-top:6px;margin-bottom:3px">Sweep days (citation evidence)</div>
+        <div class="hud-week-row">${dots}</div>`;
+      }
+
+      function getCitPattern(label) {
+        if (!cleaningInferenceReady || !label) return null;
+        const street = normCitationStreet(label.split(',')[0].trim());
+        return street ? (citationsCleaningMap.get(`${street}_${viewDate.getDay()}`) || null) : null;
+      }
+
+      function buildHudIntelHtml(latlng, label, verdict, nearby, upcoming) {
+        const rows = [];
+        const RC = { CRITICAL: '#ff4444', HIGH: '#ff9922', MEDIUM: '#ccbb00', LOW: '#44bb55' };
+        const RG = { CRITICAL: 'rgba(255,68,68,0.5)', HIGH: 'rgba(255,153,34,0.4)', MEDIUM: 'rgba(204,187,0,0.4)', LOW: 'rgba(68,187,85,0.4)' };
+        const towRisk = calcTowRisk(verdict, upcoming, latlng);
+        rows.push(`<div class="hud-intel-row">
+          <span class="hud-intel-key">Tow Risk</span>
+          <span class="hud-intel-val" style="color:${RC[towRisk]};text-shadow:0 0 10px ${RG[towRisk]}">${towRisk}</span>
+        </div>`);
+        if (verdict === 'upcoming' && upcoming.length) {
+          const mins = Math.round((parseFloat(upcoming[0].f.properties.fromhour) - activeHour) * 60);
+          const h = Math.floor(mins / 60), m = mins % 60;
+          const col = mins < 60 ? '#ff9922' : mins < 120 ? '#ccbb00' : '#44bb55';
+          rows.push(`<div class="hud-intel-row">
+            <span class="hud-intel-key">Safe For</span>
+            <span class="hud-intel-val" style="color:${col}">${h > 0 ? `${h}H ${m}M` : `${m}M`}</span>
+          </div>`);
+        }
+        const rpp = rppContainsPin(latlng);
+        if (rpp) {
+          const ri = rppHoursInfo(rpp);
+          if (ri) rows.push(`<div class="hud-intel-row">
+            <span class="hud-intel-key">RPP${ri.zone ? ' · ' + ri.zone : ''}</span>
+            <span class="hud-intel-val" style="color:${ri.active ? '#ff9922' : '#4a6a7a'}">${ri.text}</span>
+          </div>`);
+        }
+        const citPat = getCitPattern(label);
+        if (citPat) rows.push(`<div class="hud-intel-row">
+          <span class="hud-intel-key">Peak Citations</span>
+          <span class="hud-intel-val" style="color:rgba(120,210,255,0.9)">${fmtHour(citPat.fromhour)}–${fmtHour(citPat.tohour)}</span>
+        </div>`);
+        if (verdict === 'ok' && !nearby.length && label) rows.push(`<div class="hud-intel-row">
+          <span class="hud-intel-key">Block Status</span>
+          <span class="hud-intel-val" style="color:#4a6a7a;font-size:10px">NO API DATA</span>
+        </div>`);
+        if (!rows.length) return '';
+        return `<div class="hud-intel">
+          <div class="hud-intel-header">Data Inferences</div>
+          ${rows.join('')}
+          ${getWeekForecastHtml(label, nearby)}
+        </div>`;
+      }
 
       function showVerdict(latlng, label) {
         lastSearchLabel = label;
@@ -3482,6 +3679,7 @@
         panel.innerHTML = `
           ${label ? `<div class="result-address">${label}</div>` : ""}
           ${verdictHtml}
+          ${buildHudIntelHtml(latlng, label, verdict, nearby, upcoming)}
           ${buildTimelineHtml(nearbyThisWeek)}
           ${rows ? `<div class="result-rows">${rows}</div>` : ""}
           ${buildRiskHtml(latlng)}
@@ -6755,6 +6953,7 @@
           e.preventDefault();
           toggleCollapsed();
         });
+        handle.addEventListener("selectstart", (e) => e.preventDefault());
         let _lastTap = 0;
         handle.addEventListener("touchend", (e) => {
           if (_dragMoved) { _lastTap = 0; return; }
