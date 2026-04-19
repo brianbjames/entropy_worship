@@ -1429,8 +1429,8 @@
         to { stroke-dashoffset: -14; }
       }
       @keyframes route-glow-pulse {
-        0%, 100% { opacity: 0.08; }
-        50%       { opacity: 0.38; }
+        0%, 100% { opacity: 0.36; }
+        50%       { opacity: 1.0; }
       }
       .route-glow-layer {
         animation: route-glow-pulse 1.6s ease-in-out infinite;
@@ -2613,14 +2613,14 @@
         const waypoints = [origin, ...pts];
         const routeStyle = {
           color: "#cc44ff",
-          weight: 4,
-          opacity: 0.9,
-          dashArray: "8 6",
+          weight: 10,
+          opacity: 0.95,
+          dashArray: "36 16",
           className: "route-pulse",
         };
         const glowStyle = {
           color: "#cc44ff",
-          weight: 22,
+          weight: 64,
           opacity: 0,
           className: "route-glow-layer",
         };
