@@ -1974,6 +1974,19 @@
         });
       }
 
+      function stripSuffix(name) {
+        if (!name) return name;
+        return name
+          .replace(/\b0+(\d+(st|nd|rd|th))\b/gi, "$1")
+          .replace(/\s+(ST|AVE|BLVD|DR|LN|PL|RD|CT|WAY|TER|HWY|FWY|EXPY|PKWY|CIR|LOOP|ROW|ALY|WALK|PATH|SQ|PLZ)\.?$/i, "")
+          .trim();
+      }
+
+      function fixOrdinals(name) {
+        if (!name) return name;
+        return name.replace(/\b0+(\d+(st|nd|rd|th))\b/gi, "$1");
+      }
+
       function fmtHour(h) {
         const n = parseInt(h);
         if (isNaN(n)) return String(h);
@@ -2624,7 +2637,7 @@
           const panel = document.getElementById("result-panel");
           panel.innerHTML = `
             ${label ? `<div class="result-address">${label}</div>` : ""}
-            <div class="verdict verdict-ok">Safe — no weekend cleaning</div>
+            <div class="verdict verdict-ok">No weekend cleaning</div>
             <div class="result-rows">
               <span class="r-dim">Street cleaning runs Mon – Fri.<br>${viewDayName} has no restrictions.</span>
             </div>
@@ -2676,7 +2689,7 @@
         );
 
         // Verdict badge shows the most actionable time info
-        const dayLabel = isViewingToday() ? "today" : `this ${viewDayName}`;
+        const dayLabel = isViewingToday() ? "today" : viewDayName;
         let verdict, verdictHtml;
         if (active.length > 0) {
           verdict = "active";
@@ -2719,7 +2732,7 @@
             : "";
           rows += `
             <div class="r-${status}">
-              ${p.corridor || "—"}${side}<br>
+              ${stripSuffix(p.corridor) || "—"}${side}<br>
               <span class="r-dim">${fmtHour(p.fromhour)}–${fmtHour(p.tohour)} &nbsp;·&nbsp; ${Math.round(d)}m</span>
             </div>`;
         }
@@ -2733,7 +2746,7 @@
               : "";
             rows += `
               <div class="r-dim">
-                ${p.corridor || "—"}${side}<br>
+                ${stripSuffix(p.corridor) || "—"}${side}<br>
                 <span class="r-dim">${fmtHour(p.fromhour)}–${fmtHour(p.tohour)} &nbsp;·&nbsp; ${Math.round(d)}m &nbsp;·&nbsp; not this week</span>
               </div>`;
           }
@@ -2783,7 +2796,7 @@
                   const reason = parkSafeReason(p.fromhour, p.tohour);
                   return `<div class="rec-row" data-rec-idx="${i}">
                   <span style="color:#cc44ff;flex-shrink:0;min-width:14px">${i + 1}.</span>
-                  <span class="rec-name" style="color:#cc44ff">${p.corridor || "—"}</span>
+                  <span class="rec-name" style="color:#cc44ff">${stripSuffix(p.corridor) || "—"}</span>
                   <span class="rec-why">${reason}</span>
                   <span class="rec-dist">${Math.round(d)}m</span>
                 </div>`;
@@ -2800,7 +2813,7 @@
                   const p = f.properties;
                   const reason = parkSafeReason(p.fromhour, p.tohour);
                   return `<div class="rec-row" data-rec-idx="${i}">
-                  <span class="rec-name">${p.corridor || "—"}</span>
+                  <span class="rec-name">${stripSuffix(p.corridor) || "—"}</span>
                   <span class="rec-why">${reason}</span>
                   <span class="rec-dist">${Math.round(d)}m</span>
                 </div>`;
@@ -2924,7 +2937,7 @@
               // Tooltip on hover
               layer.bindTooltip(
                 () =>
-                  `${p.corridor || "—"} &nbsp;·&nbsp; ${fmtHour(p.fromhour)}–${fmtHour(p.tohour)}`,
+                  `${fixOrdinals(p.corridor) || "—"} &nbsp;·&nbsp; ${fmtHour(p.fromhour)}–${fmtHour(p.tohour)}`,
                 { sticky: true, direction: "top" },
               );
 
@@ -2950,7 +2963,7 @@
                   .filter((w) => isTruthy(p[`week${w}`]))
                   .join(", ");
                 return `
-                <div class="popup-street">${p.corridor || "Unknown Street"}</div>
+                <div class="popup-street">${fixOrdinals(p.corridor) || "Unknown Street"}</div>
                 <span class="popup-badge ${badgeClass}">${label}</span><br>
                 <b>Cross streets:</b> ${p.limits || "—"}<br>
                 <b>Block side:</b>    ${p.blockside || "—"}<br>
@@ -4241,7 +4254,7 @@
             : "Unknown";
 
           marker.bindPopup(`
-            <div class="popup-street">${crossStreet}</div>
+            <div class="popup-street">${fixOrdinals(crossStreet)}</div>
             <span class="popup-badge badge-crash">${c.type_of_collision || "Traffic Crash"}</span><br>
             ${killed ? `<b>Fatalities:</b> ${killed}<br>` : ""}
             ${injured ? `<b>Injured:</b> ${injured}<br>` : ""}
@@ -4698,7 +4711,7 @@
               })
             : null;
           marker.bindPopup(`
-            <div class="popup-street">${p.street_name || p.location_desc || "Street Construction"}</div>
+            <div class="popup-street">${fixOrdinals(p.street_name || p.location_desc) || "Street Construction"}</div>
             <span class="popup-badge badge-permit">${permitType}</span><br>
             ${status ? `<b>Status:</b> ${status}<br>` : ""}
             ${p.permit_number ? `<b>Permit #:</b> ${p.permit_number}<br>` : ""}
@@ -5234,7 +5247,7 @@
             const start = p.start_dt || p.start_date;
             const end = p.end_dt || p.end_date;
             layer.bindPopup(`
-              <div class="popup-street">${p.case_name || p.street || "Special Event"}</div>
+              <div class="popup-street">${fixOrdinals(p.case_name || p.street) || "Special Event"}</div>
               <span class="popup-badge badge-event">Special Event</span><br>
               ${p.loc_desc ? `<b>Location:</b> ${p.loc_desc}<br>` : ""}
               ${impact ? `<b>Impact:</b> ${impact}<br>` : ""}
