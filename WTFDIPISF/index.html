@@ -795,6 +795,22 @@
         border-color: #3a2800;
         box-shadow: 0 0 6px rgba(255, 170, 68, 0.2);
       }
+      .rpp-path {
+        filter: drop-shadow(0 0 3px rgba(255,170,68,0.7)) drop-shadow(0 0 7px rgba(255,170,68,0.4));
+      }
+      .rpp-path-active {
+        filter: drop-shadow(0 0 4px rgba(255,102,34,1)) drop-shadow(0 0 9px rgba(255,102,34,0.55));
+      }
+      @keyframes rpp-glow-pulse {
+        0%, 100% { opacity: 0.08; }
+        50%       { opacity: 0.28; }
+      }
+      @keyframes rpp-glow-pulse-active {
+        0%, 100% { opacity: 0.14; }
+        50%       { opacity: 0.42; }
+      }
+      .rpp-glow     { animation: rpp-glow-pulse        3.5s ease-in-out infinite; }
+      .rpp-glow-active { animation: rpp-glow-pulse-active 2.8s ease-in-out infinite; }
       .badge-incident {
         background: #1e0810;
         color: #ff4466;
@@ -1392,11 +1408,11 @@
       /* ── Free meter pulse pin ────────────────────────────────────────────── */
       @keyframes meter-ring-pulse {
         0% {
-          transform: translate(-50%, -50%) scale(0.5);
-          opacity: 1;
+          transform: translate(-50%, -50%) scale(0.4);
+          opacity: 0.9;
         }
         100% {
-          transform: translate(-50%, -50%) scale(3.2);
+          transform: translate(-50%, -50%) scale(5);
           opacity: 0;
         }
       }
@@ -1423,11 +1439,14 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        width: 7px;
-        height: 7px;
+        width: 8px;
+        height: 8px;
         border-radius: 50%;
-        border: 2px solid #1e7a38;
-        animation: meter-ring-pulse 2s ease-out infinite;
+        border: 1.5px solid #2aee66;
+        animation: meter-ring-pulse 2.4s ease-out infinite;
+      }
+      .meter-free-ring-2 {
+        animation-delay: 1.2s;
       }
 
       /* ── Flowing route line dashes ───────────────────────────────────────── */
@@ -4992,7 +5011,7 @@
           if (!active) {
             marker = L.marker([lat, lng], {
               icon: L.divIcon({
-                html: `<div class="meter-free-pin"><div class="meter-free-dot"></div><div class="meter-free-ring"></div></div>`,
+                html: `<div class="meter-free-pin"><div class="meter-free-dot"></div><div class="meter-free-ring"></div><div class="meter-free-ring meter-free-ring-2"></div></div>`,
                 className: "",
                 iconSize: [18, 18],
                 iconAnchor: [9, 9],
@@ -6642,19 +6661,32 @@
         return `${d} ${h}`;
       }
 
+      let rppGlowLayer = null;
+
       function buildRppLayer() {
-        if (rppLayer) {
-          map.removeLayer(rppLayer);
-          rppLayer = null;
-        }
+        if (rppGlowLayer) { map.removeLayer(rppGlowLayer); rppGlowLayer = null; }
+        if (rppLayer) { map.removeLayer(rppLayer); rppLayer = null; }
         if (!rppVisible || !rppData) return;
+        // Wide soft glow underneath
+        rppGlowLayer = L.geoJSON(rppData, {
+          style: (feature) => {
+            const active = rppIsActive(feature);
+            return {
+              color: active ? "#ff6622" : "#ffaa44",
+              weight: 8,
+              opacity: 1,
+              className: active ? 'rpp-glow-active' : 'rpp-glow',
+            };
+          },
+        }).addTo(map);
+        // Crisp line on top
         rppLayer = L.geoJSON(rppData, {
           style: (feature) => {
             const active = rppIsActive(feature);
             return {
               color: active ? "#ff6622" : "#ffaa44",
               weight: 3,
-              opacity: active ? 0.85 : 0.45,
+              opacity: active ? 0.9 : 0.6,
             };
           },
           onEachFeature: (feature, layer) => {
@@ -6710,6 +6742,7 @@
         if (rppVisible) {
           fetchRpp();
         } else {
+          if (rppGlowLayer) { map.removeLayer(rppGlowLayer); rppGlowLayer = null; }
           if (rppLayer) {
             map.removeLayer(rppLayer);
             rppLayer = null;
