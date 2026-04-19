@@ -1726,6 +1726,7 @@
       const map = L.map("map", {
         zoomControl: false,
         attributionControl: false,
+        closePopupOnClick: false,
       }).setView([37.7793, -122.4193], 15);
 
       L.tileLayer(
@@ -3290,7 +3291,7 @@
 
       // ── Map click → verdict ───────────────────────────────────────────────
       map.on("click", async (e) => {
-        if (Date.now() - _lastLayerClick < 50) return; // layer already handled this
+        if (Date.now() - _lastLayerClick < 400) return; // layer already handled this (400ms covers mobile synthetic click delay)
         showVerdict(e.latlng, null);
         try {
           const resp = await fetch(
@@ -5371,8 +5372,6 @@
               color: active ? "#ff6622" : "#ffaa44",
               weight: 3,
               opacity: active ? 0.85 : 0.45,
-              dashArray: active ? "6 5" : null,
-              className: active ? "rpp-march" : "",
             };
           },
           onEachFeature: (feature, layer) => {
