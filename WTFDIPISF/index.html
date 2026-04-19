@@ -833,6 +833,29 @@
         border: 1px solid #2a2a2a;
         border-radius: 3px;
         letter-spacing: 1px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      @keyframes scifi-spin {
+        0%   { transform: rotate(0deg);   opacity: 1; }
+        25%  { transform: rotate(90deg);  opacity: 0.4; }
+        50%  { transform: rotate(180deg); opacity: 1; }
+        75%  { transform: rotate(270deg); opacity: 0.4; }
+        100% { transform: rotate(360deg); opacity: 1; }
+      }
+      .scifi-spinner {
+        flex-shrink: 0;
+        width: 22px;
+        height: 22px;
+        border: 2px solid transparent;
+        border-top-color: #4499ff;
+        border-right-color: rgba(68,153,255,0.3);
+        border-bottom-color: #4499ff;
+        border-left-color: rgba(68,153,255,0.3);
+        border-radius: 50%;
+        animation: scifi-spin 0.9s linear infinite;
+        box-shadow: 0 0 8px rgba(68,153,255,0.4), inset 0 0 4px rgba(68,153,255,0.15);
       }
 
       .notice-overlay {
@@ -1299,7 +1322,7 @@
     <div id="ew-logo">
       <a href="https://www.entropyworship.com">Entropy Worship</a>
     </div>
-    <div id="loading">Loading street cleaning data&hellip;</div>
+    <div id="loading"><div class="scifi-spinner"></div><span id="loading-text">Loading street cleaning data&hellip;</span></div>
 
     <div id="panel-wrapper">
       <div id="control-panel">
@@ -3164,7 +3187,7 @@
           } else {
             // No streets loaded yet — fetch any weekday's geometry for display
             const loadEl = document.getElementById("loading");
-            loadEl.textContent = "Loading street data…";
+            loadEl.querySelector("#loading-text").textContent = "Loading street data…";
             loadEl.style.display = "block";
             fetchForDay("Friday");
           }
@@ -3179,7 +3202,7 @@
 
         // Show loading
         const loadEl = document.getElementById("loading");
-        loadEl.textContent = `Loading street cleaning data for ${viewDayName}…`;
+        loadEl.querySelector("#loading-text").textContent = `Loading street cleaning data for ${viewDayName}…`;
         loadEl.style.display = "block";
 
         // Fetch data for the selected day
@@ -3475,9 +3498,8 @@
         return fetchPage().catch((err) => {
           if (isApiDown(err)) showApiDown();
           else
-            document.getElementById("loading").textContent =
+            document.getElementById("loading-text").textContent =
               `Error: ${err.message}`;
-          console.error("[SF Cleaning]", err);
         });
       }
 
@@ -3523,7 +3545,7 @@
           .catch((err) => {
             if (isApiDown(err)) showApiDown();
             else
-              document.getElementById("loading").textContent =
+              document.getElementById("loading-text").textContent =
                 `Error: ${err.message}`;
             console.error("[SF Cleaning]", err);
           });
