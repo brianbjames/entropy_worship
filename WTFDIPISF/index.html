@@ -2623,6 +2623,7 @@
       function showVerdict(latlng, label) {
         lastSearchLabel = label;
         clearRecMarkers();
+        map.closePopup();
 
         // If data hasn't loaded yet (and it's not a weekend), leave the panel in its loading state
         if (!isWeekendView && loadedFeatures.length === 0) return;
@@ -4418,6 +4419,9 @@
       let citationsDescField = "violation_desc";
       let citationsFineField = "fine_amount";
       let citationsLocTextField = "citation_location";
+      let citationsLatField = null;  // direct lat field if present
+      let citationsLngField = null;  // direct lng field if present
+      let citationsPointField = null; // GeoJSON point field if present
 
       function rebuildCitationsLayer() {
         if (citationsLayer) {
@@ -4428,11 +4432,26 @@
 
         const points = [];
         for (const c of citationsData) {
+          // Prefer direct coordinates from the dataset
+          let lat = null, lng = null;
+          if (citationsLatField && citationsLngField) {
+            lat = parseFloat(c[citationsLatField]);
+            lng = parseFloat(c[citationsLngField]);
+          } else if (citationsPointField && c[citationsPointField]) {
+            const pt = c[citationsPointField];
+            lng = pt.coordinates[0];
+            lat = pt.coordinates[1];
+          }
+          if (lat && lng && !isNaN(lat) && !isNaN(lng)) {
+            points.push([lat, lng]);
+            continue;
+          }
+          // Fall back to geocache for records without direct coords
           const addr = c[citationsLocTextField];
           if (!addr) continue;
           const coords = citationsGeoCache.get(addr);
           if (!coords) continue;
-          points.push(coords); // [lat, lng]
+          points.push(coords);
         }
 
         const el = document.getElementById("cnt-citations");
@@ -4529,6 +4548,24 @@
                 break;
               }
             }
+            // Detect direct coordinate fields — avoids slow Nominatim geocoding
+            for (const f of fields) {
+              if (/^lat(itude)?$/i.test(f)) { citationsLatField = f; break; }
+            }
+            for (const f of fields) {
+              if (/^lon(gitude)?$/i.test(f)) { citationsLngField = f; break; }
+            }
+            if (!citationsLatField) {
+              // Check for GeoJSON Point field (e.g. "location": {"type":"Point","coordinates":[lng,lat]})
+              const sample = rows[0];
+              for (const f of fields) {
+                const v = sample[f];
+                if (v && typeof v === "object" && v.type === "Point" && Array.isArray(v.coordinates)) {
+                  citationsPointField = f;
+                  break;
+                }
+              }
+            }
 
             console.log(
               `[Citations] dateField=${citationsDateField} descField=${citationsDescField} locField=${citationsLocTextField}`,
@@ -4617,10 +4654,18 @@
             return;
           }
           citationsData = await resp.json();
-          if (statusEl)
-            statusEl.textContent = `geocoding 0/${citationsData.length}`;
-          citationsGeocoding = true;
-          geocodeCitations();
+          // Render immediately using any direct coordinates in the data
+          rebuildCitationsLayer();
+          // Only geocode if we have no direct coordinate fields (slow Nominatim fallback)
+          const hasDirectCoords = citationsLatField || citationsLngField || citationsPointField;
+          if (!hasDirectCoords) {
+            if (statusEl)
+              statusEl.textContent = `geocoding 0/${citationsData.length}`;
+            citationsGeocoding = true;
+            geocodeCitations();
+          } else {
+            if (statusEl) statusEl.textContent = "";
+          }
         } catch (err) {
           if (statusEl) statusEl.textContent = err.message || "fetch failed";
           console.error("[Citations]", err);
@@ -5143,27 +5188,18 @@
           return;
         }
 
-        // Fetch in pages of 25 so the heatmap builds up progressively
-        const PAGE = 25;
+        // Fetch all 500 in a single request
         const TOTAL = 500;
         towsData = [];
-        for (let offset = 0; offset < TOTAL; offset += PAGE) {
-          if (!towsVisible) break;
-          try {
-            const url = `${TOWS_API}?$where=${encodeURIComponent("service_name='Abandoned Vehicle'")}&$limit=${PAGE}&$offset=${offset}&$order=${towsDateField} DESC`;
-            const resp = await fetch(url);
-            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-            const page = await resp.json();
-            if (!page.length) break;
-            towsData.push(...page);
-            if (statusEl && towsVisible)
-              statusEl.textContent = `${towsData.length}/${TOTAL}`;
-            rebuildTowsLayer();
-          } catch (err) {
-            if (statusEl) statusEl.textContent = err.message;
-            console.error("[Tows]", err);
-            break;
-          }
+        try {
+          const url = `${TOWS_API}?$where=${encodeURIComponent("service_name='Abandoned Vehicle'")}&$limit=${TOTAL}&$order=${towsDateField} DESC`;
+          const resp = await fetch(url);
+          if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+          towsData = await resp.json();
+          rebuildTowsLayer();
+        } catch (err) {
+          if (statusEl) statusEl.textContent = err.message;
+          console.error("[Tows]", err);
         }
 
         towsLoaded = true;
@@ -5246,6 +5282,44 @@
               "";
             const start = p.start_dt || p.start_date;
             const end = p.end_dt || p.end_date;
+            const popupContent = `
+              <div class="popup-street">${fixOrdinals(p.case_name || p.street) || "Special Event"}</div>
+              <span class="popup-badge badge-event">Special Event</span><br>
+              ${p.loc_desc ? `<b>Location:</b> ${p.loc_desc}<br>` : ""}
+              ${impact ? `<b>Impact:</b> ${impact}<br>` : ""}
+              ${fmt(start) ? `<b>From:</b> ${fmt(start)} ${fmtTime(start) || ""}<br>` : ""}
+              ${fmt(end) ? `<b>Until:</b> ${fmt(end)} ${fmtTime(end) || ""}<br>` : ""}
+              ${p.status ? `<b>Status:</b> ${p.status}<br>` : ""}
+            `;
+            layer.bindPopup(popupContent);
+            layer.bindTooltip(p.case_name || "Special Event", {
+              sticky: true,
+              direction: "top",
+            });
+            layer.on("click", () => layer.openPopup());
+          },
+        }).addTo(map);
+
+        // Wide invisible hit-area layer for easier tapping on mobile
+        L.geoJSON(geojson, {
+          style: () => ({
+            color: "transparent",
+            weight: 28,
+            opacity: 0,
+            fillOpacity: 0,
+            interactive: true,
+          }),
+          pointToLayer: () => null,
+          onEachFeature: (feature, layer) => {
+            const p = feature.properties || {};
+            const fmt = (d) =>
+              d ? new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) : null;
+            const fmtTime = (d) =>
+              d ? new Date(d).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" }) : null;
+            const impact =
+              { "all-lanes-closed": "All lanes closed", "some-lanes-closed": "Some lanes closed", "sidewalk-only": "Sidewalk only" }[p.veh_imp] || p.veh_imp || "";
+            const start = p.start_dt || p.start_date;
+            const end = p.end_dt || p.end_date;
             layer.bindPopup(`
               <div class="popup-street">${fixOrdinals(p.case_name || p.street) || "Special Event"}</div>
               <span class="popup-badge badge-event">Special Event</span><br>
@@ -5255,10 +5329,6 @@
               ${fmt(end) ? `<b>Until:</b> ${fmt(end)} ${fmtTime(end) || ""}<br>` : ""}
               ${p.status ? `<b>Status:</b> ${p.status}<br>` : ""}
             `);
-            layer.bindTooltip(p.case_name || "Special Event", {
-              sticky: true,
-              direction: "top",
-            });
             layer.on("click", () => layer.openPopup());
           },
         }).addTo(map);
