@@ -151,7 +151,7 @@
         border: 1px solid #1e3a4a;
         width: 280px;
         color: #fff;
-        max-height: calc(100dvh - 75px);
+        max-height: calc(100dvh - 58px);
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
         box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.4);
@@ -1801,7 +1801,7 @@
                   box-sizing: border-box;
                 "
               ></div>
-              <span>Free parking meters found</span>
+              <span>Free meters found</span>
               <span class="legend-count" id="cnt-meter-free">&mdash;</span>
             </div>
           </div>
@@ -1905,7 +1905,7 @@
                   box-sizing: border-box;
                 "
               ></div>
-              <span>Vehicle theft &amp; break-ins</span>
+              <span>Recent reports</span>
               <span class="legend-count" id="cnt-breakins">&mdash;</span>
             </div>
           </div>
@@ -1974,7 +1974,7 @@
                   box-sizing: border-box;
                 "
               ></div>
-              <span>311 abandoned vehicle reports</span>
+              <span>311 reports</span>
               <span class="legend-count" id="cnt-tows">&mdash;</span>
             </div>
           </div>
@@ -1999,7 +1999,7 @@
                   flex-shrink: 0;
                 "
               ></div>
-              <span>Street closures &amp; events</span>
+              <span>Street closures</span>
               <span class="legend-count" id="cnt-events">&mdash;</span>
             </div>
           </div>
@@ -7309,10 +7309,11 @@
           "touchstart",
           (e) => {
             if (e.target.closest("button, input, a")) return;
+            e.preventDefault();
             const t = e.touches[0];
             beginDrag(t.clientX, t.clientY);
           },
-          { passive: true },
+          { passive: false },
         ));
         document.addEventListener(
           "touchmove",
