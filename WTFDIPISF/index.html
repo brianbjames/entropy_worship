@@ -242,6 +242,7 @@
       .legend .subtitle {
         color: #e0e0e0;
         font-size: 12px;
+        margin-top: 4px;
         margin-bottom: 12px;
       }
 
@@ -2329,14 +2330,14 @@
         const el = document.getElementById("legend-subtitle");
         if (!el) return;
         const ds = date.toLocaleDateString("en-US", {
-          weekday: "long",
-          month: "long",
+          weekday: "short",
+          month: "short",
           day: "numeric",
         });
         const wom = Math.ceil(date.getDate() / 7);
         const isToday = date.toDateString() === now.toDateString();
         const timePart = isToday ? `${timeStr} &nbsp;&middot;&nbsp; ` : "";
-        el.innerHTML = `${ds}, ${timePart}Week ${wom}`;
+        el.innerHTML = `${ds} ${timePart}Wk ${wom}`;
       }
       updateLegendSubtitle(now);
 
