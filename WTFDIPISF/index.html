@@ -3188,8 +3188,7 @@
             // No streets loaded yet — fetch any weekday's geometry for display
             const loadEl = document.getElementById("loading");
             loadEl.querySelector("#loading-text").textContent = "Loading street data…";
-            loadEl.style.display = "block";
-            fetchForDay("Friday");
+            loadEl.style.display = "flex";
           }
           const latlng = checkMarker
             ? checkMarker.getLatLng()
@@ -3203,8 +3202,7 @@
         // Show loading
         const loadEl = document.getElementById("loading");
         loadEl.querySelector("#loading-text").textContent = `Loading street cleaning data for ${viewDayName}…`;
-        loadEl.style.display = "block";
-
+        loadEl.style.display = "flex";
         // Fetch data for the selected day
         fetchForDay(viewDayName);
         if (metersVisible) setTimeout(fetchMeters, 500);
@@ -3428,8 +3426,7 @@
 
       function showApiDown() {
         const el = document.getElementById("loading");
-        el.style.display = "block";
-        el.style.borderColor = "#553300";
+        el.style.display = "flex";
         el.style.color = "#ffaa44";
         el.innerHTML = `
           <div style="font-size:13px;letter-spacing:1px;margin-bottom:8px">DataSF API Down</div>
