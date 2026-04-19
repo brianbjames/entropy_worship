@@ -1526,7 +1526,7 @@
     <div id="ew-logo">
       <a href="https://www.entropyworship.com">Entropy Worship</a>
     </div>
-    <div id="loading"><div class="scifi-spinner"></div><span id="loading-text">Loading street cleaning data&hellip;</span></div>
+    <div id="loading"><div class="scifi-spinner"></div><span id="loading-text">Loading&hellip;</span></div>
 
     <div id="panel-wrapper">
       <div id="control-panel">
@@ -3559,7 +3559,7 @@
 
         // Show loading
         const loadEl = document.getElementById("loading");
-        loadEl.querySelector("#loading-text").textContent = `Loading street cleaning data for ${viewDayName}…`;
+        loadEl.querySelector("#loading-text").textContent = `Loading…`;
         loadEl.style.display = "flex";
         // Fetch data for the selected day
         fetchForDay(viewDayName);
