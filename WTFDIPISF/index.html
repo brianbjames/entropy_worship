@@ -2808,7 +2808,11 @@
 
       function normCitationStreet(addr) {
         if (!addr) return null;
-        let s = addr.toUpperCase();
+        let s = addr.toUpperCase().trim();
+        // Drop completely non-useful addresses
+        if (s.includes("NOT ASSOCIATED") || s.startsWith("INTERSECTION OF")) return null;
+        // Strip city/state/zip suffix (311 addresses: "MARKET ST, SAN FRANCISCO, CA, 94103")
+        s = s.split(",")[0].trim();
         // Strip leading block number and "BLOCK OF"
         s = s.replace(/^\d+\s+(BLOCK\s+OF\s+)?/, "");
         // Take only the first street at an intersection
@@ -2856,6 +2860,36 @@
         fetchAndRenderCitationSegments();
       }
 
+      // Merges 311-derived records into citationsCleaningMap without clearing it.
+      // Citations already in the map take priority; 311 only fills gaps.
+      // Higher threshold (≥8) since complaint timestamps are less reliable than citation timestamps.
+      function merge311IntoCleaningMap(records, dateKey, addrKey) {
+        if (!records.length) return;
+        const meta = {};
+        for (const rec of records) {
+          const addr = rec[addrKey] || "";
+          const dateVal = rec[dateKey] || "";
+          if (!addr || !dateVal) continue;
+          const street = normCitationStreet(addr);
+          if (!street) continue;
+          const d = new Date(dateVal);
+          if (isNaN(d)) continue;
+          const di = d.getDay();
+          const key = `${street}_${di}`;
+          if (!meta[key]) meta[key] = { day: DAY_NAMES_FULL[di], count: 0 };
+          meta[key].count++;
+        }
+        let added = 0;
+        for (const [key, val] of Object.entries(meta)) {
+          if (val.count < 8) continue;              // higher bar — complaints are noisier
+          if (citationsCleaningMap.has(key)) continue; // citations take priority
+          // Default to 8am window — complaint time ≠ cleaning time
+          citationsCleaningMap.set(key, { day: val.day, fromhour: 8, tohour: 10, count: val.count, source: "311" });
+          added++;
+        }
+        console.log(`[311] Merged ${added} new street/day combos (${records.length} complaints)`);
+      }
+
       function inferFromCitationHistory(label) {
         if (!cleaningInferenceReady || !label) return null;
         const raw = label.split(",")[0].trim();
@@ -2899,15 +2933,21 @@
         // Save for time-slider restyles
         _citStreetsByName = citStreets;
 
-        // Fetch geometries from primary dataset (no day filter — just need the shapes)
-        const corridorIn = newStreets.map(s => `'${s.replace(/'/g, "''")}'`).join(",");
-        const where = encodeURIComponent(`upper(corridor) in (${corridorIn})`);
+        // Fetch geometries in batches to avoid 414 URL-too-long errors
+        const BATCH = 50;
+        const allRawFeatures = [];
         try {
-          const resp = await fetch(`https://data.sfgov.org/resource/yhqp-riqs.geojson?$where=${where}&$limit=10000`);
-          const geojson = await resp.json();
-          if (!geojson.features?.length) return;
+          for (let i = 0; i < newStreets.length; i += BATCH) {
+            const batch = newStreets.slice(i, i + BATCH);
+            const corridorIn = batch.map(s => `'${s.replace(/'/g, "''")}'`).join(",");
+            const where = encodeURIComponent(`upper(corridor) in (${corridorIn})`);
+            const resp = await fetch(`https://data.sfgov.org/resource/yhqp-riqs.geojson?$where=${where}&$limit=10000`);
+            const geojson = await resp.json();
+            if (geojson.features?.length) allRawFeatures.push(...geojson.features.filter(f => f.geometry));
+          }
+          if (!allRawFeatures.length) return;
 
-          const rawFeatures = geojson.features.filter(f => f.geometry);
+          const rawFeatures = allRawFeatures;
 
           // Store raw (non-offset) features with citation hours injected for verdict/routing
           _citInferredFeatures = rawFeatures
@@ -2955,11 +2995,15 @@
                           : status === "upcoming" ? "Upcoming Cleaning"
                           : "No Upcoming Cleaning";
                   }
+                  const src = ce?.source;
+                  const evLabel = src === "311" ? "311 complaints"
+                                : src ? `${src} citations`
+                                : "parking citations";
                   return `
                     <div class="popup-street">${fixOrdinals(p.corridor) || "Unknown Street"}</div>
                     <span class="popup-badge badge-${status}">${label}</span><br>
                     <b>Likely hours:</b> ${h}<br>
-                    <b>Evidence:</b> ${ce?.count || "?"} citations<br>
+                    <b>Evidence:</b> ${ce?.count || "?"} ${evLabel}<br>
                     <span style="color:#888;font-size:10px">Inferred — not in official schedule</span>
                   `;
                 });
@@ -2991,8 +3035,25 @@
           const data = await resp.json();
           if (!Array.isArray(data) || !data.length) { console.log("[CitInfer] no STR CLEAN records"); return; }
           buildCitationsCleaningMap(data, dateField, addrField);
+          // Chain 311 fetch — runs after citations are committed so merge can skip duplicates
+          fetch311CleaningComplaints();
           return;
         } catch (e) { console.log("[CitInfer] Error:", e); }
+      }
+
+      async function fetch311CleaningComplaints() {
+        // vw6y-z8j6 confirmed: service_name="Street and Sidewalk Cleaning",
+        //   date=requested_datetime, addr=address
+        const base = "https://data.sfgov.org/resource/vw6y-z8j6.json";
+        try {
+          const where = encodeURIComponent(`service_name='Street and Sidewalk Cleaning'`);
+          const resp = await fetch(`${base}?$where=${where}&$limit=50000`);
+          if (!resp.ok) { console.log("[311] fetch failed", resp.status); return; }
+          const data = await resp.json();
+          if (!Array.isArray(data) || !data.length) { console.log("[311] no records"); return; }
+          merge311IntoCleaningMap(data, "requested_datetime", "address");
+          fetchAndRenderCitationSegments();
+        } catch (e) { console.log("[311] Error:", e); }
       }
 
       // ── HUD range rings & coordinate readout ──────────────────────────────
@@ -3223,7 +3284,7 @@
           if (inf) {
             verdictHtml = `<div class="verdict verdict-inferred">No street cleaning data here<br><span style="font-size:10px">Likely ${inf.day} ${fmtHour(inf.fromhour)}–${fmtHour(inf.tohour)} <span style="opacity:0.6">(inferred from ${inf.totalSegments} nearby)</span></span></div>`;
           } else if (citInf) {
-            verdictHtml = `<div class="verdict verdict-inferred">No schedule data — citation history:<br><span style="font-size:10px">Likely ${citInf.day} ${fmtHour(citInf.fromhour)}–${fmtHour(citInf.tohour)} <span style="opacity:0.6">(${citInf.count} citations)</span></span></div>`;
+            verdictHtml = `<div class="verdict verdict-inferred">No street cleaning data here<br><span style="font-size:10px">Likely ${citInf.day} ${fmtHour(citInf.fromhour)}–${fmtHour(citInf.tohour)} <span style="opacity:0.6">(inferred from ${citInf.count} citations)</span></span></div>`;
           } else {
             verdictHtml = `<div class="verdict verdict-passed">No street cleaning data here</div>`;
           }
