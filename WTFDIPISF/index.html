@@ -2802,6 +2802,7 @@
       // ── Citation-based cleaning inference ────────────────────────────────
       let citationsCleaningMap = new Map(); // "STREETNAME_dayIndex" → { day, fromhour, tohour, count }
       let cleaningInferenceReady = false;
+      let _citInferPending = false; // renderGeoJSON ran before inference was ready
 
       const DAY_NAMES_FULL = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
 
@@ -2850,6 +2851,7 @@
           citationsCleaningMap.set(key, { day: val.day, fromhour: topHour, tohour: topHour + 2, count: total });
         }
         cleaningInferenceReady = true;
+        _citInferPending = false;
         console.log(`[CitInfer] Built from ${records.length} records → ${citationsCleaningMap.size} street/day combos`);
         fetchAndRenderCitationSegments();
       }
@@ -2868,7 +2870,7 @@
       }
 
       async function fetchAndRenderCitationSegments() {
-        if (!cleaningInferenceReady || !loadedFeatures) return;
+        if (!cleaningInferenceReady || !loadedFeatures.length) return;
         if (citationInferredLayer) {
           map.removeLayer(citationInferredLayer);
           citationInferredLayer = null;
@@ -2901,7 +2903,7 @@
         const corridorIn = newStreets.map(s => `'${s.replace(/'/g, "''")}'`).join(",");
         const where = encodeURIComponent(`upper(corridor) in (${corridorIn})`);
         try {
-          const resp = await fetch(`https://data.sfgov.org/resource/yhqp-riqs.geojson?$where=${where}&$limit=1000`);
+          const resp = await fetch(`https://data.sfgov.org/resource/yhqp-riqs.geojson?$where=${where}&$limit=10000`);
           const geojson = await resp.json();
           if (!geojson.features?.length) return;
 
@@ -2984,7 +2986,7 @@
         const addrField = "citation_location";
         try {
           const where = encodeURIComponent(`violation_desc='STR CLEAN'`);
-          const resp = await fetch(`${base}?$where=${where}&$limit=5000&$order=${dateField} DESC`);
+          const resp = await fetch(`${base}?$where=${where}&$limit=50000`);
           if (!resp.ok) { console.log("[CitInfer] fetch failed", resp.status); return; }
           const data = await resp.json();
           if (!Array.isArray(data) || !data.length) { console.log("[CitInfer] no STR CLEAN records"); return; }
@@ -3123,7 +3125,7 @@
       map.on("moveend zoomend", updateThreatHuds);
 
       // Background fetch: cleaning citations for inference (runs ~5s after load)
-      setTimeout(fetchCleaningCitationsForInference, 5000);
+      setTimeout(fetchCleaningCitationsForInference, 1000);
 
 
       function showVerdict(latlng, label) {
@@ -3570,6 +3572,7 @@
 
         // Fill in streets missing from primary dataset using citation history
         if (cleaningInferenceReady) fetchAndRenderCitationSegments();
+        else _citInferPending = true;
       }
 
       // ── Day selector ──────────────────────────────────────────────────────
