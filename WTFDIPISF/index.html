@@ -2110,6 +2110,48 @@
         },
       ).addTo(map);
 
+      // Disable Leaflet's built-in popup autoPan — we handle overlap correction ourselves
+      L.Popup.prototype.options.autoPan = false;
+
+      map.on('popupopen', function(e) {
+        const popup = e.popup;
+        const W = window.innerWidth, H = window.innerHeight;
+        const isPortrait = H > W;
+
+        if (isPortrait) {
+          // Portrait: pan the pin to center-bottom, clear of the top-right panel
+          const latlng = popup.getLatLng();
+          if (!latlng) return;
+          const pt = map.latLngToContainerPoint(latlng);
+          map.panBy([pt.x - W / 2, pt.y - H * 0.88], { animate: true, duration: 0.3 });
+          return;
+        }
+
+        // Landscape / desktop: nudge popup just enough to clear the right-side panel
+        const el = popup.getElement();
+        if (!el) return;
+        requestAnimationFrame(function() {
+          const rect = el.getBoundingClientRect();
+          const PAD = 12;
+          let dx = 0, dy = 0;
+
+          if (rect.left   < PAD)     dx = rect.left - PAD;
+          if (rect.top    < PAD)     dy = rect.top  - PAD;
+          if (rect.right  > W - PAD) dx = rect.right - (W - PAD);
+          if (rect.bottom > H - PAD) dy = rect.bottom - (H - PAD);
+
+          // Clear the right-side panel (fixed, right: 10px, width: 280px)
+          const panelLeft = W - 290;
+          if (rect.right > panelLeft - PAD) {
+            dx = Math.max(dx, rect.right - (panelLeft - PAD));
+          }
+
+          if (dx !== 0 || dy !== 0) {
+            map.panBy([dx, dy], { animate: true, duration: 0.3 });
+          }
+        });
+      });
+
       // ── Date / time ───────────────────────────────────────────────────────
       const now = new Date();
       const DAY_NAMES = [
