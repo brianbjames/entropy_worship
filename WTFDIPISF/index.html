@@ -2346,6 +2346,9 @@
       // geoLayer: the rendered L.geoJSON layer for slider updates
       let loadedFeatures = [];
       let geoLayer = null;
+      let citationInferredLayer = null;
+      let _citStreetsByName = new Map(); // normalized name → {day, fromhour, tohour, count}
+      let _citInferredFeatures = [];    // raw features with citation-inferred hours injected
       let checkMarker = null;
       let lastSearchLabel = null;
       let _lastLayerClick = 0; // timestamp of last layer click, to suppress duplicate map click
@@ -2637,10 +2640,10 @@
       }
 
       function findRecommendations(latlng, maxResults = 5, maxRadius = 400) {
-        if (loadedFeatures.length === 0) return [];
+        if (loadedFeatures.length === 0 && _citInferredFeatures.length === 0) return [];
         const hasParkWindow = parkUntilHour > activeHour;
 
-        const scored = loadedFeatures
+        const scored = [...loadedFeatures, ..._citInferredFeatures]
           .map((f) => ({ f, d: distToFeature(latlng.lat, latlng.lng, f) }))
           .filter((x) => x.d <= maxRadius && x.f.properties._thisWeek)
           .filter((x) => {
@@ -2796,6 +2799,200 @@
         return { ...top[0], totalSegments: matches.length };
       }
 
+      // ── Citation-based cleaning inference ────────────────────────────────
+      let citationsCleaningMap = new Map(); // "STREETNAME_dayIndex" → { day, fromhour, tohour, count }
+      let cleaningInferenceReady = false;
+
+      const DAY_NAMES_FULL = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+
+      function normCitationStreet(addr) {
+        if (!addr) return null;
+        let s = addr.toUpperCase();
+        // Strip leading block number and "BLOCK OF"
+        s = s.replace(/^\d+\s+(BLOCK\s+OF\s+)?/, "");
+        // Take only the first street at an intersection
+        s = s.split(/\s*[\/&]\s*/)[0];
+        s = s.trim();
+        // Normalize suffixes (same as inferCorridorSchedule)
+        s = s.replace(/\bSTREET\b/g, "ST")
+             .replace(/\bAVENUE\b/g, "AVE")
+             .replace(/\bBOULEVARD\b/g, "BLVD")
+             .replace(/\bDRIVE\b/g, "DR")
+             .replace(/\bCOURT\b/g, "CT")
+             .replace(/\bLANE\b/g, "LN")
+             .replace(/\bPLACE\b/g, "PL")
+             .replace(/\bROAD\b/g, "RD");
+        return s || null;
+      }
+
+      function buildCitationsCleaningMap(records, dateKey, addrKey) {
+        if (!records.length) return;
+        const meta = {};
+        for (const rec of records) {
+          const addr = rec[addrKey] || "";
+          const dateVal = rec[dateKey] || "";
+          if (!addr || !dateVal) continue;
+          const street = normCitationStreet(addr);
+          if (!street) continue;
+          const d = new Date(dateVal);
+          if (isNaN(d)) continue;
+          const di = d.getDay();
+          const hr = d.getHours();
+          const key = `${street}_${di}`;
+          if (!meta[key]) meta[key] = { day: DAY_NAMES_FULL[di], hourCounts: {} };
+          meta[key].hourCounts[hr] = (meta[key].hourCounts[hr] || 0) + 1;
+        }
+        citationsCleaningMap.clear();
+        for (const [key, val] of Object.entries(meta)) {
+          const total = Object.values(val.hourCounts).reduce((a, b) => a + b, 0);
+          if (total < 3) continue;
+          const topHour = parseInt(Object.entries(val.hourCounts).sort((a, b) => b[1] - a[1])[0][0]);
+          citationsCleaningMap.set(key, { day: val.day, fromhour: topHour, tohour: topHour + 2, count: total });
+        }
+        cleaningInferenceReady = true;
+        console.log(`[CitInfer] Built from ${records.length} records → ${citationsCleaningMap.size} street/day combos`);
+        fetchAndRenderCitationSegments();
+      }
+
+      function inferFromCitationHistory(label) {
+        if (!cleaningInferenceReady || !label) return null;
+        const raw = label.split(",")[0].trim();
+        const street = normCitationStreet(raw);
+        if (!street) return null;
+        let best = null;
+        for (let di = 0; di < 7; di++) {
+          const entry = citationsCleaningMap.get(`${street}_${di}`);
+          if (entry && (!best || entry.count > best.count)) best = entry;
+        }
+        return best;
+      }
+
+      async function fetchAndRenderCitationSegments() {
+        if (!cleaningInferenceReady || !loadedFeatures) return;
+        if (citationInferredLayer) {
+          map.removeLayer(citationInferredLayer);
+          citationInferredLayer = null;
+        }
+
+        const viewDayIdx = DAY_NAMES_FULL.indexOf(viewDayName);
+        if (viewDayIdx < 0) return;
+
+        // Streets with citation data for today's day
+        const citStreets = new Map();
+        for (const [key, val] of citationsCleaningMap) {
+          const lastUs = key.lastIndexOf("_");
+          const streetName = key.substring(0, lastUs);
+          const dayIdx = parseInt(key.substring(lastUs + 1));
+          if (dayIdx === viewDayIdx) citStreets.set(streetName, val);
+        }
+        if (!citStreets.size) return;
+
+        // Drop streets already covered by the primary dataset
+        const knownStreets = new Set(
+          loadedFeatures.map(f => normCitationStreet(f.properties.corridor)).filter(Boolean)
+        );
+        const newStreets = [...citStreets.keys()].filter(s => !knownStreets.has(s));
+        if (!newStreets.length) return;
+
+        // Save for time-slider restyles
+        _citStreetsByName = citStreets;
+
+        // Fetch geometries from primary dataset (no day filter — just need the shapes)
+        const corridorIn = newStreets.map(s => `'${s.replace(/'/g, "''")}'`).join(",");
+        const where = encodeURIComponent(`upper(corridor) in (${corridorIn})`);
+        try {
+          const resp = await fetch(`https://data.sfgov.org/resource/yhqp-riqs.geojson?$where=${where}&$limit=1000`);
+          const geojson = await resp.json();
+          if (!geojson.features?.length) return;
+
+          const rawFeatures = geojson.features.filter(f => f.geometry);
+
+          // Store raw (non-offset) features with citation hours injected for verdict/routing
+          _citInferredFeatures = rawFeatures
+            .map(f => {
+              const ce = citStreets.get(normCitationStreet(f.properties.corridor));
+              if (!ce) return null;
+              return { ...f, properties: { ...f.properties, fromhour: ce.fromhour, tohour: ce.tohour, _thisWeek: true } };
+            })
+            .filter(Boolean);
+
+          const features = rawFeatures
+            .map(f => ({ ...f, geometry: offsetGeometry(f.geometry, f.properties.cnnrightleft) }));
+
+          function citStyle(p) {
+            const isLeft = (p.cnnrightleft || "").toUpperCase() === "L";
+            const ce = _citStreetsByName.get(normCitationStreet(p.corridor));
+            if (!ce) return { color: "#777", weight: lineWeight(isLeft), opacity: 0.4 };
+            const fake = { ...p, fromhour: ce.fromhour, tohour: ce.tohour, _thisWeek: true };
+            return getFeatureStyle(fake, isLeft);
+          }
+
+          citationInferredLayer = L.geoJSON(
+            { type: "FeatureCollection", features },
+            {
+              style: (feature) => citStyle(feature.properties),
+              onEachFeature: (feature, layer) => {
+                const p = feature.properties;
+                const citEntry = citStreets.get(normCitationStreet(p.corridor));
+                const hrs = citEntry ? `${fmtHour(citEntry.fromhour)}–${fmtHour(citEntry.tohour)}` : "?";
+                layer.bindTooltip(
+                  () => `${fixOrdinals(p.corridor)} &nbsp;·&nbsp; ${hrs} <span style="opacity:0.6;font-size:9px">(citation history)</span>`,
+                  { sticky: true, direction: "top" }
+                );
+                layer.bindPopup(() => {
+                  const ce = _citStreetsByName.get(normCitationStreet(p.corridor));
+                  const h = ce ? `${fmtHour(ce.fromhour)}–${fmtHour(ce.tohour)}` : "?";
+                  let status, label;
+                  if (!ce) {
+                    status = "passed"; label = "No Upcoming Cleaning";
+                  } else if (isParkSafe(ce.fromhour, ce.tohour)) {
+                    status = "passed"; label = "No Upcoming Cleaning";
+                  } else {
+                    status = getStatusAtHour(ce.fromhour, ce.tohour, activeHour);
+                    label = status === "active" ? "No Parking Now"
+                          : status === "upcoming" ? "Upcoming Cleaning"
+                          : "No Upcoming Cleaning";
+                  }
+                  return `
+                    <div class="popup-street">${fixOrdinals(p.corridor) || "Unknown Street"}</div>
+                    <span class="popup-badge badge-${status}">${label}</span><br>
+                    <b>Likely hours:</b> ${h}<br>
+                    <b>Evidence:</b> ${ce?.count || "?"} citations<br>
+                    <span style="color:#888;font-size:10px">Inferred — not in official schedule</span>
+                  `;
+                });
+                layer.on("mouseover", () => {
+                  const s = citStyle(p);
+                  layer.setStyle({ ...s, weight: s.weight + 4, opacity: 0.95 });
+                });
+                layer.on("mouseout", () => layer.setStyle(citStyle(p)));
+              },
+            }
+          ).addTo(map);
+          if (geoLayer) geoLayer.bringToFront();
+          console.log(`[CitInfer] Drew ${features.length} inferred segments for ${viewDayName}`);
+        } catch (e) {
+          console.log("[CitInfer] Error fetching inferred segments:", e);
+        }
+      }
+
+      async function fetchCleaningCitationsForInference() {
+        // ab4h-6ztd confirmed: violation_desc="STR CLEAN", date=citation_issued_datetime, addr=citation_location
+        const id = "ab4h-6ztd";
+        const base = `https://data.sfgov.org/resource/${id}.json`;
+        const dateField = "citation_issued_datetime";
+        const addrField = "citation_location";
+        try {
+          const where = encodeURIComponent(`violation_desc='STR CLEAN'`);
+          const resp = await fetch(`${base}?$where=${where}&$limit=5000&$order=${dateField} DESC`);
+          if (!resp.ok) { console.log("[CitInfer] fetch failed", resp.status); return; }
+          const data = await resp.json();
+          if (!Array.isArray(data) || !data.length) { console.log("[CitInfer] no STR CLEAN records"); return; }
+          buildCitationsCleaningMap(data, dateField, addrField);
+          return;
+        } catch (e) { console.log("[CitInfer] Error:", e); }
+      }
+
       // ── HUD range rings & coordinate readout ──────────────────────────────
       let _hudRings = [];
       function clearHudRings() {
@@ -2925,12 +3122,14 @@
 
       map.on("moveend zoomend", updateThreatHuds);
 
-      // ── Verdict panel ─────────────────────────────────────────────────────
+      // Background fetch: cleaning citations for inference (runs ~5s after load)
+      setTimeout(fetchCleaningCitationsForInference, 5000);
+
+
       function showVerdict(latlng, label) {
         lastSearchLabel = label;
         clearRecMarkers();
         clearHudRings();
-        map.closePopup();
         updateHudCoords(latlng);
 
         // If data hasn't loaded yet (and it's not a weekend), leave the panel in its loading state
@@ -2957,7 +3156,7 @@
         }
 
         const RADIUS = 60;
-        const nearby = loadedFeatures
+        const nearby = [...loadedFeatures, ..._citInferredFeatures]
           .map((f) => ({ f, d: distToFeature(latlng.lat, latlng.lng, f) }))
           .filter((x) => x.d <= RADIUS)
           .sort((a, b) => a.d - b.d)
@@ -3018,8 +3217,11 @@
         } else {
           verdict = "ok";
           const inf = label ? inferCorridorSchedule(label) : null;
+          const citInf = !inf && label ? inferFromCitationHistory(label) : null;
           if (inf) {
             verdictHtml = `<div class="verdict verdict-inferred">No street cleaning data here<br><span style="font-size:10px">Likely ${inf.day} ${fmtHour(inf.fromhour)}–${fmtHour(inf.tohour)} <span style="opacity:0.6">(inferred from ${inf.totalSegments} nearby)</span></span></div>`;
+          } else if (citInf) {
+            verdictHtml = `<div class="verdict verdict-inferred">No schedule data — citation history:<br><span style="font-size:10px">Likely ${citInf.day} ${fmtHour(citInf.fromhour)}–${fmtHour(citInf.tohour)} <span style="opacity:0.6">(${citInf.count} citations)</span></span></div>`;
           } else {
             verdictHtml = `<div class="verdict verdict-passed">No street cleaning data here</div>`;
           }
@@ -3254,18 +3456,17 @@
 
               // Popup on click
               layer.bindPopup(() => {
-                const status = getStatusAtHour(
-                  p.fromhour,
-                  p.tohour,
-                  activeHour,
-                );
+                const parkSafe = p._thisWeek && isParkSafe(p.fromhour, p.tohour);
+                const status = parkSafe
+                  ? "passed"
+                  : getStatusAtHour(p.fromhour, p.tohour, activeHour);
                 const label = !p._thisWeek
                   ? "Not This Week"
-                  : status === "active"
-                    ? "No Parking Now"
-                    : status === "upcoming"
-                      ? "Upcoming Cleaning"
-                      : "No Upcoming Cleaning";
+                  : parkSafe || status === "passed"
+                    ? "No Upcoming Cleaning"
+                    : status === "active"
+                      ? "No Parking Now"
+                      : "Upcoming Cleaning";
                 const badgeClass = !p._thisWeek
                   ? "badge-passed"
                   : `badge-${status}`;
@@ -3366,6 +3567,9 @@
             showVerdict(checkMarker.getLatLng(), lastSearchLabel);
           else showVerdict(L.latLng(37.7793, -122.4193), "SF City Hall");
         }
+
+        // Fill in streets missing from primary dataset using citation history
+        if (cleaningInferenceReady) fetchAndRenderCitationSegments();
       }
 
       // ── Day selector ──────────────────────────────────────────────────────
@@ -3475,6 +3679,11 @@
             map.removeLayer(geoLayer);
             geoLayer = null;
           }
+          if (citationInferredLayer) {
+            map.removeLayer(citationInferredLayer);
+            citationInferredLayer = null;
+          }
+          _citInferredFeatures = [];
           loadedFeatures = [];
         }
 
@@ -3553,6 +3762,17 @@
             if (!p) return;
             const isLeft = (p.cnnrightleft || "").toUpperCase() === "L";
             applyFeatureStyle(layer, p, isLeft);
+          });
+        }
+
+        if (citationInferredLayer) {
+          citationInferredLayer.eachLayer((layer) => {
+            const p = layer.feature && layer.feature.properties;
+            if (!p) return;
+            const ce = _citStreetsByName.get(normCitationStreet(p.corridor));
+            if (!ce) return;
+            const isLeft = (p.cnnrightleft || "").toUpperCase() === "L";
+            layer.setStyle(getFeatureStyle({ ...p, fromhour: ce.fromhour, tohour: ce.tohour, _thisWeek: true }, isLeft));
           });
         }
 
@@ -3641,6 +3861,7 @@
 
       map.on("click", async (e) => {
         if (Date.now() - _lastLayerClick < 400) return; // layer already handled this (400ms covers mobile synthetic click delay)
+        map.closePopup();
         showVerdict(e.latlng, null);
         try {
           const resp = await fetch(
