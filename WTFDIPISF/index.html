@@ -151,12 +151,16 @@
         border: 1px solid #1e3a4a;
         width: 280px;
         color: #fff;
-        max-height: calc(50dvh - 25px);
+        max-height: calc(100dvh - 25px);
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
         box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.4);
         scrollbar-width: thin;
         scrollbar-color: #1e3a4a transparent;
+      }
+
+      @media (max-width: 768px) and (orientation: portrait) {
+        #control-panel { max-height: calc(50dvh - 25px); }
       }
 
       #control-panel::-webkit-scrollbar {
@@ -306,7 +310,7 @@
 
       .legend .source {
         font-size: 10px;
-        color: #4a6a7a;
+        color: #8ab8cc;
         margin-top: 2px;
       }
       .legend .source a {
@@ -316,7 +320,7 @@
         font-size: 10px;
         font-weight: normal;
         letter-spacing: 1px;
-        color: #4a6a7a;
+        color: #8ab8cc;
         text-decoration: none;
         text-transform: uppercase;
         vertical-align: middle;
@@ -353,7 +357,7 @@
         outline: none;
       }
 
-      #search-input::placeholder { color: #4a6a7a; }
+      #search-input::placeholder { color: #8ab8cc; }
       #search-input:focus {
         border-color: rgba(68, 153, 255, 0.6);
         box-shadow: 0 0 0 1px rgba(68, 153, 255, 0.12);
@@ -383,7 +387,7 @@
       #search-btn:disabled { opacity: 0.35; cursor: default; }
 
       #search-hint {
-        color: #4a6a7a;
+        color: #8ab8cc;
         font-size: 10px;
         margin-top: 7px;
       }
@@ -640,7 +644,7 @@
       .time-ticks {
         display: flex;
         justify-content: space-between;
-        color: #4a6a7a;
+        color: #8ab8cc;
         font-size: 10px;
         margin-top: 5px;
         letter-spacing: 0.5px;
@@ -1152,7 +1156,7 @@
       }
       .risk-section-label {
         font-size: 10px;
-        color: #4a6a7a;
+        color: #8ab8cc;
         letter-spacing: 2px;
         text-transform: uppercase;
         margin-bottom: 5px;
@@ -1184,7 +1188,7 @@
       }
 
       .recs-header {
-        color: #4a6a7a;
+        color: #8ab8cc;
         font-size: 9px;
         letter-spacing: 2px;
         text-transform: uppercase;
@@ -1206,14 +1210,14 @@
       }
 
       .rec-dist {
-        color: #4a6a7a;
+        color: #8ab8cc;
         font-size: 11px;
         margin-left: auto;
         white-space: nowrap;
       }
 
       .rec-why {
-        color: #4a6a7a;
+        color: #8ab8cc;
         font-size: 11px;
         white-space: nowrap;
       }
@@ -1270,7 +1274,7 @@
       }
 
       #meters-status {
-        color: #4a6a7a;
+        color: #8ab8cc;
         font-size: 10px;
         margin-left: 6px;
       }
@@ -1540,7 +1544,7 @@
       .hud-intel-header {
         font-size: 9px;
         letter-spacing: 3px;
-        color: rgba(68, 153, 255, 0.6);
+        color: #ffffff;
         text-transform: uppercase;
         margin-bottom: 6px;
       }
@@ -1553,7 +1557,7 @@
         gap: 8px;
       }
       .hud-intel-key {
-        color: #4a6a7a;
+        color: #d0ecf8;
         letter-spacing: 1px;
         text-transform: uppercase;
         font-size: 10px;
@@ -1565,6 +1569,15 @@
         letter-spacing: 1px;
         text-transform: uppercase;
         text-align: right;
+      }
+      .hud-intel-group {
+        font-size: 8px;
+        letter-spacing: 2px;
+        color: rgba(68,153,255,1);
+        text-transform: uppercase;
+        margin: 6px 0 3px;
+        border-top: 1px solid rgba(68,153,255,0.08);
+        padding-top: 5px;
       }
       .hud-week-row {
         display: flex;
@@ -1587,7 +1600,7 @@
         background: rgba(255, 68, 68, 0.08);
       }
       .hud-week-day.no-sweep {
-        color: rgba(255, 68, 68, 0.3);
+        color: rgba(255, 68, 68, 0.8);
         border: 1px solid rgba(255, 68, 68, 0.1);
       }
       .hud-week-day.today-col {
@@ -1735,7 +1748,7 @@
             >
             <span
               id="rpp-status"
-              style="font-size: 10px; color: #4a6a7a; margin-left: 4px"
+              style="font-size: 10px; color: #8ab8cc; margin-left: 4px"
             ></span>
             <button class="meters-toggle" id="rpp-toggle">Off</button>
           </div>
@@ -1777,7 +1790,7 @@
             <span style="font-size: 12px; color: #fff">Street Permits</span>
             <span
               id="permits-status"
-              style="font-size: 10px; color: #4a6a7a; margin-left: 4px"
+              style="font-size: 10px; color: #8ab8cc; margin-left: 4px"
             ></span>
             <button class="meters-toggle" id="permits-toggle">Off</button>
           </div>
@@ -1800,7 +1813,7 @@
             <span style="font-size: 12px; color: #fff">Parking Garages</span>
             <span
               id="garages-status"
-              style="font-size: 10px; color: #4a6a7a; margin-left: 4px"
+              style="font-size: 10px; color: #8ab8cc; margin-left: 4px"
             ></span>
             <button class="meters-toggle" id="garages-toggle">Off</button>
           </div>
@@ -1835,7 +1848,7 @@
             <span style="font-size: 12px; color: #fff">Parking Citations</span>
             <span
               id="citations-status"
-              style="font-size: 10px; color: #4a6a7a; margin-left: 4px"
+              style="font-size: 10px; color: #8ab8cc; margin-left: 4px"
             ></span>
             <button class="meters-toggle" id="citations-toggle">Off</button>
           </div>
@@ -1858,7 +1871,7 @@
             <span style="font-size: 12px; color: #fff">Car Break-ins</span>
             <span
               id="breakins-status"
-              style="font-size: 10px; color: #4a6a7a; margin-left: 4px"
+              style="font-size: 10px; color: #8ab8cc; margin-left: 4px"
             ></span>
             <button class="meters-toggle" id="breakins-toggle">Off</button>
           </div>
@@ -1881,7 +1894,7 @@
             <span style="font-size: 12px; color: #fff">Traffic Crashes</span>
             <span
               id="crashes-status"
-              style="font-size: 10px; color: #4a6a7a; margin-left: 4px"
+              style="font-size: 10px; color: #8ab8cc; margin-left: 4px"
             ></span>
             <button class="meters-toggle" id="crashes-toggle">Off</button>
           </div>
@@ -1904,7 +1917,7 @@
             <span style="font-size: 12px; color: #fff">Police Incidents</span>
             <span
               id="incidents-status"
-              style="font-size: 10px; color: #4a6a7a; margin-left: 4px"
+              style="font-size: 10px; color: #8ab8cc; margin-left: 4px"
             ></span>
             <button class="meters-toggle" id="incidents-toggle">Off</button>
           </div>
@@ -1927,7 +1940,7 @@
             <span style="font-size: 12px; color: #fff">Abandoned Vehicles</span>
             <span
               id="tows-status"
-              style="font-size: 10px; color: #4a6a7a; margin-left: 4px"
+              style="font-size: 10px; color: #8ab8cc; margin-left: 4px"
             ></span>
             <button class="meters-toggle" id="tows-toggle">Off</button>
           </div>
@@ -1950,7 +1963,7 @@
             <span style="font-size: 12px; color: #fff">Special Events</span>
             <span
               id="events-status"
-              style="font-size: 10px; color: #4a6a7a; margin-left: 4px"
+              style="font-size: 10px; color: #8ab8cc; margin-left: 4px"
             ></span>
             <button class="meters-toggle" id="events-toggle">Off</button>
           </div>
@@ -1975,7 +1988,7 @@
             <span style="font-size: 12px; color: #fff">Neighborhood Score Overlay</span>
             <span
               id="nhood-status"
-              style="font-size: 10px; color: #4a6a7a; margin-left: 4px"
+              style="font-size: 10px; color: #8ab8cc; margin-left: 4px"
             ></span>
             <button class="meters-toggle" id="nhood-toggle">Off</button>
           </div>
@@ -2043,7 +2056,7 @@
           <hr />
           <div style="margin-top: 6px; display: flex; align-items: center; gap: 8px;">
             <div id="panel-drag-handle-bottom" class="drag-grip" style="opacity:0.55; cursor:grab; padding:2px 4px; flex-shrink:0;"><span></span><span></span></div>
-            <span style="font-size: 10px; color: #4a6a7a; flex: 1; text-align: right;"
+            <span style="font-size: 10px; color: #8ab8cc; flex: 1; text-align: right;"
               >Data is fetched from
               <a
                 href="https://datasf.org/opendata/"
@@ -3412,7 +3425,7 @@
           const cls = `hud-week-day${sweep ? ' has-sweep' : ' no-sweep'}${di === today ? ' today-col' : ''}`;
           return `<div class="${cls}">${a}</div>`;
         }).join('');
-        return `<div style="font-size:9px;color:#4a6a7a;letter-spacing:1px;text-transform:uppercase;margin-top:6px;margin-bottom:3px">Sweep days (citation evidence)</div>
+        return `<div style="font-size:9px;color:#d0ecf8;letter-spacing:1px;text-transform:uppercase;margin-top:6px;margin-bottom:3px">Sweep days</div>
         <div class="hud-week-row">${dots}</div>`;
       }
 
@@ -3422,45 +3435,319 @@
         return street ? (citationsCleaningMap.get(`${street}_${viewDate.getDay()}`) || null) : null;
       }
 
+      // Street-name text match fallback — no geocoding required
+      function getStreetCitationProfile(label) {
+        if (!citationsData.length || !label) return null;
+        const street = normCitationStreet(label.split(',')[0].trim());
+        if (!street) return null;
+        const matches = citationsData.filter(r => {
+          const addr = (r[citationsLocTextField] || '').toUpperCase();
+          return addr.includes(street);
+        });
+        if (matches.length < 2) return null;
+        const vtally = {};
+        let totalFine = 0, fineCount = 0, mostRecent = 0;
+        for (const r of matches) {
+          const v = (r[citationsDescField] || 'UNKNOWN').toUpperCase();
+          vtally[v] = (vtally[v] || 0) + 1;
+          const fine = parseFloat(r[citationsFineField]);
+          if (!isNaN(fine)) { totalFine += fine; fineCount++; }
+          const dt = r[citationsDateField] ? new Date(r[citationsDateField]).getTime() : 0;
+          if (dt > mostRecent) mostRecent = dt;
+        }
+        const topViolation = Object.entries(vtally).sort((a,b) => b[1]-a[1])[0]?.[0] || null;
+        const avgFine = fineCount ? Math.round(totalFine / fineCount) : null;
+        const recentDays = mostRecent ? Math.floor((Date.now() - mostRecent) / 86400000) : null;
+        const shortV = topViolation
+          ? topViolation.replace('STREET CLEANING','ST CLEANING').replace('PARKING METER','METER').replace('EXPIRED','EXP').slice(0,22)
+          : null;
+        return { count: matches.length, topViolation: shortV, avgFine, recentDays };
+      }
+
+      function getNearbyCitationProfile(latlng) {
+        if (!citationsData.length || !citationsGeoCache.size) return null;
+        const addrMap = new Map();
+        for (const rec of citationsData) {
+          const addr = rec[citationsLocTextField];
+          if (addr && !addrMap.has(addr)) addrMap.set(addr, rec);
+        }
+        const nearby = [];
+        for (const [addr, coords] of citationsGeoCache.entries()) {
+          if (!coords) continue;
+          const ym = 111320, xm = ym * Math.cos(latlng.lat * Math.PI / 180);
+          const dy = (coords[0] - latlng.lat) * ym, dx = (coords[1] - latlng.lng) * xm;
+          if (Math.hypot(dx, dy) > 200) continue;
+          const rec = addrMap.get(addr);
+          if (rec) nearby.push(rec);
+        }
+        if (!nearby.length) return null;
+        const vtally = {};
+        let totalFine = 0, fineCount = 0, mostRecent = 0;
+        for (const r of nearby) {
+          const v = (r[citationsDescField] || 'UNKNOWN').toUpperCase();
+          vtally[v] = (vtally[v] || 0) + 1;
+          const fine = parseFloat(r[citationsFineField]);
+          if (!isNaN(fine)) { totalFine += fine; fineCount++; }
+          const dt = r[citationsDateField] ? new Date(r[citationsDateField]).getTime() : 0;
+          if (dt > mostRecent) mostRecent = dt;
+        }
+        const topViolation = Object.entries(vtally).sort((a,b) => b[1]-a[1])[0]?.[0] || null;
+        const avgFine = fineCount ? Math.round(totalFine / fineCount) : null;
+        const recentDays = mostRecent ? Math.floor((Date.now() - mostRecent) / 86400000) : null;
+        const shortV = topViolation
+          ? topViolation.replace('STREET CLEANING','ST CLEANING').replace('PARKING METER','METER').replace('EXPIRED','EXP').slice(0,22)
+          : null;
+        return { count: nearby.length, topViolation: shortV, avgFine, recentDays };
+      }
+
+      function getNearbyIncidentProfile(latlng) {
+        if (!incidentsData.length) return null;
+        const pts = incidentsData.filter(i => i.latitude && i.longitude);
+        const nearby = pts.filter(i => {
+          const ym = 111320, xm = ym * Math.cos(latlng.lat * Math.PI / 180);
+          const dy = (parseFloat(i.latitude) - latlng.lat) * ym;
+          const dx = (parseFloat(i.longitude) - latlng.lng) * xm;
+          return Math.hypot(dx, dy) <= 200;
+        });
+        if (!nearby.length) return null;
+        const cats = {}, hours = {};
+        for (const i of nearby) {
+          const c = (i.incident_category || 'UNKNOWN').toUpperCase();
+          cats[c] = (cats[c] || 0) + 1;
+          if (i.incident_time) {
+            const h = parseInt(i.incident_time.split(':')[0]);
+            if (!isNaN(h)) hours[h] = (hours[h] || 0) + 1;
+          }
+        }
+        const topCat = Object.entries(cats).sort((a,b)=>b[1]-a[1])[0]?.[0] || null;
+        const peakHour = Object.keys(hours).length
+          ? parseInt(Object.entries(hours).sort((a,b)=>b[1]-a[1])[0][0]) : null;
+        return { count: nearby.length, topCat, peakHour };
+      }
+
+      function getNearbyCrashProfile(latlng) {
+        if (!crashesData.length || !crashesLatField) return null;
+        const ym = 111320, xm = ym * Math.cos(latlng.lat * Math.PI / 180);
+        let killed = 0, injured = 0;
+        const nearby50 = [];
+        for (const c of crashesData) {
+          const lat = parseFloat(c[crashesLatField]), lng = parseFloat(c[crashesLngField]);
+          if (isNaN(lat) || isNaN(lng)) continue;
+          const dy = (lat - latlng.lat) * ym, dx = (lng - latlng.lng) * xm;
+          const d = Math.hypot(dx, dy);
+          if (d <= 200) {
+            killed += parseInt(c.number_killed) || 0;
+            injured += parseInt(c.number_injured) || 0;
+          }
+          if (d <= 50) nearby50.push([lat, lng]);
+        }
+        const chronic = nearby50.length >= 3;
+        if (!killed && !injured && !chronic) return null;
+        return { killed, injured, chronic };
+      }
+
+      function getNearestOpenGarage(latlng) {
+        if (!garagesLoaded || !garagesData.length) return null;
+        const ym = 111320, xm = ym * Math.cos(latlng.lat * Math.PI / 180);
+        let best = null, bestDist = Infinity;
+        for (const row of garagesData) {
+          if (!row.the_geom?.coordinates) continue;
+          const [gLng, gLat] = row.the_geom.coordinates;
+          if (isNaN(gLat) || isNaN(gLng)) continue;
+          if (garageIsOpen(row) !== true) continue;
+          const dy = (gLat - latlng.lat) * ym, dx = (gLng - latlng.lng) * xm;
+          const d = Math.hypot(dx, dy);
+          if (d < bestDist) { bestDist = d; best = row; }
+        }
+        return best ? { name: best.name || best.facname || 'GARAGE', dist: Math.round(bestDist) } : null;
+      }
+
+      function getNearestFreeMeter(latlng) {
+        if (!metersVisible || !metersData.length) return null;
+        const ym = 111320, xm = ym * Math.cos(latlng.lat * Math.PI / 180);
+        let bestDist = Infinity;
+        for (const m of metersData) {
+          const snap = m._snapped;
+          const mLat = snap ? snap[0] : parseFloat(m.location?.latitude || m.location?.lat);
+          const mLng = snap ? snap[1] : parseFloat(m.location?.longitude || m.location?.lon);
+          if (isNaN(mLat) || isNaN(mLng)) continue;
+          const active = isMeterActiveNow(m);
+          if (active) continue;
+          const dy = (mLat - latlng.lat) * ym, dx = (mLng - latlng.lng) * xm;
+          const d = Math.hypot(dx, dy);
+          if (d < bestDist) bestDist = d;
+        }
+        return bestDist < Infinity ? Math.round(bestDist) : null;
+      }
+
+      function getNearbyEvents(latlng) {
+        if (!eventsVisible || !eventsLayer) return [];
+        const ym = 111320, xm = ym * Math.cos(latlng.lat * Math.PI / 180);
+        const found = [];
+        eventsLayer.eachLayer(layer => {
+          const geom = layer.feature?.geometry;
+          const props = layer.feature?.properties;
+          if (!geom || !props) return;
+          const coords = geom.type === 'LineString' ? geom.coordinates
+            : geom.type === 'MultiLineString' ? geom.coordinates[0]
+            : geom.type === 'Polygon' ? geom.coordinates[0] : null;
+          if (!coords?.length) return;
+          const sumLat = coords.reduce((s,c)=>s+c[1],0)/coords.length;
+          const sumLng = coords.reduce((s,c)=>s+c[0],0)/coords.length;
+          const dy = (sumLat - latlng.lat) * ym, dx = (sumLng - latlng.lng) * xm;
+          const d = Math.hypot(dx, dy);
+          if (d <= 800) found.push({
+            name: props.case_name || props.street || 'EVENT',
+            dist: Math.round(d),
+            endDt: props.end_dt || props.end_date || ''
+          });
+        });
+        return found.sort((a,b) => a.dist - b.dist).slice(0, 2);
+      }
+
+      function getNhoodScore(latlng) {
+        if (!nhoodData?.features) return null;
+        for (const f of nhoodData.features) {
+          const p = f.properties;
+          if (latlng.lat < p.minLat || latlng.lat > p.maxLat) continue;
+          if (latlng.lng < p.minLng || latlng.lng > p.maxLng) continue;
+          const score = Math.round((p.score || 0) * 100);
+          return { name: p.name || '', score };
+        }
+        return null;
+      }
+
+      function getNearbyPermitCount(latlng) {
+        if (!permitsData.length || !permitsLatField) return 0;
+        const pts = permitsData
+          .filter(p => p[permitsLatField] && p[permitsLngField])
+          .map(p => [parseFloat(p[permitsLatField]), parseFloat(p[permitsLngField])]);
+        return countNearby(latlng, pts, 200);
+      }
+
+      function getNearbyAbandonedInfo(latlng) {
+        if (!towsData.length || !towsLatField) return null;
+        const ym = 111320, xm = ym * Math.cos(latlng.lat * Math.PI / 180);
+        const nearby = towsData.filter(t => {
+          if (!t[towsLatField] || !t[towsLngField]) return false;
+          const dy = (parseFloat(t[towsLatField]) - latlng.lat) * ym;
+          const dx = (parseFloat(t[towsLngField]) - latlng.lng) * xm;
+          return Math.hypot(dx, dy) <= 200;
+        });
+        if (!nearby.length) return null;
+        let oldestDays = 0;
+        for (const t of nearby) {
+          if (t[towsDateField]) {
+            const days = Math.floor((Date.now() - new Date(t[towsDateField]).getTime()) / 86400000);
+            if (days > oldestDays) oldestDays = days;
+          }
+        }
+        return { count: nearby.length, oldestDays };
+      }
+
       function buildHudIntelHtml(latlng, label, verdict, nearby, upcoming) {
-        const rows = [];
-        const RC = { CRITICAL: '#ff4444', HIGH: '#ff9922', MEDIUM: '#ccbb00', LOW: '#44bb55' };
+        const RC = { CRITICAL: '#ff4444', HIGH: '#ff9922', MEDIUM: '#ccbb00', LOW: '#55ee66' };
         const RG = { CRITICAL: 'rgba(255,68,68,0.5)', HIGH: 'rgba(255,153,34,0.4)', MEDIUM: 'rgba(204,187,0,0.4)', LOW: 'rgba(68,187,85,0.4)' };
+        const row = (key, valHtml) =>
+          `<div class="hud-intel-row"><span class="hud-intel-key">${key}</span><span class="hud-intel-val">${valHtml}</span></div>`;
+        const grp = (label) =>
+          `<div class="hud-intel-group">${label}</div>`;
+
+        // ── GROUP 0: Risk / timing / RPP ────────────────────────────────────────
+        const g0 = [];
         const towRisk = calcTowRisk(verdict, upcoming, latlng);
-        rows.push(`<div class="hud-intel-row">
-          <span class="hud-intel-key">Tow Risk</span>
-          <span class="hud-intel-val" style="color:${RC[towRisk]};text-shadow:0 0 10px ${RG[towRisk]}">${towRisk}</span>
-        </div>`);
+        g0.push(row('Tow Risk',
+          `<span style="color:${RC[towRisk]};text-shadow:0 0 10px ${RG[towRisk]}">${towRisk}</span>`));
         if (verdict === 'upcoming' && upcoming.length) {
           const mins = Math.round((parseFloat(upcoming[0].f.properties.fromhour) - activeHour) * 60);
           const h = Math.floor(mins / 60), m = mins % 60;
           const col = mins < 60 ? '#ff9922' : mins < 120 ? '#ccbb00' : '#44bb55';
-          rows.push(`<div class="hud-intel-row">
-            <span class="hud-intel-key">Safe For</span>
-            <span class="hud-intel-val" style="color:${col}">${h > 0 ? `${h}H ${m}M` : `${m}M`}</span>
-          </div>`);
+          g0.push(row('Safe For',
+            `<span style="color:${col}">${h > 0 ? `${h}H ${m}M` : `${m}M`}</span>`));
         }
         const rpp = rppContainsPin(latlng);
         if (rpp) {
           const ri = rppHoursInfo(rpp);
-          if (ri) rows.push(`<div class="hud-intel-row">
-            <span class="hud-intel-key">RPP${ri.zone ? ' · ' + ri.zone : ''}</span>
-            <span class="hud-intel-val" style="color:${ri.active ? '#ff9922' : '#4a6a7a'}">${ri.text}</span>
-          </div>`);
+          if (ri) g0.push(row(`RPP${ri.zone ? ' · ' + ri.zone : ''}`,
+            `<span style="color:${ri.active ? '#ff9922' : '#4a6a7a'}">${ri.text}</span>`));
         }
+
+        // ── GROUP 1: Citations ───────────────────────────────────────────────────
+        const g1 = [];
         const citPat = getCitPattern(label);
-        if (citPat) rows.push(`<div class="hud-intel-row">
-          <span class="hud-intel-key">Peak Citations</span>
-          <span class="hud-intel-val" style="color:rgba(120,210,255,0.9)">${fmtHour(citPat.fromhour)}–${fmtHour(citPat.tohour)}</span>
-        </div>`);
-        if (verdict === 'ok' && !nearby.length && label) rows.push(`<div class="hud-intel-row">
-          <span class="hud-intel-key">Block Status</span>
-          <span class="hud-intel-val" style="color:#4a6a7a;font-size:10px">NO API DATA</span>
-        </div>`);
-        if (!rows.length) return '';
+        if (citPat) g1.push(row('Peak Citations',
+          `<span style="color:rgba(120,210,255,0.9)">${fmtHour(citPat.fromhour)}–${fmtHour(citPat.tohour)}</span>`));
+        const citProf = getNearbyCitationProfile(latlng) || getStreetCitationProfile(label);
+        if (citProf) {
+          if (citProf.topViolation) g1.push(row('Mostly',
+            `<span style="color:rgba(120,210,255,0.9)">${citProf.topViolation}</span>`));
+          if (citProf.recentDays !== null) {
+            const recCol = citProf.recentDays > 14 ? '#44bb55' : citProf.recentDays > 7 ? '#ccbb00' : '#ff9922';
+            g1.push(row('Last Citation',
+              `<span style="color:${recCol}">${citProf.recentDays}D AGO</span>`));
+          }
+          if (citProf.avgFine !== null) g1.push(row('Avg Fine',
+            `<span style="color:rgba(120,210,255,0.9)">$${citProf.avgFine}</span>`));
+        }
+
+        // ── GROUP 2: Parking ─────────────────────────────────────────────────────
+        const g2 = [];
+        const garage = getNearestOpenGarage(latlng);
+        if (garage) g2.push(row('Open Garage',
+          `<span style="color:#44bb55">${garage.dist}M AWAY</span>`));
+        const freeMeter = getNearestFreeMeter(latlng);
+        if (freeMeter !== null) g2.push(row('Free Meter',
+          `<span style="color:#44bb55">${freeMeter}M AWAY</span>`));
+        const permitCount = getNearbyPermitCount(latlng);
+        if (permitCount > 0) g2.push(row('Permits Nearby',
+          `<span style="color:${permitCount >= 2 ? '#ccbb00' : '#4a6a7a'}">${permitCount} · FEWER SPOTS</span>`));
+        const abandoned = getNearbyAbandonedInfo(latlng);
+        if (abandoned) g2.push(row('Abandoned',
+          `<span style="color:#8ab8cc">${abandoned.count} · OLDEST ${abandoned.oldestDays}D</span>`));
+
+        // ── GROUP 3: Safety ──────────────────────────────────────────────────────
+        const g3 = [];
+        const crash = getNearbyCrashProfile(latlng);
+        if (crash) {
+          const crashCol = crash.chronic ? '#ff4444' : '#ff9922';
+          const crashLabel = crash.chronic ? 'CHRONIC HOTSPOT' : `${crash.killed ? crash.killed + ' KILLED · ' : ''}${crash.injured} INJURED`;
+          g3.push(row('Crashes', `<span style="color:${crashCol}">${crashLabel}</span>`));
+        }
+        const incident = getNearbyIncidentProfile(latlng);
+        if (incident) {
+          if (incident.topCat) g3.push(row('Incident Type',
+            `<span style="color:#8ab8cc">${incident.topCat.slice(0,20)}</span>`));
+          if (incident.peakHour !== null) g3.push(row('Incident Peak',
+            `<span style="color:rgba(120,210,255,0.9)">${fmtHour(incident.peakHour)}</span>`));
+        }
+
+        // ── GROUP 4: Context ─────────────────────────────────────────────────────
+        const g4 = [];
+        const events = getNearbyEvents(latlng);
+        for (const ev of events) {
+          g4.push(row('Street Event',
+            `<span style="color:#cc44ff">${ev.name.slice(0,18)} · ${ev.dist}M</span>`));
+        }
+        const nhood = getNhoodScore(latlng);
+        if (nhood) g4.push(row(nhood.name ? nhood.name.slice(0,16) : 'Neighborhood',
+          `<span style="color:rgba(120,210,255,0.9)">${nhood.score}/100</span>`));
+        if (verdict === 'ok' && !nearby.length && label) g4.push(row('Block Status',
+          `<span style="color:#d0ecf8;font-size:10px">NO API DATA</span>`));
+
+        // ── Assemble ─────────────────────────────────────────────────────────────
+        const allEmpty = !g0.length && !g1.length && !g2.length && !g3.length && !g4.length;
+        if (allEmpty) return '';
+
+        let html = '';
+        if (g0.length) html += g0.join('');
+        if (g1.length) html += grp('Citations') + g1.join('');
+        if (g2.length) html += grp('Parking') + g2.join('');
+        if (g3.length) html += grp('Safety') + g3.join('');
+        if (g4.length) html += grp('Context') + g4.join('');
+
         return `<div class="hud-intel">
           <div class="hud-intel-header">Data Inferences</div>
-          ${rows.join('')}
+          ${html}
           ${getWeekForecastHtml(label, nearby)}
         </div>`;
       }
@@ -3489,6 +3776,7 @@
             <div class="result-rows">
               <span class="r-dim">Street cleaning runs Mon – Fri.<br>${viewDayName} has no restrictions.</span>
             </div>
+            ${loadedFeatures.length > 0 ? buildHudIntelHtml(latlng, label, 'ok', [], []) : ''}
           `;
           panel.style.display = "block";
           return;
