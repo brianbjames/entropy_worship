@@ -773,6 +773,12 @@
         border-color: #3a1500;
         box-shadow: 0 0 6px rgba(255, 102, 34, 0.3);
       }
+      .badge-rpp-inactive {
+        background: #1a1000;
+        color: #ffaa44;
+        border-color: #3a2800;
+        box-shadow: 0 0 6px rgba(255, 170, 68, 0.2);
+      }
       .badge-incident {
         background: #1e0810;
         color: #ff4466;
@@ -3208,6 +3214,7 @@
         // Re-render meters if visible (active hours may change with time)
         if (metersVisible) renderMeters();
         if (garagesLoaded && garagesVisible) renderGarages();
+        if (rppLoaded && rppVisible) buildRppLayer();
 
         // Refresh verdict if a location is pinned
         if (checkMarker) showVerdict(checkMarker.getLatLng(), lastSearchLabel);
@@ -5163,6 +5170,7 @@
         eventsLayer = L.geoJSON(geojson, {
           style: () => ({
             color: "#ff44aa",
+            weight: 5,
             dashArray: "10 8",
             className: "events-march",
           }),
@@ -5214,6 +5222,7 @@
               sticky: true,
               direction: "top",
             });
+            layer.on("click", () => layer.openPopup());
           },
         }).addTo(map);
 
@@ -5297,12 +5306,17 @@
 
       function rppIsActive(feature) {
         const p = feature.properties;
-        const hrsBegin = parseFloat(p.hrs_begin);
-        const hrsEnd = parseFloat(p.hrs_end);
+        const toDecimal = (v) => {
+          const n = parseFloat(v);
+          if (isNaN(n)) return NaN;
+          return Math.floor(n / 100) + (n % 100) / 60;
+        };
+        const hrsBegin = toDecimal(p.hrs_begin);
+        const hrsEnd = toDecimal(p.hrs_end);
         const days = (p.days || "").toUpperCase();
         if (isNaN(hrsBegin) || isNaN(hrsEnd)) return false;
-        const curHour = now.getHours() + now.getMinutes() / 60;
-        const dow = now.getDay(); // 0=Sun … 6=Sat
+        const curHour = activeHour;
+        const dow = viewDate.getDay(); // 0=Sun … 6=Sat
         let dayMatch = false;
         if (days.includes("M-F")) dayMatch = dow >= 1 && dow <= 5;
         if (days.includes("M-SA") || days.includes("M-SA"))
@@ -5373,7 +5387,7 @@
             const exc = p.exceptions ? `<b>Note:</b> ${p.exceptions}<br>` : "";
             layer.bindPopup(`
               <div class="popup-street">RPP Zone ${zone}</div>
-              <span class="popup-badge ${active ? "badge-rpp" : "badge-garage-closed"}">${active ? "Permit Required Now" : "Outside Hours"}</span><br>
+              <span class="popup-badge ${active ? "badge-rpp" : "badge-rpp-inactive"}">${active ? "Permit Required Now" : "Outside Hours"}</span><br>
               <b>Hours:</b> ${fmtRppHours(p)}<br>
               ${limit}${exc}
             `);
