@@ -1703,8 +1703,9 @@
             <span>Recommended parking route</span>
           </div>
           <hr />
-          <div style="margin-top: 6px; text-align: right">
-            <span style="font-size: 10px; color: #666"
+          <div style="margin-top: 6px; display: flex; align-items: center; gap: 8px;">
+            <div id="panel-drag-handle-bottom" class="drag-grip" style="opacity:0.3; cursor:grab; padding:2px 4px; flex-shrink:0;"><span></span><span></span></div>
+            <span style="font-size: 10px; color: #666; flex: 1; text-align: right;"
               >Data is fetched from
               <a
                 href="https://datasf.org/opendata/"
@@ -5888,6 +5889,8 @@
       (function () {
         const panel = document.getElementById("panel-wrapper");
         const handle = document.getElementById("panel-drag-handle");
+        const handleBottom = document.getElementById("panel-drag-handle-bottom");
+        const allHandles = [handle, handleBottom];
         let dragging = false,
           startX,
           startY,
@@ -5905,7 +5908,7 @@
           panel.style.right = "auto";
           panel.style.left = startLeft + "px";
           panel.style.top = startTop + "px";
-          handle.style.cursor = "grabbing";
+          allHandles.forEach(h => h.style.cursor = "grabbing");
         }
 
         function moveDrag(clientX, clientY) {
@@ -5921,22 +5924,22 @@
 
         function endDrag() {
           dragging = false;
-          handle.style.cursor = "grab";
+          allHandles.forEach(h => h.style.cursor = "grab");
         }
 
         // Mouse
-        handle.addEventListener("mousedown", (e) => {
+        allHandles.forEach(h => h.addEventListener("mousedown", (e) => {
           if (e.target.closest("button, input, a")) return;
           e.preventDefault();
           beginDrag(e.clientX, e.clientY);
-        });
+        }));
         document.addEventListener("mousemove", (e) =>
           moveDrag(e.clientX, e.clientY),
         );
         document.addEventListener("mouseup", endDrag);
 
         // Touch
-        handle.addEventListener(
+        allHandles.forEach(h => h.addEventListener(
           "touchstart",
           (e) => {
             if (e.target.closest("button, input, a")) return;
@@ -5944,7 +5947,7 @@
             beginDrag(t.clientX, t.clientY);
           },
           { passive: true },
-        );
+        ));
         document.addEventListener(
           "touchmove",
           (e) => {
