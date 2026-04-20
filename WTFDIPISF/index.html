@@ -2077,11 +2077,14 @@
           <div style="margin-top: 6px; display: flex; align-items: center; gap: 8px;">
             <div id="panel-drag-handle-bottom" class="drag-grip" style="opacity:0.55; cursor:grab; padding:2px 4px; flex-shrink:0;"><span></span><span></span></div>
             <span style="font-size: 10px; color: #b8d8e8; flex: 1; text-align: right;"
-              >WTFDIPISF<br>Parking Inference Calculator<br>Data is fetched from
+              >WTFDIPISF<br>Parking Inference Calculator<br>
+              <a id="bug-report-link" href="#" target="_blank" rel="noopener"
+                style="color:rgba(120,180,255,0.5);text-decoration:none;">Report a bug</a
+              > · Data from
               <a
                 href="https://datasf.org/opendata/"
                 target="_blank"
-                style="color: #4a8a9a"
+                style="color:rgba(120,180,255,0.5);text-decoration:none;"
                 >DataSF</a
               ></span
             >
@@ -3227,6 +3230,7 @@
                     <b>Likely hours:</b> ${h}<br>
                     <b>Evidence:</b> ${ce?.count || "?"} ${evLabel}<br>
                     <span style="color:#c0d8e4;font-size:10px">Inferred — not in official schedule</span>
+                    ${dsLink('vw6y-z8j6')}
                   `;
                 });
                 layer.on("mouseover", () => {
@@ -3707,6 +3711,56 @@
         return { count: nearby.length, oldestDays };
       }
 
+      // Wire up the "report a bug" footer link with pre-filled GitHub issue context
+      (function() {
+        const link = document.getElementById('bug-report-link');
+        if (!link) return;
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          const layers = [];
+          if (typeof citationsVisible !== 'undefined' && citationsVisible) layers.push('Citations');
+          if (typeof metersVisible   !== 'undefined' && metersVisible)    layers.push('Meters');
+          if (typeof incidentsVisible !== 'undefined' && incidentsVisible) layers.push('Incidents');
+          if (typeof crashesVisible  !== 'undefined' && crashesVisible)   layers.push('Crashes');
+          if (typeof permitsVisible  !== 'undefined' && permitsVisible)   layers.push('Permits');
+          if (typeof garagesVisible  !== 'undefined' && garagesVisible)   layers.push('Garages');
+          if (typeof eventsVisible   !== 'undefined' && eventsVisible)    layers.push('Events');
+          if (typeof rppVisible      !== 'undefined' && rppVisible)       layers.push('RPP');
+          if (typeof towsVisible     !== 'undefined' && towsVisible)      layers.push('311 Reports');
+          if (typeof nhoodVisible    !== 'undefined' && nhoodVisible)     layers.push('Neighborhood');
+
+          const pinLine = (typeof checkMarker !== 'undefined' && checkMarker)
+            ? `- **Pinned location:** ${checkMarker.getLatLng().lat.toFixed(6)}, ${checkMarker.getLatLng().lng.toFixed(6)}`
+            : '- **Pinned location:** none';
+
+          const body = [
+            '**Describe the bug**',
+            '<!-- What happened? What did you expect? -->',
+            '',
+            '**Steps to reproduce**',
+            '1. ',
+            '',
+            '**Context**',
+            `- **Browser:** ${navigator.userAgent}`,
+            `- **Screen:** ${window.innerWidth}×${window.innerHeight} (device ${screen.width}×${screen.height})`,
+            `- **Active layers:** ${layers.length ? layers.join(', ') : 'none'}`,
+            pinLine,
+            `- **URL:** ${location.href}`,
+          ].join('\n');
+
+          const url = new URL('https://github.com/brianbjames/entropy_worship/issues/new');
+          url.searchParams.set('title', 'Bug: ');
+          url.searchParams.set('body', body);
+          url.searchParams.set('labels', 'bug');
+          window.open(url.toString(), '_blank', 'noopener');
+        });
+      })();
+
+      // Returns a small "Report data issue" footer link for DataSF popups
+      function dsLink(datasetId) {
+        return `<div style="margin-top:7px;padding-top:5px;border-top:1px solid rgba(255,255,255,0.08)"><a href="https://data.sfgov.org/d/${datasetId}" target="_blank" rel="noopener" style="color:rgba(120,180,255,0.5);font-size:10px;text-decoration:none">↗ View dataset or report data issue</a></div>`;
+      }
+
       function buildHudIntelHtml(latlng, label, verdict, nearby, upcoming) {
         const RC = { CRITICAL: '#ff4444', HIGH: '#ff9922', MEDIUM: '#ccbb00', LOW: '#55ee66' };
         const RG = { CRITICAL: 'rgba(255,68,68,0.5)', HIGH: 'rgba(255,153,34,0.4)', MEDIUM: 'rgba(204,187,0,0.4)', LOW: 'rgba(68,187,85,0.4)' };
@@ -4172,6 +4226,7 @@
                 <b>Hours:</b>         ${fmtHour(p.fromhour)} – ${fmtHour(p.tohour)}<br>
                 ${p._thisWeek ? fmtNextOccurrence(p.fromhour, p.tohour, p.weekday || viewDayName) + "<br>" : ""}
                 <b>Schedule:</b>      ${p.weekday || viewDayName}${weekNums ? `, week${weekNums.length > 1 ? "s" : ""} ${weekNums}` : ""}
+                ${dsLink('yhqp-riqs')}
               `;
               });
 
@@ -5099,6 +5154,7 @@
             ${rates.length ? `<b>Rate:</b> <span style="color:#ffcc66">${rates.join(" &nbsp;·&nbsp; ")}</span><br>` : ""}
             ${capLabel ? `<b>Type:</b> ${capLabel}<br>` : ""}
             <span style="color:#ccc;font-size:10px">Post ${m.post_id || "—"}</span>
+            ${dsLink('nwbb-fxhp')}
           `);
 
           markers.push(marker);
@@ -5325,6 +5381,7 @@
             ${inc.police_district ? `<b>District:</b> ${inc.police_district}<br>` : ""}
             ${inc.resolution ? `<b>Resolution:</b> ${inc.resolution}<br>` : ""}
             <span style="color:#ccc;font-size:10px">#${inc.incident_number || inc.incident_id || "—"}</span>
+            ${dsLink('wg3w-h783')}
           `);
 
           markers.push(marker);
@@ -5498,6 +5555,7 @@
             ${c.road_surface ? `<b>Road surface:</b> ${c.road_surface}<br>` : ""}
             <b>Date:</b> ${collisionDate}
             ${c.collision_time ? ` &nbsp;&middot;&nbsp; ${c.collision_time}` : ""}
+            ${dsLink('ubvf-ztfx')}
           `);
 
           markers.push(marker);
@@ -5996,6 +6054,7 @@
             ${status ? `<b>Status:</b> ${status}<br>` : ""}
             ${p.permit_number ? `<b>Permit #:</b> ${p.permit_number}<br>` : ""}
             ${expires ? `<b>Expires:</b> ${expires}<br>` : ""}
+            ${dsLink('sftu-nd43')}
           `);
           markers.push(marker);
         }
@@ -6528,6 +6587,7 @@
               ${fmt(start) ? `<b>From:</b> ${fmt(start)} ${fmtTime(start) || ""}<br>` : ""}
               ${fmt(end) ? `<b>Until:</b> ${fmt(end)} ${fmtTime(end) || ""}<br>` : ""}
               ${p.status ? `<b>Status:</b> ${p.status}<br>` : ""}
+              ${dsLink('8x25-yybr')}
             `;
             layer.bindPopup(popupContent);
             layer.bindTooltip(p.case_name || "Special Event", {
@@ -6746,6 +6806,7 @@
               <span class="popup-badge ${active ? "badge-rpp" : "badge-rpp-inactive"}">${active ? "Permit Required Now" : "Outside Hours"}</span><br>
               <b>Hours:</b> ${fmtRppHours(p)}<br>
               ${limit}${exc}
+              ${dsLink('hi6h-neyh')}
             `);
           },
         }).addTo(map);
@@ -6920,6 +6981,7 @@
             <b>Today's hours:</b> ${hoursStr}<br>
             ${ratesArr.length ? `<b>Rates:</b> ${ratesArr.join(" &nbsp;·&nbsp; ")}<br>` : ""}
             ${row.notes_1 ? `<b>Notes:</b> <span style="font-size:11px">${row.notes_1}</span><br>` : ""}
+            ${dsLink('mizu-nf6z')}
           `);
 
           garagesLayer.addLayer(marker);
@@ -7196,6 +7258,7 @@
               ${it && it.citations ? `<b>Parking citations:</b> ${it.citations}<br>` : ""}
               ${it && it.cleaning ? `<b>Cleaning segments:</b> ${it.cleaning}<br>` : ""}
               <span style="color:#ccc;font-size:10px">Score from: ${sources.join(", ")}</span>
+              ${dsLink('j2bu-swwd')}
             `);
           },
         }).addTo(map);
