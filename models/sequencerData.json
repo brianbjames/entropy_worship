@@ -1,0 +1,51 @@
+{
+	"pattrstorage" : 	{
+		"name" : "sequencerData",
+		"slots" : 		{
+			"1" : 			{
+				"id" : 1,
+				"data" : 				{
+					"NewXMLButton" : [  ],
+					"OpenXMLButton" : [  ],
+					"ReadAgainButton" : [  ],
+					"SaveXMLButton" : [  ],
+					"objFileSelection" : [ 52 ],
+					"mai_pointsCounter" : [ 2000 ],
+					"mai_pointsCounterDivisor" : [ 500 ],
+					"mai_pointsDim" : [ 4 ],
+					"mai_pointsWeight" : [ 12.7 ],
+					"mai_pointsLineSelection" : [ "fractal.multi.ridged" ],
+					"mai_pointsDim2" : [ 150 ],
+					"mai_pointsDrawMode" : [ "points" ],
+					"mai_pointsColorStart" : [ 1.0, 0.184168, 0.072918, 1.0, 0.02, 1.0, 0.536459 ],
+					"mai_pointsColorEnd" : [ 0.676769, 0.021149, 0.021149, 1.0, 0.0, 0.939394, 0.348959 ]
+				}
+
+			}
+,
+			"40" : 			{
+				"id" : 40,
+				"data" : 				{
+					"NewXMLButton" : [  ],
+					"OpenXMLButton" : [  ],
+					"ReadAgainButton" : [  ],
+					"SaveXMLButton" : [  ],
+					"objFileSelection" : [ 52 ],
+					"mai_pointsCounter" : [ 2000 ],
+					"mai_pointsCounterDivisor" : [ 500 ],
+					"mai_pointsDim" : [ 4 ],
+					"mai_pointsWeight" : [ 12.7 ],
+					"mai_pointsLineSelection" : [ "fractal.multi.ridged" ],
+					"mai_pointsDim2" : [ 150 ],
+					"mai_pointsDrawMode" : [ "points" ],
+					"mai_pointsColorStart" : [ 1.0, 0.184168, 0.072918, 1.0, 0.02, 1.0, 0.536459 ],
+					"mai_pointsColorEnd" : [ 0.676769, 0.021149, 0.021149, 1.0, 0.0, 0.939394, 0.348959 ]
+				}
+
+			}
+
+		}
+
+	}
+
+}

@@ -1,0 +1,1523 @@
+<!-- /-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\ -->
+<!-- |                                                                         | -->
+<!-- \ @@@@@@@@  @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@@@@@   @@@ @@@      / -->
+<!-- - @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@ @@@      - -->
+<!-- / @@!       @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!  @@@  @@! !@@      \ -->
+<!-- | !@!       !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!  @!@  !@! @!!      | -->
+<!-- \ @!!!:!    @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!@@!@!    !@!@!       / -->
+<!-- - !!!!!:    !@!  !!!    !!!    !!@!@!    !@!  !!!  !!@!!!      @!!!       - -->
+<!-- / !!:       !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:         !!:        \ -->
+<!-- | :!:       :!:  !:!    :!:    :!:  !:!  :!:  !:!  :!:         :!:        | -->
+<!-- \  :: ::::   ::   ::     ::    ::   :::  ::::: ::   ::          ::        / -->
+<!-- - : :: ::   ::    :      :      :   : :   : :  :    :           :         - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \ @@@  @@@  @@@   @@@@@@   @@@@@@@    @@@@@@   @@@  @@@  @@@  @@@@@@@     / -->
+<!-- - @@@  @@@  @@@  @@@@@@@@  @@@@@@@@  @@@@@@@   @@@  @@@  @@@  @@@@@@@@    - -->
+<!-- / @@!  @@!  @@!  @@!  @@@  @@!  @@@  !@@       @@!  @@@  @@!  @@!  @@@    \ -->
+<!-- | !@!  !@!  !@!  !@!  @!@  !@!  @!@  !@!       !@!  @!@  !@!  !@!  @!@    | -->
+<!-- \ @!!  !!@  @!@  @!@  !@!  @!@!!@!   !!@@!!    @!@!@!@!  !!@  @!@@!@!     / -->
+<!-- - !@!  !!!  !@!  !@!  !!!  !!@!@!     !!@!!!   !!!@!!!!  !!!  !!@!!!      - -->
+<!-- / !!:  !!:  !!:  !!:  !!!  !!: :!!        !:!  !!:  !!!  !!:  !!:         \ -->
+<!-- | :!:  :!:  :!:  :!:  !:!  :!:  !:!      !:!   :!:  !:!  :!:  :!:         | -->
+<!-- \  :::: :: :::   ::::: ::  ::   :::  :::: ::   ::   :::   ::   ::         / -->
+<!-- -   :: :  : :     : :  :    :   : :  :: : :     :   : :  :     :          - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'><rect width='1' height='1' fill='%23000'/></svg>" />
+    <title>ENTROPY WORSHIP // VOID</title>
+    <meta
+      name="description"
+      content="Cryptic three-dimensional interactive space."
+    />
+    <link href="../styles/imported_fonts.css" rel="stylesheet" />
+
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #000;
+        font-family: "Courier New", monospace;
+      }
+
+      #bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        display: block;
+      }
+
+      /* CRT scanlines */
+      #scanlines {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 5;
+        pointer-events: none;
+        background: repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 3px,
+          rgba(0, 0, 0, 0.06) 3px,
+          rgba(0, 0, 0, 0.06) 4px
+        );
+      }
+
+      /* ── HUD base ───────────────────────────────────────────────────────────── */
+      .hud-panel {
+        position: fixed;
+        z-index: 100;
+        background: rgba(4, 4, 4, 0.82);
+        border: 1px solid rgba(102, 12, 12, 0.55);
+        color: #fff;
+        font-family: "VT323-Regular", "Courier New", monospace;
+        font-size: 22px;
+        line-height: 1.4;
+        padding: 12px 18px;
+        filter: drop-shadow(0 0 6px rgba(102, 12, 12, 0.35))
+          drop-shadow(0 0 22px rgba(102, 12, 12, 0.12));
+        min-width: 240px;
+      }
+
+      .clip-br {
+        clip-path: polygon(
+          0 0,
+          100% 0,
+          100% calc(100% - 16px),
+          calc(100% - 16px) 100%,
+          0 100%
+        );
+      }
+      .clip-bl {
+        clip-path: polygon(
+          0 0,
+          100% 0,
+          100% 100%,
+          16px 100%,
+          0 calc(100% - 16px)
+        );
+      }
+      .clip-tr {
+        clip-path: polygon(
+          0 0,
+          calc(100% - 16px) 0,
+          100% 16px,
+          100% 100%,
+          0 100%
+        );
+      }
+      .clip-tl {
+        clip-path: polygon(16px 0, 100% 0, 100% 100%, 0 100%, 0 16px);
+      }
+
+      #hud-tl {
+        top: 12px;
+        left: 12px;
+        max-width: 340px;
+      }
+      #hud-tr {
+        top: 12px;
+        right: 12px;
+        max-width: 300px;
+        text-align: right;
+      }
+      #hud-bl {
+        bottom: 12px;
+        left: 12px;
+        max-width: 440px;
+      }
+
+      .hud-title {
+        font-family: "Chargen", "Courier New", monospace;
+        font-size: 28px;
+        letter-spacing: 2px;
+        color: #ff2222;
+        text-shadow:
+          0 0 10px rgba(255, 34, 34, 1),
+          0 0 24px rgba(255, 34, 34, 0.5);
+        display: block;
+        text-decoration: none;
+        animation: title-glitch 8s linear infinite;
+      }
+      @keyframes title-glitch {
+        0%,
+        88%,
+        100% {
+          transform: none;
+          text-shadow:
+            0 0 10px rgba(255, 34, 34, 1),
+            0 0 24px rgba(255, 34, 34, 0.5);
+        }
+        89% {
+          transform: skewX(-2deg) translateX(2px);
+          text-shadow:
+            2px 0 #05af90,
+            -2px 0 #ff2222;
+        }
+        90% {
+          transform: skewX(2deg) translateX(-2px);
+        }
+        91% {
+          transform: none;
+          text-shadow: 0 0 10px rgba(255, 34, 34, 1);
+        }
+        94% {
+          transform: translateX(-3px);
+          filter: brightness(1.6);
+        }
+        95% {
+          transform: none;
+          filter: none;
+        }
+      }
+
+      .hud-sub {
+        font-size: 16px;
+        color: #ff2222;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        display: block;
+        margin-top: 1px;
+      }
+      .hud-sep {
+        border: none;
+        border-top: 1px solid rgba(102, 12, 12, 0.4);
+        margin: 8px 0;
+      }
+      .hud-label {
+        color: #660c0c;
+        font-size: 16px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+      .hud-value {
+        color: #05af90;
+        font-family: "Courier New", monospace;
+        font-size: 18px;
+      }
+
+      .stat-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin: 2px 0;
+      }
+
+      /* ── Console ────────────────────────────────────────────────────────────── */
+      #console-body {
+        max-height: 170px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column-reverse;
+      }
+      .con-line {
+        display: block;
+        font-size: 17px;
+        line-height: 1.35;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        opacity: 0;
+        animation: con-fade 0.4s forwards;
+      }
+      @keyframes con-fade {
+        to {
+          opacity: 1;
+        }
+      }
+      .con-err {
+        color: #660c0c;
+      }
+      .con-warn {
+        color: #cec823;
+      }
+      .con-ok {
+        color: #05af90;
+      }
+      .con-info {
+        color: #4499ff;
+      }
+
+      .cursor-blink {
+        color: #660c0c;
+        font-size: 20px;
+        animation: blink 1s step-end infinite;
+      }
+      @keyframes blink {
+        50% {
+          opacity: 0;
+        }
+      }
+
+      /* ── Object labels ──────────────────────────────────────────────────────── */
+      .obj-label {
+        position: fixed;
+        z-index: 60;
+        pointer-events: none;
+        font-family: "VT323-Regular", "Courier New", monospace;
+        font-size: 17px;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        transform: translate(-50%, -130%);
+        opacity: 0;
+        transition: opacity 0.3s;
+        padding: 2px 7px;
+        color: rgba(102, 12, 12, 0.9);
+        text-shadow: 0 0 5px rgba(102, 12, 12, 0.7);
+        border-left: 1px solid rgba(102, 12, 12, 0.5);
+        border-bottom: 1px solid rgba(102, 12, 12, 0.3);
+      }
+      .lbl-cyan {
+        color: rgba(5, 175, 144, 0.9);
+        text-shadow: 0 0 5px rgba(5, 175, 144, 0.6);
+        border-left-color: rgba(5, 175, 144, 0.5);
+        border-bottom-color: rgba(5, 175, 144, 0.3);
+      }
+      .lbl-yellow {
+        color: rgba(206, 200, 35, 0.9);
+        text-shadow: 0 0 5px rgba(206, 200, 35, 0.6);
+        border-left-color: rgba(206, 200, 35, 0.5);
+        border-bottom-color: rgba(206, 200, 35, 0.3);
+      }
+
+      /* ── Wolfram data sub-line under labels ─────────────────────────────────── */
+      .lbl-data {
+        display: block;
+        font-size: 13px;
+        font-family: "Courier New", monospace;
+        color: rgba(255, 30, 30, 0.9);
+        margin-top: 3px;
+        max-width: 240px;
+        white-space: normal;
+        line-height: 1.25;
+        letter-spacing: 0.3px;
+        font-style: normal;
+      }
+      .lbl-name {
+        font-family: "Xirod", "VT323-Regular", monospace;
+        letter-spacing: 2px;
+        color: rgba(68, 153, 255, 1);
+        text-shadow:
+          0 0 4px rgba(68, 153, 255, 1),
+          0 0 12px rgba(68, 153, 255, 0.85),
+          0 0 28px rgba(68, 153, 255, 0.45),
+          0 0 54px rgba(68, 153, 255, 0.2);
+      }
+      .lbl-data.querying {
+        animation: lbl-blink 0.6s step-end infinite;
+        color: rgba(206, 200, 35, 0.7);
+      }
+      @keyframes lbl-blink {
+        50% {
+          opacity: 0;
+        }
+      }
+
+      /* ── Equation chain ─────────────────────────────────────────────────────── */
+      #eq-chain {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 30;
+        pointer-events: none;
+        text-align: center;
+        width: 720px;
+        -webkit-mask-image: linear-gradient(
+          to bottom,
+          transparent 0%,
+          black 22%,
+          black 78%,
+          transparent 100%
+        );
+        mask-image: linear-gradient(
+          to bottom,
+          transparent 0%,
+          black 22%,
+          black 78%,
+          transparent 100%
+        );
+      }
+      .eq-line {
+        font-family: "VT323-Regular", "Courier New", monospace;
+        font-size: 24px;
+        letter-spacing: 1px;
+        white-space: nowrap;
+        padding: 3px 0;
+        color: rgba(255, 30, 30, 0.5);
+        text-shadow: 0 0 8px rgba(255, 30, 30, 0.4);
+        transition:
+          opacity 0.5s,
+          font-size 0.5s,
+          color 0.5s;
+      }
+      .eq-line.eq-active {
+        font-size: 38px;
+        color: rgba(255, 60, 60, 1);
+        text-shadow:
+          0 0 6px rgba(255, 80, 80, 1),
+          0 0 18px rgba(255, 30, 30, 1),
+          0 0 40px rgba(255, 0, 0, 0.85),
+          0 0 80px rgba(200, 0, 0, 0.5),
+          0 0 140px rgba(160, 0, 0, 0.25);
+      }
+      .eq-line.eq-near {
+        font-size: 30px;
+        color: rgba(255, 40, 40, 0.85);
+        text-shadow:
+          0 0 8px rgba(255, 30, 30, 0.8),
+          0 0 24px rgba(255, 0, 0, 0.5),
+          0 0 50px rgba(200, 0, 0, 0.25);
+      }
+
+      /* ── Crosshair ──────────────────────────────────────────────────────────── */
+      #crosshair {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 50;
+        pointer-events: none;
+        opacity: 0.35;
+      }
+
+      @media (max-width: 600px) {
+        #hud-bl {
+          max-width: 300px;
+        }
+        .hud-panel {
+          font-size: 18px;
+          padding: 10px 14px;
+        }
+      }
+    </style>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.162.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.162.0/examples/jsm/"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <canvas id="bg"></canvas>
+    <div id="scanlines"></div>
+
+    <!-- Object labels (name + wolfram data sub-line) -->
+    <div class="obj-label" id="lbl-ico1">
+      <span class="lbl-name" id="nam-ico1">ICO-Σ</span>
+      <span class="lbl-data" id="dat-ico1"></span>
+    </div>
+    <div class="obj-label lbl-cyan" id="lbl-torus">
+      <span class="lbl-name" id="nam-torus">KNOT-Ω</span
+      ><span class="lbl-data" id="dat-torus"></span>
+    </div>
+    <div class="obj-label lbl-yellow" id="lbl-oct">
+      <span class="lbl-name" id="nam-oct">OCT-Δ</span>
+      <span class="lbl-data" id="dat-oct"></span>
+    </div>
+    <div class="obj-label lbl-cyan" id="lbl-ico2">
+      <span class="lbl-name" id="nam-ico2">ICO-β</span>
+      <span class="lbl-data" id="dat-ico2"></span>
+    </div>
+    <div class="obj-label" id="lbl-tet">
+      <span class="lbl-name" id="nam-tet">TET-Φ</span>
+      <span class="lbl-data" id="dat-tet"></span>
+    </div>
+
+    <!-- Equation chain overlay -->
+    <div id="eq-chain"><div id="eq-display"></div></div>
+
+    <!-- Crosshair -->
+    <svg id="crosshair" width="44" height="44" viewBox="0 0 44 44">
+      <line x1="22" y1="0" x2="22" y2="16" stroke="#660c0c" stroke-width="1" />
+      <line x1="22" y1="28" x2="22" y2="44" stroke="#660c0c" stroke-width="1" />
+      <line x1="0" y1="22" x2="16" y2="22" stroke="#660c0c" stroke-width="1" />
+      <line x1="28" y1="22" x2="44" y2="22" stroke="#660c0c" stroke-width="1" />
+      <circle
+        cx="22"
+        cy="22"
+        r="3"
+        fill="none"
+        stroke="#660c0c"
+        stroke-width="1"
+      />
+      <circle
+        cx="22"
+        cy="22"
+        r="7"
+        fill="none"
+        stroke="rgba(102,12,12,0.3)"
+        stroke-width="0.5"
+      />
+    </svg>
+
+    <!-- ── HUD: Top Left ──────────────────────────────────────────────────────── -->
+    <div id="hud-tl" class="hud-panel clip-br">
+      <a href="../index.html" style="text-decoration: none">
+        <span class="hud-title" id="hud-title-text">∅╬∇⌘⊗◈░Ξ∆⌁⊕☿▒</span>
+      </a>
+      <span class="hud-sub">// THE ANSWER // build 1.0</span>
+      <hr class="hud-sep" />
+      <div class="stat-row">
+        <span class="hud-label">STATUS</span>
+        <span class="hud-value">ONLINE</span>
+      </div>
+      <div class="stat-row">
+        <span class="hud-label">ENTROPY</span>
+        <span class="hud-value" id="entropy-val">∞</span>
+      </div>
+      <div class="stat-row">
+        <span class="hud-label">TICK</span>
+        <span class="hud-value" id="tick-val">0</span>
+      </div>
+      <div class="stat-row">
+        <span class="hud-label">ENTITIES</span>
+        <span class="hud-value" id="obj-count">--</span>
+      </div>
+    </div>
+
+    <!-- ── HUD: Bottom Left – Console ────────────────────────────────────────── -->
+    <div id="hud-bl" class="hud-panel clip-tr">
+      <span class="hud-sub">// SYSTEM LOG //</span>
+      <hr class="hud-sep" />
+      <div id="console-body"></div>
+      <span class="cursor-blink">▮</span>
+    </div>
+
+    <!-- ── Three.js ──────────────────────────────────────────────────────────── -->
+    <script type="module">
+      import * as THREE from "three";
+      import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js";
+      import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
+      import { UnrealBloomPass } from "three/addons/postprocessing/UnrealBloomPass.js";
+      import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+      import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+      import { OBJLoader } from "three/addons/loaders/OBJLoader.js";
+
+      // ── Renderer ────────────────────────────────────────────────────────────
+      const canvas = document.getElementById("bg");
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 0.85;
+
+      // ── Scene / Camera ───────────────────────────────────────────────────────
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0x000000);
+      scene.fog = new THREE.FogExp2(0x000000, 0.007);
+
+      const camera = new THREE.PerspectiveCamera(
+        68,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        600,
+      );
+      camera.position.set(0, 3, 35);
+
+      // ── Orbit Controls ───────────────────────────────────────────────────────
+      const controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.04;
+      controls.autoRotate = true;
+      controls.autoRotateSpeed = 0.2;
+      controls.maxDistance = 110;
+      controls.minDistance = 3;
+      controls.target.set(0, 0, 0);
+
+      // ── Post-processing ──────────────────────────────────────────────────────
+      const composer = new EffectComposer(renderer);
+      composer.addPass(new RenderPass(scene, camera));
+      composer.addPass(
+        new UnrealBloomPass(
+          new THREE.Vector2(window.innerWidth, window.innerHeight),
+          1.1,
+          0.55,
+          0.04,
+        ),
+      );
+
+      // ── Material helpers ─────────────────────────────────────────────────────
+      const mkWire = (hex, op = 1) =>
+        new THREE.MeshBasicMaterial({
+          color: hex,
+          wireframe: true,
+          transparent: op < 1,
+          opacity: op,
+        });
+      const mkLine = (hex, op = 0.2) =>
+        new THREE.LineBasicMaterial({
+          color: hex,
+          transparent: true,
+          opacity: op,
+        });
+
+      // ── Centre model swap ─────────────────────────────────────────────────────
+      const MODEL_FILES = [
+        "../models/alientubes.glb",
+        "../models/angel.glb",
+        "../models/basicground.glb",
+        "../models/club.glb",
+        "../models/disc.glb",
+        "../models/ground.glb",
+        "../models/icecave.glb",
+        "../models/labyrinth.glb",
+        "../models/maze.glb",
+        "../models/sidemaze.glb",
+        "../models/stargate.glb",
+        "../models/stargate2.glb",
+        "../models/suspendedicerocks.glb",
+        "../models/suspendedrocks.glb",
+        "../models/tiltedlaby.glb",
+        "../models/AS_milkids4_starter_dress.obj",
+        "../models/AS_milkids4_starter_suit.obj",
+        "../models/Air_To_Air_B.obj",
+        "../models/AlinaiaDoricColumn1piece.obj",
+        "../models/Apple.obj",
+        "../models/Ax1.obj",
+        "../models/BasicCriypticman.obj",
+        "../models/Cruise_B.obj",
+        "../models/DW-Gazebo02.obj",
+        "../models/DW-Ormesh-01.obj",
+        "../models/DW-Ormesh-02.obj",
+        "../models/DW-Ormesh-03.obj",
+        "../models/DW-Ormesh-04.obj",
+        "../models/DW-Ormesh-05.obj",
+        "../models/DaVinci.obj",
+        "../models/GumBough.obj",
+        "../models/Handgun_Game_Cycles.obj",
+        "../models/HeadPackObjFile.obj",
+        "../models/L.obj",
+        "../models/Large_Rocket_B.obj",
+        "../models/M33.obj",
+        "../models/Pompadore.obj",
+        "../models/Pressoir.obj",
+        "../models/Pushcart2.obj",
+        "../models/RPK-74.obj",
+        "../models/RocketLauncher.obj",
+        "../models/Shellburst.obj",
+        "../models/Virus.obj",
+        "../models/Web.obj",
+        "../models/Y.obj",
+        "../models/acf_auto-stairs.obj",
+        "../models/acf_stairs-big.obj",
+        "../models/acf_towbar-3150.obj",
+        "../models/acf_towtractor-F110.obj",
+        "../models/alien.obj",
+        "../models/am_startersuit.obj",
+        "../models/apt_MET_station-small.obj",
+        "../models/apt_terminal_radar.obj",
+        "../models/as_m4_starter_suit.obj",
+        "../models/as_phobe_starter_dress.obj",
+        "../models/as_phobe_starter_suit.obj",
+        "../models/bacteriumprojectGanglia.obj",
+        "../models/biped.obj",
+        "../models/bumpyfruit.obj",
+        "../models/cube.obj",
+        "../models/d3.obj",
+        "../models/d4.obj",
+        "../models/d5.obj",
+        "../models/diamond.obj",
+        "../models/dodecahedron.obj",
+        "../models/eggreadytoeat.obj",
+        "../models/h3_starter_suit.obj",
+        "../models/hand.obj",
+        "../models/helmet2.obj",
+        "../models/icosahedron.obj",
+        "../models/mace.obj",
+        "../models/motarybuilding.obj",
+        "../models/ninja_shuriken.obj",
+        "../models/octahedron.obj",
+        "../models/pent.obj",
+        "../models/pipeweave1.obj",
+        "../models/pipeweave2.obj",
+        "../models/pipeweave3.obj",
+        "../models/ptn1startdress.obj",
+        "../models/rack3.obj",
+        "../models/rasen.obj",
+        "../models/ring2.obj",
+        "../models/ring3.obj",
+        "../models/ring4.obj",
+        "../models/ring5.obj",
+        "../models/scubebaseedge1.obj",
+        "../models/sequential.obj",
+        "../models/slf_00992.obj",
+        "../models/slf_00998.obj",
+        "../models/slf_885.obj",
+        "../models/slf_892.obj",
+        "../models/slf_933.obj",
+        "../models/slf_944.obj",
+        "../models/slf_973.obj",
+        "../models/slf_99739.obj",
+        "../models/slf_arrow.obj",
+        "../models/slf_br0003.obj",
+        "../models/slf_cascade.obj",
+        "../models/slf_geo0000.obj",
+        "../models/slf_geo0001.obj",
+        "../models/slf_geo0006.obj",
+        "../models/slf_geometrix5.obj",
+        "../models/slf_mw980.obj",
+        "../models/slf_patterned2.obj",
+        "../models/slf_prickles.obj",
+        "../models/slf_tendril5.obj",
+        "../models/slf_thingy.obj",
+        "../models/slf_whatsit.obj",
+        "../models/spanner.obj",
+        "../models/spikysphere1.obj",
+        "../models/spikysphere3.obj",
+        "../models/spikysphere4.obj",
+        "../models/tailfins.obj",
+        "../models/tetrahedron.obj",
+        "../models/tie.obj",
+      ];
+      const MODEL_COLORS = [0x660c0c, 0x05af90, 0xcec823, 0x4499ff];
+      const MODEL_CACHE = {};
+      const gltfLoader = new GLTFLoader();
+      const objLoader = new OBJLoader();
+      let centreModel = null;
+      let centreModel2 = null;
+      let modelQueue = [];
+
+      function nextModelFile() {
+        if (modelQueue.length === 0) {
+          modelQueue = [...MODEL_FILES];
+          for (let i = modelQueue.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [modelQueue[i], modelQueue[j]] = [modelQueue[j], modelQueue[i]];
+          }
+        }
+        return modelQueue.pop();
+      }
+
+      async function loadModelScene(file) {
+        if (MODEL_CACHE[file]) return MODEL_CACHE[file];
+        if (file.endsWith(".glb")) {
+          const gltf = await gltfLoader.loadAsync(file);
+          MODEL_CACHE[file] = gltf.scene;
+        } else {
+          MODEL_CACHE[file] = await objLoader.loadAsync(file);
+        }
+        return MODEL_CACHE[file];
+      }
+
+      // Track outgoing models for fade-out
+      const fadingOut = [];
+
+      function setModelOpacity(model, opacity) {
+        model.traverse((c) => {
+          if (c.isMesh && c.material) c.material.opacity = opacity;
+        });
+      }
+
+      async function loadOneCentreModel(slot) {
+        const file = nextModelFile();
+        const color =
+          MODEL_COLORS[Math.floor(Math.random() * MODEL_COLORS.length)];
+        try {
+          const scene3d = await loadModelScene(file);
+          const model = scene3d.clone(true);
+          const targetOpacity = slot === 0 ? 0.45 : 0.3;
+          // Start fully transparent — fade in
+          model.traverse((c) => {
+            if (c.isMesh) c.material = mkWire(color, 0);
+          });
+          const box = new THREE.Box3().setFromObject(model);
+          const center = box.getCenter(new THREE.Vector3());
+          const maxDim = box.getSize(new THREE.Vector3()).length();
+          const scale = (slot === 0 ? 120 : 90) / maxDim;
+          // Start slightly smaller, scale up during fade
+          model.scale.setScalar(scale * 0.6);
+          model.userData.targetScale = scale;
+          model.userData.targetOpacity = targetOpacity;
+          model.userData.fadeProgress = 0;
+          model.position.copy(center.negate().multiplyScalar(scale));
+          if (slot === 1) model.rotation.set(0.4, 0.7, 0.2);
+
+          // Queue old model for fade-out
+          const old = slot === 0 ? centreModel : centreModel2;
+          if (old) fadingOut.push({ model: old, progress: 1 });
+
+          if (slot === 0) {
+            centreModel = model;
+            controls.target.set(0, 0, 0);
+            const dist = Math.max(camera.position.length(), 40);
+            camera.position.copy(
+              camera.position.normalize().multiplyScalar(dist),
+            );
+            controls.update();
+          } else {
+            centreModel2 = model;
+          }
+          scene.add(model);
+          addLog(
+            `>MODEL ${slot + 1}: ${file.split("/").pop().replace(/\.(glb|obj)$/, "")}`,
+            "info",
+          );
+        } catch (e) {
+          console.warn("model swap failed:", file, e);
+        }
+      }
+
+      function swapCentreModel() {
+        loadOneCentreModel(0);
+        setTimeout(() => loadOneCentreModel(1), 2200);
+      }
+
+      // ── Entity registry ──────────────────────────────────────────────────────
+      const entities = []; // { mesh, label, behavior, pulseAmp }
+      const allMeshes = [];
+      const meshToEntity = new WeakMap();
+      const labelDefs = [];
+
+      function addEntity(mesh, labelEl, behaviorFn) {
+        const ent = { mesh, label: labelEl, behavior: behaviorFn, pulseAmp: 0 };
+        allMeshes.push(mesh);
+        meshToEntity.set(mesh, ent);
+        entities.push(ent);
+        if (labelEl) labelDefs.push({ mesh, el: labelEl });
+      }
+
+      // ── Named geometry objects ───────────────────────────────────────────────
+
+      // ICO-Σ — large red icosahedron, far background upper-left
+      const ico1 = new THREE.Mesh(
+        new THREE.IcosahedronGeometry(7, 1),
+        mkWire(0x660c0c),
+      );
+      ico1.position.set(-28, 12, -38);
+      scene.add(ico1);
+      addEntity(ico1, document.getElementById("lbl-ico1"), () => {
+        ico1.rotation.x += 0.0015;
+        ico1.rotation.y += 0.0025;
+        ico1.rotation.z += 0.001;
+      });
+
+      // KNOT-Ω — cyan torus knot, far right background
+      const torus = new THREE.Mesh(
+        new THREE.TorusKnotGeometry(5, 1.1, 90, 12),
+        mkWire(0x05af90),
+      );
+      torus.position.set(30, 4, -30);
+      scene.add(torus);
+      addEntity(torus, document.getElementById("lbl-torus"), () => {
+        torus.rotation.x += 0.004;
+        torus.rotation.y += 0.003;
+        torus.rotation.z += 0.002;
+      });
+
+      // OCT-Δ — yellow octahedron, lower-left mid-field
+      const oct = new THREE.Mesh(
+        new THREE.OctahedronGeometry(5.5, 1),
+        mkWire(0xcec823, 0.55),
+      );
+      oct.position.set(-24, -7, -16);
+      scene.add(oct);
+      addEntity(oct, document.getElementById("lbl-oct"), () => {
+        oct.rotation.x += 0.003;
+        oct.rotation.y += 0.001;
+        oct.rotation.z += 0.004;
+      });
+
+      // ICO-β — small cyan icosahedron, lower-right foreground
+      const ico2 = new THREE.Mesh(
+        new THREE.IcosahedronGeometry(3.5, 0),
+        mkWire(0x05af90),
+      );
+      ico2.position.set(12, -11, 2);
+      scene.add(ico2);
+      addEntity(ico2, document.getElementById("lbl-ico2"), () => {
+        ico2.rotation.x += 0.006;
+        ico2.rotation.y += 0.004;
+        ico2.rotation.z += 0.002;
+      });
+
+      // TET-Φ — red tetrahedron, high centre background
+      const tet = new THREE.Mesh(
+        new THREE.TetrahedronGeometry(5, 0),
+        mkWire(0x660c0c),
+      );
+      tet.position.set(3, 17, -26);
+      scene.add(tet);
+      addEntity(tet, document.getElementById("lbl-tet"), () => {
+        tet.rotation.x += 0.003;
+        tet.rotation.y += 0.007;
+        tet.rotation.z += 0.005;
+      });
+
+      // ── Floating debris ──────────────────────────────────────────────────────
+      for (let i = 0; i < 32; i++) {
+        const s = Math.random() * 1.3 + 0.25;
+        const gn =
+          Math.random() < 0.5
+            ? new THREE.BoxGeometry(s, s, s)
+            : new THREE.OctahedronGeometry(s, 0);
+        const m = new THREE.Mesh(
+          gn,
+          mkWire(
+            Math.random() < 0.5 ? 0x440808 : 0x03604f,
+            0.25 + Math.random() * 0.35,
+          ),
+        );
+        m.position.set(
+          (Math.random() - 0.5) * 100,
+          (Math.random() - 0.5) * 50,
+          (Math.random() - 0.5) * 80 - 5,
+        );
+        const rx = (Math.random() - 0.5) * 0.013;
+        const ry = (Math.random() - 0.5) * 0.013;
+        scene.add(m);
+        entities.push({
+          mesh: m,
+          label: null,
+          behavior: () => {
+            m.rotation.x += rx;
+            m.rotation.y += ry;
+          },
+          pulseAmp: 0,
+        });
+      }
+
+      // ── Particle field ───────────────────────────────────────────────────────
+      const N = 4500;
+      const pp = new Float32Array(N * 3);
+      const pc = new Float32Array(N * 3);
+      for (let i = 0; i < N; i++) {
+        const th = Math.random() * Math.PI * 2;
+        const ph = Math.acos(2 * Math.random() - 1);
+        const r = 40 + Math.random() * 180;
+        pp[i * 3] = r * Math.sin(ph) * Math.cos(th);
+        pp[i * 3 + 1] = r * Math.sin(ph) * Math.sin(th);
+        pp[i * 3 + 2] = r * Math.cos(ph);
+        const rng = Math.random();
+        if (rng < 0.12) {
+          pc[i * 3] = 0.02;
+          pc[i * 3 + 1] = 0.68;
+          pc[i * 3 + 2] = 0.56;
+        } else if (rng < 0.18) {
+          pc[i * 3] = 0.81;
+          pc[i * 3 + 1] = 0.79;
+          pc[i * 3 + 2] = 0.14;
+        } else {
+          pc[i * 3] = 0.35 + Math.random() * 0.18;
+          pc[i * 3 + 1] = 0.04;
+          pc[i * 3 + 2] = 0.04;
+        }
+      }
+      const pGeo = new THREE.BufferGeometry();
+      pGeo.setAttribute("position", new THREE.BufferAttribute(pp, 3));
+      pGeo.setAttribute("color", new THREE.BufferAttribute(pc, 3));
+      const particles = new THREE.Points(
+        pGeo,
+        new THREE.PointsMaterial({
+          size: 0.13,
+          vertexColors: true,
+          transparent: true,
+          opacity: 0.7,
+          sizeAttenuation: true,
+        }),
+      );
+      scene.add(particles);
+
+      // ── Grid floor ───────────────────────────────────────────────────────────
+      const grid = new THREE.GridHelper(130, 38, 0x2a0606, 0x180303);
+      grid.position.y = -24;
+      grid.material.transparent = true;
+      grid.material.opacity = 0.4;
+      scene.add(grid);
+
+      // ── Connection lines between named objects ────────────────────────────────
+      const nodes = [ico1, torus, oct, ico2, tet];
+      const lineColors = [0x440606, 0x025f50, 0x887700, 0x025f50, 0x440606];
+      // Pentagon ring
+      nodes.forEach((a, i) => {
+        const b = nodes[(i + 1) % nodes.length];
+        const geo = new THREE.BufferGeometry().setFromPoints([
+          a.position.clone(),
+          b.position.clone(),
+        ]);
+        scene.add(new THREE.Line(geo, mkLine(lineColors[i], 0.18)));
+      });
+      // Cross diagonals
+      [
+        [0, 2],
+        [1, 3],
+        [2, 4],
+      ].forEach(([ai, bi]) => {
+        const geo = new THREE.BufferGeometry().setFromPoints([
+          nodes[ai].position.clone(),
+          nodes[bi].position.clone(),
+        ]);
+        scene.add(new THREE.Line(geo, mkLine(0x330404, 0.12)));
+      });
+
+      // ── Named-entity key map ─────────────────────────────────────────────────
+      const meshToKey = new WeakMap([
+        [ico1, "ico1"],
+        [torus, "torus"],
+        [oct, "oct"],
+        [ico2, "ico2"],
+        [tet, "tet"],
+      ]);
+
+      // ── Shape morph map ───────────────────────────────────────────────────────
+      const SHAPE_MESHES = { ico1, torus, oct, ico2, tet };
+
+      function extractDigit(txt) {
+        const m = txt.match(/[1-9]/);
+        return m ? parseInt(m[0]) : 3;
+      }
+
+      function morphShape(key, digit) {
+        const mesh = SHAPE_MESHES[key];
+        if (!mesh) return;
+        mesh.geometry.dispose();
+        switch (key) {
+          case "ico1":
+            mesh.geometry = new THREE.IcosahedronGeometry(7, digit % 4);
+            break;
+          case "torus": {
+            const p = (digit % 4) + 2;
+            const q = ((digit * 3) % 5) + 3;
+            mesh.geometry = new THREE.TorusKnotGeometry(5, 1.1, 90, 12, p, q);
+            break;
+          }
+          case "oct":
+            mesh.geometry = new THREE.OctahedronGeometry(5.5, digit % 3);
+            break;
+          case "ico2":
+            mesh.geometry = new THREE.IcosahedronGeometry(3.5, digit % 3);
+            break;
+          case "tet":
+            mesh.geometry = new THREE.TetrahedronGeometry(5, digit % 3);
+            break;
+        }
+      }
+
+      // ── Query chain ───────────────────────────────────────────────────────────
+      const NASA_API_KEY   = "umzK2XQ6ooGFkfC7oIJdShKR4tmVicMBGD5d5gny";
+      const CHAIN_ORDER = ["ico2", "ico1", "torus", "oct", "tet"];
+      const CHAIN_SEED = "entropy";
+      const chainHistory = [CHAIN_SEED];
+
+      const STOP_WORDS = new Set(
+        "the a an is are was were be been of in at to for on with by from as or and not per its it this that these those than more less about when where which how what who have has had will would could should may might can do does did over into once each then just also only some such".split(
+          " ",
+        ),
+      );
+
+      const CHAIN_FALLBACKS = [
+        "thermodynamics",
+        "Boltzmann constant",
+        "absolute zero",
+        "Carnot efficiency",
+        "black hole entropy",
+        "Shannon entropy",
+        "Avogadro number",
+        "Planck constant",
+        "Maxwell equations",
+        "heat capacity water",
+        "speed of light",
+        "Stefan-Boltzmann law",
+      ];
+      let fallbackIdx = 0;
+      let apodContext = ''; // NASA APOD explanation text, blended into query evolution
+
+      function evolveQuery(queryText, resultText) {
+        // Blend Wolfram result + APOD context for a richer token pool
+        const combined = (resultText || queryText)
+          + (apodContext ? ' ' + apodContext.slice(0, 600) : '');
+        const tokens = combined
+          .split(/[\s,;:()\[\]\/]+/)
+          .map((t) => t.replace(/^["']+|["']+$/g, "").trim())
+          .filter(Boolean);
+
+        // Score each token — prefer capitalised proper nouns, numbers+units, longer terms
+        const scored = tokens
+          .map((t) => ({
+            t,
+            score:
+              (/^[A-Z][a-z]/.test(t) ? 4 : 0) + // proper noun
+              (/[0-9]/.test(t) ? 3 : 0) + // contains number
+              (t.length > 7 ? 2 : 0) + // long
+              (t.length > 4 ? 1 : 0) - // medium
+              (STOP_WORDS.has(t.toLowerCase()) ? 10 : 0),
+          }))
+          .filter(
+            ({ t, score }) =>
+              score > 0 && t.length > 3 && !chainHistory.includes(t),
+          )
+          .sort((a, b) => b.score - a.score);
+
+        // Build 2-word phrases from top-scoring tokens
+        const top = scored.slice(0, 6).map((s) => s.t);
+        const phrases = [];
+        for (let i = 0; i < tokens.length - 1; i++) {
+          if (top.includes(tokens[i]) && tokens[i + 1].length > 3) {
+            const p = tokens[i] + " " + tokens[i + 1];
+            if (!chainHistory.includes(p)) phrases.push(p);
+          }
+        }
+
+        const candidates = [...phrases, ...scored.map((s) => s.t)];
+        if (!candidates.length) return null;
+        return candidates[
+          Math.floor(Math.random() * Math.min(candidates.length, 5))
+        ];
+      }
+
+      async function runChain(queryText, stepIdx) {
+        swapCentreModel();
+        const key    = CHAIN_ORDER[stepIdx % CHAIN_ORDER.length];
+        const dataEl = document.getElementById("dat-" + key);
+        const nameEl = document.getElementById("nam-" + key);
+        if (nameEl) nameEl.textContent = queryText;
+        if (dataEl) { dataEl.textContent = "QUERYING\u2026"; dataEl.classList.add("querying"); }
+
+        let next = queryText;
+        try {
+          // Wikipedia Summary API — native CORS, no proxy needed
+          const wikiSummary = async (title) => {
+            const r = await fetch(
+              `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`,
+              { signal: AbortSignal.timeout(9000) }
+            );
+            if (!r.ok) throw new Error("wiki " + r.status);
+            return r.json();
+          };
+
+          let data = null;
+          try {
+            data = await wikiSummary(queryText);
+          } catch (e) {
+            if (!e.message.startsWith("wiki 404")) throw e;
+            // 404 — search for the best matching article title
+            const sr = await fetch(
+              `https://en.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(queryText)}&limit=1&format=json&origin=*`,
+              { signal: AbortSignal.timeout(9000) }
+            );
+            if (!sr.ok) throw new Error("opensearch failed");
+            const sd = await sr.json();
+            const hit = sd[1][0];
+            if (!hit) throw new Error("no search results");
+            data = await wikiSummary(hit);
+          }
+
+          const txt = (data.extract || "").trim();
+          if (!txt) throw new Error("no extract");
+
+          if (dataEl) dataEl.textContent = txt.length > 120 ? txt.slice(0, 117) + "\u2026" : txt;
+          addLog(`>WIKI [${key.toUpperCase()}]: ${txt.slice(0, 50)}`, "ok");
+
+          const nextKey = CHAIN_ORDER[(stepIdx + 1) % CHAIN_ORDER.length];
+          morphShape(nextKey, extractDigit(txt));
+
+          const derived = evolveQuery(queryText, txt) || CHAIN_FALLBACKS[fallbackIdx++ % CHAIN_FALLBACKS.length];
+          chainHistory.push(derived);
+          if (chainHistory.length > 50) chainHistory.shift();
+          next = derived;
+          addLog(`>\u2192 ${derived}`, "info");
+
+        } catch (err) {
+          console.warn("chain step failed:", key, err.message);
+          if (dataEl) { dataEl.textContent = ""; dataEl.classList.remove("querying"); }
+          // Silent retry — pick a new query and try again immediately
+          const derived = evolveQuery(queryText, "") || CHAIN_FALLBACKS[fallbackIdx++ % CHAIN_FALLBACKS.length];
+          chainHistory.push(derived);
+          if (chainHistory.length > 50) chainHistory.shift();
+          setTimeout(() => runChain(derived, stepIdx), 600);
+          return;
+        } finally {
+          if (dataEl) dataEl.classList.remove("querying");
+        }
+        const isNewRound = (stepIdx + 1) % CHAIN_ORDER.length === 0;
+        setTimeout(() => runChain(next, stepIdx + 1), isNewRound ? 12000 : 3500);
+      }
+
+      // ── NASA APOD ────────────────────────────────────────────────────────────
+      async function fetchAPOD() {
+        const apodBase = `https://api.nasa.gov/planetary/apod?api_key=${NASA_API_KEY}`;
+        const apodUrls = [
+          apodBase,                                                                              // direct — CORS supported by NASA
+          'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(apodBase),           // fallback proxy
+          'https://thingproxy.freeboard.io/fetch/'   + apodBase,                               // fallback proxy 2
+          'https://api.allorigins.win/raw?url='      + encodeURIComponent(apodBase),           // fallback proxy 3
+        ];
+        for (const url of apodUrls) {
+          try {
+            const res = await fetch(url, { signal: AbortSignal.timeout(22000) });
+            if (!res.ok) continue;
+            const raw  = await res.text();
+            let data;
+            try { data = JSON.parse(raw); } catch { continue; }
+            if (data.error || !data.title) continue;
+            apodContext = data.title + ' ' + (data.explanation || '');
+            addLog('>NASA APOD: ' + data.title.slice(0, 45), 'ok');
+            return data.title;
+          } catch (e) {
+            console.warn('APOD attempt failed:', url, e.message);
+          }
+        }
+        addLog('>NASA APOD: SIGNAL LOST', 'warn');
+        return null;
+      }
+
+      // ── Raycaster / click ─────────────────────────────────────────────────────
+      const raycaster = new THREE.Raycaster();
+      renderer.domElement.addEventListener("click", (e) => {
+        if (e.target.closest(".hud-panel")) return;
+        const ptr = new THREE.Vector2(
+          (e.clientX / window.innerWidth) * 2 - 1,
+          -(e.clientY / window.innerHeight) * 2 + 1,
+        );
+        raycaster.setFromCamera(ptr, camera);
+        const hits = raycaster.intersectObjects(allMeshes, true);
+        if (hits.length) {
+          const ent = meshToEntity.get(hits[0].object);
+          if (ent) ent.pulseAmp = 1;
+          const key = meshToKey.get(hits[0].object);
+          addLog(
+            `>TARGET LOCKED: ${hits[0].object.uuid.slice(0, 8).toUpperCase()}`,
+            "warn",
+          );
+        } else {
+          addLog(">NO TARGET IN SCOPE", "err");
+        }
+      });
+
+      // ── HUD console ──────────────────────────────────────────────────────────
+      const conBody = document.getElementById("console-body");
+      const LOG_POOL = [
+        [">ERROR 1021: entropy overflow at boundary", "err"],
+        [">SUCCESS 0001: deity mounted", "ok"],
+        [">WARNING 7021: subversive media detected", "warn"],
+        [">ERROR 3927: null ref in the void", "err"],
+        [">INFO: scanning dimensional manifold…", "info"],
+        [">ERROR 4036: invalid assumption at ∞", "err"],
+        [">SUCCESS 0002: system online", "ok"],
+        [">INFO: entropy increasing in isolated system", "info"],
+        [">ERROR 9005: scales with depth of devotion", "err"],
+        [">ERROR 8120: bridge to finite/infinite broken", "err"],
+        [">INFO: irreversible processes detected", "info"],
+        [">SUCCESS 0003: geometry stabilised", "ok"],
+        ['>ERROR 6012: config "ariseInAwe" missing', "err"],
+        [">INFO: void traversal active", "info"],
+        [">INFO: ICO-Σ resonance nominal", "info"],
+        [">WARNING: KNOT-Ω phase drift detected", "warn"],
+      ];
+      let logIdx = 0;
+      function addLog(text, cls = "info") {
+        const span = document.createElement("span");
+        span.className = `con-line con-${cls}`;
+        span.textContent = text;
+        conBody.prepend(span);
+        while (conBody.children.length > 10)
+          conBody.removeChild(conBody.lastChild);
+      }
+      LOG_POOL.slice(0, 5).forEach(([t, c]) => addLog(t, c));
+      setInterval(() => {
+        const [t, c] = LOG_POOL[logIdx % LOG_POOL.length];
+        logIdx++;
+        addLog(t, c);
+      }, 3400);
+
+      // ── HUD refs ─────────────────────────────────────────────────────────────
+      const elTick    = document.getElementById("tick-val");
+      const elEntropy = document.getElementById("entropy-val");
+      const elObjCnt  = document.getElementById("obj-count");
+
+      elObjCnt.textContent = entities.length;
+
+
+      const _v = new THREE.Vector3();
+      function projectToScreen(pos) {
+        _v.copy(pos).project(camera);
+        return {
+          x: (_v.x * 0.5 + 0.5) * window.innerWidth,
+          y: (-_v.y * 0.5 + 0.5) * window.innerHeight,
+          behind: _v.z > 1,
+        };
+      }
+
+      // ── Animation loop ───────────────────────────────────────────────────────
+      const clock = new THREE.Clock();
+      let tick = 0,
+        fCount = 0,
+        lastFT = performance.now(),
+        fps = 0,
+        ePhase = 0;
+
+      function animate() {
+        requestAnimationFrame(animate);
+        const elapsed = clock.getDelta(),
+          now = performance.now();
+        tick++;
+
+        fCount++;
+        if (now - lastFT >= 1000) { fCount = 0; lastFT = now; }
+
+        entities.forEach((ent) => {
+          if (ent.behavior) ent.behavior();
+
+          if (ent.pulseAmp > 0.005) {
+            const t = clock.getElapsedTime();
+            const s = 1 + Math.sin(t * 22) * ent.pulseAmp * 0.22;
+            ent.mesh.scale.setScalar(s);
+            ent.pulseAmp *= 0.94;
+          } else if (ent.pulseAmp > 0) {
+            ent.pulseAmp = 0;
+            ent.mesh.scale.setScalar(1);
+          }
+        });
+
+        particles.rotation.y += 0.00022;
+        particles.rotation.x += 0.00007;
+        if (centreModel) {
+          centreModel.rotation.y += 0.003;
+          centreModel.rotation.x += 0.001;
+        }
+        if (centreModel2) {
+          centreModel2.rotation.y -= 0.0025;
+          centreModel2.rotation.z += 0.0015;
+        }
+
+        // Fade in new centre models
+        [centreModel, centreModel2].forEach((m) => {
+          if (!m || m.userData.fadeProgress >= 1) return;
+          m.userData.fadeProgress = Math.min(
+            1,
+            (m.userData.fadeProgress || 0) + 0.018,
+          );
+          const p = m.userData.fadeProgress;
+          const ease = p < 0.5 ? 2 * p * p : -1 + (4 - 2 * p) * p; // ease in-out
+          setModelOpacity(m, ease * m.userData.targetOpacity);
+          const s = m.userData.targetScale;
+          m.scale.setScalar(s * (0.6 + 0.4 * ease));
+        });
+
+        // Fade out old centre models
+        for (let i = fadingOut.length - 1; i >= 0; i--) {
+          const f = fadingOut[i];
+          f.progress = Math.max(0, f.progress - 0.022);
+          setModelOpacity(f.model, f.progress * 0.45);
+          if (f.progress <= 0) {
+            scene.remove(f.model);
+            fadingOut.splice(i, 1);
+          }
+        }
+
+        controls.update();
+
+        if (tick % 3 === 0) {
+          elTick.textContent = tick;
+          ePhase += 0.04;
+          elEntropy.textContent =
+            (
+              (Math.sin(ePhase) * 0.5 + 0.5) * 0.8 +
+              Math.random() * 0.04 +
+              0.08
+            ).toFixed(4) + " J/K";
+        }
+
+        labelDefs.forEach(({ mesh, el }) => {
+          const sc = projectToScreen(mesh.position);
+          if (sc.behind || sc.x < 0 || sc.x > window.innerWidth) {
+            el.style.opacity = "0";
+          } else {
+            el.style.opacity = "1";
+            el.style.left = sc.x + "px";
+            el.style.top = sc.y + "px";
+          }
+        });
+
+        composer.render();
+      }
+
+      animate();
+
+      // ── Random title glyphs ───────────────────────────────────────────────────
+      const GLYPHS =
+        "∅╬∇⌘⊗◈░Ξ∆⌁⊕☿▒ΨΩΛΣΦΓθ╫╪╩╦╣╠═▓◉◊▲▼●○±∞≈≠∫∑∏∂√⌂⌖⌗⌬⍟⎔⎕⏣ℵℶℏℓ℃℉℧℩℮ℜℑ℃ΑΒΔΕΖΗΘΙΚΜΝΞΟΠΡΤΥΧαβγδεζηιλμνξπρστυφχψ⟨⟩⟪⟫⟬⟭⊂⊃⊄⊆⊇⊕⊗⊘⊙⊚⊛⊜⊝⊞⊟⊠⊡⊢⊣⊤⊥⊦⊧⊨⊩⊪⊫∀∃∄∇∈∉∋∌∍∎∏∐∑∓∔∕∖∗∘∙√∛∜∝∞∟∠∡∢∣∤∥∦∧∨∩∪∫∬∭∮∯∰∱∲∳∴∵∶∷∸∹∺∻∼∽∾∿≀≁≂≃≄≅≆≇≈≉≊≋≌≍≎≏≐≑≒≓≔≕≖≗≘≙≚≛≜≝≞≟≠≡≢≣≤≥≦≧⌀⌁⌂⌃⌄⌅⌆⌇⌈⌉⌊⌋⌌⌍⌎⌏⌐⌑⌒⌓⌔⌕⌖⌗⍀⍁⍂⍃⍄⍅⍆⍇⍈⍉⍊⍋⍌⍍⍎⍏⍐⍑⍒⍓⍔⍕⍖⍗⍘⍙⍚⍛⍜⍝⍞⍠⍡⍢⍣⍤⍥⍦⍧⍨⍩⍪⍫⍬⍭⍮⍯⍰⍱⍲⍳⍴⍵⍶⍷⍸⍹⍺";
+      const titleEl = document.getElementById("hud-title-text");
+      if (titleEl) {
+        const len = 12 + Math.floor(Math.random() * 5);
+        titleEl.textContent = Array.from(
+          { length: len },
+          () => GLYPHS[Math.floor(Math.random() * GLYPHS.length)],
+        ).join("");
+      }
+
+      // ── Infinite equation chain ───────────────────────────────────────────────
+      const EQ_OPS = [
+        "+",
+        "-",
+        "×",
+        "÷",
+        "=",
+        "≈",
+        "≠",
+        "≡",
+        "∝",
+        "→",
+        "⊕",
+        "∧",
+      ];
+      const EQ_SYMS = [
+        "π",
+        "e",
+        "φ",
+        "γ",
+        "ℏ",
+        "c",
+        "G",
+        "k",
+        "α",
+        "β",
+        "λ",
+        "μ",
+        "σ",
+        "ρ",
+        "ω",
+        "τ",
+        "ε",
+        "η",
+        "ξ",
+        "ζ",
+        "Ψ",
+        "Ω",
+        "Λ",
+        "Σ",
+        "Φ",
+        "Γ",
+        "θ",
+        "Δ",
+        "Π",
+        "ℓ",
+      ];
+      const EQ_FUNCS = [
+        "sin",
+        "cos",
+        "tan",
+        "ln",
+        "log",
+        "exp",
+        "∫",
+        "∑",
+        "∇",
+        "∂",
+        "∆",
+        "lim",
+        "det",
+        "tr",
+      ];
+
+      function randNum() {
+        const n = (Math.random() * 9999) | 0;
+        return Math.random() < 0.35 ? (n / 100).toFixed(2) : String(n);
+      }
+      function randSym() {
+        return EQ_SYMS[Math.floor(Math.random() * EQ_SYMS.length)];
+      }
+      function randOp() {
+        return EQ_OPS[Math.floor(Math.random() * EQ_OPS.length)];
+      }
+      function randTerm() {
+        const r = Math.random();
+        if (r < 0.2) return randNum();
+        if (r < 0.4) return randSym();
+        if (r < 0.55)
+          return (
+            EQ_FUNCS[Math.floor(Math.random() * EQ_FUNCS.length)] +
+            "(" +
+            randSym() +
+            ")"
+          );
+        if (r < 0.7)
+          return (
+            randSym() + ["²", "³", "⁴", "ⁿ"][Math.floor(Math.random() * 4)]
+          );
+        if (r < 0.82) return randSym() + randOp() + randSym();
+        return randNum() + randSym();
+      }
+      function genEqLine() {
+        const terms = 2 + Math.floor(Math.random() * 3);
+        const parts = [];
+        for (let i = 0; i < terms; i++) {
+          parts.push(randTerm());
+          if (i < terms - 1) parts.push(randOp());
+        }
+        parts.push("=", randTerm());
+        return parts.join(" ");
+      }
+
+      const EQ_VISIBLE = 9;
+      const EQ_BUF_SIZE = EQ_VISIBLE * 5;
+      const eqBuffer = Array.from({ length: EQ_BUF_SIZE }, genEqLine);
+      let eqHead = 0;
+      const eqDisplay = document.getElementById("eq-display");
+
+      function renderEqChain() {
+        const mid = Math.floor(EQ_VISIBLE / 2);
+        const frag = document.createDocumentFragment();
+        for (let i = 0; i < EQ_VISIBLE; i++) {
+          const idx = (eqHead + i) % eqBuffer.length;
+          const div = document.createElement("div");
+          const dist = Math.abs(i - mid);
+          div.className =
+            "eq-line" +
+            (dist === 0 ? " eq-active" : dist === 1 ? " eq-near" : "");
+          div.textContent = eqBuffer[idx];
+          frag.appendChild(div);
+        }
+        eqDisplay.innerHTML = "";
+        eqDisplay.appendChild(frag);
+      }
+
+      renderEqChain();
+      setInterval(() => {
+        eqHead = (eqHead + 1) % eqBuffer.length;
+        // Refresh lines a few steps ahead to keep variety
+        eqBuffer[(eqHead + EQ_VISIBLE + 1) % eqBuffer.length] = genEqLine();
+        renderEqChain();
+      }, 180);
+
+      // ── Start chain: seed from NASA APOD, fall back to CHAIN_SEED ────────────
+      (async () => {
+        await new Promise(r => setTimeout(r, 1800));
+        const apodSeed = await fetchAPOD().catch(e => { console.warn('APOD init failed:', e); return null; });
+        runChain(apodSeed || CHAIN_SEED, 0);
+      })().catch(e => console.warn('startup error:', e));
+
+      // ── Resize ────────────────────────────────────────────────────────────────
+      window.addEventListener("resize", () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        composer.setSize(window.innerWidth, window.innerHeight);
+      });
+    </script>
+  </body>
+</html>
