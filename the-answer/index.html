@@ -92,7 +92,7 @@
       .hud-panel {
         position: fixed;
         z-index: 100;
-        background: rgba(4, 4, 4, 0.82);
+        background: rgba(4, 4, 4, 0.5);
         border: 1px solid rgba(102, 12, 12, 0.55);
         color: #fff;
         font-family: "VT323-Regular", "Courier New", monospace;
@@ -137,11 +137,6 @@
 
       #hud-tl {
         top: 12px;
-        left: 12px;
-        max-width: 340px;
-      }
-      #hud-bl {
-        bottom: 12px;
         left: 12px;
         max-width: 340px;
       }
@@ -401,8 +396,7 @@
       }
 
       @media (max-width: 600px) {
-        #hud-tl,
-        #hud-bl {
+        #hud-tl {
           max-width: 300px;
         }
         .hud-panel {
@@ -474,27 +468,14 @@
       />
     </svg>
 
-    <!-- ── HUD: Top Left ──────────────────────────────────────────────────────── -->
+    <!-- ── HUD: Left panel ───────────────────────────────────────────────────── -->
     <div id="hud-tl" class="hud-panel clip-br">
       <a href="../index.html" style="text-decoration: none">
         <span class="hud-title" id="hud-title-text">∅╬∇⌘⊗◈░Ξ∆⌁⊕☿▒</span>
       </a>
       <span class="hud-sub">// THE ANSWER // build 1.0</span>
       <hr class="hud-sep" />
-      <div class="stat-row">
-        <span class="hud-label">ENTROPY</span>
-        <span class="hud-value" id="entropy-val">∞</span>
-      </div>
-      <div class="stat-row">
-        <span class="hud-label">TICK</span>
-        <span class="hud-value" id="tick-val">0</span>
-      </div>
-    </div>
-
-    <!-- ── HUD: Bottom Left – Console ────────────────────────────────────────── -->
-    <div id="hud-bl" class="hud-panel clip-tr">
       <span class="hud-sub">// SYSTEM LOG //</span>
-      <hr class="hud-sep" />
       <div id="console-body"></div>
       <span class="cursor-blink">▮</span>
     </div>
@@ -1261,9 +1242,6 @@
       }, 3400);
 
       // ── HUD refs ─────────────────────────────────────────────────────────────
-      const elTick = document.getElementById("tick-val");
-      const elEntropy = document.getElementById("entropy-val");
-
       const _v = new THREE.Vector3();
       function projectToScreen(pos) {
         _v.copy(pos).project(camera);
@@ -1276,11 +1254,7 @@
 
       // ── Animation loop ───────────────────────────────────────────────────────
       const clock = new THREE.Clock();
-      let tick = 0,
-        fCount = 0,
-        lastFT = performance.now(),
-        fps = 0,
-        ePhase = 0;
+      let tick = 0, fCount = 0, lastFT = performance.now();
 
       function animate() {
         requestAnimationFrame(animate);
@@ -1345,17 +1319,6 @@
         }
 
         controls.update();
-
-        if (tick % 3 === 0) {
-          elTick.textContent = tick;
-          ePhase += 0.04;
-          elEntropy.textContent =
-            (
-              (Math.sin(ePhase) * 0.5 + 0.5) * 0.8 +
-              Math.random() * 0.04 +
-              0.08
-            ).toFixed(4) + " J/K";
-        }
 
         labelDefs.forEach(({ mesh, el }) => {
           const sc = projectToScreen(mesh.position);
