@@ -30,11 +30,15 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'><rect width='1' height='1' fill='%23000'/></svg>" />
-    <title>ENTROPY WORSHIP // VOID</title>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'><rect width='1' height='1' fill='%23000'/></svg>"
+    />
+    <title>ENTROPY WORSHIP // THE ANSWER</title>
     <meta
       name="description"
-      content="Cryptic three-dimensional interactive space."
+      content="Three-dimensional interactive space created with Wolfram-fed data from the NASA API"
     />
     <link href="../styles/imported_fonts.css" rel="stylesheet" />
 
@@ -136,16 +140,10 @@
         left: 12px;
         max-width: 340px;
       }
-      #hud-tr {
-        top: 12px;
-        right: 12px;
-        max-width: 300px;
-        text-align: right;
-      }
       #hud-bl {
         bottom: 12px;
         left: 12px;
-        max-width: 440px;
+        max-width: 340px;
       }
 
       .hud-title {
@@ -226,7 +224,7 @@
 
       /* ── Console ────────────────────────────────────────────────────────────── */
       #console-body {
-        max-height: 170px;
+        max-height: 85px;
         overflow: hidden;
         display: flex;
         flex-direction: column-reverse;
@@ -403,6 +401,7 @@
       }
 
       @media (max-width: 600px) {
+        #hud-tl,
         #hud-bl {
           max-width: 300px;
         }
@@ -483,20 +482,12 @@
       <span class="hud-sub">// THE ANSWER // build 1.0</span>
       <hr class="hud-sep" />
       <div class="stat-row">
-        <span class="hud-label">STATUS</span>
-        <span class="hud-value">ONLINE</span>
-      </div>
-      <div class="stat-row">
         <span class="hud-label">ENTROPY</span>
         <span class="hud-value" id="entropy-val">∞</span>
       </div>
       <div class="stat-row">
         <span class="hud-label">TICK</span>
         <span class="hud-value" id="tick-val">0</span>
-      </div>
-      <div class="stat-row">
-        <span class="hud-label">ENTITIES</span>
-        <span class="hud-value" id="obj-count">--</span>
       </div>
     </div>
 
@@ -774,7 +765,10 @@
           }
           scene.add(model);
           addLog(
-            `>MODEL ${slot + 1}: ${file.split("/").pop().replace(/\.(glb|obj)$/, "")}`,
+            `>MODEL ${slot + 1}: ${file
+              .split("/")
+              .pop()
+              .replace(/\.(glb|obj)$/, "")}`,
             "info",
           );
         } catch (e) {
@@ -1018,7 +1012,7 @@
       }
 
       // ── Query chain ───────────────────────────────────────────────────────────
-      const NASA_API_KEY   = "umzK2XQ6ooGFkfC7oIJdShKR4tmVicMBGD5d5gny";
+      const NASA_API_KEY = "umzK2XQ6ooGFkfC7oIJdShKR4tmVicMBGD5d5gny";
       const CHAIN_ORDER = ["ico2", "ico1", "torus", "oct", "tet"];
       const CHAIN_SEED = "entropy";
       const chainHistory = [CHAIN_SEED];
@@ -1044,12 +1038,13 @@
         "Stefan-Boltzmann law",
       ];
       let fallbackIdx = 0;
-      let apodContext = ''; // NASA APOD explanation text, blended into query evolution
+      let apodContext = ""; // NASA APOD explanation text, blended into query evolution
 
       function evolveQuery(queryText, resultText) {
         // Blend Wolfram result + APOD context for a richer token pool
-        const combined = (resultText || queryText)
-          + (apodContext ? ' ' + apodContext.slice(0, 600) : '');
+        const combined =
+          (resultText || queryText) +
+          (apodContext ? " " + apodContext.slice(0, 600) : "");
         const tokens = combined
           .split(/[\s,;:()\[\]\/]+/)
           .map((t) => t.replace(/^["']+|["']+$/g, "").trim())
@@ -1091,11 +1086,14 @@
 
       async function runChain(queryText, stepIdx) {
         swapCentreModel();
-        const key    = CHAIN_ORDER[stepIdx % CHAIN_ORDER.length];
+        const key = CHAIN_ORDER[stepIdx % CHAIN_ORDER.length];
         const dataEl = document.getElementById("dat-" + key);
         const nameEl = document.getElementById("nam-" + key);
         if (nameEl) nameEl.textContent = queryText;
-        if (dataEl) { dataEl.textContent = "QUERYING\u2026"; dataEl.classList.add("querying"); }
+        if (dataEl) {
+          dataEl.textContent = "QUERYING\u2026";
+          dataEl.classList.add("querying");
+        }
 
         let next = queryText;
         try {
@@ -1103,7 +1101,7 @@
           const wikiSummary = async (title) => {
             const r = await fetch(
               `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(title)}`,
-              { signal: AbortSignal.timeout(9000) }
+              { signal: AbortSignal.timeout(9000) },
             );
             if (!r.ok) throw new Error("wiki " + r.status);
             return r.json();
@@ -1117,7 +1115,7 @@
             // 404 — search for the best matching article title
             const sr = await fetch(
               `https://en.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(queryText)}&limit=1&format=json&origin=*`,
-              { signal: AbortSignal.timeout(9000) }
+              { signal: AbortSignal.timeout(9000) },
             );
             if (!sr.ok) throw new Error("opensearch failed");
             const sd = await sr.json();
@@ -1129,23 +1127,31 @@
           const txt = (data.extract || "").trim();
           if (!txt) throw new Error("no extract");
 
-          if (dataEl) dataEl.textContent = txt.length > 120 ? txt.slice(0, 117) + "\u2026" : txt;
+          if (dataEl)
+            dataEl.textContent =
+              txt.length > 120 ? txt.slice(0, 117) + "\u2026" : txt;
           addLog(`>WIKI [${key.toUpperCase()}]: ${txt.slice(0, 50)}`, "ok");
 
           const nextKey = CHAIN_ORDER[(stepIdx + 1) % CHAIN_ORDER.length];
           morphShape(nextKey, extractDigit(txt));
 
-          const derived = evolveQuery(queryText, txt) || CHAIN_FALLBACKS[fallbackIdx++ % CHAIN_FALLBACKS.length];
+          const derived =
+            evolveQuery(queryText, txt) ||
+            CHAIN_FALLBACKS[fallbackIdx++ % CHAIN_FALLBACKS.length];
           chainHistory.push(derived);
           if (chainHistory.length > 50) chainHistory.shift();
           next = derived;
           addLog(`>\u2192 ${derived}`, "info");
-
         } catch (err) {
           console.warn("chain step failed:", key, err.message);
-          if (dataEl) { dataEl.textContent = ""; dataEl.classList.remove("querying"); }
+          if (dataEl) {
+            dataEl.textContent = "";
+            dataEl.classList.remove("querying");
+          }
           // Silent retry — pick a new query and try again immediately
-          const derived = evolveQuery(queryText, "") || CHAIN_FALLBACKS[fallbackIdx++ % CHAIN_FALLBACKS.length];
+          const derived =
+            evolveQuery(queryText, "") ||
+            CHAIN_FALLBACKS[fallbackIdx++ % CHAIN_FALLBACKS.length];
           chainHistory.push(derived);
           if (chainHistory.length > 50) chainHistory.shift();
           setTimeout(() => runChain(derived, stepIdx), 600);
@@ -1154,34 +1160,44 @@
           if (dataEl) dataEl.classList.remove("querying");
         }
         const isNewRound = (stepIdx + 1) % CHAIN_ORDER.length === 0;
-        setTimeout(() => runChain(next, stepIdx + 1), isNewRound ? 12000 : 3500);
+        setTimeout(
+          () => runChain(next, stepIdx + 1),
+          isNewRound ? 12000 : 3500,
+        );
       }
 
       // ── NASA APOD ────────────────────────────────────────────────────────────
       async function fetchAPOD() {
         const apodBase = `https://api.nasa.gov/planetary/apod?api_key=${NASA_API_KEY}`;
         const apodUrls = [
-          apodBase,                                                                              // direct — CORS supported by NASA
-          'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(apodBase),           // fallback proxy
-          'https://thingproxy.freeboard.io/fetch/'   + apodBase,                               // fallback proxy 2
-          'https://api.allorigins.win/raw?url='      + encodeURIComponent(apodBase),           // fallback proxy 3
+          apodBase, // direct — CORS supported by NASA
+          "https://api.codetabs.com/v1/proxy?quest=" +
+            encodeURIComponent(apodBase), // fallback proxy
+          "https://thingproxy.freeboard.io/fetch/" + apodBase, // fallback proxy 2
+          "https://api.allorigins.win/raw?url=" + encodeURIComponent(apodBase), // fallback proxy 3
         ];
         for (const url of apodUrls) {
           try {
-            const res = await fetch(url, { signal: AbortSignal.timeout(22000) });
+            const res = await fetch(url, {
+              signal: AbortSignal.timeout(22000),
+            });
             if (!res.ok) continue;
-            const raw  = await res.text();
+            const raw = await res.text();
             let data;
-            try { data = JSON.parse(raw); } catch { continue; }
+            try {
+              data = JSON.parse(raw);
+            } catch {
+              continue;
+            }
             if (data.error || !data.title) continue;
-            apodContext = data.title + ' ' + (data.explanation || '');
-            addLog('>NASA APOD: ' + data.title.slice(0, 45), 'ok');
+            apodContext = data.title + " " + (data.explanation || "");
+            addLog(">NASA APOD: " + data.title.slice(0, 45), "ok");
             return data.title;
           } catch (e) {
-            console.warn('APOD attempt failed:', url, e.message);
+            console.warn("APOD attempt failed:", url, e.message);
           }
         }
-        addLog('>NASA APOD: SIGNAL LOST', 'warn');
+        addLog(">NASA APOD: SIGNAL LOST", "warn");
         return null;
       }
 
@@ -1234,7 +1250,7 @@
         span.className = `con-line con-${cls}`;
         span.textContent = text;
         conBody.prepend(span);
-        while (conBody.children.length > 10)
+        while (conBody.children.length > 5)
           conBody.removeChild(conBody.lastChild);
       }
       LOG_POOL.slice(0, 5).forEach(([t, c]) => addLog(t, c));
@@ -1245,12 +1261,8 @@
       }, 3400);
 
       // ── HUD refs ─────────────────────────────────────────────────────────────
-      const elTick    = document.getElementById("tick-val");
+      const elTick = document.getElementById("tick-val");
       const elEntropy = document.getElementById("entropy-val");
-      const elObjCnt  = document.getElementById("obj-count");
-
-      elObjCnt.textContent = entities.length;
-
 
       const _v = new THREE.Vector3();
       function projectToScreen(pos) {
@@ -1277,7 +1289,10 @@
         tick++;
 
         fCount++;
-        if (now - lastFT >= 1000) { fCount = 0; lastFT = now; }
+        if (now - lastFT >= 1000) {
+          fCount = 0;
+          lastFT = now;
+        }
 
         entities.forEach((ent) => {
           if (ent.behavior) ent.behavior();
@@ -1506,10 +1521,13 @@
 
       // ── Start chain: seed from NASA APOD, fall back to CHAIN_SEED ────────────
       (async () => {
-        await new Promise(r => setTimeout(r, 1800));
-        const apodSeed = await fetchAPOD().catch(e => { console.warn('APOD init failed:', e); return null; });
+        await new Promise((r) => setTimeout(r, 1800));
+        const apodSeed = await fetchAPOD().catch((e) => {
+          console.warn("APOD init failed:", e);
+          return null;
+        });
         runChain(apodSeed || CHAIN_SEED, 0);
-      })().catch(e => console.warn('startup error:', e));
+      })().catch((e) => console.warn("startup error:", e));
 
       // ── Resize ────────────────────────────────────────────────────────────────
       window.addEventListener("resize", () => {
