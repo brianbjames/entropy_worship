@@ -1,27 +1,22 @@
-# WTFDIPISF — WTF Do I Park In San Francisco?
+# WTFDIPISF
 
-An interactive parking tool for San Francisco that tells you whether it's currently safe to park on any given street, how long you have, and how risky the spot is — based on official street cleaning schedules, citation history, and neighborhood safety data.
+Interactive parking tool for San Francisco that tells you whether it's currently safe to park on any given street, how long you have, and how risky the spot is — based on official street cleaning schedules, citation history, and neighborhood safety data
 
 ---
 
-## How It Works
+1. **The Map** — streets are rendered and color-coded for the current day and time
+2. **Adjust Sliders** — set the current viewing hour and when you plan to leave ("park until")
+3. **Click a Street** — pin the location to get a full verdict: is it safe, when does the restriction start/end, and what's the tow risk?
+4. **"Where's the safest spot?"** — Nearby streets ranked by safety
+5. **What route should I take?"** — Driving route is suggested for optimal parking
 
-WTFDIPISF loads a map of San Francisco and color-codes every street blockface based on parking restriction status relative to the current time and your intended parking window.
-
-The core user flow:
-
-1. **Open the map** — streets are rendered and color-coded for the current day and time.
-2. **Adjust sliders** — set the current viewing hour and when you plan to leave ("park until").
-3. **Click a street** — pin the location to get a full verdict: is it safe, when does the restriction start/end, and what's the tow risk?
-4. **"Where's the safest spot?"** — the app ranks nearby streets by safety and routes you there.
-
-Street colors update live as you scrub through time, so you can plan ahead.
+Street colors update live as you scrub through time, so you can plan ahead
 
 ---
 
 ## Data Sources
 
-All data comes from **[DataSF](https://data.sfgov.org)**, San Francisco's open data portal. No API key required — all endpoints are public.
+All data comes from **[DataSF](https://data.sfgov.org)**, San Francisco's open data portal. No API key required — all endpoints are public
 
 | Dataset                        | DataSF ID                             | What It Provides                                                      |
 | ------------------------------ | ------------------------------------- | --------------------------------------------------------------------- |
@@ -45,20 +40,7 @@ The **Street Cleaning Schedule** is the primary source. All other datasets are u
 
 ### 1. Is It Safe to Park Here?
 
-The core function `isParkSafe(fromhour, tohour)` checks whether the street's cleaning window overlaps with your parking window:
-
-```
-Cleaning window:  [from ──────── to)
-Your window:      [activeHour ──────── parkUntilHour)
-
-Safe = NO overlap between the two windows
-```
-
-- If `to <= activeHour`: restriction already passed — safe.
-- If `from >= parkUntilHour`: restriction starts after you leave — safe.
-- Any overlap = NOT safe.
-
-Streets with unknown or missing schedule data default to **safe** (benefit of the doubt).
+The app looks at when street cleaning is scheduled and compares it to when you plan to park. If the cleaning happens before you arrive or after you leave, you're fine. If there's any overlap — even partial — the street is flagged as unsafe. Streets with no schedule data on record are treated as safe
 
 ### 2. Street Status Colors
 
@@ -73,38 +55,32 @@ Every blockface gets one of four statuses at the current viewing hour:
 
 Upcoming streets get urgency shading based on how soon the restriction starts:
 
-| Time Until | Color                    |
-| ---------- | ------------------------ |
-| < 30 min   | Red (#ff2200) — critical |
-| < 1 hour   | Orange-red (#ff5500)     |
-| < 2 hours  | Orange (#ff9900)         |
-| > 2 hours  | Yellow (#ffcc00)         |
+| Time Until | Color          |
+| ---------- | -------------- |
+| < 30 min   | Red — critical |
+| < 1 hour   | Orange-red     |
+| < 2 hours  | Orange         |
+| > 2 hours  | Yellow         |
 
-On **weekends**, all streets display as blue — most SF street cleaning is Monday–Friday.
+On **weekends**, all streets display as blue — most SF street cleaning is Monday–Friday
 
 ### 3. Week-of-Month Detection
 
-SF's cleaning schedule varies by week. A street cleaned "the 1st and 3rd Monday" only shows restrictions on weeks 1 and 3. The app calculates the current week of the month:
+Not every street gets cleaned every week. Some are only cleaned on the 1st and 3rd Monday of the month, for example. The app figures out which week of the month it currently is and only shows restrictions for streets that are actually scheduled to be cleaned that week.
 
-```
-weekOfMonth = ceil(date / 7)   →   week1 through week5
-```
-
-Only streets where `week{N} = 'Yes'` for the current week are rendered with active restrictions.
-
-### 4. Citation-Based Schedule Inference (`buildCitationsCleaningMap`)
+### 4. Citation-Based Schedule Inference
 
 Many streets are not in the official cleaning schedule dataset. For these, the app infers a likely schedule from **parking citation history**:
 
-1. Pull recent citations for the area with date, time, and street name.
-2. Normalize street name suffixes (ST, AVE, BLVD, etc.) for consistent matching.
-3. Group citations by `streetName + dayOfWeek`, then count how many citations fall in each hour of that day.
-4. **Inference rule:** If a street has ≥3 citations on the same day, the app treats the peak citation hour as the likely cleaning window (peak hour to peak hour + 2).
-5. **311 supplement:** If 311 cleaning complaints exist for the same street/day (threshold: ≥8 complaints), those fill gaps and default to an 8AM–10AM window.
+1. Pull recent citations for the area with date, time, and street name
+2. Normalize street name suffixes (ST, AVE, BLVD, etc.) for consistent matching
+3. Group citations by street name and day of the week, then count how many citations fall in each hour of that day
+4. **Inference rule:** If a street has ≥3 citations on the same day, the app treats the peak citation hour as the likely cleaning window (peak hour to peak hour + 2)
+5. **311 supplement:** If 311 cleaning complaints exist for the same street/day (threshold: ≥8 complaints), those fill gaps and default to an 8AM–10AM window
 
-This means a street with no official schedule but a clear pattern of Monday morning tickets will still show a warning.
+This means a street with no official schedule but a clear pattern of Monday morning tickets will still show a warning
 
-### 5. Tow Risk Scoring (`calcTowRisk`)
+### 5. Tow Risk Scoring
 
 After determining legality, the app calculates a composite **tow risk score** for a pinned location:
 
@@ -126,7 +102,7 @@ After determining legality, the app calculates a composite **tow risk score** fo
 | ≥2    | MEDIUM   |
 | <2    | LOW      |
 
-### 6. Neighborhood Risk (`buildRiskHtml`)
+### 6. Neighborhood Risk
 
 For a pinned location, the app scans a **200-meter radius** and evaluates nearby incident density:
 
@@ -165,6 +141,6 @@ Toggle these on/off from the sidebar:
 - **CartoDB Dark Matter** — basemap tiles
 - **DataSF Socrata API** — all data (GeoJSON + JSON endpoints)
 - **OSRM / Valhalla** — routing for "find nearest safe spot" recommendations
-- Single-file HTML/CSS/JS — no build step, no dependencies to install
+- Single-file HTML/CSS/JS
 
 ---

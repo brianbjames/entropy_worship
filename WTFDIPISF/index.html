@@ -913,6 +913,140 @@
         line-height: 1.9;
       }
 
+      /* ── Info modal overlay ─────────────────────────────────────────────── */
+      #info-modal-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.72);
+        z-index: 3000;
+        backdrop-filter: blur(2px);
+      }
+      #info-modal-backdrop.open { display: flex; align-items: center; justify-content: center; }
+
+      #info-modal {
+        background: rgba(8, 8, 8, 0.95);
+        border: 1px solid #1e3a4a;
+        border-left: 2px solid rgba(68, 153, 255, 0.6);
+        color: #ccc;
+        width: min(680px, calc(100vw - 32px));
+        max-height: calc(100dvh - 48px);
+        overflow-y: auto;
+        padding: 28px 32px 32px;
+        position: relative;
+        clip-path: polygon(14px 0%, 100% 0%, 100% calc(100% - 14px), calc(100% - 14px) 100%, 0% 100%, 0% 14px);
+        filter: drop-shadow(0 0 24px rgba(68, 153, 255, 0.18));
+        scrollbar-width: thin;
+        scrollbar-color: #1e3a4a transparent;
+        font-size: 13px;
+        line-height: 1.75;
+      }
+      #info-modal::-webkit-scrollbar { width: 4px; }
+      #info-modal::-webkit-scrollbar-track { background: transparent; }
+      #info-modal::-webkit-scrollbar-thumb { background: #1e3a4a; border-radius: 2px; }
+
+      #info-modal h1 {
+        font-family: "Orbitron", sans-serif;
+        font-size: 18px;
+        font-weight: 900;
+        letter-spacing: 4px;
+        color: rgba(120, 210, 255, 1);
+        text-shadow: 0 0 8px rgba(68, 153, 255, 0.35);
+        text-transform: uppercase;
+        margin: 0 0 6px;
+      }
+      #info-modal h2 {
+        font-family: "Courier New", monospace;
+        font-size: 11px;
+        letter-spacing: 3px;
+        text-transform: uppercase;
+        color: rgba(120, 200, 255, 0.85);
+        margin: 24px 0 10px;
+        padding-bottom: 6px;
+        border-bottom: 1px solid #1e3a4a;
+      }
+      #info-modal h3 {
+        font-size: 11px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: #aaa;
+        margin: 16px 0 6px;
+      }
+      #info-modal p { margin: 0 0 10px; }
+      #info-modal a { color: #7ac8e0; text-decoration: none; }
+      #info-modal a:hover { color: #aee; }
+      #info-modal hr { border: none; border-top: 1px solid #1e3a4a; margin: 20px 0; }
+      #info-modal code {
+        background: rgba(68, 153, 255, 0.08);
+        border: 1px solid rgba(68, 153, 255, 0.15);
+        padding: 1px 5px;
+        border-radius: 2px;
+        font-family: "Courier New", monospace;
+        font-size: 11px;
+        color: #b8d8e8;
+      }
+      #info-modal pre {
+        background: rgba(0, 0, 0, 0.5);
+        border: 1px solid #1e3a4a;
+        border-left: 2px solid rgba(68, 153, 255, 0.4);
+        padding: 12px 14px;
+        overflow-x: auto;
+        font-size: 11px;
+        color: #b8d8e8;
+        margin: 8px 0 14px;
+        line-height: 1.6;
+      }
+      #info-modal pre code { background: none; border: none; padding: 0; }
+      #info-modal table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12px;
+        margin: 10px 0 16px;
+      }
+      #info-modal th {
+        text-align: left;
+        color: rgba(120, 200, 255, 0.85);
+        font-size: 10px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        border-bottom: 1px solid #1e3a4a;
+        padding: 5px 8px;
+      }
+      #info-modal td {
+        padding: 5px 8px;
+        border-bottom: 1px solid rgba(30, 58, 74, 0.5);
+        vertical-align: top;
+      }
+      #info-modal tr:last-child td { border-bottom: none; }
+      #info-modal ol, #info-modal ul {
+        padding-left: 20px;
+        margin: 6px 0 12px;
+      }
+      #info-modal li { margin-bottom: 4px; }
+      #info-modal strong { color: #ddd; }
+
+      #info-modal-close {
+        position: absolute;
+        top: 14px;
+        right: 16px;
+        background: none;
+        border: 1px solid rgba(68, 153, 255, 0.3);
+        color: rgba(120, 200, 255, 0.8);
+        font-family: "Courier New", monospace;
+        font-size: 13px;
+        width: 26px;
+        height: 26px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: border-color 0.15s, color 0.15s;
+      }
+      #info-modal-close:hover {
+        border-color: rgba(68, 153, 255, 0.8);
+        color: #fff;
+      }
+
       /* ── HUD overlay elements ────────────────────────────────────────────── */
       /* INCIDENTS — rapid radar strobe */
       @keyframes ring-incidents {
@@ -2077,7 +2211,7 @@
           <div style="margin-top: 6px; display: flex; align-items: center; gap: 8px;">
             <div id="panel-drag-handle-bottom" class="drag-grip" style="opacity:0.55; cursor:grab; padding:2px 4px; flex-shrink:0;"><span></span><span></span></div>
             <span style="font-size: 10px; color: #b8d8e8; flex: 1; text-align: right;"
-              >WTFDIPISF<br>Parking Inference Calculator<br>
+              ><button id="info-btn" style="background:rgba(8,8,8,0.8);border:1px solid rgba(68,153,255,0.35);border-left:2px solid rgba(68,153,255,0.65);padding:2px 7px;font:inherit;font-size:10px;color:rgba(120,200,255,0.9);cursor:pointer;letter-spacing:1px;transition:border-color 0.15s,color 0.15s;" onmouseover="this.style.borderColor='rgba(68,153,255,0.8)';this.style.color='#fff'" onmouseout="this.style.borderColor='rgba(68,153,255,0.35)';this.style.color='rgba(120,200,255,0.9)'" title="About">WTFDIPISF</button><br>Parking Inference Calculator<br>
               <a id="bug-report-link" href="#" target="_blank" rel="noopener"
                 style="color:rgba(120,180,255,0.5);text-decoration:none;">Report a bug</a
               > · Data from
@@ -2094,6 +2228,126 @@
       <!-- /#control-panel -->
     </div>
     <!-- /#panel-wrapper -->
+
+  <!-- ── Info modal markup ───────────────────────────────────────────────── -->
+  <div id="info-modal-backdrop">
+    <div id="info-modal">
+      <button id="info-modal-close" title="Close">✕</button>
+
+      <h1>WTFDIPISF</h1>
+      <p>WTF Do I Park In San Francisco — an interactive parking safety tool that tells you whether it's currently safe to park on any given street, how long you have, and how risky the spot is.</p>
+
+      <hr>
+
+      <h2>How It Works</h2>
+      <p>WTFDIPISF loads a map of San Francisco and color-codes every street blockface based on parking restriction status relative to the current time and your intended parking window.</p>
+      <ol>
+        <li><strong>Open the map</strong> — streets are rendered and color-coded for the current day and time.</li>
+        <li><strong>Adjust sliders</strong> — set the current viewing hour and when you plan to leave ("park until").</li>
+        <li><strong>Click a street</strong> — pin the location to get a full verdict: is it safe, when does the restriction start/end, and what's the tow risk?</li>
+        <li><strong>"Where's the safest spot?"</strong> — the app ranks nearby streets by safety and routes you there.</li>
+      </ol>
+      <p>Street colors update live as you scrub through time, so you can plan ahead.</p>
+
+      <hr>
+
+      <h2>Data Sources</h2>
+      <p>All data comes from <a href="https://data.sfgov.org" target="_blank">DataSF</a>, San Francisco's open data portal. No API key required — all endpoints are public.</p>
+      <table>
+        <tr><th>Dataset</th><th>DataSF ID</th><th>What It Provides</th></tr>
+        <tr><td>Street Cleaning Schedule</td><td><code>yhqp-riqs</code></td><td>Official blockface-level cleaning windows (day, hours, week-of-month)</td></tr>
+        <tr><td>Parking Citations</td><td><code>ab4h-6ztd</code>, <code>pvgt-pd5y</code>, <code>wwf5-khdm</code></td><td>Historical tickets used to infer undocumented cleaning schedules</td></tr>
+        <tr><td>Parking Meters</td><td><code>nwbb-fxhp</code>, <code>28et-5khy</code>, <code>rqzj-sfat</code></td><td>Meter locations and active/free hours by day</td></tr>
+        <tr><td>311 Street Cleaning Requests</td><td><code>vw6y-z8j6</code></td><td>Resident complaints used as secondary cleaning schedule signal</td></tr>
+        <tr><td>Police Incidents</td><td><code>wg3w-h783</code></td><td>Vehicle break-ins and theft patterns near a pinned location</td></tr>
+        <tr><td>Traffic Crashes</td><td><code>ubvf-ztfx</code></td><td>Collision data for area risk scoring</td></tr>
+        <tr><td>Abandoned Vehicles / Tows</td><td><code>wr8u-xric</code>, <code>i98e-djp9</code>, <code>ktji-gn4e</code></td><td>Density of abandoned cars in the area</td></tr>
+        <tr><td>Residential Permit Zones (RPP)</td><td><code>hi6h-neyh</code></td><td>Permit-only hours and zone numbers</td></tr>
+        <tr><td>Construction Permits</td><td><code>sftu-nd43</code></td><td>Active street work that may restrict parking</td></tr>
+        <tr><td>Special Events</td><td><code>8x25-yybr</code></td><td>Events that affect nearby parking availability</td></tr>
+        <tr><td>Parking Garages</td><td><code>mizu-nf6z</code></td><td>Nearby garages with hours and access info</td></tr>
+      </table>
+      <p>The <strong>Street Cleaning Schedule</strong> is the primary source. All other datasets are used for risk scoring, inference, and supplementary layers.</p>
+
+      <hr>
+
+      <h2>Inference Logic</h2>
+
+      <h3>1. Is It Safe to Park Here?</h3>
+      <p>The core check asks whether the street's cleaning window overlaps with your parking window:</p>
+      <pre>Cleaning window:  [from ──────── to)
+Your window:      [activeHour ──────── parkUntilHour)
+
+Safe = NO overlap between the two windows</pre>
+      <ul>
+        <li>If <code>to &lt;= activeHour</code>: restriction already passed — safe.</li>
+        <li>If <code>from &gt;= parkUntilHour</code>: restriction starts after you leave — safe.</li>
+        <li>Any overlap = NOT safe.</li>
+      </ul>
+      <p>Streets with unknown or missing schedule data default to <strong>safe</strong> (benefit of the doubt).</p>
+
+      <h3>2. Street Status Colors</h3>
+      <table>
+        <tr><th>Color</th><th>Status</th><th>Condition</th></tr>
+        <tr><td>Red</td><td><strong>Active</strong></td><td>Cleaning is happening right now</td></tr>
+        <tr><td>Orange/Yellow</td><td><strong>Upcoming</strong></td><td>Restriction starts within the viewing window</td></tr>
+        <tr><td>Green</td><td><strong>Passed</strong></td><td>Restriction already ended today</td></tr>
+        <tr><td>Blue</td><td><strong>Park Safe</strong></td><td>No overlap with your full parking window</td></tr>
+      </table>
+      <p>Upcoming streets get urgency shading: &lt;30 min = red, &lt;1 hr = orange-red, &lt;2 hr = orange, &gt;2 hr = yellow. On <strong>weekends</strong>, all streets display blue — most SF street cleaning is Mon–Fri.</p>
+
+      <h3>3. Week-of-Month Detection</h3>
+      <p>SF cleaning schedules vary by week (e.g. "1st and 3rd Monday only"). The app calculates <code>weekOfMonth = ceil(date / 7)</code> and only shows restrictions for streets where <code>week{N} = 'Yes'</code> for the current week.</p>
+
+      <h3>4. Citation-Based Schedule Inference</h3>
+      <p>Many streets are not in the official dataset. For these, the app infers a likely schedule from parking citation history:</p>
+      <ol>
+        <li>Pull recent citations with date, time, and street name.</li>
+        <li>Normalize street name suffixes (ST, AVE, BLVD…) for consistent matching.</li>
+        <li>Group by <code>streetName + dayOfWeek</code> and count citations per hour.</li>
+        <li><strong>Inference rule:</strong> If a street has ≥3 citations on the same day, treat the peak citation hour as the likely cleaning window (peak hour to peak hour + 2).</li>
+        <li><strong>311 supplement:</strong> ≥8 cleaning complaints on the same street/day → default to an 8AM–10AM window.</li>
+      </ol>
+
+      <h3>5. Tow Risk Scoring</h3>
+      <table>
+        <tr><th>Factor</th><th>Points</th></tr>
+        <tr><td>Cleaning is actively happening</td><td>+4</td></tr>
+        <tr><td>Cleaning starts in &lt; 1 hour</td><td>+3</td></tr>
+        <tr><td>Cleaning starts in &lt; 2 hours</td><td>+2</td></tr>
+        <tr><td>Active RPP (Residential Permit) zone</td><td>+2</td></tr>
+        <tr><td>≥10 nearby citations in the last 90 days</td><td>+1</td></tr>
+        <tr><td>≥6 nearby vehicle break-ins</td><td>+1</td></tr>
+      </table>
+      <p><strong>Risk levels:</strong> ≥7 = Critical &nbsp;|&nbsp; ≥4 = High &nbsp;|&nbsp; ≥2 = Medium &nbsp;|&nbsp; &lt;2 = Low</p>
+
+      <h3>6. Neighborhood Risk (200m radius)</h3>
+      <table>
+        <tr><th>Category</th><th>High</th><th>Medium</th><th>Low</th></tr>
+        <tr><td>Vehicle break-ins</td><td>≥6</td><td>≥3</td><td>&lt;3</td></tr>
+        <tr><td>Parking citations</td><td>≥10</td><td>≥4</td><td>&lt;4</td></tr>
+        <tr><td>Abandoned vehicles</td><td>≥4</td><td>≥2</td><td>&lt;2</td></tr>
+        <tr><td>Police incidents</td><td>≥8</td><td>≥3</td><td>&lt;3</td></tr>
+      </table>
+
+      <hr>
+
+      <h2>Map Layers</h2>
+      <ul>
+        <li><strong>Street Cleaning</strong> — primary blockface restriction layer</li>
+        <li><strong>Parking Meters</strong> — green (free) or blue (active cost) by time of day</li>
+        <li><strong>Parking Citations</strong> — heatmap of historical ticket density</li>
+        <li><strong>Police Incidents</strong> — vehicle-related crime locations</li>
+        <li><strong>Traffic Crashes</strong> — collision hotspots</li>
+        <li><strong>Abandoned Vehicles (311)</strong> — reported abandoned car density</li>
+        <li><strong>Construction</strong> — active permit areas</li>
+        <li><strong>Events</strong> — scheduled events affecting parking</li>
+        <li><strong>RPP Zones</strong> — residential permit districts with hours</li>
+        <li><strong>Parking Garages</strong> — nearby garages with open/close times</li>
+      </ul>
+    </div>
+  </div>
+
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
     <script>
@@ -7445,7 +7699,24 @@
             map.closePopup();
           }
         });
+
+        // ── Info modal ────────────────────────────────────────────────────
+        (function () {
+          const backdrop = document.getElementById("info-modal-backdrop");
+          const btn      = document.getElementById("info-btn");
+          const closeBtn = document.getElementById("info-modal-close");
+
+          function openModal() { backdrop.classList.add("open"); }
+          function closeModal() { backdrop.classList.remove("open"); }
+
+          btn.addEventListener("click", (e) => { e.stopPropagation(); openModal(); });
+          closeBtn.addEventListener("click", closeModal);
+          backdrop.addEventListener("click", (e) => { if (e.target === backdrop) closeModal(); });
+          document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+        })();
+
       })();
     </script>
+
   </body>
 </html>
