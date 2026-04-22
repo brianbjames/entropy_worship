@@ -1,5 +1,5 @@
 // ============================================================
-// Jam Sync — server.js
+// MIDI-server — server.js
 // WebSocket server: clock sync, sequencer state, event relay
 // ============================================================
 
@@ -123,5 +123,5 @@ wss.on('connection', ws => {
 
 const PORT = process.env.PORT || 3000;
 httpServer.listen(PORT, () => {
-  console.log(`Jam Sync running → http://localhost:${PORT}`);
+  console.log(`MIDI-server running → http://localhost:${PORT}`);
 });

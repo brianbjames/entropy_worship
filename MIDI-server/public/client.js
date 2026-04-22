@@ -1,5 +1,5 @@
 // ============================================================
-// Jam Sync — client.js
+// MIDI-server — client.js
 // NTP clock sync + Tone.js sequencer + Web MIDI relay
 // ============================================================
 
