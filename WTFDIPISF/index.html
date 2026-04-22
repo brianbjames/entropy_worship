@@ -2235,17 +2235,16 @@
       <button id="info-modal-close" title="Close">✕</button>
 
       <h1>WTFDIPISF</h1>
-      <p>WTF Do I Park In San Francisco — an interactive parking safety tool that tells you whether it's currently safe to park on any given street, how long you have, and how risky the spot is.</p>
+      <p>Interactive parking tool for San Francisco that tells you whether it's currently safe to park on any given street, how long you have, and how risky the spot is — based on official street cleaning schedules, citation history, and neighborhood safety data.</p>
 
       <hr>
 
-      <h2>How It Works</h2>
-      <p>WTFDIPISF loads a map of San Francisco and color-codes every street blockface based on parking restriction status relative to the current time and your intended parking window.</p>
       <ol>
-        <li><strong>Open the map</strong> — streets are rendered and color-coded for the current day and time.</li>
-        <li><strong>Adjust sliders</strong> — set the current viewing hour and when you plan to leave ("park until").</li>
-        <li><strong>Click a street</strong> — pin the location to get a full verdict: is it safe, when does the restriction start/end, and what's the tow risk?</li>
-        <li><strong>"Where's the safest spot?"</strong> — the app ranks nearby streets by safety and routes you there.</li>
+        <li><strong>The Map</strong> — streets are rendered and color-coded for the current day and time.</li>
+        <li><strong>Adjust Sliders</strong> — set the current viewing hour and when you plan to leave ("park until").</li>
+        <li><strong>Click a Street</strong> — pin the location to get a full verdict: is it safe, when does the restriction start/end, and what's the tow risk?</li>
+        <li><strong>"Where's the safest spot?"</strong> — nearby streets ranked by safety.</li>
+        <li><strong>"What route should I take?"</strong> — driving route suggested for optimal parking.</li>
       </ol>
       <p>Street colors update live as you scrub through time, so you can plan ahead.</p>
 
@@ -2274,17 +2273,7 @@
       <h2>Inference Logic</h2>
 
       <h3>1. Is It Safe to Park Here?</h3>
-      <p>The core check asks whether the street's cleaning window overlaps with your parking window:</p>
-      <pre>Cleaning window:  [from ──────── to)
-Your window:      [activeHour ──────── parkUntilHour)
-
-Safe = NO overlap between the two windows</pre>
-      <ul>
-        <li>If <code>to &lt;= activeHour</code>: restriction already passed — safe.</li>
-        <li>If <code>from &gt;= parkUntilHour</code>: restriction starts after you leave — safe.</li>
-        <li>Any overlap = NOT safe.</li>
-      </ul>
-      <p>Streets with unknown or missing schedule data default to <strong>safe</strong> (benefit of the doubt).</p>
+      <p>The app looks at when street cleaning is scheduled and compares it to when you plan to park. If the cleaning happens before you arrive or after you leave, you're fine. If there's any overlap — even partial — the street is flagged as unsafe. Streets with no schedule data on record are treated as safe.</p>
 
       <h3>2. Street Status Colors</h3>
       <table>
@@ -2294,20 +2283,28 @@ Safe = NO overlap between the two windows</pre>
         <tr><td>Green</td><td><strong>Passed</strong></td><td>Restriction already ended today</td></tr>
         <tr><td>Blue</td><td><strong>Park Safe</strong></td><td>No overlap with your full parking window</td></tr>
       </table>
-      <p>Upcoming streets get urgency shading: &lt;30 min = red, &lt;1 hr = orange-red, &lt;2 hr = orange, &gt;2 hr = yellow. On <strong>weekends</strong>, all streets display blue — most SF street cleaning is Mon–Fri.</p>
+      <table>
+        <tr><th>Time Until</th><th>Color</th></tr>
+        <tr><td>&lt; 30 min</td><td>Red — critical</td></tr>
+        <tr><td>&lt; 1 hour</td><td>Orange-red</td></tr>
+        <tr><td>&lt; 2 hours</td><td>Orange</td></tr>
+        <tr><td>&gt; 2 hours</td><td>Yellow</td></tr>
+      </table>
+      <p>On <strong>weekends</strong>, all streets display blue — most SF street cleaning is Monday–Friday.</p>
 
       <h3>3. Week-of-Month Detection</h3>
-      <p>SF cleaning schedules vary by week (e.g. "1st and 3rd Monday only"). The app calculates <code>weekOfMonth = ceil(date / 7)</code> and only shows restrictions for streets where <code>week{N} = 'Yes'</code> for the current week.</p>
+      <p>Not every street gets cleaned every week. Some are only cleaned on the 1st and 3rd Monday of the month, for example. The app figures out which week of the month it currently is and only shows restrictions for streets that are actually scheduled to be cleaned that week.</p>
 
       <h3>4. Citation-Based Schedule Inference</h3>
-      <p>Many streets are not in the official dataset. For these, the app infers a likely schedule from parking citation history:</p>
+      <p>Many streets are not in the official cleaning schedule dataset. For these, the app infers a likely schedule from parking citation history:</p>
       <ol>
-        <li>Pull recent citations with date, time, and street name.</li>
-        <li>Normalize street name suffixes (ST, AVE, BLVD…) for consistent matching.</li>
-        <li>Group by <code>streetName + dayOfWeek</code> and count citations per hour.</li>
-        <li><strong>Inference rule:</strong> If a street has ≥3 citations on the same day, treat the peak citation hour as the likely cleaning window (peak hour to peak hour + 2).</li>
-        <li><strong>311 supplement:</strong> ≥8 cleaning complaints on the same street/day → default to an 8AM–10AM window.</li>
+        <li>Pull recent citations for the area with date, time, and street name.</li>
+        <li>Normalize street name suffixes (ST, AVE, BLVD, etc.) for consistent matching.</li>
+        <li>Group citations by street name and day of the week, then count how many citations fall in each hour of that day.</li>
+        <li><strong>Inference rule:</strong> If a street has ≥3 citations on the same day, the app treats the peak citation hour as the likely cleaning window (peak hour to peak hour + 2).</li>
+        <li><strong>311 supplement:</strong> If 311 cleaning complaints exist for the same street/day (threshold: ≥8 complaints), those fill gaps and default to an 8AM–10AM window.</li>
       </ol>
+      <p>This means a street with no official schedule but a clear pattern of Monday morning tickets will still show a warning.</p>
 
       <h3>5. Tow Risk Scoring</h3>
       <table>
@@ -2319,9 +2316,16 @@ Safe = NO overlap between the two windows</pre>
         <tr><td>≥10 nearby citations in the last 90 days</td><td>+1</td></tr>
         <tr><td>≥6 nearby vehicle break-ins</td><td>+1</td></tr>
       </table>
-      <p><strong>Risk levels:</strong> ≥7 = Critical &nbsp;|&nbsp; ≥4 = High &nbsp;|&nbsp; ≥2 = Medium &nbsp;|&nbsp; &lt;2 = Low</p>
+      <table>
+        <tr><th>Score</th><th>Level</th></tr>
+        <tr><td>≥7</td><td>Critical</td></tr>
+        <tr><td>≥4</td><td>High</td></tr>
+        <tr><td>≥2</td><td>Medium</td></tr>
+        <tr><td>&lt;2</td><td>Low</td></tr>
+      </table>
 
-      <h3>6. Neighborhood Risk (200m radius)</h3>
+      <h3>6. Neighborhood Risk</h3>
+      <p>For a pinned location, the app scans a <strong>200-meter radius</strong> and evaluates nearby incident density:</p>
       <table>
         <tr><th>Category</th><th>High</th><th>Medium</th><th>Low</th></tr>
         <tr><td>Vehicle break-ins</td><td>≥6</td><td>≥3</td><td>&lt;3</td></tr>
@@ -2329,6 +2333,7 @@ Safe = NO overlap between the two windows</pre>
         <tr><td>Abandoned vehicles</td><td>≥4</td><td>≥2</td><td>&lt;2</td></tr>
         <tr><td>Police incidents</td><td>≥8</td><td>≥3</td><td>&lt;3</td></tr>
       </table>
+      <p>This is displayed separately from legality — a street can be technically legal to park on but still be flagged high risk based on neighborhood patterns.</p>
 
       <hr>
 
@@ -2344,6 +2349,18 @@ Safe = NO overlap between the two windows</pre>
         <li><strong>Events</strong> — scheduled events affecting parking</li>
         <li><strong>RPP Zones</strong> — residential permit districts with hours</li>
         <li><strong>Parking Garages</strong> — nearby garages with open/close times</li>
+      </ul>
+
+      <hr>
+
+      <h2>Technical Stack</h2>
+      <ul>
+        <li><strong><a href="https://leafletjs.com" target="_blank">Leaflet.js</a></strong> v1.9.4 — map rendering</li>
+        <li><strong><a href="https://github.com/Leaflet/Leaflet.heat" target="_blank">Leaflet.heat</a></strong> — citation heatmap</li>
+        <li><strong><a href="https://carto.com/basemaps/" target="_blank">CartoDB Dark Matter</a></strong> — basemap tiles</li>
+        <li><strong><a href="https://dev.socrata.com/" target="_blank">DataSF Socrata API</a></strong> — all data (GeoJSON + JSON endpoints)</li>
+        <li><strong><a href="https://project-osrm.org/" target="_blank">OSRM</a> / <a href="https://valhalla.github.io/valhalla/" target="_blank">Valhalla</a></strong> — routing for "find nearest safe spot" recommendations</li>
+        <li>Single-file HTML/CSS/JS</li>
       </ul>
     </div>
   </div>
