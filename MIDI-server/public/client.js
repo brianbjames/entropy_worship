@@ -216,7 +216,7 @@ function logMidi(note, vel, remote) {
 // In production: set this to your Railway URL, e.g.:
 //   const WS_SERVER = 'wss://jam-sync-production.up.railway.app';
 // Leave as null to connect to the same host (local dev).
-const WS_SERVER = null;
+const WS_SERVER = 'wss://midi-server-production.up.railway.app';
 
 const wsProto = location.protocol === 'https:' ? 'wss:' : 'ws:';
 const wsUrl   = WS_SERVER || `${wsProto}//${location.host}`;
