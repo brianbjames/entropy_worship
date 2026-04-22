@@ -213,8 +213,14 @@ function logMidi(note, vel, remote) {
 }
 
 // ── WebSocket connection ─────────────────────────────────────
+// In production: set this to your Railway URL, e.g.:
+//   const WS_SERVER = 'wss://jam-sync-production.up.railway.app';
+// Leave as null to connect to the same host (local dev).
+const WS_SERVER = null;
+
 const wsProto = location.protocol === 'https:' ? 'wss:' : 'ws:';
-const ws = new WebSocket(`${wsProto}//${location.host}`);
+const wsUrl   = WS_SERVER || `${wsProto}//${location.host}`;
+const ws = new WebSocket(wsUrl);
 
 ws.onopen = () => {
   document.getElementById('status').className   = 'connected';
