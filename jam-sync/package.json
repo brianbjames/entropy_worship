@@ -1,0 +1,12 @@
+{
+  "name": "jam-sync",
+  "version": "1.0.0",
+  "description": "Web-based multi-user MIDI and audio step sequencer with network sync",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}

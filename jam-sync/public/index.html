@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jam Sync</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Browser autoplay policy: must have a user gesture before AudioContext resumes -->
+  <div id="unlock-overlay">
+    <div class="unlock-box">
+      <h1>Jam Sync</h1>
+      <p>Collaborative step sequencer — synced across locations</p>
+      <button id="unlock-btn">Enter</button>
+    </div>
+  </div>
+
+  <div id="app">
+    <header>
+      <h1>Jam Sync</h1>
+      <div id="meta">
+        <span id="status" class="disconnected">connecting…</span>
+        <span id="players">— players</span>
+        <span id="latency">— ms</span>
+        <span id="clock-offset" title="Server clock offset">Δ—</span>
+      </div>
+    </header>
+
+    <div id="controls">
+      <button id="play-btn">&#9654; Play</button>
+      <button id="stop-btn" disabled>&#9632; Stop</button>
+      <label>
+        BPM
+        <input type="range" id="bpm" min="60" max="200" value="120">
+        <strong id="bpm-val">120</strong>
+      </label>
+      <button id="midi-btn">MIDI Off</button>
+    </div>
+
+    <div id="sequencer"></div>
+
+    <div id="midi-section">
+      <div class="section-title">MIDI Log</div>
+      <div id="midi-log"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/tone@14.8/build/Tone.js"></script>
+  <script src="client.js"></script>
+</body>
+</html>
