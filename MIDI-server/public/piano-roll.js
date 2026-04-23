@@ -59,7 +59,7 @@ let prEnabled = false;
 let prBars = 4;
 let prScrollPitch = 84; // MIDI note at top of viewport (C6)
 let prScrollBeat = 0; // beat offset at left edge
-let prZoom = 80; // px per beat
+let prZoom = 0; // set to prMinZoom() on first prResize()
 let prRowH = 10; // px per semitone
 let prLastPrIdx = -1;
 let prDrag = null; // { noteIdx, offsetBeat, origNote } | { adding, note }
@@ -74,6 +74,10 @@ function prVisibleRows() {
 }
 function prTotalBeat() {
   return prBars * 4;
+}
+// Minimum zoom that keeps the full pattern filling the canvas (no dead zone)
+function prMinZoom() {
+  return prGridW > 0 ? Math.max(5, prGridW / prTotalBeat()) : 5;
 }
 function prBeatToX(beat) {
   return (beat - prScrollBeat) * prZoom;
@@ -141,7 +145,8 @@ function drawRuler() {
   ctx.fillRect(0, 0, w, h);
 
   const beatStart = Math.floor(prScrollBeat);
-  const beatEnd = Math.ceil(prScrollBeat + prGridW / prZoom) + 1;
+  const patternEnd = prTotalBeat();
+  const beatEnd = Math.min(patternEnd, Math.ceil(prScrollBeat + prGridW / prZoom) + 1);
 
   for (let b = beatStart; b <= beatEnd; b++) {
     const x = prBeatToX(b);
@@ -157,11 +162,11 @@ function drawRuler() {
     ctx.lineTo(x, h);
     ctx.stroke();
 
-    if (isBar) {
+    if (isBar && b < patternEnd) {
       ctx.fillStyle = "#ff3c3c";
       ctx.font = '9px "Courier New", monospace';
       ctx.fillText(`${bar + 1}`, x + 3, h - 5);
-    } else {
+    } else if (!isBar) {
       ctx.fillStyle = "rgba(102,12,12,0.8)";
       ctx.font = '7px "Courier New", monospace';
       ctx.fillText(`${beatInBar + 1}`, x + 2, h - 4);
@@ -170,13 +175,20 @@ function drawRuler() {
     // 1/16th subdivision ticks
     for (let sub = 1; sub < 4; sub++) {
       const sx = x + (sub / 4) * prZoom;
-      if (sx < 0 || sx > prGridW) continue;
+      if (sx < 0 || sx > prGridW || sx > prBeatToX(patternEnd)) continue;
       ctx.strokeStyle = "rgba(102,12,12,0.3)";
       ctx.beginPath();
       ctx.moveTo(sx, h * 0.75);
       ctx.lineTo(sx, h);
       ctx.stroke();
     }
+  }
+
+  // Shade dead zone beyond pattern end
+  const endX = prBeatToX(patternEnd);
+  if (endX < w) {
+    ctx.fillStyle = "rgba(0,0,0,0.55)";
+    ctx.fillRect(Math.max(0, endX), 0, w - Math.max(0, endX), h);
   }
 
   // Bottom border
@@ -214,9 +226,10 @@ function drawGrid(playBeat) {
     }
   }
 
-  // Vertical beat/bar lines
+  // Vertical beat/bar lines — capped at pattern end
   const beatStart = Math.floor(prScrollBeat);
-  const beatEnd = Math.ceil(prScrollBeat + w / prZoom) + 1;
+  const patternEnd = prTotalBeat();
+  const beatEnd = Math.min(patternEnd, Math.ceil(prScrollBeat + w / prZoom) + 1);
 
   for (let b = beatStart; b <= beatEnd; b++) {
     const x = prBeatToX(b);
@@ -232,13 +245,20 @@ function drawGrid(playBeat) {
     // 1/16 subdivisions
     for (let sub = 1; sub < 4; sub++) {
       const sx = x + (sub / 4) * prZoom;
-      if (sx < 0 || sx > w) continue;
+      if (sx < 0 || sx > w || sx > prBeatToX(patternEnd)) continue;
       ctx.strokeStyle = "rgba(102,12,12,0.08)";
       ctx.beginPath();
       ctx.moveTo(sx, 0);
       ctx.lineTo(sx, h);
       ctx.stroke();
     }
+  }
+
+  // Dead zone: shade area past pattern end
+  const endX = prBeatToX(patternEnd);
+  if (endX < w) {
+    ctx.fillStyle = "rgba(0,0,0,0.55)";
+    ctx.fillRect(Math.max(0, endX), 0, w - Math.max(0, endX), h);
   }
 
   // Notes
@@ -290,6 +310,11 @@ function prResize() {
 
   prGridW = wrap.clientWidth - PR_KEYS_W;
   prGridH = wrap.clientHeight - PR_RULER_H;
+
+  // Enforce no dead zone after resize (canvas may have grown wider)
+  prZoom = Math.max(prZoom, prMinZoom());
+  const maxScroll = Math.max(0, prTotalBeat() - prGridW / prZoom);
+  prScrollBeat = Math.min(prScrollBeat, maxScroll);
 
   // Keys
   keys.style.width = `${PR_KEYS_W}px`;
@@ -403,9 +428,13 @@ function prOnWheel(e) {
   e.preventDefault();
   const delta = e.deltaY;
   if (e.ctrlKey || e.metaKey) {
-    prZoom = prClamp(prZoom * (delta > 0 ? 0.85 : 1.18), 20, 400);
+    prZoom = prClamp(prZoom * (delta > 0 ? 0.85 : 1.18), prMinZoom(), 400);
+    // Clamp scroll so we don't drift past the end of the pattern
+    const maxScroll = Math.max(0, prTotalBeat() - prGridW / prZoom);
+    prScrollBeat = prClamp(prScrollBeat, 0, maxScroll);
   } else if (e.shiftKey) {
-    prScrollBeat = prClamp(prScrollBeat + delta / prZoom, 0, prTotalBeat());
+    const maxScroll = Math.max(0, prTotalBeat() - prGridW / prZoom);
+    prScrollBeat = prClamp(prScrollBeat + delta / prZoom, 0, maxScroll);
   } else {
     prScrollPitch = prClamp(
       prScrollPitch + (delta > 0 ? -2 : 2),
@@ -625,19 +654,14 @@ function importParsedMidi({ tempoUs, division, notes }) {
     maxBeat = Math.max(maxBeat, beatStart + beatDur);
   }
 
-  // Auto-set prBars
+  // Auto-set prBars — clamp to 1-32
   const barsNeeded = Math.ceil(maxBeat / 4);
-  prBars = [1, 2, 4, 8, 16, 32].find((v) => v >= barsNeeded) ?? 32;
-  const barsSel = document.getElementById("pr-bars");
-  barsSel.value = Math.min(prBars, 8).toString();
-  if (!barsSel.value) {
-    // value > 8: add a temporary option
-    const opt = document.createElement("option");
-    opt.value = prBars;
-    opt.textContent = prBars;
-    barsSel.appendChild(opt);
-    barsSel.value = prBars;
-  }
+  prBars = Math.min(32, Math.max(1, barsNeeded));
+  document.getElementById("pr-bars").value = prBars;
+
+  // Fit zoom so the full pattern fills the canvas with no gap on the right
+  prScrollBeat = 0;
+  prZoom = prClamp(prGridW / prTotalBeat(), prMinZoom(), 400);
 
   // BPM sync
   const fileBpm = Math.round(60_000_000 / tempoUs);
@@ -649,7 +673,7 @@ function importParsedMidi({ tempoUs, division, notes }) {
       ws.send(JSON.stringify({ type: "bpm", bpm: fileBpm }));
   }
 
-  // Scroll to centroid
+  // Scroll pitch to centroid of imported notes
   if (prNotes.length) {
     const avg = prNotes.reduce((s, n) => s + n.note, 0) / prNotes.length;
     prScrollPitch = prClamp(
@@ -657,7 +681,6 @@ function importParsedMidi({ tempoUs, division, notes }) {
       PR_NOTE_MIN + prVisibleRows(),
       PR_NOTE_MAX,
     );
-    prScrollBeat = 0;
   }
 
   drawAll();
@@ -756,7 +779,11 @@ function exportPrMid() {
     drawAll();
   });
   document.getElementById("pr-bars").addEventListener("change", (e) => {
-    prBars = +e.target.value;
+    prBars = Math.min(32, Math.max(1, Math.round(+e.target.value) || 4));
+    e.target.value = prBars; // normalise display
+    prScrollBeat = 0;
+    // Fit all bars in view so bars beyond 4 are immediately reachable
+    prZoom = prClamp(prGridW / prTotalBeat(), prMinZoom(), 400);
     drawAll();
   });
   document.getElementById("pr-vel").addEventListener("input", (e) => {
@@ -805,7 +832,9 @@ function exportPrMid() {
   });
   grid.addEventListener("wheel", prOnWheel, { passive: false });
 
-  // Initial resize + observe
+  // Initial resize — run immediately, then again after first paint in case
+  // the layout wasn't fully resolved yet (e.g. scrollbars, flex reflow)
   prResize();
+  requestAnimationFrame(prResize);
   window.addEventListener("resize", prResize);
 })();
