@@ -96,7 +96,8 @@
 }
 
 @keyframes stop-flash {
-  0%, 100% {
+  0%,
+  100% {
     color: var(--dim);
     border-color: var(--border);
     text-shadow: none;
@@ -959,7 +960,10 @@ strong {
     6px 100%,
     0 calc(100% - 6px)
   );
-  transition: color 0.15s, background 0.15s, border-color 0.15s;
+  transition:
+    color 0.15s,
+    background 0.15s,
+    border-color 0.15s;
   user-select: none;
 }
 #pr-drop-zone.drag-over {
@@ -1102,7 +1106,9 @@ strong {
     rgba(5, 175, 144, 0.6)
   );
   box-shadow: 0 0 6px rgba(5, 175, 144, 0.5);
-  transition: left 0.05s, width 0.05s;
+  transition:
+    left 0.05s,
+    width 0.05s;
 }
 .bend-val {
   font-size: 0.88rem;
@@ -1286,7 +1292,9 @@ strong {
   font-family: var(--font);
   font-size: 0.85rem;
   letter-spacing: 0.05em;
-  transition: background 0.15s, border-color 0.15s;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
 }
 .room-entry:hover {
   border-color: var(--border);
@@ -1314,7 +1322,9 @@ strong {
   color: rgba(102, 12, 12, 0.6);
   text-decoration: none;
   text-transform: uppercase;
-  transition: color 0.2s, text-shadow 0.2s;
+  transition:
+    color 0.2s,
+    text-shadow 0.2s;
 }
 #ew-footer-link:hover {
   color: var(--accent);
