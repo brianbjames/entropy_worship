@@ -555,6 +555,7 @@ function handleMidiData(bytes, remote) {
       break;
     case 0xC0:
       logMidiRow('PGM', ch, `#${d1 + 1}`, '', remote);
+      updatePgmViz(ch, d1);
       break;
     case 0xD0:
       logMidiRow('Pressure', ch, `v:${d1}`, '', remote);
@@ -563,6 +564,7 @@ function handleMidiData(bytes, remote) {
       const bend = ((d2 << 7) | d1) - 8192;
       if (padSynth) padSynth.set({ detune: (bend / 8192) * 200 });
       logMidiRow('Pitch', ch, bend >= 0 ? `+${bend}` : `${bend}`, '', remote);
+      updateBendViz(ch, bend);
       break;
     }
     case 0xF0:
@@ -612,11 +614,23 @@ function handleSysMsg(status, bytes, remote) {
       const now = performance.now();
       clockTickTimes.push(now);
       if (clockTickTimes.length > 24) clockTickTimes.shift();
+      if (clockTickTimes.length >= 4) {
+        const span = clockTickTimes[clockTickTimes.length - 1] - clockTickTimes[0];
+        const bpm  = Math.round((clockTickTimes.length - 1) / span * 60000 / 24);
+        const el   = document.getElementById('clock-bpm');
+        if (el) el.textContent = `♩${bpm}`;
+      }
       return;
     }
     case 0xFA: logMidiRow('Clock', null, 'Start',    '', remote); break;
     case 0xFB: logMidiRow('Clock', null, 'Continue', '', remote); break;
-    case 0xFC: clockTickTimes = []; logMidiRow('Clock', null, 'Stop', '', remote); break;
+    case 0xFC: {
+      clockTickTimes = [];
+      const el = document.getElementById('clock-bpm');
+      if (el) el.textContent = '';
+      logMidiRow('Clock', null, 'Stop', '', remote);
+      break;
+    }
     case 0xFE: return; // Active Sensing
     case 0xFF: logMidiRow('Sys',   null, 'Reset',    '', remote); break;
   }
@@ -691,6 +705,103 @@ function renderCCViz() {
       `<span class="cc-label">ch${ch} CC${cc}</span>` +
       `<div class="cc-bar-bg"><div class="cc-bar" style="width:${pct}%"></div></div>` +
       `<span class="cc-val">${val}</span>`;
+    el.appendChild(row);
+  });
+}
+
+// ── Program Change Visualizer ────────────────────────────────
+const GM_PATCHES = [
+  'Acoustic Grand Piano','Bright Acoustic Piano','Electric Grand Piano','Honky-tonk Piano',
+  'Electric Piano 1','Electric Piano 2','Harpsichord','Clavinet',
+  'Celesta','Glockenspiel','Music Box','Vibraphone',
+  'Marimba','Xylophone','Tubular Bells','Dulcimer',
+  'Drawbar Organ','Percussive Organ','Rock Organ','Church Organ',
+  'Reed Organ','Accordion','Harmonica','Tango Accordion',
+  'Acoustic Guitar (nylon)','Acoustic Guitar (steel)','Electric Guitar (jazz)','Electric Guitar (clean)',
+  'Electric Guitar (muted)','Overdriven Guitar','Distortion Guitar','Guitar Harmonics',
+  'Acoustic Bass','Electric Bass (finger)','Electric Bass (pick)','Fretless Bass',
+  'Slap Bass 1','Slap Bass 2','Synth Bass 1','Synth Bass 2',
+  'Violin','Viola','Cello','Contrabass',
+  'Tremolo Strings','Pizzicato Strings','Orchestral Harp','Timpani',
+  'String Ensemble 1','String Ensemble 2','Synth Strings 1','Synth Strings 2',
+  'Choir Aahs','Voice Oohs','Synth Voice','Orchestra Hit',
+  'Trumpet','Trombone','Tuba','Muted Trumpet',
+  'French Horn','Brass Section','Synth Brass 1','Synth Brass 2',
+  'Soprano Sax','Alto Sax','Tenor Sax','Baritone Sax',
+  'Oboe','English Horn','Bassoon','Clarinet',
+  'Piccolo','Flute','Recorder','Pan Flute',
+  'Blown Bottle','Shakuhachi','Whistle','Ocarina',
+  'Lead 1 (square)','Lead 2 (sawtooth)','Lead 3 (calliope)','Lead 4 (chiff)',
+  'Lead 5 (charang)','Lead 6 (voice)','Lead 7 (fifths)','Lead 8 (bass+lead)',
+  'Pad 1 (new age)','Pad 2 (warm)','Pad 3 (polysynth)','Pad 4 (choir)',
+  'Pad 5 (bowed)','Pad 6 (metallic)','Pad 7 (halo)','Pad 8 (sweep)',
+  'FX 1 (rain)','FX 2 (soundtrack)','FX 3 (crystal)','FX 4 (atmosphere)',
+  'FX 5 (brightness)','FX 6 (goblins)','FX 7 (echoes)','FX 8 (sci-fi)',
+  'Sitar','Banjo','Shamisen','Koto',
+  'Kalimba','Bag Pipe','Fiddle','Shanai',
+  'Tinkle Bell','Agogo','Steel Drums','Woodblock',
+  'Taiko Drum','Melodic Tom','Synth Drum','Reverse Cymbal',
+  'Guitar Fret Noise','Breath Noise','Seashore','Bird Tweet',
+  'Telephone Ring','Helicopter','Applause','Gunshot',
+];
+
+const pgmValues  = {}; // key: ch (1-16)
+const bendValues = {}; // key: ch (1-16)
+
+function updatePgmViz(ch, pgm) {
+  pgmValues[ch] = pgm;
+  renderPgmViz();
+}
+
+function renderPgmViz() {
+  const el = document.getElementById('pgm-viz');
+  if (!el) return;
+  const entries = Object.entries(pgmValues)
+    .sort((a, b) => +a[0] - +b[0]);
+  if (entries.length === 0) {
+    el.innerHTML = '<span class="label-dim">NO PGM RECEIVED</span>';
+    return;
+  }
+  el.innerHTML = '';
+  entries.forEach(([ch, pgm]) => {
+    const name = GM_PATCHES[pgm] || `PGM ${pgm}`;
+    const row  = document.createElement('div');
+    row.className = 'pgm-row';
+    row.innerHTML =
+      `<span class="pgm-ch">ch${String(ch).padStart(2,' ')}</span>` +
+      `<span class="pgm-num">#${String(pgm + 1).padStart(3,' ')}</span>` +
+      `<span class="pgm-name">${name}</span>`;
+    el.appendChild(row);
+  });
+}
+
+function updateBendViz(ch, bend) {
+  bendValues[ch] = bend;
+  renderBendViz();
+}
+
+function renderBendViz() {
+  const el = document.getElementById('bend-viz');
+  if (!el) return;
+  const entries = Object.entries(bendValues)
+    .sort((a, b) => +a[0] - +b[0]);
+  if (entries.length === 0) {
+    el.innerHTML = '<span class="label-dim">NO BEND RECEIVED</span>';
+    return;
+  }
+  el.innerHTML = '';
+  entries.forEach(([ch, bend]) => {
+    const pct    = (bend / 8192) * 50; // -50 to +50, center = 0
+    const left   = bend >= 0 ? 50 : 50 + pct;   // pct is negative when bend<0
+    const width  = Math.abs(pct);
+    const row    = document.createElement('div');
+    row.className = 'bend-row';
+    const sign   = bend > 0 ? '+' : '';
+    row.innerHTML =
+      `<span class="bend-ch">ch${String(ch).padStart(2,' ')}</span>` +
+      `<div class="bend-bar-bg"><div class="bend-center"></div>` +
+        `<div class="bend-fill" style="left:${left}%;width:${width}%"></div></div>` +
+      `<span class="bend-val">${sign}${bend}</span>`;
     el.appendChild(row);
   });
 }
