@@ -765,10 +765,22 @@ function exportPrMid() {
   document
     .getElementById("pr-export-btn")
     .addEventListener("click", exportPrMid);
-  document.getElementById("pr-file-input").addEventListener("change", (e) => {
-    const file = e.target.files[0];
+
+  // Drag-and-drop MIDI import
+  const dropZone = document.getElementById("pr-drop-zone");
+  dropZone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropZone.classList.add("drag-over");
+  });
+  dropZone.addEventListener("dragleave", () => {
+    dropZone.classList.remove("drag-over");
+  });
+  dropZone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropZone.classList.remove("drag-over");
+    const file = e.dataTransfer.files[0];
     if (!file) return;
-    if (file.size > 2_000_000) { console.warn('MIDI file too large (>2MB)'); return; }
+    if (file.size > 2_000_000) { console.warn("MIDI file too large (>2MB)"); return; }
     const reader = new FileReader();
     reader.onload = (ev) => {
       try {
@@ -779,7 +791,6 @@ function exportPrMid() {
       }
     };
     reader.readAsArrayBuffer(file);
-    e.target.value = "";
   });
 
   // Grid mouse events

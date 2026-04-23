@@ -11,6 +11,21 @@ document.getElementById('unlock-btn').addEventListener('click', async () => {
   initUI();
 });
 
+// ── Help modal ───────────────────────────────────────────────
+(function () {
+  const modal = document.getElementById('help-modal');
+  document.getElementById('help-btn').addEventListener('click', () => modal.classList.add('open'));
+  document.getElementById('help-close-btn').addEventListener('click', () => modal.classList.remove('open'));
+  modal.addEventListener('click', (e) => { if (e.target === modal) modal.classList.remove('open'); });
+})();
+
+// ── Browser compatibility warning ───────────────────────────
+(function () {
+  if (!navigator.requestMIDIAccess) {
+    document.getElementById('browser-warn-splash').style.display = 'block';
+  }
+})();
+
 // ── Clock Sync (NTP-style) ───────────────────────────────────
 let serverTimeOffset = 0;
 let rttMs = 0;
@@ -31,7 +46,7 @@ function handlePong({ t0, t1, t2 }) {
   const sorted = [...syncSamples].sort((a, b) => a - b);
   serverTimeOffset = sorted[Math.floor(sorted.length / 2)];
 
-  document.getElementById('latency').textContent     = `${Math.round(rttMs / 2)} ms`;
+  document.getElementById('latency').textContent     = `you ${Math.round(rttMs / 2)} ms`;
   document.getElementById('clock-offset').textContent = `Δ${Math.round(serverTimeOffset)} ms`;
 
   // Report RTT to server so it can broadcast to all peers in the room
@@ -46,20 +61,9 @@ function serverToAudio(serverMs) {
 }
 
 // ── Sequencer State ──────────────────────────────────────────
-const TRACKS = ['kick', 'snare', 'hihat', 'synth'];
-const LABELS  = { kick: 'Kick', snare: 'Snare', hihat: 'Hi-Hat', synth: 'Synth' };
-const COLORS  = { kick: '#e74c3c', snare: '#3498db', hihat: '#f1c40f', synth: '#2ecc71' };
-
 const state = {
   playing:     false,
   bpm:         120,
-  currentStep: -1,
-  steps: {
-    kick:  [1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0],
-    snare: [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0],
-    hihat: [1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0],
-    synth: [0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
-  },
 };
 
 // ── Session state ────────────────────────────────────────────
@@ -68,27 +72,9 @@ let clockRelayEnabled = false;
 let clickEnabled      = false;
 
 // ── Tone.js Instruments ──────────────────────────────────────
-// Declared here, created in initSynths() after user gesture to avoid
-// AudioContext autoplay policy warnings in the browser console.
-let kickSynth, snareSynth, hihatSynth, padSynth, clickSynth;
+let padSynth, clickSynth;
 
 function initSynths() {
-  kickSynth = new Tone.MembraneSynth({
-    pitchDecay: 0.05, octaves: 6,
-    envelope: { attack: 0.001, decay: 0.25, sustain: 0, release: 0.1 },
-  }).toDestination();
-
-  snareSynth = new Tone.NoiseSynth({
-    noise: { type: 'white' },
-    envelope: { attack: 0.001, decay: 0.13, sustain: 0, release: 0.05 },
-  }).toDestination();
-
-  hihatSynth = new Tone.MetalSynth({
-    frequency: 400, harmonicity: 5.1, modulationIndex: 32,
-    resonance: 4000, octaves: 1.5,
-    envelope: { attack: 0.001, decay: 0.04, release: 0.01 },
-  }).toDestination();
-
   padSynth = new Tone.PolySynth(Tone.Synth, {
     oscillator: { type: 'triangle' },
     envelope: { attack: 0.02, decay: 0.1, sustain: 0.4, release: 0.2 },
@@ -99,40 +85,8 @@ function initSynths() {
     envelope: { attack: 0.001, decay: 0.04, sustain: 0, release: 0.01 },
   }).toDestination();
 
-  kickSynth.volume.value  = -4;
-  snareSynth.volume.value = -10;
-  hihatSynth.volume.value = -12;
   padSynth.volume.value   = -8;
   clickSynth.volume.value = -6;
-}
-
-const SCALE_NOTES = ['C4','D4','E4','G4','A4','C5','D5','E5',
-                     'G5','A5','C4','D4','E4','G4','A4','C5'];
-
-// GM drum map (ch 9 = MIDI channel 10) + melodic ch 0 for synth
-const SEQ_MIDI = {
-  kick:  ()     => [36, 9],
-  snare: ()     => [38, 9],
-  hihat: ()     => [42, 9],
-  synth: (step) => [Tone.Frequency(SCALE_NOTES[step]).toMidi(), 0],
-};
-
-function fireStep(track, step, time) {
-  if (!kickSynth) return;
-  switch (track) {
-    case 'kick':  kickSynth.triggerAttackRelease('C1', '8n', time);              break;
-    case 'snare': snareSynth.triggerAttackRelease('8n', time);                   break;
-    case 'hihat': hihatSynth.triggerAttackRelease('32n', time);                  break;
-    case 'synth': padSynth.triggerAttackRelease(SCALE_NOTES[step], '8n', time);  break;
-  }
-  if (selectedOutput) {
-    const [note, ch] = SEQ_MIDI[track](step);
-    const delayMs = Math.max(0, (time - Tone.context.currentTime) * 1000);
-    setTimeout(() => {
-      sendToOutput([0x90 | ch, note, 100]);
-      setTimeout(() => sendToOutput([0x80 | ch, note, 0]), 80);
-    }, delayMs);
-  }
 }
 
 // ── Epoch-based scheduler ────────────────────────────────────
@@ -158,9 +112,6 @@ function schedulerTick() {
     const stepServerMs = epochMs + idx * stepMs;
     const audioT      = serverToAudio(stepServerMs);
     if (audioT < Tone.context.currentTime) continue;
-    TRACKS.forEach(track => {
-      if (state.steps[track][step]) fireStep(track, step, audioT);
-    });
     if (clickEnabled && clickSynth) {
       if (step % 4 === 0) {
         const freq = step === 0 ? 'G5' : 'C5';
@@ -193,54 +144,6 @@ function stopSequencer(updateUI = true) {
 }
 
 // ── UI ───────────────────────────────────────────────────────
-function buildGrid() {
-  const container = document.getElementById('sequencer');
-  container.innerHTML = '';
-  TRACKS.forEach(track => {
-    const row = document.createElement('div');
-    row.className = 'row';
-    const lbl = document.createElement('span');
-    lbl.className = 'lbl';
-    lbl.textContent = LABELS[track];
-    lbl.style.borderLeftColor = COLORS[track];
-    row.appendChild(lbl);
-    const grid = document.createElement('div');
-    grid.className = 'grid';
-    for (let i = 0; i < 16; i++) {
-      const btn = document.createElement('button');
-      btn.className = 'cell' + (state.steps[track][i] ? ' on' : '') + (i % 4 === 0 ? ' beat' : '');
-      btn.dataset.t = track;
-      btn.dataset.s = i;
-      btn.style.setProperty('--c', COLORS[track]);
-      btn.addEventListener('click', () => {
-        const v = state.steps[track][i] ? 0 : 1;
-        state.steps[track][i] = v;
-        btn.classList.toggle('on', !!v);
-        ws.send(JSON.stringify({ type: 'step', track, step: i, value: v }));
-      });
-      grid.appendChild(btn);
-    }
-    row.appendChild(grid);
-    container.appendChild(row);
-  });
-}
-
-let prevDisplayStep = -1;
-function renderLoop() {
-  if (epochMs !== null && state.playing) {
-    const elapsed = Date.now() + serverTimeOffset - epochMs;
-    state.currentStep = elapsed >= 0 ? Math.floor(elapsed / stepDurationMs()) % 16 : -1;
-  }
-  const s = state.currentStep;
-  if (s !== prevDisplayStep) {
-    document.querySelectorAll('.cell').forEach(c => {
-      c.classList.toggle('now', parseInt(c.dataset.s) === s);
-    });
-    prevDisplayStep = s;
-  }
-  requestAnimationFrame(renderLoop);
-}
-
 function updateTransportUI() {
   document.getElementById('play-btn').disabled = state.playing;
   document.getElementById('stop-btn').disabled = !state.playing;
@@ -293,12 +196,10 @@ ws.onmessage = ({ data }) => {
       myClientId        = msg.clientId;
       clockRelayEnabled = msg.clockRelay || false;
       state.bpm   = msg.bpm;
-      state.steps = msg.steps;
       document.getElementById('bpm').value          = msg.bpm;
       document.getElementById('bpm-val').textContent = msg.bpm;
       document.getElementById('room-name').textContent = msg.room || ROOM;
       document.getElementById('clock-relay-btn').classList.toggle('active', clockRelayEnabled);
-      if (document.getElementById('sequencer').children.length) buildGrid();
       if (msg.playing && msg.epoch) startSequencer(msg.epoch);
       break;
 
@@ -316,22 +217,15 @@ ws.onmessage = ({ data }) => {
       document.getElementById('bpm-val').textContent = msg.bpm;
       break;
 
-    case 'step': {
-      state.steps[msg.track][msg.step] = msg.value;
-      const cell = document.querySelector(`.cell[data-t="${msg.track}"][data-s="${msg.step}"]`);
-      if (cell) cell.classList.toggle('on', !!msg.value);
-      break;
-    }
-
     case 'peers': {
       const count = msg.count || msg.peers.length;
       document.getElementById('players').textContent = `${count} PLR`;
       const bar = document.getElementById('peers-bar');
-      bar.innerHTML = msg.peers.map(p => {
+      if (bar) bar.innerHTML = msg.peers.filter(p => p.id !== myClientId).map(p => {
         const ms  = p.rtt > 0 ? Math.round(p.rtt / 2) : null;
         const cls = ['peer', p.id === myClientId ? 'me' : '', ms != null && ms > 150 ? 'peer-hi' : ''].filter(Boolean).join(' ');
         const label = p.id === myClientId ? 'you' : `p${p.id}`;
-        const latStr = ms != null ? `<span class="peer-rtt"> ${ms}ms</span>` : '';
+        const latStr = (ms != null && p.id !== myClientId) ? `<span class="peer-rtt"> ${ms}ms</span>` : '';
         return `<span class="${cls}">${label}${latStr}</span>`;
       }).join('');
       break;
@@ -352,8 +246,6 @@ ws.onmessage = ({ data }) => {
 function initUI() {
   document.getElementById('bpm').value           = state.bpm;
   document.getElementById('bpm-val').textContent = state.bpm;
-  buildGrid();
-  renderLoop();
   updateTransportUI();
 
   document.getElementById('play-btn').addEventListener('click', () => {
