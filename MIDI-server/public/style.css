@@ -185,7 +185,8 @@ body {
 /* ── Section title ──────────────────────────────────────────── */
 .section-title {
   font-size: 0.78rem;
-  color: var(--dim);
+  color: rgba(255, 60, 60, 0.9);
+  text-shadow: 0 0 8px rgba(255, 34, 34, 0.7), 0 0 20px rgba(255, 34, 34, 0.3);
   letter-spacing: 0.25em;
   margin-bottom: 12px;
   text-transform: uppercase;
@@ -653,12 +654,16 @@ strong {
   width: 80px;
 }
 
+#vkb-scroll {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+}
 #vkb {
   position: relative;
-  height: 88px;
+  height: 96px;
+  min-width: 900px;
   user-select: none;
   -webkit-user-select: none;
-  border: 1px solid var(--border);
 }
 .vkey {
   position: absolute;
@@ -813,7 +818,7 @@ strong {
     margin-left: 3px;
   }
   #vkb {
-    height: 64px;
+    height: 72px;
   }
   .vkey.black {
     height: 52%;
