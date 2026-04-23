@@ -139,6 +139,23 @@ strong { color: var(--text); min-width: 28px; display: inline-block; }
 .cell.on.now { filter: brightness(1.7); }
 .cell:hover:not(.on) { background: #2a2a3e; }
 
+/* ── MIDI device selector ───────────────────────────────────── */
+#midi-controls { display: flex; align-items: center; gap: 8px; }
+
+#midi-device {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 8px 10px;
+  font-family: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  max-width: 220px;
+  outline: none;
+}
+#midi-device:focus { border-color: var(--accent); }
+#midi-device option { background: var(--surface); }
+
 /* ── MIDI section ───────────────────────────────────────────── */
 #midi-section {
   border-top: 1px solid var(--border);
