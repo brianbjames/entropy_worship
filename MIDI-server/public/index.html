@@ -3,30 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MIDI Server</title>
+  <title>MIDI SERVER // ENTROPY WORSHIP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div id="scanlines"></div>
 
   <!-- Browser autoplay policy: must have a user gesture before AudioContext resumes -->
   <div id="unlock-overlay">
     <div class="unlock-box">
-      <h1>MIDI Server</h1>
-      <p>Collaborative step sequencer — synced across locations</p>
-      <button id="unlock-btn">Enter</button>
+      <h1 class="hud-title">MIDI SERVER</h1>
+      <p>// COLLABORATIVE SEQUENCER // SYNCHRONIZED</p>
+      <button id="unlock-btn">[ ENTER ]</button>
     </div>
   </div>
 
   <div id="app">
     <header>
-      <h1>MIDI Server</h1>
+      <h1 class="hud-title">MIDI SERVER</h1>
       <div id="meta">
         <span id="status" class="disconnected">connecting…</span>
+        <span id="room-display">room: <strong id="room-name">—</strong></span>
         <span id="players">— players</span>
         <span id="latency">— ms</span>
         <span id="clock-offset" title="Server clock offset">Δ—</span>
       </div>
     </header>
+
+    <!-- Room switcher -->
+    <div id="room-bar">
+      <span class="muted">room</span>
+      <input id="room-input" type="text" placeholder="room name" maxlength="32" spellcheck="false">
+      <button id="room-join-btn">Join</button>
+    </div>
+
+    <!-- Peers latency list -->
+    <div id="peers-bar"></div>
 
     <div id="controls">
       <button id="play-btn">&#9654; Play</button>
@@ -47,6 +61,7 @@
             <option value="">— output —</option>
           </select>
           <button id="thru-btn" style="display:none">Thru</button>
+          <button id="clock-relay-btn" style="display:none">Clock ↑</button>
           <button id="panic-btn">Panic</button>
         </div>
         <div id="midi-channel-row" style="display:none">
@@ -58,8 +73,47 @@
 
     <div id="sequencer"></div>
 
+    <!-- Virtual Keyboard -->
+    <div id="vkb-section">
+      <div class="section-title">Virtual Keyboard</div>
+      <div id="vkb-controls">
+        <label>Oct
+          <select id="vkb-oct">
+            <option value="2">C2</option>
+            <option value="3">C3</option>
+            <option value="4" selected>C4</option>
+            <option value="5">C5</option>
+            <option value="6">C6</option>
+          </select>
+        </label>
+        <label>Ch <select id="vkb-ch"></select></label>
+        <label>Vel
+          <input type="range" id="vkb-vel" min="1" max="127" value="80">
+          <strong id="vkb-vel-val">80</strong>
+        </label>
+      </div>
+      <div id="vkb"></div>
+    </div>
+
+    <!-- CC Monitor -->
+    <div id="cc-section">
+      <div class="section-title">CC Monitor</div>
+      <div id="cc-viz"><span class="muted" style="font-size:0.78rem">no CC received yet</span></div>
+    </div>
+
+    <!-- Recording -->
+    <div id="record-section">
+      <div class="section-title">Recording</div>
+      <div id="record-controls">
+        <button id="rec-btn">&#9679; Rec</button>
+        <button id="rec-stop-btn" disabled>&#9632; Stop</button>
+        <button id="rec-export-btn" disabled>&#8595; .mid</button>
+        <span id="rec-status" class="muted"></span>
+      </div>
+    </div>
+
     <div id="midi-section">
-      <div class="section-title">MIDI Log</div>
+      <div class="section-title">// MIDI LOG <span class="cursor-blink">▮</span></div>
       <div id="midi-log"></div>
     </div>
   </div>
