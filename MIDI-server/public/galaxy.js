@@ -1,4 +1,4 @@
-// ── Galaxy background ────────────────────────────────────────
+// ── Starfield background ─────────────────────────────────────
 (function () {
   if (!window.THREE) return;
 
@@ -9,12 +9,11 @@
   renderer.setSize(window.innerWidth, window.innerHeight);
 
   const scene  = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 200);
-  camera.position.set(0, 5, 12);
-  camera.lookAt(0, 0, 0);
+  // Camera sits at origin, looking into the field
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 500);
 
   // ── Particles ─────────────────────────────────────────────
-  const COUNT     = 8000;
+  const COUNT     = 22000;
   const positions = new Float32Array(COUNT * 3);
   const colors    = new Float32Array(COUNT * 3);
   const color     = new THREE.Color();
@@ -22,40 +21,32 @@
   for (let i = 0; i < COUNT; i++) {
     const i3 = i * 3;
 
-    // Radius — bias toward centre
-    const r = Math.pow(Math.random(), 1.4) * 9;
+    // Uniform random point on sphere surface, random radius
+    const theta = Math.random() * Math.PI * 2;
+    const phi   = Math.acos(2 * Math.random() - 1);
+    const r     = 8 + Math.pow(Math.random(), 0.6) * 120; // bias toward farther out
 
-    // Three spiral arms
-    const arm      = Math.floor(Math.random() * 3);
-    const armAngle = (arm / 3) * Math.PI * 2;
-    const spin     = r * 0.55;
-    const scatter  = (Math.random() - 0.5) * (0.5 + r * 0.06);
+    positions[i3]     = r * Math.sin(phi) * Math.cos(theta);
+    positions[i3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+    positions[i3 + 2] = r * Math.cos(phi);
 
-    const angle = armAngle + spin + scatter;
-
-    positions[i3]     = Math.cos(angle) * r + (Math.random() - 0.5) * 0.4;
-    positions[i3 + 1] = (Math.random() - 0.5) * 0.35 * Math.max(0, 1 - r / 10);
-    positions[i3 + 2] = Math.sin(angle) * r + (Math.random() - 0.5) * 0.4;
-
-    // Colour
-    const t = r / 9; // 0 = core, 1 = edge
+    // Colour — mostly dim, occasional hot
     const roll = Math.random();
-
-    if (roll < 0.015) {
-      // Accent stars — red or teal
-      color.set(Math.random() < 0.5 ? 0xff2222 : 0x05af90);
-    } else if (t < 0.25) {
-      // Core — warm near-white
-      const b = 0.75 + Math.random() * 0.25;
-      color.setRGB(b, b * 0.82, b * 0.65);
-    } else if (t < 0.55) {
-      // Mid — dim blood red
-      const b = 0.25 + Math.random() * 0.35;
-      color.setRGB(b * 0.95, b * 0.22, b * 0.18);
+    if (roll < 0.018) {
+      // Hot accent — red or teal
+      color.set(Math.random() < 0.65 ? 0xff2222 : 0x05af90);
+    } else if (roll < 0.10) {
+      // Blood-red mid stars
+      const b = 0.25 + Math.random() * 0.45;
+      color.setRGB(b, b * 0.15, b * 0.1);
+    } else if (roll < 0.30) {
+      // Warm dim orange-white
+      const b = 0.08 + Math.random() * 0.22;
+      color.setRGB(b, b * 0.55, b * 0.4);
     } else {
-      // Outer — barely-there embers
-      const b = 0.04 + Math.random() * 0.12;
-      color.setRGB(b * 0.85, b * 0.15, b * 0.1);
+      // Cold distant white
+      const b = 0.03 + Math.random() * 0.18;
+      color.setRGB(b * 0.85, b * 0.85, b);
     }
 
     colors[i3]     = color.r;
@@ -68,21 +59,21 @@
   geo.setAttribute('color',    new THREE.BufferAttribute(colors, 3));
 
   const mat = new THREE.PointsMaterial({
-    size:            0.045,
+    size:            0.4,
     vertexColors:    true,
     sizeAttenuation: true,
     transparent:     true,
-    opacity:         0.9,
+    opacity:         0.95,
   });
 
-  const galaxy = new THREE.Points(geo, mat);
-  galaxy.rotation.x = Math.PI * 0.13; // tilt the disc toward viewer
-  scene.add(galaxy);
+  const stars = new THREE.Points(geo, mat);
+  scene.add(stars);
 
   // ── Animate ───────────────────────────────────────────────
   function animate() {
     requestAnimationFrame(animate);
-    galaxy.rotation.y += 0.00025;
+    stars.rotation.y += 0.00006;
+    stars.rotation.x += 0.000025;
     renderer.render(scene, camera);
   }
   animate();
