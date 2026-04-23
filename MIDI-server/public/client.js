@@ -65,11 +65,12 @@ const state = {
 // ── Session state ────────────────────────────────────────────
 let myClientId        = null;
 let clockRelayEnabled = false;
+let clickEnabled      = false;
 
 // ── Tone.js Instruments ──────────────────────────────────────
 // Declared here, created in initSynths() after user gesture to avoid
 // AudioContext autoplay policy warnings in the browser console.
-let kickSynth, snareSynth, hihatSynth, padSynth;
+let kickSynth, snareSynth, hihatSynth, padSynth, clickSynth;
 
 function initSynths() {
   kickSynth = new Tone.MembraneSynth({
@@ -93,10 +94,16 @@ function initSynths() {
     envelope: { attack: 0.02, decay: 0.1, sustain: 0.4, release: 0.2 },
   }).toDestination();
 
+  clickSynth = new Tone.Synth({
+    oscillator: { type: 'sine' },
+    envelope: { attack: 0.001, decay: 0.04, sustain: 0, release: 0.01 },
+  }).toDestination();
+
   kickSynth.volume.value  = -4;
   snareSynth.volume.value = -10;
   hihatSynth.volume.value = -12;
   padSynth.volume.value   = -8;
+  clickSynth.volume.value = -6;
 }
 
 const SCALE_NOTES = ['C4','D4','E4','G4','A4','C5','D5','E5',
@@ -154,6 +161,12 @@ function schedulerTick() {
     TRACKS.forEach(track => {
       if (state.steps[track][step]) fireStep(track, step, audioT);
     });
+    if (clickEnabled && clickSynth) {
+      if (step % 4 === 0) {
+        const freq = step === 0 ? 'G5' : 'C5';
+        clickSynth.triggerAttackRelease(freq, '32n', audioT);
+      }
+    }
     lastScheduledIdx = idx;
   }
 }
@@ -357,6 +370,11 @@ function initUI() {
   });
 
   document.getElementById('panic-btn').addEventListener('click', panic);
+
+  document.getElementById('click-btn').addEventListener('click', () => {
+    clickEnabled = !clickEnabled;
+    document.getElementById('click-btn').classList.toggle('active', clickEnabled);
+  });
 
   // Clock relay
   document.getElementById('clock-relay-btn').addEventListener('click', () => {

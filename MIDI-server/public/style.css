@@ -530,6 +530,10 @@ input[type="range"]::-moz-range-thumb {
   gap: 12px;
   flex-wrap: wrap;
 }
+#controls .section-title {
+  width: 100%;
+  margin-bottom: 0;
+}
 .bpm-group {
   display: flex;
   align-items: center;
@@ -736,6 +740,21 @@ strong {
 }
 
 /* ── CC monitor ─────────────────────────────────────────────── */
+#monitor-section {
+  padding-bottom: 16px;
+}
+#monitor-cols {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+.monitor-col {
+  flex: 1;
+  min-width: 0;
+}
+.monitor-col .section-title {
+  margin-bottom: 8px;
+}
 #cc-viz {
   display: flex;
   flex-direction: column;
@@ -870,37 +889,20 @@ strong {
   }
 }
 
-/* ── Piano Roll upload label (styled as a button) ───────────── */
-label#pr-upload-btn {
-  display: inline-block;
-  background: rgba(0, 0, 0, 0.45);
-  color: var(--dim);
-  border: 1px solid var(--border);
-  padding: 6px 16px;
-  cursor: pointer;
-  font-family: var(--font);
-  font-size: 0.95rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  clip-path: polygon(
-    0 0,
-    calc(100% - 6px) 0,
-    100% 6px,
-    100% 100%,
-    6px 100%,
-    0 calc(100% - 6px)
-  );
-  user-select: none;
-  transition: color 0.1s, background 0.1s, border-color 0.1s, text-shadow 0.1s;
-}
-label#pr-upload-btn:hover {
-  background: rgba(255, 34, 34, 0.1);
-  border-color: var(--border-hi);
-  color: var(--accent);
-  text-shadow: 0 0 8px rgba(255, 34, 34, 0.7);
-}
-
 /* ── Piano Roll canvases ─────────────────────────────────────── */
+.file-btn-wrap {
+  position: relative;
+  display: inline-block;
+}
+.file-btn-wrap input[type="file"] {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 1;
+}
 #pr-toolbar {
   display: flex;
   align-items: center;
@@ -960,12 +962,14 @@ label#pr-upload-btn:hover {
   align-items: baseline;
   gap: 10px;
   font-size: 0.88rem;
+  font-family: var(--font);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
 }
 .pgm-ch {
   color: var(--dim);
   min-width: 42px;
   flex-shrink: 0;
-  letter-spacing: 0.05em;
 }
 .pgm-num {
   color: var(--accent);
@@ -976,7 +980,6 @@ label#pr-upload-btn:hover {
 .pgm-name {
   color: var(--teal);
   text-shadow: 0 0 4px rgba(5, 175, 144, 0.3);
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -992,13 +995,14 @@ label#pr-upload-btn:hover {
   display: flex;
   align-items: center;
   gap: 8px;
+  font-size: 0.88rem;
+  font-family: var(--font);
+  letter-spacing: 0.05em;
 }
 .bend-ch {
-  font-size: 0.82rem;
   color: var(--dim);
   min-width: 42px;
   flex-shrink: 0;
-  letter-spacing: 0.05em;
 }
 .bend-bar-bg {
   flex: 1;
@@ -1029,14 +1033,14 @@ label#pr-upload-btn:hover {
   height: 100%;
   background: linear-gradient(
     90deg,
-    rgba(255, 34, 34, 0.85),
-    rgba(255, 100, 100, 0.6)
+    rgba(5, 175, 144, 0.9),
+    rgba(5, 175, 144, 0.6)
   );
-  box-shadow: 0 0 5px rgba(255, 34, 34, 0.5);
+  box-shadow: 0 0 6px rgba(5, 175, 144, 0.5);
   transition: left 0.05s, width 0.05s;
 }
 .bend-val {
-  font-size: 0.82rem;
+  font-size: 0.88rem;
   color: var(--accent);
   min-width: 52px;
   text-align: right;
