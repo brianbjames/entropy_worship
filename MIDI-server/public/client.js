@@ -114,34 +114,68 @@ function fireStep(track, step, time) {
   }
 }
 
-// ── Sequencer Transport ──────────────────────────────────────
-let seq = null;
+// ── Epoch-based scheduler ────────────────────────────────────
+//
+// Instead of Tone.Transport (which drifts independently on each client),
+// every step is derived from a shared Unix epoch:
+//
+//   step index  = floor((serverNow - epochMs) / stepMs)
+//   step time   = epochMs + index * stepMs   (as AudioContext seconds)
+//
+// Each client independently calculates "what step is due next" from the
+// same epoch, so they self-correct on every beat rather than drifting.
 
-function startSequencer(audioStartTime) {
-  stopSequencer(/* updateUI= */ false);
-  Tone.Transport.bpm.value = state.bpm;
-  Tone.Transport.cancel();
+const LOOKAHEAD_MS  = 100;  // schedule this far ahead of wall clock
+const SCHEDULER_MS  = 20;   // how often the scheduler ticks
 
-  seq = new Tone.Sequence((time, step) => {
-    state.currentStep = step;
+let epochMs          = null; // server Unix ms that step 0 starts at
+let schedulerTimer   = null;
+let lastScheduledIdx = -1;   // absolute (non-wrapping) step index
+
+function stepDurationMs() {
+  return (60 / state.bpm) * 1000 / 4;  // duration of one 16th note in ms
+}
+
+function schedulerTick() {
+  if (epochMs === null) return;
+
+  const serverNow  = Date.now() + serverTimeOffset;
+  const stepMs     = stepDurationMs();
+  const horizonIdx = Math.floor((serverNow + LOOKAHEAD_MS - epochMs) / stepMs);
+
+  for (let idx = Math.max(0, lastScheduledIdx + 1); idx <= horizonIdx; idx++) {
+    const step       = idx % 16;
+    const stepServerMs = epochMs + idx * stepMs;
+    const audioT     = serverToAudio(stepServerMs);
+
+    if (audioT < Tone.context.currentTime) continue;  // already passed
+
     TRACKS.forEach(track => {
-      if (state.steps[track][step]) fireStep(track, step, time);
+      if (state.steps[track][step]) fireStep(track, step, audioT);
     });
-  }, [...Array(16).keys()], '16n');
 
-  seq.start(0);
-  // Clamp: never schedule in the past
-  const at = Math.max(audioStartTime, Tone.context.currentTime + 0.05);
-  Tone.Transport.start(at);
-  state.playing = true;
+    lastScheduledIdx = idx;
+  }
+}
+
+function startSequencer(epoch) {
+  stopSequencer(/* updateUI= */ false);
+  epochMs = epoch;
+  // Start the index just before now so the first tick schedules the right step
+  lastScheduledIdx = Math.floor(
+    (Date.now() + serverTimeOffset - epochMs) / stepDurationMs()
+  ) - 1;
+  schedulerTick();  // immediate first pass
+  schedulerTimer = setInterval(schedulerTick, SCHEDULER_MS);
+  state.playing  = true;
   updateTransportUI();
 }
 
 function stopSequencer(updateUI = true) {
-  Tone.Transport.stop();
-  Tone.Transport.cancel();
-  if (seq) { seq.stop(); seq.dispose(); seq = null; }
-  state.playing     = false;
+  if (schedulerTimer) { clearInterval(schedulerTimer); schedulerTimer = null; }
+  epochMs          = null;
+  lastScheduledIdx = -1;
+  state.playing    = false;
   state.currentStep = -1;
   if (updateUI) updateTransportUI();
 }
@@ -185,9 +219,16 @@ function buildGrid() {
   });
 }
 
-// RAF loop: syncs the playhead highlight to audio scheduling
+// RAF loop: derives the visual playhead position from the epoch,
+// independently of the audio scheduler, so display and audio stay locked.
 let prevDisplayStep = -1;
 function renderLoop() {
+  if (epochMs !== null && state.playing) {
+    const serverNow = Date.now() + serverTimeOffset;
+    const elapsed   = serverNow - epochMs;
+    state.currentStep = elapsed >= 0 ? Math.floor(elapsed / stepDurationMs()) % 16 : -1;
+  }
+
   const s = state.currentStep;
   if (s !== prevDisplayStep) {
     document.querySelectorAll('.cell').forEach(c => {
@@ -241,22 +282,21 @@ ws.onmessage = ({ data }) => {
       state.steps = msg.steps;
       document.getElementById('bpm').value        = msg.bpm;
       document.getElementById('bpm-val').textContent = msg.bpm;
-      // Grid may not exist yet if unlock hasn't happened
       if (document.getElementById('sequencer').children.length) buildGrid();
+      // Sync into a running session on late join
+      if (msg.playing && msg.epoch) startSequencer(msg.epoch);
       break;
 
-    case 'play': {
-      const at = serverToAudio(msg.startAt);
-      startSequencer(at);
+    case 'play':
+      startSequencer(msg.epoch);
       break;
-    }
+
     case 'stop':
       stopSequencer();
       break;
 
     case 'bpm':
       state.bpm = msg.bpm;
-      Tone.Transport.bpm.value = msg.bpm;
       document.getElementById('bpm').value          = msg.bpm;
       document.getElementById('bpm-val').textContent = msg.bpm;
       break;
@@ -273,7 +313,7 @@ ws.onmessage = ({ data }) => {
         `${msg.count} player${msg.count !== 1 ? 's' : ''}`;
       break;
 
-    // MIDI relayed from another client → handle locally
+    // MIDI relayed from another client → handle locally + route to output
     case 'midi':
       if (Array.isArray(msg.data)) handleMidiData(msg.data, /* remote= */ true);
       break;
@@ -300,10 +340,12 @@ function initUI() {
   document.getElementById('bpm').addEventListener('input', e => {
     const bpm = +e.target.value;
     state.bpm = bpm;
-    Tone.Transport.bpm.value = bpm;
     document.getElementById('bpm-val').textContent = bpm;
     ws.send(JSON.stringify({ type: 'bpm', bpm }));
   });
+
+  // Panic wired outside initUI so it works before unlock too
+  document.getElementById('panic-btn').addEventListener('click', panic);
 
   document.getElementById('midi-btn').addEventListener('click', async () => {
     if (!navigator.requestMIDIAccess) {
@@ -311,16 +353,20 @@ function initUI() {
       return;
     }
     try {
-      const access = await navigator.requestMIDIAccess({ sysex: false });
+      const access = await navigator.requestMIDIAccess({ sysex: true });
       const btn = document.getElementById('midi-btn');
       btn.textContent = 'MIDI';
       btn.classList.add('active');
       btn.disabled = true;
 
       populateMidiDevices(access);
+      populateMidiOutputs(access);
+      populateChannelSelects();
 
-      // Update device list when devices are plugged/unplugged
-      access.onstatechange = () => populateMidiDevices(access);
+      access.onstatechange = () => {
+        populateMidiDevices(access);
+        populateMidiOutputs(access);
+      };
     } catch (err) {
       alert('MIDI access denied: ' + err.message);
     }
@@ -328,21 +374,26 @@ function initUI() {
 }
 
 // ── Web MIDI ─────────────────────────────────────────────────
-let midiAccess     = null;
-let selectedPortId = null;
-let clockTickTimes = [];
+let midiAccess      = null;
+let selectedInputId = null;
+let selectedOutput  = null;   // MIDIOutput port object
+let thruEnabled     = false;
+let filterChannel   = 0;      // 0 = all, 1-16 = specific channel
+let remapChannel    = 0;      // 0 = as-is, 1-16 = force to channel
+let clockTickTimes  = [];
 
 // MIDI note number → name (e.g. 60 → "C4")
 function midiNoteName(n) {
   return ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'][n % 12] + (Math.floor(n / 12) - 1);
 }
 
+// ── Input devices ────────────────────────────────────────────
 function populateMidiDevices(access) {
   midiAccess = access;
-  const select   = document.getElementById('midi-device');
-  const prevVal  = select.value;
+  const select  = document.getElementById('midi-input-device');
+  const prevVal = select.value;
 
-  select.innerHTML = '<option value="">— select device —</option>';
+  select.innerHTML = '<option value="">— input —</option>';
   access.inputs.forEach(port => {
     const opt = document.createElement('option');
     opt.value = port.id;
@@ -352,12 +403,12 @@ function populateMidiDevices(access) {
 
   if (prevVal && [...access.inputs.keys()].includes(prevVal)) select.value = prevVal;
   select.style.display = access.inputs.size > 0 ? 'inline-block' : 'none';
-  selectMidiDevice(select.value);
+  selectMidiInput(select.value);
 }
 
-function selectMidiDevice(portId) {
+function selectMidiInput(portId) {
   if (!midiAccess) return;
-  selectedPortId = portId;
+  selectedInputId = portId;
   midiAccess.inputs.forEach(port => { port.onmidimessage = null; });
   if (portId) {
     const port = midiAccess.inputs.get(portId);
@@ -365,13 +416,100 @@ function selectMidiDevice(portId) {
   }
 }
 
-document.getElementById('midi-device').addEventListener('change', e => {
-  selectMidiDevice(e.target.value);
+document.getElementById('midi-input-device').addEventListener('change', e => {
+  selectMidiInput(e.target.value);
+});
+
+// ── Output devices ────────────────────────────────────────────
+function populateMidiOutputs(access) {
+  const select  = document.getElementById('midi-output-device');
+  const prevVal = select.value;
+  const arrow   = document.getElementById('midi-arrow');
+
+  select.innerHTML = '<option value="">— output —</option>';
+  access.outputs.forEach(port => {
+    const opt = document.createElement('option');
+    opt.value = port.id;
+    opt.textContent = port.name + (port.state === 'disconnected' ? ' (disconnected)' : '');
+    select.appendChild(opt);
+  });
+
+  const hasOutputs = access.outputs.size > 0;
+  select.style.display = hasOutputs ? 'inline-block' : 'none';
+  arrow.style.display  = hasOutputs ? 'inline' : 'none';
+  document.getElementById('thru-btn').style.display = hasOutputs ? 'inline-block' : 'none';
+
+  if (prevVal && [...access.outputs.keys()].includes(prevVal)) select.value = prevVal;
+  selectMidiOutput(select.value);
+}
+
+function selectMidiOutput(portId) {
+  if (!midiAccess) return;
+  selectedOutput = portId ? (midiAccess.outputs.get(portId) || null) : null;
+}
+
+function sendToOutput(bytes) {
+  if (selectedOutput && selectedOutput.state !== 'disconnected') {
+    try { selectedOutput.send(bytes); } catch (_) {}
+  }
+}
+
+document.getElementById('midi-output-device').addEventListener('change', e => {
+  selectMidiOutput(e.target.value);
+});
+
+// ── Thru toggle ───────────────────────────────────────────────
+document.getElementById('thru-btn').addEventListener('click', () => {
+  thruEnabled = !thruEnabled;
+  document.getElementById('thru-btn').classList.toggle('active', thruEnabled);
+});
+
+// ── Panic ─────────────────────────────────────────────────────
+function panic() {
+  padSynth.releaseAll();
+  if (selectedOutput) {
+    for (let ch = 0; ch < 16; ch++) {
+      selectedOutput.send([0xB0 | ch, 120, 0]);  // All Sound Off
+      selectedOutput.send([0xB0 | ch, 123, 0]);  // All Notes Off
+    }
+  }
+}
+
+// ── Channel filter / remap ────────────────────────────────────
+function populateChannelSelects() {
+  ['filter-ch', 'remap-ch'].forEach(id => {
+    const sel  = document.getElementById(id);
+    const isRemap = id === 'remap-ch';
+    // clear all but first option
+    while (sel.options.length > 1) sel.remove(1);
+    for (let i = 1; i <= 16; i++) {
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = isRemap ? `ch ${i}` : `ch ${i}`;
+      sel.appendChild(opt);
+    }
+  });
+  document.getElementById('midi-channel-row').style.display = 'flex';
+}
+
+document.getElementById('filter-ch').addEventListener('change', e => {
+  filterChannel = +e.target.value;
+});
+document.getElementById('remap-ch').addEventListener('change', e => {
+  remapChannel = +e.target.value;
 });
 
 // ── Unified MIDI handler (local + remote) ────────────────────
 function handleMidiData(bytes, remote) {
   const status  = bytes[0];
+
+  // SysEx (variable-length, 0xF0 … 0xF7)
+  if (status === 0xF0) {
+    logMidiRow('SysEx', null, `${bytes.length}b`, '', remote);
+    if (!remote) sendToOutput(bytes);
+    return;
+  }
+
   const msgType = status & 0xf0;
   const ch      = (status & 0x0f) + 1;   // 1-based
   const d1      = bytes[1] ?? 0;
@@ -412,10 +550,13 @@ function handleMidiData(bytes, remote) {
       break;
     }
 
-    case 0xF0:  // System Real-Time / SysEx
-      handleSysMsg(status, remote);
+    case 0xF0:  // System Real-Time
+      handleSysMsg(status, bytes, remote);
       break;
   }
+
+  // Route incoming remote MIDI to physical output (Thru from network)
+  if (remote && thruEnabled) sendToOutput(bytes);
 }
 
 function handleCC(ch, cc, val, remote) {
@@ -435,13 +576,29 @@ function handleCC(ch, cc, val, remote) {
   logMidiRow('CC', ch, `#${cc}`, `v:${val}`, remote);
 }
 
-function handleSysMsg(status, remote) {
+function handleSysMsg(status, bytes, remote) {
   switch (status) {
-    case 0xF8: {  // MIDI Clock tick — 24 per beat, measure locally only
+    case 0xF1: {  // MTC Quarter Frame
+      const mt = bytes[1] ?? 0;
+      logMidiRow('MTC', null, `t:${mt >> 4}`, `v:${mt & 0xf}`, remote);
+      return;
+    }
+    case 0xF2: {  // Song Position Pointer
+      const pos = ((bytes[2] ?? 0) << 7) | (bytes[1] ?? 0);
+      logMidiRow('SPP', null, `beat:${pos}`, '', remote);
+      return;
+    }
+    case 0xF3:  // Song Select
+      logMidiRow('SongSel', null, `#${bytes[1] ?? 0}`, '', remote);
+      return;
+    case 0xF6:  // Tune Request
+      logMidiRow('Tune', null, '', '', remote);
+      return;
+    case 0xF8: {  // MIDI Clock tick — never relay or log
       const now = performance.now();
       clockTickTimes.push(now);
       if (clockTickTimes.length > 24) clockTickTimes.shift();
-      return;  // never log or relay clock ticks
+      return;
     }
     case 0xFA: logMidiRow('Clock', null, 'Start',    '', remote); break;
     case 0xFB: logMidiRow('Clock', null, 'Continue', '', remote); break;
@@ -470,14 +627,30 @@ function onMidiMessage(e) {
 
   // MIDI Clock and Active Sensing: handle locally, never relay
   if (status === 0xF8 || status === 0xFE) {
-    handleSysMsg(status, false);
+    handleSysMsg(status, bytes, false);
     return;
   }
 
-  handleMidiData(bytes, /* remote= */ false);
+  // Channel filter: skip messages on wrong channel (channel voice only)
+  if (filterChannel !== 0 && (status & 0xf0) !== 0xf0) {
+    const ch = (status & 0x0f) + 1;
+    if (ch !== filterChannel) return;
+  }
+
+  // Channel remap: rewrite status byte to target channel
+  let outBytes = bytes;
+  if (remapChannel !== 0 && (status & 0xf0) !== 0xf0) {
+    outBytes = [...bytes];
+    outBytes[0] = (status & 0xf0) | (remapChannel - 1);
+  }
+
+  handleMidiData(outBytes, /* remote= */ false);
+
+  // Local thru to output (pre-relay, after remap)
+  if (thruEnabled) sendToOutput(outBytes);
 
   if (ws.readyState === WebSocket.OPEN) {
-    ws.send(JSON.stringify({ type: 'midi', data: bytes }));
+    ws.send(JSON.stringify({ type: 'midi', data: outBytes }));
   }
 }
 

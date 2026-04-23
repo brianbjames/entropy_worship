@@ -33,6 +33,7 @@ const httpServer = http.createServer((req, res) => {
 const seqState = {
   playing: false,
   bpm: 120,
+  epoch: null,   // Unix ms that step 0 started — shared source of truth for all clients
   steps: {
     kick:  [1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0],
     snare: [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0],
@@ -61,7 +62,7 @@ wss.on('connection', ws => {
   clients.add(ws);
   console.log(`[+] client connected  (${clients.size} total)`);
 
-  send(ws, { type: 'state', bpm: seqState.bpm, steps: seqState.steps, playing: seqState.playing });
+  send(ws, { type: 'state', bpm: seqState.bpm, steps: seqState.steps, playing: seqState.playing, epoch: seqState.epoch });
   broadcastAll({ type: 'clients', count: clients.size });
 
   ws.on('message', raw => {
@@ -74,8 +75,10 @@ wss.on('connection', ws => {
         break;
       case 'play': {
         seqState.playing = true;
-        const startAt = Date.now() + 300;
-        broadcastAll({ type: 'play', startAt, bpm: seqState.bpm });
+        // Epoch is the Unix ms at which step 0 fires.
+        // Set it 300 ms in the future so every client gets the message in time.
+        seqState.epoch = Date.now() + 300;
+        broadcastAll({ type: 'play', epoch: seqState.epoch, bpm: seqState.bpm });
         break;
       }
       case 'stop':
@@ -97,8 +100,8 @@ wss.on('connection', ws => {
         break;
       }
       case 'midi':
-        // Relay raw MIDI bytes — validate length (1–3 bytes)
-        if (Array.isArray(msg.data) && msg.data.length >= 1 && msg.data.length <= 3) {
+        // Relay raw MIDI bytes — 1-3 bytes for standard messages, up to 4096 for SysEx
+        if (Array.isArray(msg.data) && msg.data.length >= 1 && msg.data.length <= 4096) {
           broadcast({ type: 'midi', data: msg.data }, ws);
         }
         break;
