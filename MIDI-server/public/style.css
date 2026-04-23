@@ -870,7 +870,37 @@ strong {
   }
 }
 
-/* ── Piano Roll ──────────────────────────────────────────────── */
+/* ── Piano Roll upload label (styled as a button) ───────────── */
+label#pr-upload-btn {
+  display: inline-block;
+  background: rgba(0, 0, 0, 0.45);
+  color: var(--dim);
+  border: 1px solid var(--border);
+  padding: 6px 16px;
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: 0.95rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  clip-path: polygon(
+    0 0,
+    calc(100% - 6px) 0,
+    100% 6px,
+    100% 100%,
+    6px 100%,
+    0 calc(100% - 6px)
+  );
+  user-select: none;
+  transition: color 0.1s, background 0.1s, border-color 0.1s, text-shadow 0.1s;
+}
+label#pr-upload-btn:hover {
+  background: rgba(255, 34, 34, 0.1);
+  border-color: var(--border-hi);
+  color: var(--accent);
+  text-shadow: 0 0 8px rgba(255, 34, 34, 0.7);
+}
+
+/* ── Piano Roll canvases ─────────────────────────────────────── */
 #pr-toolbar {
   display: flex;
   align-items: center;

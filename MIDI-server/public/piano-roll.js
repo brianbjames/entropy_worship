@@ -759,12 +759,10 @@ function exportPrMid() {
   document
     .getElementById("pr-export-btn")
     .addEventListener("click", exportPrMid);
-  document.getElementById("pr-upload-btn").addEventListener("click", () => {
-    document.getElementById("pr-file-input").click();
-  });
   document.getElementById("pr-file-input").addEventListener("change", (e) => {
     const file = e.target.files[0];
     if (!file) return;
+    if (file.size > 2_000_000) { console.warn('MIDI file too large (>2MB)'); return; }
     const reader = new FileReader();
     reader.onload = (ev) => {
       try {

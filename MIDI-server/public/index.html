@@ -189,12 +189,12 @@
             <input type="range" id="pr-vel" min="1" max="127" value="100" />
             <strong id="pr-vel-val">100</strong>
           </label>
-          <button id="pr-upload-btn">↑ LOAD .MID</button>
+          <label id="pr-upload-btn" for="pr-file-input">↑ LOAD .MID</label>
           <input
             type="file"
             id="pr-file-input"
             accept=".mid,.midi"
-            style="display: none"
+            style="position:absolute;left:-9999px;opacity:0"
           />
           <button id="pr-export-btn">↓ EXPORT .MID</button>
         </div>
