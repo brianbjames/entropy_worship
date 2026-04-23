@@ -327,16 +327,14 @@ function initUI() {
     try {
       const access = await navigator.requestMIDIAccess();
       const btn = document.getElementById('midi-btn');
-      btn.textContent = 'MIDI On';
+      btn.textContent = 'MIDI';
       btn.classList.add('active');
+      btn.disabled = true;
 
-      const attachPort = port => { port.onmidimessage = onMidiMessage; };
-      access.inputs.forEach(attachPort);
-      access.onstatechange = e => {
-        if (e.port.type === 'input' && e.port.state === 'connected') {
-          attachPort(e.port);
-        }
-      };
+      populateMidiDevices(access);
+
+      // Update device list when devices are plugged/unplugged
+      access.onstatechange = () => populateMidiDevices(access);
     } catch (err) {
       alert('MIDI access denied: ' + err.message);
     }
@@ -344,6 +342,53 @@ function initUI() {
 }
 
 // ── Web MIDI input ───────────────────────────────────────────
+let midiAccess = null;
+let selectedPortId = null;  // null = no device selected
+
+function populateMidiDevices(access) {
+  midiAccess = access;
+  const select = document.getElementById('midi-device');
+  const prevValue = select.value;
+
+  // Rebuild options
+  select.innerHTML = '<option value="">— select device —</option>';
+  access.inputs.forEach(port => {
+    const opt = document.createElement('option');
+    opt.value = port.id;
+    opt.textContent = port.name;
+    if (port.state === 'disconnected') opt.textContent += ' (disconnected)';
+    select.appendChild(opt);
+  });
+
+  // Restore previous selection if still available
+  if (prevValue && [...access.inputs.keys()].includes(prevValue)) {
+    select.value = prevValue;
+  }
+
+  select.style.display = access.inputs.size > 0 ? 'inline-block' : 'none';
+
+  // Re-attach listener to whichever port is selected
+  selectMidiDevice(select.value);
+}
+
+function selectMidiDevice(portId) {
+  if (!midiAccess) return;
+  selectedPortId = portId;
+
+  // Detach from all ports first
+  midiAccess.inputs.forEach(port => { port.onmidimessage = null; });
+
+  // Attach to selected port only
+  if (portId) {
+    const port = midiAccess.inputs.get(portId);
+    if (port) port.onmidimessage = onMidiMessage;
+  }
+}
+
+document.getElementById('midi-device').addEventListener('change', e => {
+  selectMidiDevice(e.target.value);
+});
+
 function onMidiMessage(e) {
   const [status, note, vel] = e.data;
   const type = status & 0xf0;

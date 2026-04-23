@@ -36,7 +36,12 @@
         <input type="range" id="bpm" min="60" max="200" value="120">
         <strong id="bpm-val">120</strong>
       </label>
-      <button id="midi-btn">MIDI Off</button>
+      <div id="midi-controls">
+        <button id="midi-btn">MIDI</button>
+        <select id="midi-device" style="display:none">
+          <option value="">— select device —</option>
+        </select>
+      </div>
     </div>
 
     <div id="sequencer"></div>
