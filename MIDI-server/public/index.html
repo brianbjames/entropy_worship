@@ -9,75 +9,83 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div id="grid-bg"></div>
   <div id="scanlines"></div>
 
-  <!-- Browser autoplay policy: must have a user gesture before AudioContext resumes -->
   <div id="unlock-overlay">
     <div class="unlock-box">
+      <div class="unlock-corner tl"></div>
+      <div class="unlock-corner tr"></div>
+      <div class="unlock-corner bl"></div>
+      <div class="unlock-corner br"></div>
       <h1 class="hud-title">MIDI SERVER</h1>
-      <p>// COLLABORATIVE SEQUENCER // SYNCHRONIZED</p>
-      <button id="unlock-btn">[ ENTER ]</button>
+      <p>// COLLABORATIVE SEQUENCER // SYNCHRONIZED //</p>
+      <button id="unlock-btn">[ ENTER SYSTEM ]</button>
     </div>
   </div>
 
   <div id="app">
     <header>
-      <h1 class="hud-title">MIDI SERVER</h1>
+      <h1 class="hud-title">MIDI&thinsp;SERVER</h1>
       <div id="meta">
-        <span id="status" class="disconnected">connecting…</span>
-        <span id="room-display">room: <strong id="room-name">—</strong></span>
-        <span id="players">— players</span>
+        <span id="status" class="disconnected">◈ OFFLINE</span>
+        <span id="room-display">RM:<strong id="room-name">—</strong></span>
+        <span id="players">— PLR</span>
         <span id="latency">— ms</span>
-        <span id="clock-offset" title="Server clock offset">Δ—</span>
+        <span id="clock-offset">Δ—</span>
       </div>
     </header>
 
-    <!-- Room switcher -->
     <div id="room-bar">
-      <span class="muted">room</span>
-      <input id="room-input" type="text" placeholder="room name" maxlength="32" spellcheck="false">
-      <button id="room-join-btn">Join</button>
+      <span class="label-dim">// ROOM</span>
+      <input id="room-input" type="text" placeholder="ROOM-ID" maxlength="32" spellcheck="false" autocomplete="off">
+      <button id="room-join-btn">[ JOIN ]</button>
     </div>
 
-    <!-- Peers latency list -->
     <div id="peers-bar"></div>
 
-    <div id="controls">
-      <button id="play-btn">&#9654; Play</button>
-      <button id="stop-btn" disabled>&#9632; Stop</button>
-      <label>
-        BPM
+    <div id="controls" class="hud-panel clip-br">
+      <button id="play-btn">▶ PLAY</button>
+      <button id="stop-btn" disabled>■ STOP</button>
+      <div class="bpm-group">
+        <span class="label-dim">BPM</span>
         <input type="range" id="bpm" min="60" max="200" value="120">
         <strong id="bpm-val">120</strong>
-      </label>
+      </div>
       <div id="midi-controls">
         <div id="midi-io">
-          <button id="midi-btn">MIDI</button>
+          <button id="midi-btn">◈ MIDI</button>
           <select id="midi-input-device" style="display:none">
-            <option value="">— input —</option>
+            <option value="">— INPUT —</option>
           </select>
           <span class="midi-sep" id="midi-arrow" style="display:none">→</span>
           <select id="midi-output-device" style="display:none">
-            <option value="">— output —</option>
+            <option value="">— OUTPUT —</option>
           </select>
-          <button id="thru-btn" style="display:none">Thru</button>
-          <button id="clock-relay-btn" style="display:none">Clock ↑</button>
-          <button id="panic-btn">Panic</button>
+          <button id="thru-btn" style="display:none">THRU</button>
+          <button id="clock-relay-btn" style="display:none">CLK ↑</button>
+          <button id="panic-btn">⚠ PANIC</button>
         </div>
         <div id="midi-channel-row" style="display:none">
-          <label>Filter <select id="filter-ch"><option value="0">All ch</option></select></label>
-          <label>Remap&#8594; <select id="remap-ch"><option value="0">ch as-is</option></select></label>
+          <label class="label-dim">FILTER
+            <select id="filter-ch"><option value="0">ALL CH</option></select>
+          </label>
+          <label class="label-dim">REMAP →
+            <select id="remap-ch"><option value="0">AS-IS</option></select>
+          </label>
         </div>
       </div>
     </div>
 
-    <div id="sequencer"></div>
+    <div id="seq-wrap" class="hud-panel clip-bl">
+      <div class="section-title">// SEQUENCER //</div>
+      <div id="sequencer"></div>
+    </div>
 
-    <!-- Virtual Keyboard -->
-    <div id="vkb-section">
-      <div class="section-title">Virtual Keyboard</div>
+    <div id="vkb-section" class="hud-panel clip-tr">
+      <div class="section-title">// VIRTUAL KEYBOARD //</div>
       <div id="vkb-controls">
-        <label>Oct
+        <label class="label-dim">OCT
           <select id="vkb-oct">
             <option value="2">C2</option>
             <option value="3">C3</option>
@@ -86,8 +94,8 @@
             <option value="6">C6</option>
           </select>
         </label>
-        <label>Ch <select id="vkb-ch"></select></label>
-        <label>Vel
+        <label class="label-dim">CH <select id="vkb-ch"></select></label>
+        <label class="label-dim">VEL
           <input type="range" id="vkb-vel" min="1" max="127" value="80">
           <strong id="vkb-vel-val">80</strong>
         </label>
@@ -95,24 +103,22 @@
       <div id="vkb"></div>
     </div>
 
-    <!-- CC Monitor -->
-    <div id="cc-section">
-      <div class="section-title">CC Monitor</div>
-      <div id="cc-viz"><span class="muted" style="font-size:0.78rem">no CC received yet</span></div>
+    <div id="cc-section" class="hud-panel clip-br">
+      <div class="section-title">// CC MONITOR //</div>
+      <div id="cc-viz"><span class="label-dim">NO CC RECEIVED</span></div>
     </div>
 
-    <!-- Recording -->
-    <div id="record-section">
-      <div class="section-title">Recording</div>
+    <div id="record-section" class="hud-panel clip-bl">
+      <div class="section-title">// RECORDING //</div>
       <div id="record-controls">
-        <button id="rec-btn">&#9679; Rec</button>
-        <button id="rec-stop-btn" disabled>&#9632; Stop</button>
-        <button id="rec-export-btn" disabled>&#8595; .mid</button>
-        <span id="rec-status" class="muted"></span>
+        <button id="rec-btn">● REC</button>
+        <button id="rec-stop-btn" disabled>■ STOP</button>
+        <button id="rec-export-btn" disabled>↓ EXPORT .MID</button>
+        <span id="rec-status" class="label-dim"></span>
       </div>
     </div>
 
-    <div id="midi-section">
+    <div id="midi-section" class="hud-panel clip-tr">
       <div class="section-title">// MIDI LOG <span class="cursor-blink">▮</span></div>
       <div id="midi-log"></div>
     </div>
