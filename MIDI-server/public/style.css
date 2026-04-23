@@ -486,6 +486,7 @@ strong {
 .mlog {
   font-size: 0.88rem; color: var(--teal);
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  flex-shrink: 0;
   opacity: 0;
   animation: con-fade 0.25s forwards;
   text-shadow: 0 0 4px rgba(5,175,144,0.3);
