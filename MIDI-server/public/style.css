@@ -47,11 +47,16 @@
 }
 
 /* ── Background layers ──────────────────────────────────────── */
-html, body { background: var(--bg); }
+html, body { background: #000; }
+
+#galaxy-bg {
+  position: fixed; inset: 0;
+  z-index: 0; pointer-events: none;
+}
 
 #grid-bg {
   position: fixed; inset: 0;
-  z-index: 0; pointer-events: none;
+  z-index: 1; pointer-events: none;
   background-image:
     linear-gradient(rgba(102,12,12,0.045) 1px, transparent 1px),
     linear-gradient(90deg, rgba(102,12,12,0.045) 1px, transparent 1px);
