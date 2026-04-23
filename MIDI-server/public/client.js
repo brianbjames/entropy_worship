@@ -150,8 +150,15 @@ function updateTransportUI() {
 }
 
 // ── WebSocket connection ─────────────────────────────────────
+// If no room is in the URL, generate a random one and update the address
+// bar so users don't all pile into a shared default room by accident.
+if (!new URLSearchParams(location.search).get('room')) {
+  const name = Math.random().toString(36).slice(2, 8).toUpperCase();
+  history.replaceState(null, '', `?room=${name}`);
+}
+
 const WS_SERVER = 'wss://midi-server-production.up.railway.app';
-const ROOM      = new URLSearchParams(location.search).get('room') || 'default';
+const ROOM      = new URLSearchParams(location.search).get('room');
 
 // ── Room join — wired immediately, no unlock required ────────
 document.getElementById('room-input').value = ROOM;
