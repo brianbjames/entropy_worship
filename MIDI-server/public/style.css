@@ -947,3 +947,108 @@ label#pr-upload-btn:hover {
   height: calc(100% - 24px);
   z-index: 1;
 }
+
+/* ── Program Change monitor ─────────────────────────────────── */
+#pgm-viz {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-height: 18px;
+}
+.pgm-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 0.88rem;
+}
+.pgm-ch {
+  color: var(--dim);
+  min-width: 42px;
+  flex-shrink: 0;
+  letter-spacing: 0.05em;
+}
+.pgm-num {
+  color: var(--accent);
+  min-width: 38px;
+  flex-shrink: 0;
+  text-shadow: 0 0 4px rgba(255, 34, 34, 0.4);
+}
+.pgm-name {
+  color: var(--teal);
+  text-shadow: 0 0 4px rgba(5, 175, 144, 0.3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Pitch Bend monitor ─────────────────────────────────────── */
+#bend-viz {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 18px;
+}
+.bend-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.bend-ch {
+  font-size: 0.82rem;
+  color: var(--dim);
+  min-width: 42px;
+  flex-shrink: 0;
+  letter-spacing: 0.05em;
+}
+.bend-bar-bg {
+  flex: 1;
+  height: 8px;
+  background: rgba(4, 4, 4, 0.9);
+  border: 1px solid var(--border);
+  position: relative;
+  clip-path: polygon(
+    0 0,
+    calc(100% - 3px) 0,
+    100% 3px,
+    100% 100%,
+    3px 100%,
+    0 calc(100% - 3px)
+  );
+}
+.bend-center {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  background: rgba(102, 12, 12, 0.6);
+}
+.bend-fill {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 34, 34, 0.85),
+    rgba(255, 100, 100, 0.6)
+  );
+  box-shadow: 0 0 5px rgba(255, 34, 34, 0.5);
+  transition: left 0.05s, width 0.05s;
+}
+.bend-val {
+  font-size: 0.82rem;
+  color: var(--accent);
+  min-width: 52px;
+  text-align: right;
+  flex-shrink: 0;
+  text-shadow: 0 0 4px rgba(255, 34, 34, 0.4);
+}
+
+/* ── Clock BPM in header ────────────────────────────────────── */
+#clock-bpm {
+  color: var(--yellow);
+  text-shadow: 0 0 5px rgba(206, 200, 35, 0.5);
+  letter-spacing: 0.06em;
+  font-size: 1rem;
+  min-width: 60px;
+}

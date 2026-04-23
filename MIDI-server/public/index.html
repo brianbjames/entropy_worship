@@ -50,9 +50,8 @@
         <div class="unlock-corner bl"></div>
         <div class="unlock-corner br"></div>
         <h1 class="hud-title">MIDISERVER</h1>
-        <p>// COLLABORATIVE SEQUENCER // SYNCHRONIZED</p>
         <p>
-          a collaborative network MIDI relay server with basic channel routing
+          // COLLABORATIVE NETWORK MIDI RELAY SERVER WITH BASIC CHANNEL ROUTING
         </p>
         <button id="unlock-btn">[ ENTER ]</button>
       </div>
@@ -67,6 +66,7 @@
           <span id="players">— PLR</span>
           <span id="latency">— ms</span>
           <span id="clock-offset">Δ—</span>
+          <span id="clock-bpm"></span>
         </div>
       </header>
 
@@ -187,7 +187,7 @@
             type="file"
             id="pr-file-input"
             accept=".mid,.midi"
-            style="position:absolute;left:-9999px;opacity:0"
+            style="position: absolute; left: -9999px; opacity: 0"
           />
           <button id="pr-export-btn">↓ EXPORT .MID</button>
         </div>
@@ -196,6 +196,16 @@
           <canvas id="pr-ruler"></canvas>
           <canvas id="pr-grid"></canvas>
         </div>
+      </div>
+
+      <div id="pgm-section" class="hud-panel clip-tr">
+        <div class="section-title">// PROGRAM CHANGE //</div>
+        <div id="pgm-viz"><span class="label-dim">NO PGM RECEIVED</span></div>
+      </div>
+
+      <div id="bend-section" class="hud-panel clip-bl">
+        <div class="section-title">// PITCH BEND //</div>
+        <div id="bend-viz"><span class="label-dim">NO BEND RECEIVED</span></div>
       </div>
 
       <div id="midi-section" class="hud-panel clip-tr">
