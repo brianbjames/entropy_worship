@@ -114,34 +114,68 @@ function fireStep(track, step, time) {
   }
 }
 
-// ── Sequencer Transport ──────────────────────────────────────
-let seq = null;
+// ── Epoch-based scheduler ────────────────────────────────────
+//
+// Instead of Tone.Transport (which drifts independently on each client),
+// every step is derived from a shared Unix epoch:
+//
+//   step index  = floor((serverNow - epochMs) / stepMs)
+//   step time   = epochMs + index * stepMs   (as AudioContext seconds)
+//
+// Each client independently calculates "what step is due next" from the
+// same epoch, so they self-correct on every beat rather than drifting.
 
-function startSequencer(audioStartTime) {
-  stopSequencer(/* updateUI= */ false);
-  Tone.Transport.bpm.value = state.bpm;
-  Tone.Transport.cancel();
+const LOOKAHEAD_MS  = 100;  // schedule this far ahead of wall clock
+const SCHEDULER_MS  = 20;   // how often the scheduler ticks
 
-  seq = new Tone.Sequence((time, step) => {
-    state.currentStep = step;
+let epochMs          = null; // server Unix ms that step 0 starts at
+let schedulerTimer   = null;
+let lastScheduledIdx = -1;   // absolute (non-wrapping) step index
+
+function stepDurationMs() {
+  return (60 / state.bpm) * 1000 / 4;  // duration of one 16th note in ms
+}
+
+function schedulerTick() {
+  if (epochMs === null) return;
+
+  const serverNow  = Date.now() + serverTimeOffset;
+  const stepMs     = stepDurationMs();
+  const horizonIdx = Math.floor((serverNow + LOOKAHEAD_MS - epochMs) / stepMs);
+
+  for (let idx = Math.max(0, lastScheduledIdx + 1); idx <= horizonIdx; idx++) {
+    const step       = idx % 16;
+    const stepServerMs = epochMs + idx * stepMs;
+    const audioT     = serverToAudio(stepServerMs);
+
+    if (audioT < Tone.context.currentTime) continue;  // already passed
+
     TRACKS.forEach(track => {
-      if (state.steps[track][step]) fireStep(track, step, time);
+      if (state.steps[track][step]) fireStep(track, step, audioT);
     });
-  }, [...Array(16).keys()], '16n');
 
-  seq.start(0);
-  // Clamp: never schedule in the past
-  const at = Math.max(audioStartTime, Tone.context.currentTime + 0.05);
-  Tone.Transport.start(at);
-  state.playing = true;
+    lastScheduledIdx = idx;
+  }
+}
+
+function startSequencer(epoch) {
+  stopSequencer(/* updateUI= */ false);
+  epochMs = epoch;
+  // Start the index just before now so the first tick schedules the right step
+  lastScheduledIdx = Math.floor(
+    (Date.now() + serverTimeOffset - epochMs) / stepDurationMs()
+  ) - 1;
+  schedulerTick();  // immediate first pass
+  schedulerTimer = setInterval(schedulerTick, SCHEDULER_MS);
+  state.playing  = true;
   updateTransportUI();
 }
 
 function stopSequencer(updateUI = true) {
-  Tone.Transport.stop();
-  Tone.Transport.cancel();
-  if (seq) { seq.stop(); seq.dispose(); seq = null; }
-  state.playing     = false;
+  if (schedulerTimer) { clearInterval(schedulerTimer); schedulerTimer = null; }
+  epochMs          = null;
+  lastScheduledIdx = -1;
+  state.playing    = false;
   state.currentStep = -1;
   if (updateUI) updateTransportUI();
 }
@@ -185,9 +219,16 @@ function buildGrid() {
   });
 }
 
-// RAF loop: syncs the playhead highlight to audio scheduling
+// RAF loop: derives the visual playhead position from the epoch,
+// independently of the audio scheduler, so display and audio stay locked.
 let prevDisplayStep = -1;
 function renderLoop() {
+  if (epochMs !== null && state.playing) {
+    const serverNow = Date.now() + serverTimeOffset;
+    const elapsed   = serverNow - epochMs;
+    state.currentStep = elapsed >= 0 ? Math.floor(elapsed / stepDurationMs()) % 16 : -1;
+  }
+
   const s = state.currentStep;
   if (s !== prevDisplayStep) {
     document.querySelectorAll('.cell').forEach(c => {
@@ -241,22 +282,21 @@ ws.onmessage = ({ data }) => {
       state.steps = msg.steps;
       document.getElementById('bpm').value        = msg.bpm;
       document.getElementById('bpm-val').textContent = msg.bpm;
-      // Grid may not exist yet if unlock hasn't happened
       if (document.getElementById('sequencer').children.length) buildGrid();
+      // Sync into a running session on late join
+      if (msg.playing && msg.epoch) startSequencer(msg.epoch);
       break;
 
-    case 'play': {
-      const at = serverToAudio(msg.startAt);
-      startSequencer(at);
+    case 'play':
+      startSequencer(msg.epoch);
       break;
-    }
+
     case 'stop':
       stopSequencer();
       break;
 
     case 'bpm':
       state.bpm = msg.bpm;
-      Tone.Transport.bpm.value = msg.bpm;
       document.getElementById('bpm').value          = msg.bpm;
       document.getElementById('bpm-val').textContent = msg.bpm;
       break;
