@@ -231,16 +231,17 @@ const ws = new WebSocket(wsUrl);
 
 ws.onopen = () => {
   document.getElementById('status').className   = 'connected';
-  document.getElementById('status').textContent = 'connected';
+  document.getElementById('status').textContent = '◈ ONLINE';
   sendPing();
   setInterval(sendPing, 4000);
 };
 ws.onclose = () => {
   document.getElementById('status').className   = 'disconnected';
-  document.getElementById('status').textContent = 'disconnected';
+  document.getElementById('status').textContent = '◈ OFFLINE';
 };
 ws.onerror = () => {
-  document.getElementById('status').textContent = 'error';
+  document.getElementById('status').className   = 'disconnected';
+  document.getElementById('status').textContent = '◈ ERROR';
 };
 
 ws.onmessage = ({ data }) => {
@@ -287,8 +288,7 @@ ws.onmessage = ({ data }) => {
 
     case 'peers': {
       const count = msg.count || msg.peers.length;
-      document.getElementById('players').textContent =
-        `${count} player${count !== 1 ? 's' : ''}`;
+      document.getElementById('players').textContent = `${count} PLR`;
       const bar = document.getElementById('peers-bar');
       bar.innerHTML = msg.peers.map(p => {
         const ms  = p.rtt > 0 ? Math.round(p.rtt / 2) : null;
@@ -780,7 +780,7 @@ function startRecording() {
   document.getElementById('rec-btn').disabled      = true;
   document.getElementById('rec-stop-btn').disabled = false;
   document.getElementById('rec-export-btn').disabled = true;
-  document.getElementById('rec-status').textContent  = '● REC';
+  document.getElementById('rec-status').textContent  = '● RECORDING';
 }
 
 function stopRecording() {
