@@ -100,8 +100,8 @@ wss.on('connection', ws => {
         break;
       }
       case 'midi':
-        // Relay raw MIDI bytes — validate length (1–3 bytes)
-        if (Array.isArray(msg.data) && msg.data.length >= 1 && msg.data.length <= 3) {
+        // Relay raw MIDI bytes — 1-3 bytes for standard messages, up to 4096 for SysEx
+        if (Array.isArray(msg.data) && msg.data.length >= 1 && msg.data.length <= 4096) {
           broadcast({ type: 'midi', data: msg.data }, ws);
         }
         break;

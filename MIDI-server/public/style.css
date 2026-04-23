@@ -140,9 +140,14 @@ strong { color: var(--text); min-width: 28px; display: inline-block; }
 .cell:hover:not(.on) { background: #2a2a3e; }
 
 /* ── MIDI device selector ───────────────────────────────────── */
-#midi-controls { display: flex; align-items: center; gap: 8px; }
+#midi-controls { display: flex; flex-direction: column; gap: 6px; }
 
-#midi-device {
+#midi-io { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+.midi-sep { color: var(--muted); font-size: 0.85rem; }
+
+#midi-input-device,
+#midi-output-device {
   background: var(--surface);
   color: var(--text);
   border: 1px solid var(--border);
@@ -150,11 +155,35 @@ strong { color: var(--text); min-width: 28px; display: inline-block; }
   font-family: inherit;
   font-size: 0.85rem;
   cursor: pointer;
-  max-width: 220px;
+  max-width: 180px;
   outline: none;
 }
-#midi-device:focus { border-color: var(--accent); }
-#midi-device option { background: var(--surface); }
+#midi-input-device:focus,
+#midi-output-device:focus { border-color: var(--accent); }
+#midi-input-device option,
+#midi-output-device option { background: var(--surface); }
+
+#panic-btn { border-color: #c0392b; color: #e74c3c; }
+#panic-btn:hover:not(:disabled) { background: #c0392b; border-color: #c0392b; color: #fff; }
+
+#midi-channel-row {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-left: 2px;
+}
+#midi-channel-row label { font-size: 0.8rem; color: var(--muted); gap: 6px; }
+#midi-channel-row select {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 4px 6px;
+  font-family: inherit;
+  font-size: 0.8rem;
+  outline: none;
+}
+#midi-channel-row select:focus { border-color: var(--accent); }
+#midi-channel-row select option { background: var(--surface); }
 
 /* ── MIDI section ───────────────────────────────────────────── */
 #midi-section {

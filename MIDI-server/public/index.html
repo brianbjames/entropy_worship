@@ -37,10 +37,22 @@
         <strong id="bpm-val">120</strong>
       </label>
       <div id="midi-controls">
-        <button id="midi-btn">MIDI</button>
-        <select id="midi-device" style="display:none">
-          <option value="">— select device —</option>
-        </select>
+        <div id="midi-io">
+          <button id="midi-btn">MIDI</button>
+          <select id="midi-input-device" style="display:none">
+            <option value="">— input —</option>
+          </select>
+          <span class="midi-sep" id="midi-arrow" style="display:none">→</span>
+          <select id="midi-output-device" style="display:none">
+            <option value="">— output —</option>
+          </select>
+          <button id="thru-btn" style="display:none">Thru</button>
+          <button id="panic-btn">Panic</button>
+        </div>
+        <div id="midi-channel-row" style="display:none">
+          <label>Filter <select id="filter-ch"><option value="0">All ch</option></select></label>
+          <label>Remap&#8594; <select id="remap-ch"><option value="0">ch as-is</option></select></label>
+        </div>
       </div>
     </div>
 
