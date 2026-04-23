@@ -213,6 +213,17 @@ function updateTransportUI() {
 const WS_SERVER = 'wss://midi-server-production.up.railway.app';
 const ROOM      = new URLSearchParams(location.search).get('room') || 'default';
 
+// ── Room join — wired immediately, no unlock required ────────
+document.getElementById('room-input').value = ROOM;
+document.getElementById('room-join-btn').addEventListener('click', () => {
+  const name = document.getElementById('room-input').value
+    .trim().replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 32) || 'default';
+  location.search = `?room=${encodeURIComponent(name)}`;
+});
+document.getElementById('room-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('room-join-btn').click();
+});
+
 const wsProto = location.protocol === 'https:' ? 'wss:' : 'ws:';
 const wsBase  = WS_SERVER || `${wsProto}//${location.host}`;
 const wsUrl   = `${wsBase}?room=${encodeURIComponent(ROOM)}`;
@@ -308,17 +319,6 @@ function initUI() {
   renderLoop();
   updateTransportUI();
 
-  // Room join
-  document.getElementById('room-input').value = ROOM;
-  document.getElementById('room-join-btn').addEventListener('click', () => {
-    const name = document.getElementById('room-input').value
-      .trim().replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 32) || 'default';
-    if (name !== ROOM) location.search = `?room=${encodeURIComponent(name)}`;
-  });
-  document.getElementById('room-input').addEventListener('keydown', e => {
-    if (e.key === 'Enter') document.getElementById('room-join-btn').click();
-  });
-
   document.getElementById('play-btn').addEventListener('click', () => {
     ws.send(JSON.stringify({ type: 'play' }));
   });
@@ -405,7 +405,7 @@ function midiNoteName(n) {
 function populateMidiDevices(access) {
   midiAccess = access;
   const select  = document.getElementById('midi-input-device');
-  const prevVal = select.value;
+  const prevVal = select.value || localStorage.getItem('midi-input-id') || '';
   select.innerHTML = '<option value="">— input —</option>';
   access.inputs.forEach(port => {
     const opt = document.createElement('option');
@@ -421,6 +421,8 @@ function populateMidiDevices(access) {
 function selectMidiInput(portId) {
   if (!midiAccess) return;
   selectedInputId = portId;
+  if (portId) localStorage.setItem('midi-input-id', portId);
+  else localStorage.removeItem('midi-input-id');
   midiAccess.inputs.forEach(port => { port.onmidimessage = null; });
   if (portId) {
     const port = midiAccess.inputs.get(portId);
@@ -435,7 +437,7 @@ document.getElementById('midi-input-device').addEventListener('change', e => {
 // ── Output devices ────────────────────────────────────────────
 function populateMidiOutputs(access) {
   const select  = document.getElementById('midi-output-device');
-  const prevVal = select.value;
+  const prevVal = select.value || localStorage.getItem('midi-output-id') || '';
   const arrow   = document.getElementById('midi-arrow');
   select.innerHTML = '<option value="">— output —</option>';
   access.outputs.forEach(port => {
@@ -455,6 +457,8 @@ function populateMidiOutputs(access) {
 function selectMidiOutput(portId) {
   if (!midiAccess) return;
   selectedOutput = portId ? (midiAccess.outputs.get(portId) || null) : null;
+  if (portId) localStorage.setItem('midi-output-id', portId);
+  else localStorage.removeItem('midi-output-id');
 }
 
 function sendToOutput(bytes) {
