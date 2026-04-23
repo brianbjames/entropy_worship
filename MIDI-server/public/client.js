@@ -381,7 +381,6 @@ function initUI() {
     vkbCh.appendChild(opt);
   }
   buildVirtualKeyboard();
-  document.getElementById('vkb-oct').addEventListener('change', buildVirtualKeyboard);
   document.getElementById('vkb-vel').addEventListener('input', e => {
     document.getElementById('vkb-vel-val').textContent = e.target.value;
   });
@@ -689,51 +688,51 @@ function renderCCViz() {
 }
 
 // ── Virtual Keyboard ─────────────────────────────────────────
-// White key semitones within an octave (C=0…B=11)
-const VKB_WHITE = [0, 2, 4, 5, 7, 9, 11];
-// Black keys: semitone + index of white key to their left
-const VKB_BLACK = [
-  { semi: 1, after: 0 },
-  { semi: 3, after: 1 },
-  { semi: 6, after: 3 },
-  { semi: 8, after: 4 },
-  { semi: 10, after: 5 },
-];
+const WHITE_SEMIS  = new Set([0, 2, 4, 5, 7, 9, 11]);
+const VKB_START    = 21;   // A0
+const VKB_END      = 108;  // C8
 const activeVKBNotes = new Set();
 
 function buildVirtualKeyboard() {
-  const el  = document.getElementById('vkb');
-  const oct = +document.getElementById('vkb-oct').value;
-  const NUM_OCTAVES = 2;
-  const totalWhite  = NUM_OCTAVES * 7;
+  const el = document.getElementById('vkb');
   el.innerHTML = '';
 
-  for (let o = 0; o < NUM_OCTAVES; o++) {
-    // White keys
-    VKB_WHITE.forEach((semi, wi) => {
-      const note = (oct + o) * 12 + 12 + semi;
-      const key  = document.createElement('div');
-      key.className  = 'vkey';
-      key.dataset.note = note;
-      key.style.left  = `${(o * 7 + wi) / totalWhite * 100}%`;
-      key.style.width = `${1 / totalWhite * 100}%`;
-      attachVKBEvents(key);
-      el.appendChild(key);
-    });
+  // Build ordered white-key list and index lookup
+  const whiteNotes     = [];
+  const noteToWhiteIdx = {};
+  for (let n = VKB_START; n <= VKB_END; n++) {
+    if (WHITE_SEMIS.has(n % 12)) {
+      noteToWhiteIdx[n] = whiteNotes.length;
+      whiteNotes.push(n);
+    }
+  }
+  const totalWhite = whiteNotes.length; // 52
+  const blackW     = (1 / totalWhite) * 0.62 * 100; // % width of a black key
 
-    // Black keys (positioned relative to surrounding white keys)
-    const blackW = (1 / totalWhite) * 0.6 * 100; // % of container
-    VKB_BLACK.forEach(({ semi, after }) => {
-      const note  = (oct + o) * 12 + 12 + semi;
-      const key   = document.createElement('div');
-      key.className    = 'vkey black';
-      key.dataset.note = note;
-      const rightEdgePct = (o * 7 + after + 1) / totalWhite * 100;
-      key.style.left  = `calc(${rightEdgePct}% - ${blackW / 2}%)`;
-      key.style.width = `${blackW}%`;
-      attachVKBEvents(key);
-      el.appendChild(key);
-    });
+  // White keys
+  whiteNotes.forEach((note, wi) => {
+    const key = document.createElement('div');
+    key.className    = 'vkey';
+    key.dataset.note = note;
+    key.style.left   = `${wi / totalWhite * 100}%`;
+    key.style.width  = `${1  / totalWhite * 100}%`;
+    attachVKBEvents(key);
+    el.appendChild(key);
+  });
+
+  // Black keys — left neighbour is always note-1 (a white key)
+  for (let note = VKB_START; note <= VKB_END; note++) {
+    if (WHITE_SEMIS.has(note % 12)) continue;
+    const leftIdx = noteToWhiteIdx[note - 1];
+    if (leftIdx === undefined) continue;
+    const rightEdgePct = (leftIdx + 1) / totalWhite * 100;
+    const key = document.createElement('div');
+    key.className    = 'vkey black';
+    key.dataset.note = note;
+    key.style.left   = `calc(${rightEdgePct}% - ${blackW / 2}%)`;
+    key.style.width  = `${blackW}%`;
+    attachVKBEvents(key);
+    el.appendChild(key);
   }
 }
 
