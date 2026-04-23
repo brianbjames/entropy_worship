@@ -6,6 +6,7 @@
 // ── AudioContext unlock ──────────────────────────────────────
 document.getElementById('unlock-btn').addEventListener('click', async () => {
   await Tone.start();
+  initSynths();
   document.getElementById('unlock-overlay').style.display = 'none';
   initUI();
 });
@@ -66,31 +67,37 @@ let myClientId        = null;
 let clockRelayEnabled = false;
 
 // ── Tone.js Instruments ──────────────────────────────────────
-const kickSynth = new Tone.MembraneSynth({
-  pitchDecay: 0.05, octaves: 6,
-  envelope: { attack: 0.001, decay: 0.25, sustain: 0, release: 0.1 },
-}).toDestination();
+// Declared here, created in initSynths() after user gesture to avoid
+// AudioContext autoplay policy warnings in the browser console.
+let kickSynth, snareSynth, hihatSynth, padSynth;
 
-const snareSynth = new Tone.NoiseSynth({
-  noise: { type: 'white' },
-  envelope: { attack: 0.001, decay: 0.13, sustain: 0, release: 0.05 },
-}).toDestination();
+function initSynths() {
+  kickSynth = new Tone.MembraneSynth({
+    pitchDecay: 0.05, octaves: 6,
+    envelope: { attack: 0.001, decay: 0.25, sustain: 0, release: 0.1 },
+  }).toDestination();
 
-const hihatSynth = new Tone.MetalSynth({
-  frequency: 400, harmonicity: 5.1, modulationIndex: 32,
-  resonance: 4000, octaves: 1.5,
-  envelope: { attack: 0.001, decay: 0.04, release: 0.01 },
-}).toDestination();
+  snareSynth = new Tone.NoiseSynth({
+    noise: { type: 'white' },
+    envelope: { attack: 0.001, decay: 0.13, sustain: 0, release: 0.05 },
+  }).toDestination();
 
-const padSynth = new Tone.PolySynth(Tone.Synth, {
-  oscillator: { type: 'triangle' },
-  envelope: { attack: 0.02, decay: 0.1, sustain: 0.4, release: 0.2 },
-}).toDestination();
+  hihatSynth = new Tone.MetalSynth({
+    frequency: 400, harmonicity: 5.1, modulationIndex: 32,
+    resonance: 4000, octaves: 1.5,
+    envelope: { attack: 0.001, decay: 0.04, release: 0.01 },
+  }).toDestination();
 
-kickSynth.volume.value  = -4;
-snareSynth.volume.value = -10;
-hihatSynth.volume.value = -12;
-padSynth.volume.value   = -8;
+  padSynth = new Tone.PolySynth(Tone.Synth, {
+    oscillator: { type: 'triangle' },
+    envelope: { attack: 0.02, decay: 0.1, sustain: 0.4, release: 0.2 },
+  }).toDestination();
+
+  kickSynth.volume.value  = -4;
+  snareSynth.volume.value = -10;
+  hihatSynth.volume.value = -12;
+  padSynth.volume.value   = -8;
+}
 
 const SCALE_NOTES = ['C4','D4','E4','G4','A4','C5','D5','E5',
                      'G5','A5','C4','D4','E4','G4','A4','C5'];
@@ -104,6 +111,7 @@ const SEQ_MIDI = {
 };
 
 function fireStep(track, step, time) {
+  if (!kickSynth) return;
   switch (track) {
     case 'kick':  kickSynth.triggerAttackRelease('C1', '8n', time);              break;
     case 'snare': snareSynth.triggerAttackRelease('8n', time);                   break;
@@ -482,7 +490,7 @@ document.getElementById('thru-btn').addEventListener('click', () => {
 
 // ── Panic ─────────────────────────────────────────────────────
 function panic() {
-  padSynth.releaseAll();
+  if (padSynth) padSynth.releaseAll();
   if (selectedOutput) {
     for (let ch = 0; ch < 16; ch++) {
       selectedOutput.send([0xB0 | ch, 120, 0]);
@@ -532,7 +540,7 @@ function handleMidiData(bytes, remote) {
   switch (msgType) {
     case 0x90:
       if (d2 > 0) {
-        remote
+        if (padSynth) remote
           ? padSynth.triggerAttackRelease(Tone.Frequency(d1, 'midi').toFrequency(), '8n')
           : padSynth.triggerAttackRelease(Tone.Frequency(d1, 'midi').toFrequency(), '8n', Tone.now(), d2 / 127);
         logMidiRow('Note On', ch, midiNoteName(d1), `v:${d2}`, remote);
@@ -553,7 +561,7 @@ function handleMidiData(bytes, remote) {
       break;
     case 0xE0: {
       const bend = ((d2 << 7) | d1) - 8192;
-      padSynth.set({ detune: (bend / 8192) * 200 });
+      if (padSynth) padSynth.set({ detune: (bend / 8192) * 200 });
       logMidiRow('Pitch', ch, bend >= 0 ? `+${bend}` : `${bend}`, '', remote);
       break;
     }
@@ -570,7 +578,7 @@ function handleMidiData(bytes, remote) {
 }
 
 function handleCC(ch, cc, val, remote) {
-  switch (cc) {
+  if (padSynth) switch (cc) {
     case 1:  padSynth.set({ detune: (val / 127) * 50 }); break;
     case 7:
     case 11: padSynth.volume.value = -40 + (val / 127) * 32; break;
