@@ -97,7 +97,10 @@ wss.on('connection', ws => {
         break;
       }
       case 'midi':
-        broadcast({ type: 'midi', midiType: msg.midiType, note: msg.note, velocity: msg.velocity }, ws);
+        // Relay raw MIDI bytes — validate length (1–3 bytes)
+        if (Array.isArray(msg.data) && msg.data.length >= 1 && msg.data.length <= 3) {
+          broadcast({ type: 'midi', data: msg.data }, ws);
+        }
         break;
     }
   });
