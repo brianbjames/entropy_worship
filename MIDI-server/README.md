@@ -1,18 +1,18 @@
 # MIDI Server
 
-A collaborative, web-based MIDI step sequencer with real-time network synchronization. Multiple users can join the same room and control drum sequences, synthesizers, and external MIDI devices in perfect sync.
+A collaborative, web-based MIDI relay and performance tool with real-time network synchronization. Multiple users can join the same room and play, sequence, and route MIDI in perfect sync.
 
 ## Features
 
 - **Multi-user collaboration** — Multiple clients connect to named rooms and share state in real time
 - **NTP-style clock sync** — Epoch-based scheduling keeps all clients locked to the same tempo
-- **16-step drum sequencer** — 4 tracks (Kick, Snare, Hi-Hat, Synth) with 16 steps each
-- **Piano roll editor** — Canvas-based note editor with MIDI file import/export
+- **Piano roll editor** — Canvas-based note editor with drag-and-drop MIDI file import and `.mid` export
 - **Web MIDI API** — Send/receive MIDI to/from external hardware (inputs, outputs, clock relay)
 - **MIDI recording** — Record incoming MIDI and export as `.mid` files
-- **Virtual keyboard** — On-screen keyboard for playing notes
-- **CC monitor** — Displays incoming MIDI Control Change messages
-- **Built-in synths** — Tone.js drums and pad synth for in-browser playback
+- **Virtual keyboard** — On-screen keyboard for playing notes into the piano roll or MIDI output
+- **Monitor panel** — Live display of incoming CC values, Program Changes, and Pitch Bend per channel
+- **Click track** — Built-in metronome with downbeat accent, toggled from the transport bar
+- **Built-in synths** — Tone.js pad synth and click synth for in-browser playback
 - **Retro CRT aesthetic** — Scanlines, galaxy background (Three.js), VT323 font
 
 ## Stack
@@ -38,18 +38,50 @@ Open `http://localhost:3000` in a browser.
 
 ## Usage
 
-1. Enter a room name and click **JOIN** (or use the default room)
-2. Share the room name with collaborators — they join the same room and sync automatically
-3. Use the sequencer grid to program drum patterns
-4. Adjust BPM with the slider; press **PLAY** to start
+1. Click **[ ENTER ]** on the splash screen
+2. Enter a room name and click **[ JOIN ]** (or use the default room)
+3. Share the room name with collaborators — they join the same room and sync automatically
+4. Draw notes on the piano roll, adjust BPM, and press **▶ PLAY** to start
+
+### Transport
+
+- **▶ PLAY / ■ STOP** — Start and stop synchronized playback across all peers
+- **♩ CLICK** — Toggle the metronome click track (downbeat accent on beat 1)
+- **BPM** — Drag the slider to change tempo; changes broadcast to all peers
+
+### Piano Roll
+
+- **Left-click empty area** — Add a note (snapped to 1/16th)
+- **Left-click existing note** — Delete the note
+- **Left-click + drag note** — Move the note (pitch and/or beat)
+- **Right-click note** — Delete the note
+- **Scroll wheel** — Scroll pitch range (vertical)
+- **Shift + scroll** — Scroll time (horizontal)
+- **Ctrl + scroll** — Zoom horizontal
+- **↓ DROP .MID** — Drag a `.mid` file onto the drop zone to import it
+- **↓ EXPORT .MID** — Download the current roll as a standard MIDI file
+- **PR ON** — Enable piano roll playback (routes notes to built-in synth and/or MIDI output)
 
 ### MIDI I/O
 
 - Select an input device to receive MIDI from hardware
-- Select an output device to route sequencer notes to external gear
-- **THRU** — pass MIDI input through to the output device
-- **CLK** — relay MIDI clock (0xF8) messages to the output device
-- **PANIC** — send all-notes-off to the output device
+- Select an output device to route piano roll and keyboard notes to external gear
+- **THRU** — Pass MIDI input through to the output device
+- **CLK ↑** — Relay MIDI clock (0xF8) messages to the output device
+- **PANIC** — Send all-notes-off to the output device
+
+### Monitor Panel
+
+Displays live incoming MIDI data:
+- **CC** — Bar graph per controller number, labeled with CC name
+- **Program Change** — Last program received per channel, with GM patch name
+- **Pitch Bend** — Center-anchored bar per channel showing bend amount
+
+### MIDI Recording
+
+- **● REC** — Start recording all incoming MIDI events
+- **■ STOP** — Stop recording
+- **↓ EXPORT .MID** — Download the recording as a `.mid` file
 
 ### Rooms
 
@@ -59,7 +91,7 @@ Connect multiple browser tabs or devices to the same room:
 http://localhost:3000?room=my-room
 ```
 
-All play/stop commands, BPM changes, and step edits are broadcast to all peers in the room.
+All play/stop commands, BPM changes, and piano roll state are broadcast to all peers in the room. Header shows your latency (`you Xms`) and total player count.
 
 ## File Structure
 
@@ -70,8 +102,8 @@ MIDI-server/
 ├── railway.json       # Railway deployment config
 └── public/
     ├── index.html     # Main UI
-    ├── client.js      # Client app (sync, sequencer, MIDI, UI)
-    ├── piano-roll.js  # Piano roll editor
+    ├── client.js      # Client app (sync, MIDI, transport, monitor, recording)
+    ├── piano-roll.js  # Piano roll editor + MIDI parser/exporter
     ├── galaxy.js      # Three.js starfield background
     └── style.css      # Retro CRT styling
 ```

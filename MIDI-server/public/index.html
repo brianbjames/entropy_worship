@@ -53,6 +53,10 @@
         <p>
           // COLLABORATIVE NETWORK MIDI RELAY SERVER WITH BASIC CHANNEL ROUTING
         </p>
+        <div id="browser-warn-splash" style="display:none">
+          <span class="warn-icon">⚠</span> WEB MIDI NOT SUPPORTED IN THIS BROWSER<br/>
+          <span class="warn-sub">CHROME OR EDGE RECOMMENDED — PIANO ROLL / SYNTH STILL WORK</span>
+        </div>
         <button id="unlock-btn">[ ENTER ]</button>
       </div>
     </div>
@@ -64,9 +68,10 @@
           <span id="status" class="disconnected">◈ OFFLINE</span>
           <span id="room-display">RM:<strong id="room-name">—</strong></span>
           <span id="players">— PLR</span>
-          <span id="latency">— ms</span>
+          <span id="latency">you — ms</span>
           <span id="clock-offset">Δ—</span>
           <span id="clock-bpm"></span>
+          <button id="help-btn">[ ? ]</button>
         </div>
       </header>
 
@@ -82,8 +87,6 @@
         />
         <button id="room-join-btn">[ JOIN ]</button>
       </div>
-
-      <div id="peers-bar"></div>
 
       <div id="controls" class="hud-panel clip-br">
         <div class="section-title">// TRANSPORT //</div>
@@ -133,11 +136,15 @@
           </div>
           <div class="monitor-col">
             <div class="section-title">// PROGRAM CHANGE //</div>
-            <div id="pgm-viz"><span class="label-dim">NO PGM RECEIVED</span></div>
+            <div id="pgm-viz">
+              <span class="label-dim">NO PGM RECEIVED</span>
+            </div>
           </div>
           <div class="monitor-col">
             <div class="section-title">// PITCH BEND //</div>
-            <div id="bend-viz"><span class="label-dim">NO BEND RECEIVED</span></div>
+            <div id="bend-viz">
+              <span class="label-dim">NO BEND RECEIVED</span>
+            </div>
           </div>
         </div>
       </div>
@@ -150,11 +157,6 @@
           <button id="rec-export-btn" disabled>↓ EXPORT .MID</button>
           <span id="rec-status" class="label-dim"></span>
         </div>
-      </div>
-
-      <div id="seq-wrap" class="hud-panel clip-bl">
-        <div class="section-title">// SEQUENCER //</div>
-        <div id="sequencer"></div>
       </div>
 
       <div id="vkb-section" class="hud-panel clip-tr">
@@ -196,10 +198,7 @@
             <input type="range" id="pr-vel" min="1" max="127" value="100" />
             <strong id="pr-vel-val">100</strong>
           </label>
-          <div class="file-btn-wrap">
-            <button id="pr-upload-btn">↑ LOAD .MID</button>
-            <input type="file" id="pr-file-input" accept=".mid,.midi" />
-          </div>
+          <div id="pr-drop-zone">↓ DROP .MID</div>
           <button id="pr-export-btn">↓ EXPORT .MID</button>
         </div>
         <div id="pr-canvas-wrap">
@@ -214,6 +213,204 @@
           // MIDI LOG <span class="cursor-blink">▮</span>
         </div>
         <div id="midi-log"></div>
+      </div>
+    </div>
+
+    <div id="help-modal">
+      <div class="help-box">
+        <div class="unlock-corner tl"></div>
+        <div class="unlock-corner tr"></div>
+        <div class="unlock-corner bl"></div>
+        <div class="unlock-corner br"></div>
+        <div class="help-header">
+          <h2 class="hud-title">MIDISERVER</h2>
+          <button id="help-close-btn">[ CLOSE ]</button>
+        </div>
+        <div class="help-content">
+          <p class="help-intro">// COLLABORATIVE NETWORK MIDI RELAY SERVER</p>
+
+          <div class="help-section">
+            <div class="section-title">// GETTING STARTED</div>
+            <ol class="help-list">
+              <li>
+                Click <span class="hk">[ ENTER ]</span> on the splash screen to
+                unlock audio
+              </li>
+              <li>
+                Enter a room name and click <span class="hk">[ JOIN ]</span>
+              </li>
+              <li>
+                Share the room name with collaborators — all peers sync
+                automatically
+              </li>
+              <li>
+                Draw notes on the piano roll, set BPM, and press
+                <span class="hk">▶ PLAY</span>
+              </li>
+            </ol>
+          </div>
+
+          <div class="help-section">
+            <div class="section-title">// TRANSPORT</div>
+            <table class="help-table">
+              <tr>
+                <td class="hk">▶ PLAY / ■ STOP</td>
+                <td>Start and stop synchronized playback across all peers</td>
+              </tr>
+              <tr>
+                <td class="hk">♩ CLICK</td>
+                <td>
+                  Toggle the metronome click track (downbeat accent on beat 1)
+                </td>
+              </tr>
+              <tr>
+                <td class="hk">BPM</td>
+                <td>
+                  Drag the slider to change tempo — broadcasts to all peers
+                </td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="help-section">
+            <div class="section-title">// PIANO ROLL</div>
+            <table class="help-table">
+              <tr>
+                <td class="hk">Left-click empty</td>
+                <td>Add a note, snapped to 1/16th beat</td>
+              </tr>
+              <tr>
+                <td class="hk">Left-click note</td>
+                <td>Delete the note</td>
+              </tr>
+              <tr>
+                <td class="hk">Drag note</td>
+                <td>Move note (pitch and/or beat position)</td>
+              </tr>
+              <tr>
+                <td class="hk">Right-click note</td>
+                <td>Delete the note</td>
+              </tr>
+              <tr>
+                <td class="hk">Scroll wheel</td>
+                <td>Scroll pitch range (vertical)</td>
+              </tr>
+              <tr>
+                <td class="hk">Shift + scroll</td>
+                <td>Scroll time (horizontal)</td>
+              </tr>
+              <tr>
+                <td class="hk">Ctrl + scroll</td>
+                <td>Zoom horizontal</td>
+              </tr>
+              <tr>
+                <td class="hk">↓ DROP .MID</td>
+                <td>Drag a .mid file onto the zone to import it</td>
+              </tr>
+              <tr>
+                <td class="hk">↓ EXPORT .MID</td>
+                <td>Download the current roll as a MIDI file</td>
+              </tr>
+              <tr>
+                <td class="hk">PR ON</td>
+                <td>
+                  Enable piano roll playback (routes to synth and/or MIDI
+                  output)
+                </td>
+              </tr>
+              <tr>
+                <td class="hk">BARS</td>
+                <td>Pattern length in bars (1 / 2 / 4 / 8)</td>
+              </tr>
+              <tr>
+                <td class="hk">CH / VEL</td>
+                <td>Channel and velocity for new notes</td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="help-section">
+            <div class="section-title">// MIDI I/O</div>
+            <table class="help-table">
+              <tr>
+                <td class="hk">INPUT / OUTPUT</td>
+                <td>
+                  Select hardware MIDI devices (requires browser MIDI
+                  permission)
+                </td>
+              </tr>
+              <tr>
+                <td class="hk">THRU</td>
+                <td>Pass MIDI input through to the output device</td>
+              </tr>
+              <tr>
+                <td class="hk">CLK ↑</td>
+                <td>Relay MIDI clock (0xF8) messages to the output device</td>
+              </tr>
+              <tr>
+                <td class="hk">PANIC</td>
+                <td>Send all-notes-off to the output device</td>
+              </tr>
+              <tr>
+                <td class="hk">FILTER CH</td>
+                <td>Only pass through MIDI on a specific channel (or all)</td>
+              </tr>
+              <tr>
+                <td class="hk">REMAP →</td>
+                <td>Remap incoming MIDI to a different output channel</td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="help-section">
+            <div class="section-title">// MONITOR</div>
+            <table class="help-table">
+              <tr>
+                <td class="hk">CC</td>
+                <td>
+                  Bar graph per controller number, labeled with CC name and
+                  value
+                </td>
+              </tr>
+              <tr>
+                <td class="hk">PROGRAM CHANGE</td>
+                <td>Last program received per channel with GM patch name</td>
+              </tr>
+              <tr>
+                <td class="hk">PITCH BEND</td>
+                <td>Center-anchored bar per channel showing bend amount</td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="help-section">
+            <div class="section-title">// MIDI RECORDING</div>
+            <table class="help-table">
+              <tr>
+                <td class="hk">● REC</td>
+                <td>Start recording all incoming MIDI events</td>
+              </tr>
+              <tr>
+                <td class="hk">■ STOP</td>
+                <td>Stop recording</td>
+              </tr>
+              <tr>
+                <td class="hk">↓ EXPORT .MID</td>
+                <td>Download the recording as a .mid file</td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="help-section">
+            <div class="section-title">// ROOMS</div>
+            <p>
+              Connect multiple browser tabs or devices to the same room by
+              entering the same room name. All play/stop commands, BPM changes,
+              and piano roll state broadcast to all peers. Your latency is shown
+              in the header as <span class="hk">you Xms</span>.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
 
