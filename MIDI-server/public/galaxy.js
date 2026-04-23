@@ -86,8 +86,7 @@
     const pos   = [];
 
     for (const raw of text.split('\n')) {
-      const line  = raw.trim();
-      const parts = line.split(/\s+/);
+      const parts = raw.trim().split(/\s+/);
       if (parts[0] === 'v') {
         verts.push(+parts[1], +parts[2], +parts[3]);
       } else if (parts[0] === 'f') {
@@ -113,13 +112,12 @@
   let model = null;
 
   loadOBJ('/models/slf_99739.obj').then(geo => {
-    // Auto-centre and scale to ~5 units
     const box    = geo.boundingBox;
     const size   = new THREE.Vector3();
     const centre = new THREE.Vector3();
     box.getSize(size);
     box.getCenter(centre);
-    const scale  = 5 / Math.max(size.x, size.y, size.z);
+    const scale = 5 / Math.max(size.x, size.y, size.z);
 
     geo.translate(-centre.x, -centre.y, -centre.z);
     geo.scale(scale, scale, scale);
@@ -132,14 +130,14 @@
     });
     model = new THREE.LineSegments(wireGeo, wireMat);
     scene.add(model);
-  }).catch(() => { /* model not found — skip silently */ });
+  }).catch(() => {});
 
   // ── Animate ───────────────────────────────────────────────
   function animate() {
     requestAnimationFrame(animate);
     stars.rotation.y += 0.00006;
     stars.rotation.x += 0.000025;
-    if (model) model.rotation.y += 0.003;
+    if (model) model.rotation.y += 0.0006;
     renderer.render(scene, camera);
   }
   animate();
