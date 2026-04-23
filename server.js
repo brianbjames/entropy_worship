@@ -8,7 +8,7 @@ const fs   = require('fs');
 const path = require('path');
 const { WebSocketServer, WebSocket } = require('ws');
 
-const PUBLIC = __dirname;
+const PUBLIC = path.join(__dirname, 'public');
 const MIME = {
   '.html': 'text/html',
   '.css':  'text/css',
