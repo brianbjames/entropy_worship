@@ -1267,6 +1267,40 @@ strong {
   letter-spacing: 0.06em;
 }
 
+/* ── Available Rooms panel ───────────────────────────────────── */
+#rooms-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 4px 0;
+  min-height: 24px;
+}
+.room-entry {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 8px;
+  color: var(--accent);
+  text-decoration: none;
+  border: 1px solid transparent;
+  font-family: var(--font);
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  transition: background 0.15s, border-color 0.15s;
+}
+.room-entry:hover {
+  border-color: var(--border);
+  background: rgba(255, 34, 34, 0.07);
+}
+.room-entry-name {
+  letter-spacing: 0.1em;
+}
+.room-entry-info {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+}
+
 /* ── Footer ──────────────────────────────────────────────────── */
 #ew-footer {
   border-top: 1px solid var(--border);

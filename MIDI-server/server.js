@@ -84,6 +84,7 @@ function makeRoom(name) {
       bpm: 120,
       epoch: null,
       clockRelay: false,
+      private: false,
     },
     clients: new Map(), // clientId → { ws, rtt }
   };
@@ -134,6 +135,20 @@ function broadcastPeers(room) {
   }
 }
 
+function broadcastPublicRooms() {
+  const list = [...rooms.values()]
+    .filter((r) => !r.seqState.private && r.clients.size > 0)
+    .map((r) => ({
+      name: r.name,
+      players: r.clients.size,
+      bpm: r.seqState.bpm,
+      playing: r.seqState.playing,
+    }));
+  const msg = { type: "rooms", rooms: list };
+  for (const room of rooms.values())
+    for (const { ws } of room.clients.values()) send(ws, msg);
+}
+
 // ── WebSocket server ─────────────────────────────────────────
 const wss = new WebSocketServer({ server: httpServer });
 
@@ -154,8 +169,10 @@ wss.on("connection", (ws, req) => {
     playing: room.seqState.playing,
     epoch: room.seqState.epoch,
     clockRelay: room.seqState.clockRelay,
+    private: room.seqState.private,
   });
   broadcastPeers(room);
+  broadcastPublicRooms();
 
   ws.on("message", (raw) => {
     let msg;
@@ -225,6 +242,14 @@ wss.on("connection", (ws, req) => {
           );
         }
         break;
+
+      case "setPrivate":
+        if (typeof msg.private === "boolean") {
+          room.seqState.private = msg.private;
+          broadcastAll(room, { type: "roomPrivate", private: msg.private });
+          broadcastPublicRooms();
+        }
+        break;
     }
   });
 
@@ -240,6 +265,7 @@ wss.on("connection", (ws, req) => {
       room.seqState.epoch = null;
       if (roomName !== "default") rooms.delete(roomName);
     }
+    broadcastPublicRooms();
   });
 });
 

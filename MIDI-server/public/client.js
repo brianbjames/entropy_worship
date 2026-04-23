@@ -70,6 +70,7 @@ const state = {
 let myClientId        = null;
 let clockRelayEnabled = false;
 let clickEnabled      = false;
+let roomPrivate       = false;
 
 // ── Tone.js Instruments ──────────────────────────────────────
 let padSynth, clickSynth;
@@ -149,6 +150,32 @@ function updateTransportUI() {
   document.getElementById('stop-btn').disabled = !state.playing;
 }
 
+function updatePrivacyBtn() {
+  const btn = document.getElementById('privacy-btn');
+  btn.textContent = roomPrivate ? '[ PRIVATE ]' : '[ PUBLIC ]';
+  btn.classList.toggle('active', roomPrivate);
+}
+
+function renderRooms(list) {
+  const el = document.getElementById('rooms-list');
+  if (!el) return;
+  const others = (list || []).filter(r => r.name !== ROOM);
+  if (!others.length) {
+    el.innerHTML = '<span class="label-dim">NO ROOMS AVAILABLE</span>';
+    return;
+  }
+  el.innerHTML = '';
+  for (const r of others) {
+    const a = document.createElement('a');
+    a.className = 'room-entry';
+    a.href = `?room=${encodeURIComponent(r.name)}`;
+    a.innerHTML =
+      `<span class="room-entry-name">${r.name}</span>` +
+      `<span class="room-entry-info">${r.players} PLR · ${r.bpm} BPM · ${r.playing ? '▶' : '■'}</span>`;
+    el.appendChild(a);
+  }
+}
+
 // ── WebSocket connection ─────────────────────────────────────
 // If no room is in the URL, generate a random one and update the address
 // bar so users don't all pile into a shared default room by accident.
@@ -202,12 +229,23 @@ ws.onmessage = ({ data }) => {
     case 'state':
       myClientId        = msg.clientId;
       clockRelayEnabled = msg.clockRelay || false;
+      roomPrivate       = msg.private   || false;
       state.bpm   = msg.bpm;
       document.getElementById('bpm').value          = msg.bpm;
       document.getElementById('bpm-val').textContent = msg.bpm;
       document.getElementById('room-name').textContent = msg.room || ROOM;
       document.getElementById('clock-relay-btn').classList.toggle('active', clockRelayEnabled);
+      updatePrivacyBtn();
       if (msg.playing && msg.epoch) startSequencer(msg.epoch);
+      break;
+
+    case 'roomPrivate':
+      roomPrivate = msg.private;
+      updatePrivacyBtn();
+      break;
+
+    case 'rooms':
+      renderRooms(msg.rooms);
       break;
 
     case 'play':
@@ -280,6 +318,13 @@ function initUI() {
     clockRelayEnabled = !clockRelayEnabled;
     document.getElementById('clock-relay-btn').classList.toggle('active', clockRelayEnabled);
     ws.send(JSON.stringify({ type: 'clockRelay', enabled: clockRelayEnabled }));
+  });
+
+  // Room privacy toggle
+  document.getElementById('privacy-btn').addEventListener('click', () => {
+    roomPrivate = !roomPrivate;
+    updatePrivacyBtn();
+    ws.send(JSON.stringify({ type: 'setPrivate', private: roomPrivate }));
   });
 
   // Auto-request MIDI access
