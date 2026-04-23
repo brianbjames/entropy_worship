@@ -86,8 +86,10 @@
       <div id="peers-bar"></div>
 
       <div id="controls" class="hud-panel clip-br">
+        <div class="section-title">// TRANSPORT //</div>
         <button id="play-btn">▶ PLAY</button>
         <button id="stop-btn" disabled>■ STOP</button>
+        <button id="click-btn">♩ CLICK</button>
         <div class="bpm-group">
           <span class="label-dim">BPM</span>
           <input type="range" id="bpm" min="60" max="200" value="120" />
@@ -123,6 +125,33 @@
         </div>
       </div>
 
+      <div id="monitor-section" class="hud-panel clip-br">
+        <div id="monitor-cols">
+          <div class="monitor-col">
+            <div class="section-title">// CC //</div>
+            <div id="cc-viz"><span class="label-dim">NO CC RECEIVED</span></div>
+          </div>
+          <div class="monitor-col">
+            <div class="section-title">// PROGRAM CHANGE //</div>
+            <div id="pgm-viz"><span class="label-dim">NO PGM RECEIVED</span></div>
+          </div>
+          <div class="monitor-col">
+            <div class="section-title">// PITCH BEND //</div>
+            <div id="bend-viz"><span class="label-dim">NO BEND RECEIVED</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="record-section" class="hud-panel clip-bl">
+        <div class="section-title">// MIDI RECORDING //</div>
+        <div id="record-controls">
+          <button id="rec-btn">● REC</button>
+          <button id="rec-stop-btn" disabled>■ STOP</button>
+          <button id="rec-export-btn" disabled>↓ EXPORT .MID</button>
+          <span id="rec-status" class="label-dim"></span>
+        </div>
+      </div>
+
       <div id="seq-wrap" class="hud-panel clip-bl">
         <div class="section-title">// SEQUENCER //</div>
         <div id="sequencer"></div>
@@ -142,21 +171,6 @@
           </label>
         </div>
         <div id="vkb-scroll"><div id="vkb"></div></div>
-      </div>
-
-      <div id="cc-section" class="hud-panel clip-br">
-        <div class="section-title">// CC MONITOR //</div>
-        <div id="cc-viz"><span class="label-dim">NO CC RECEIVED</span></div>
-      </div>
-
-      <div id="record-section" class="hud-panel clip-bl">
-        <div class="section-title">// MIDI RECORDING //</div>
-        <div id="record-controls">
-          <button id="rec-btn">● REC</button>
-          <button id="rec-stop-btn" disabled>■ STOP</button>
-          <button id="rec-export-btn" disabled>↓ EXPORT .MID</button>
-          <span id="rec-status" class="label-dim"></span>
-        </div>
       </div>
 
       <div id="pr-section" class="hud-panel clip-tl">
@@ -182,13 +196,10 @@
             <input type="range" id="pr-vel" min="1" max="127" value="100" />
             <strong id="pr-vel-val">100</strong>
           </label>
-          <label id="pr-upload-btn" for="pr-file-input">↑ LOAD .MID</label>
-          <input
-            type="file"
-            id="pr-file-input"
-            accept=".mid,.midi"
-            style="position: absolute; left: -9999px; opacity: 0"
-          />
+          <div class="file-btn-wrap">
+            <button id="pr-upload-btn">↑ LOAD .MID</button>
+            <input type="file" id="pr-file-input" accept=".mid,.midi" />
+          </div>
           <button id="pr-export-btn">↓ EXPORT .MID</button>
         </div>
         <div id="pr-canvas-wrap">
@@ -196,16 +207,6 @@
           <canvas id="pr-ruler"></canvas>
           <canvas id="pr-grid"></canvas>
         </div>
-      </div>
-
-      <div id="pgm-section" class="hud-panel clip-tr">
-        <div class="section-title">// PROGRAM CHANGE //</div>
-        <div id="pgm-viz"><span class="label-dim">NO PGM RECEIVED</span></div>
-      </div>
-
-      <div id="bend-section" class="hud-panel clip-bl">
-        <div class="section-title">// PITCH BEND //</div>
-        <div id="bend-viz"><span class="label-dim">NO BEND RECEIVED</span></div>
       </div>
 
       <div id="midi-section" class="hud-panel clip-tr">

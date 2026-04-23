@@ -354,6 +354,7 @@ function prOnMouseDown(e) {
       idx,
       offsetBeat: beat - prNotes[idx].beatStart,
       origNote: prNotes[idx].note,
+      didMove: false,
     };
   } else {
     const ch = +document.getElementById("pr-ch").value;
@@ -382,6 +383,7 @@ function prOnMouseMove(e) {
       prTotalBeat() - n.beatDur,
     );
     n.note = note;
+    prDrag.didMove = true;
   } else if (prDrag.mode === "add") {
     const end = prClamp(prSnapBeat(beat), 0.25, prTotalBeat());
     n.beatDur = Math.max(0.25, end - prDrag.origBeat);
@@ -390,6 +392,10 @@ function prOnMouseMove(e) {
 }
 
 function prOnMouseUp() {
+  if (prDrag && prDrag.mode === "move" && !prDrag.didMove) {
+    prNotes.splice(prDrag.idx, 1);
+    drawAll();
+  }
   prDrag = null;
 }
 
