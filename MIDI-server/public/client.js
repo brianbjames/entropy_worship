@@ -629,7 +629,7 @@ function logMidiRow(label, ch, val1, val2, remote) {
   const chStr = ch != null ? `ch${String(ch).padStart(2)}` : '    ';
   div.textContent = `${remote ? '←' : '→'} ${label.padEnd(8)} ${chStr}  ${val1}${val2 ? '  ' + val2 : ''}`;
   el.prepend(div);
-  if (el.children.length > 20) el.removeChild(el.lastChild);
+  if (el.children.length > 200) el.removeChild(el.lastChild);
 }
 
 function onMidiMessage(e) {
