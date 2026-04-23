@@ -95,12 +95,28 @@ padSynth.volume.value   = -8;
 const SCALE_NOTES = ['C4','D4','E4','G4','A4','C5','D5','E5',
                      'G5','A5','C4','D4','E4','G4','A4','C5'];
 
+// GM drum map (ch 9 = MIDI channel 10) + melodic ch 0 for synth
+const SEQ_MIDI = {
+  kick:  ()     => [36, 9],
+  snare: ()     => [38, 9],
+  hihat: ()     => [42, 9],
+  synth: (step) => [Tone.Frequency(SCALE_NOTES[step]).toMidi(), 0],
+};
+
 function fireStep(track, step, time) {
   switch (track) {
     case 'kick':  kickSynth.triggerAttackRelease('C1', '8n', time);              break;
     case 'snare': snareSynth.triggerAttackRelease('8n', time);                   break;
     case 'hihat': hihatSynth.triggerAttackRelease('32n', time);                  break;
     case 'synth': padSynth.triggerAttackRelease(SCALE_NOTES[step], '8n', time);  break;
+  }
+  if (selectedOutput) {
+    const [note, ch] = SEQ_MIDI[track](step);
+    const delayMs = Math.max(0, (time - Tone.context.currentTime) * 1000);
+    setTimeout(() => {
+      sendToOutput([0x90 | ch, note, 100]);
+      setTimeout(() => sendToOutput([0x80 | ch, note, 0]), 80);
+    }, delayMs);
   }
 }
 
@@ -738,6 +754,7 @@ function vkbOn(note) {
   const ch    = +document.getElementById('vkb-ch').value - 1;
   const bytes = [0x90 | ch, note, vel];
   handleMidiData(bytes, false);
+  sendToOutput(bytes);
   if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: 'midi', data: bytes }));
   document.querySelectorAll(`.vkey[data-note="${note}"]`).forEach(k => k.classList.add('active'));
 }
@@ -748,6 +765,7 @@ function vkbOff(note) {
   const ch    = +document.getElementById('vkb-ch').value - 1;
   const bytes = [0x80 | ch, note, 0];
   handleMidiData(bytes, false);
+  sendToOutput(bytes);
   if (ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: 'midi', data: bytes }));
   document.querySelectorAll(`.vkey[data-note="${note}"]`).forEach(k => k.classList.remove('active'));
 }
