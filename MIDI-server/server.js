@@ -73,13 +73,6 @@ const httpServer = http.createServer((req, res) => {
 });
 
 // ── Room management ──────────────────────────────────────────
-const DEFAULT_STEPS = () => ({
-  kick: [1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
-  snare: [0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0],
-  hihat: [1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
-  synth: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-});
-
 const rooms = new Map();
 let nextId = 1;
 
@@ -91,7 +84,6 @@ function makeRoom(name) {
       bpm: 120,
       epoch: null,
       clockRelay: false,
-      steps: DEFAULT_STEPS(),
     },
     clients: new Map(), // clientId → { ws, rtt }
   };
@@ -159,7 +151,6 @@ wss.on("connection", (ws, req) => {
     clientId,
     room: roomName,
     bpm: room.seqState.bpm,
-    steps: room.seqState.steps,
     playing: room.seqState.playing,
     epoch: room.seqState.epoch,
     clockRelay: room.seqState.clockRelay,
@@ -211,23 +202,6 @@ wss.on("connection", (ws, req) => {
         }
         break;
 
-      case "step": {
-        const { track, step, value } = msg;
-        if (room.seqState.steps[track] && step >= 0 && step < 16) {
-          room.seqState.steps[track][step] = value ? 1 : 0;
-          broadcastRoom(
-            room,
-            {
-              type: "step",
-              track,
-              step,
-              value: room.seqState.steps[track][step],
-            },
-            clientId,
-          );
-        }
-        break;
-      }
 
       case "midi":
         if (
@@ -260,8 +234,12 @@ wss.on("connection", (ws, req) => {
       `[-] ${clientId} left room "${roomName}" (${room.clients.size} total)`,
     );
     broadcastPeers(room);
-    if (room.clients.size === 0 && roomName !== "default")
-      rooms.delete(roomName);
+    if (room.clients.size === 0) {
+      // Reset transport so new joiners don't inherit a stale playing state
+      room.seqState.playing = false;
+      room.seqState.epoch = null;
+      if (roomName !== "default") rooms.delete(roomName);
+    }
   });
 });
 
