@@ -203,15 +203,6 @@ function updateTransportUI() {
   document.getElementById('stop-btn').disabled = !state.playing;
 }
 
-function logMidi(note, vel, remote) {
-  const el  = document.getElementById('midi-log');
-  const div = document.createElement('div');
-  div.className = 'mlog' + (remote ? ' rem' : '');
-  div.textContent = `${remote ? '← ' : '→ '}note ${note}  vel ${vel}`;
-  el.prepend(div);
-  if (el.children.length > 16) el.removeChild(el.lastChild);
-}
-
 // ── WebSocket connection ─────────────────────────────────────
 // In production: set this to your Railway URL, e.g.:
 //   const WS_SERVER = 'wss://jam-sync-production.up.railway.app';
@@ -282,14 +273,9 @@ ws.onmessage = ({ data }) => {
         `${msg.count} player${msg.count !== 1 ? 's' : ''}`;
       break;
 
-    // MIDI note relayed from another client → play locally
+    // MIDI relayed from another client → handle locally
     case 'midi':
-      if (msg.midiType === 'noteon') {
-        padSynth.triggerAttackRelease(
-          Tone.Frequency(msg.note, 'midi').toFrequency(), '8n'
-        );
-        logMidi(msg.note, msg.velocity, /* remote= */ true);
-      }
+      if (Array.isArray(msg.data)) handleMidiData(msg.data, /* remote= */ true);
       break;
   }
 };
@@ -325,7 +311,7 @@ function initUI() {
       return;
     }
     try {
-      const access = await navigator.requestMIDIAccess();
+      const access = await navigator.requestMIDIAccess({ sysex: false });
       const btn = document.getElementById('midi-btn');
       btn.textContent = 'MIDI';
       btn.classList.add('active');
@@ -341,44 +327,38 @@ function initUI() {
   });
 }
 
-// ── Web MIDI input ───────────────────────────────────────────
-let midiAccess = null;
-let selectedPortId = null;  // null = no device selected
+// ── Web MIDI ─────────────────────────────────────────────────
+let midiAccess     = null;
+let selectedPortId = null;
+let clockTickTimes = [];
+
+// MIDI note number → name (e.g. 60 → "C4")
+function midiNoteName(n) {
+  return ['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'][n % 12] + (Math.floor(n / 12) - 1);
+}
 
 function populateMidiDevices(access) {
   midiAccess = access;
-  const select = document.getElementById('midi-device');
-  const prevValue = select.value;
+  const select   = document.getElementById('midi-device');
+  const prevVal  = select.value;
 
-  // Rebuild options
   select.innerHTML = '<option value="">— select device —</option>';
   access.inputs.forEach(port => {
     const opt = document.createElement('option');
     opt.value = port.id;
-    opt.textContent = port.name;
-    if (port.state === 'disconnected') opt.textContent += ' (disconnected)';
+    opt.textContent = port.name + (port.state === 'disconnected' ? ' (disconnected)' : '');
     select.appendChild(opt);
   });
 
-  // Restore previous selection if still available
-  if (prevValue && [...access.inputs.keys()].includes(prevValue)) {
-    select.value = prevValue;
-  }
-
+  if (prevVal && [...access.inputs.keys()].includes(prevVal)) select.value = prevVal;
   select.style.display = access.inputs.size > 0 ? 'inline-block' : 'none';
-
-  // Re-attach listener to whichever port is selected
   selectMidiDevice(select.value);
 }
 
 function selectMidiDevice(portId) {
   if (!midiAccess) return;
   selectedPortId = portId;
-
-  // Detach from all ports first
   midiAccess.inputs.forEach(port => { port.onmidimessage = null; });
-
-  // Attach to selected port only
   if (portId) {
     const port = midiAccess.inputs.get(portId);
     if (port) port.onmidimessage = onMidiMessage;
@@ -389,21 +369,115 @@ document.getElementById('midi-device').addEventListener('change', e => {
   selectMidiDevice(e.target.value);
 });
 
-function onMidiMessage(e) {
-  const [status, note, vel] = e.data;
-  const type = status & 0xf0;
+// ── Unified MIDI handler (local + remote) ────────────────────
+function handleMidiData(bytes, remote) {
+  const status  = bytes[0];
+  const msgType = status & 0xf0;
+  const ch      = (status & 0x0f) + 1;   // 1-based
+  const d1      = bytes[1] ?? 0;
+  const d2      = bytes[2] ?? 0;
 
-  // Note On (with non-zero velocity)
-  if (type === 0x90 && vel > 0) {
-    padSynth.triggerAttackRelease(
-      Tone.Frequency(note, 'midi').toFrequency(), '8n', Tone.now(), vel / 127
-    );
-    logMidi(note, vel, /* remote= */ false);
-    ws.send(JSON.stringify({ type: 'midi', midiType: 'noteon', note, velocity: vel }));
+  switch (msgType) {
+
+    case 0x90:  // Note On
+      if (d2 > 0) {
+        remote
+          ? padSynth.triggerAttackRelease(Tone.Frequency(d1, 'midi').toFrequency(), '8n')
+          : padSynth.triggerAttackRelease(Tone.Frequency(d1, 'midi').toFrequency(), '8n', Tone.now(), d2 / 127);
+        logMidiRow('Note On',  ch, midiNoteName(d1), `v:${d2}`, remote);
+        break;
+      }
+      // velocity 0 = Note Off, fall through
+
+    case 0x80:  // Note Off
+      logMidiRow('Note Off', ch, midiNoteName(d1), '', remote);
+      break;
+
+    case 0xB0:  // Control Change
+      handleCC(ch, d1, d2, remote);
+      break;
+
+    case 0xC0:  // Program Change
+      logMidiRow('PGM', ch, `#${d1 + 1}`, '', remote);
+      break;
+
+    case 0xD0:  // Channel Pressure
+      logMidiRow('Pressure', ch, `v:${d1}`, '', remote);
+      break;
+
+    case 0xE0: { // Pitch Bend  (-8192 … +8191)
+      const bend = ((d2 << 7) | d1) - 8192;
+      padSynth.set({ detune: (bend / 8192) * 200 });  // ±200 cents
+      logMidiRow('Pitch', ch, bend >= 0 ? `+${bend}` : `${bend}`, '', remote);
+      break;
+    }
+
+    case 0xF0:  // System Real-Time / SysEx
+      handleSysMsg(status, remote);
+      break;
   }
-  // Note Off (or Note On with vel=0)
-  else if (type === 0x80 || (type === 0x90 && vel === 0)) {
-    ws.send(JSON.stringify({ type: 'midi', midiType: 'noteoff', note, velocity: 0 }));
+}
+
+function handleCC(ch, cc, val, remote) {
+  switch (cc) {
+    case 1:           // Mod wheel → subtle detune
+      padSynth.set({ detune: (val / 127) * 50 });
+      break;
+    case 7:           // Channel Volume
+    case 11:          // Expression
+      padSynth.volume.value = -40 + (val / 127) * 32;
+      break;
+    case 120:         // All Sound Off
+    case 123:         // All Notes Off
+      padSynth.releaseAll();
+      break;
+  }
+  logMidiRow('CC', ch, `#${cc}`, `v:${val}`, remote);
+}
+
+function handleSysMsg(status, remote) {
+  switch (status) {
+    case 0xF8: {  // MIDI Clock tick — 24 per beat, measure locally only
+      const now = performance.now();
+      clockTickTimes.push(now);
+      if (clockTickTimes.length > 24) clockTickTimes.shift();
+      return;  // never log or relay clock ticks
+    }
+    case 0xFA: logMidiRow('Clock', null, 'Start',    '', remote); break;
+    case 0xFB: logMidiRow('Clock', null, 'Continue', '', remote); break;
+    case 0xFC:
+      clockTickTimes = [];
+      logMidiRow('Clock', null, 'Stop', '', remote);
+      break;
+    case 0xFE: return;  // Active Sensing — ignore
+    case 0xFF: logMidiRow('Sys',   null, 'Reset',    '', remote); break;
+  }
+}
+
+function logMidiRow(label, ch, val1, val2, remote) {
+  const el  = document.getElementById('midi-log');
+  const div = document.createElement('div');
+  div.className = 'mlog' + (remote ? ' rem' : '');
+  const chStr = ch != null ? `ch${String(ch).padStart(2)}` : '    ';
+  div.textContent = `${remote ? '←' : '→'} ${label.padEnd(8)} ${chStr}  ${val1}${val2 ? '  ' + val2 : ''}`;
+  el.prepend(div);
+  if (el.children.length > 20) el.removeChild(el.lastChild);
+}
+
+function onMidiMessage(e) {
+  const bytes  = Array.from(e.data);
+  const status = bytes[0];
+
+  // MIDI Clock and Active Sensing: handle locally, never relay
+  if (status === 0xF8 || status === 0xFE) {
+    handleSysMsg(status, false);
+    return;
+  }
+
+  handleMidiData(bytes, /* remote= */ false);
+
+  if (ws.readyState === WebSocket.OPEN) {
+    ws.send(JSON.stringify({ type: 'midi', data: bytes }));
   }
 }
 
