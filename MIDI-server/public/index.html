@@ -1,132 +1,158 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MIDI SERVER // ENTROPY WORSHIP</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <canvas id="galaxy-bg"></canvas>
-  <div id="grid-bg"></div>
-  <div id="scanlines"></div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MIDISERVER // ENTROPY WORSHIP</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=VT323&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <canvas id="galaxy-bg"></canvas>
+    <div id="grid-bg"></div>
+    <div id="scanlines"></div>
 
-  <div id="unlock-overlay">
-    <div class="unlock-box">
-      <div class="unlock-corner tl"></div>
-      <div class="unlock-corner tr"></div>
-      <div class="unlock-corner bl"></div>
-      <div class="unlock-corner br"></div>
-      <h1 class="hud-title">MIDI SERVER</h1>
-      <p>// COLLABORATIVE SEQUENCER // SYNCHRONIZED //</p>
-      <button id="unlock-btn">[ ENTER ]</button>
-    </div>
-  </div>
-
-  <div id="app">
-    <header>
-      <h1 class="hud-title">MIDI&thinsp;SERVER</h1>
-      <div id="meta">
-        <span id="status" class="disconnected">◈ OFFLINE</span>
-        <span id="room-display">RM:<strong id="room-name">—</strong></span>
-        <span id="players">— PLR</span>
-        <span id="latency">— ms</span>
-        <span id="clock-offset">Δ—</span>
+    <div id="unlock-overlay">
+      <div class="unlock-box">
+        <div class="unlock-corner tl"></div>
+        <div class="unlock-corner tr"></div>
+        <div class="unlock-corner bl"></div>
+        <div class="unlock-corner br"></div>
+        <h1 class="hud-title">MIDISERVER</h1>
+        <p>// COLLABORATIVE SEQUENCER // SYNCHRONIZED</p>
+        <p>
+          a collaborative network MIDI relay server with basic channel routing
+        </p>
+        <button id="unlock-btn">[ ENTER ]</button>
       </div>
-    </header>
-
-    <div id="room-bar">
-      <span class="label-dim">// ROOM</span>
-      <input id="room-input" type="text" placeholder="ROOM-ID" maxlength="32" spellcheck="false" autocomplete="off">
-      <button id="room-join-btn">[ JOIN ]</button>
     </div>
 
-    <div id="peers-bar"></div>
-
-    <div id="controls" class="hud-panel clip-br">
-      <button id="play-btn">▶ PLAY</button>
-      <button id="stop-btn" disabled>■ STOP</button>
-      <div class="bpm-group">
-        <span class="label-dim">BPM</span>
-        <input type="range" id="bpm" min="60" max="200" value="120">
-        <strong id="bpm-val">120</strong>
-      </div>
-      <div id="midi-controls">
-        <div id="midi-io">
-          <select id="midi-input-device">
-            <option value="">— INPUT —</option>
-          </select>
-          <span class="midi-sep" id="midi-arrow">→</span>
-          <select id="midi-output-device">
-            <option value="">— OUTPUT —</option>
-          </select>
-          <button id="thru-btn">THRU</button>
-          <button id="clock-relay-btn">CLK ↑</button>
-          <button id="panic-btn">⚠ PANIC</button>
+    <div id="app">
+      <header>
+        <h1 class="hud-title">MIDISERVER</h1>
+        <div id="meta">
+          <span id="status" class="disconnected">◈ OFFLINE</span>
+          <span id="room-display">RM:<strong id="room-name">—</strong></span>
+          <span id="players">— PLR</span>
+          <span id="latency">— ms</span>
+          <span id="clock-offset">Δ—</span>
         </div>
-        <div id="midi-channel-row" style="display:none">
-          <label class="label-dim">FILTER
-            <select id="filter-ch"><option value="0">ALL CH</option></select>
-          </label>
-          <label class="label-dim">REMAP →
-            <select id="remap-ch"><option value="0">AS-IS</option></select>
-          </label>
+      </header>
+
+      <div id="room-bar">
+        <span class="label-dim">// ROOM</span>
+        <input
+          id="room-input"
+          type="text"
+          placeholder="ROOM-ID"
+          maxlength="32"
+          spellcheck="false"
+          autocomplete="off"
+        />
+        <button id="room-join-btn">[ JOIN ]</button>
+      </div>
+
+      <div id="peers-bar"></div>
+
+      <div id="controls" class="hud-panel clip-br">
+        <button id="play-btn">▶ PLAY</button>
+        <button id="stop-btn" disabled>■ STOP</button>
+        <div class="bpm-group">
+          <span class="label-dim">BPM</span>
+          <input type="range" id="bpm" min="60" max="200" value="120" />
+          <strong id="bpm-val">120</strong>
+        </div>
+        <div id="midi-controls">
+          <div id="midi-io">
+            <select id="midi-input-device">
+              <option value="">— INPUT —</option>
+            </select>
+            <span class="midi-sep" id="midi-arrow">→</span>
+            <select id="midi-output-device">
+              <option value="">— OUTPUT —</option>
+            </select>
+            <button id="thru-btn">THRU</button>
+            <button id="clock-relay-btn">CLK ↑</button>
+            <button id="panic-btn">⚠ PANIC</button>
+          </div>
+          <div id="midi-channel-row" style="display: none">
+            <label class="label-dim"
+              >FILTER
+              <select id="filter-ch">
+                <option value="0">ALL CH</option>
+              </select>
+            </label>
+            <label class="label-dim"
+              >REMAP →
+              <select id="remap-ch">
+                <option value="0">AS-IS</option>
+              </select>
+            </label>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div id="seq-wrap" class="hud-panel clip-bl">
-      <div class="section-title">// SEQUENCER //</div>
-      <div id="sequencer"></div>
-    </div>
-
-    <div id="vkb-section" class="hud-panel clip-tr">
-      <div class="section-title">// VIRTUAL KEYBOARD //</div>
-      <div id="vkb-controls">
-        <label class="label-dim">OCT
-          <select id="vkb-oct">
-            <option value="2">C2</option>
-            <option value="3">C3</option>
-            <option value="4" selected>C4</option>
-            <option value="5">C5</option>
-            <option value="6">C6</option>
-          </select>
-        </label>
-        <label class="label-dim">CH <select id="vkb-ch"></select></label>
-        <label class="label-dim">VEL
-          <input type="range" id="vkb-vel" min="1" max="127" value="80">
-          <strong id="vkb-vel-val">80</strong>
-        </label>
+      <div id="seq-wrap" class="hud-panel clip-bl">
+        <div class="section-title">// SEQUENCER //</div>
+        <div id="sequencer"></div>
       </div>
-      <div id="vkb"></div>
-    </div>
 
-    <div id="cc-section" class="hud-panel clip-br">
-      <div class="section-title">// CC MONITOR //</div>
-      <div id="cc-viz"><span class="label-dim">NO CC RECEIVED</span></div>
-    </div>
+      <div id="vkb-section" class="hud-panel clip-tr">
+        <div class="section-title">// VIRTUAL KEYBOARD //</div>
+        <div id="vkb-controls">
+          <label class="label-dim"
+            >OCT
+            <select id="vkb-oct">
+              <option value="2">C2</option>
+              <option value="3">C3</option>
+              <option value="4" selected>C4</option>
+              <option value="5">C5</option>
+              <option value="6">C6</option>
+            </select>
+          </label>
+          <label class="label-dim"
+            >CH
+            <select id="vkb-ch"></select
+          ></label>
+          <label class="label-dim"
+            >VEL
+            <input type="range" id="vkb-vel" min="1" max="127" value="80" />
+            <strong id="vkb-vel-val">80</strong>
+          </label>
+        </div>
+        <div id="vkb"></div>
+      </div>
 
-    <div id="record-section" class="hud-panel clip-bl">
-      <div class="section-title">// RECORDING //</div>
-      <div id="record-controls">
-        <button id="rec-btn">● REC</button>
-        <button id="rec-stop-btn" disabled>■ STOP</button>
-        <button id="rec-export-btn" disabled>↓ EXPORT .MID</button>
-        <span id="rec-status" class="label-dim"></span>
+      <div id="cc-section" class="hud-panel clip-br">
+        <div class="section-title">// CC MONITOR //</div>
+        <div id="cc-viz"><span class="label-dim">NO CC RECEIVED</span></div>
+      </div>
+
+      <div id="record-section" class="hud-panel clip-bl">
+        <div class="section-title">// RECORDING //</div>
+        <div id="record-controls">
+          <button id="rec-btn">● REC</button>
+          <button id="rec-stop-btn" disabled>■ STOP</button>
+          <button id="rec-export-btn" disabled>↓ EXPORT .MID</button>
+          <span id="rec-status" class="label-dim"></span>
+        </div>
+      </div>
+
+      <div id="midi-section" class="hud-panel clip-tr">
+        <div class="section-title">
+          // MIDI LOG <span class="cursor-blink">▮</span>
+        </div>
+        <div id="midi-log"></div>
       </div>
     </div>
 
-    <div id="midi-section" class="hud-panel clip-tr">
-      <div class="section-title">// MIDI LOG <span class="cursor-blink">▮</span></div>
-      <div id="midi-log"></div>
-    </div>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/tone@14.8/build/Tone.js"></script>
-  <script src="galaxy.js"></script>
-  <script src="client.js"></script>
-</body>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tone@14.8/build/Tone.js"></script>
+    <script src="galaxy.js"></script>
+    <script src="client.js"></script>
+  </body>
 </html>
