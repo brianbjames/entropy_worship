@@ -341,32 +341,20 @@ function initUI() {
     ws.send(JSON.stringify({ type: 'clockRelay', enabled: clockRelayEnabled }));
   });
 
-  // MIDI access
-  document.getElementById('midi-btn').addEventListener('click', async () => {
-    if (!navigator.requestMIDIAccess) {
-      alert('Web MIDI is not supported in this browser.\nTry Chrome or Edge.');
-      return;
-    }
-    try {
-      const access = await navigator.requestMIDIAccess({ sysex: true });
-      const btn = document.getElementById('midi-btn');
-      btn.textContent = 'MIDI';
-      btn.classList.add('active');
-      btn.disabled = true;
-
+  // Auto-request MIDI access
+  if (navigator.requestMIDIAccess) {
+    navigator.requestMIDIAccess({ sysex: true }).then(access => {
       populateMidiDevices(access);
       populateMidiOutputs(access);
       populateChannelSelects();
-      document.getElementById('clock-relay-btn').style.display = 'inline-block';
-
       access.onstatechange = () => {
         populateMidiDevices(access);
         populateMidiOutputs(access);
       };
-    } catch (err) {
-      alert('MIDI access denied: ' + err.message);
-    }
-  });
+    }).catch(() => {
+      // MIDI denied — selects stay hidden, no hard failure
+    });
+  }
 
   // Virtual keyboard
   const vkbCh = document.getElementById('vkb-ch');
@@ -415,6 +403,7 @@ function populateMidiDevices(access) {
   });
   if (prevVal && [...access.inputs.keys()].includes(prevVal)) select.value = prevVal;
   select.style.display = access.inputs.size > 0 ? 'inline-block' : 'none';
+  document.getElementById('clock-relay-btn').style.display = access.inputs.size > 0 ? 'inline-block' : 'none';
   selectMidiInput(select.value);
 }
 
