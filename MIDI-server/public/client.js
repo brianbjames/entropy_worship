@@ -450,9 +450,11 @@ function handleMidiData(bytes, remote) {
   switch (msgType) {
     case 0x90:
       if (d2 > 0) {
-        if (padSynth) remote
-          ? padSynth.triggerAttackRelease(Tone.Frequency(d1, 'midi').toFrequency(), '8n')
-          : padSynth.triggerAttackRelease(Tone.Frequency(d1, 'midi').toFrequency(), '8n', Tone.now(), d2 / 127);
+        // Only play local notes through the browser synth — remote notes are
+        // for MIDI log and hardware output (via THRU) only
+        if (padSynth && !remote) {
+          padSynth.triggerAttackRelease(Tone.Frequency(d1, 'midi').toFrequency(), '8n', Tone.now(), d2 / 127);
+        }
         logMidiRow('Note On', ch, midiNoteName(d1), `v:${d2}`, remote);
         break;
       }
@@ -485,8 +487,12 @@ function handleMidiData(bytes, remote) {
   // Record channel-voice events (skip system messages)
   if (msgType < 0xF0) recordEvent(bytes);
 
-  // Route remote MIDI to physical output when Thru is on
-  if (remote && thruEnabled) sendToOutput(bytes);
+  // Route remote MIDI to physical output:
+  // • THRU on  → forward everything
+  // • THRU off → still forward 0xF8 clock (CLK relay should be transparent)
+  if (remote) {
+    if (thruEnabled || bytes[0] === 0xF8) sendToOutput(bytes);
+  }
 }
 
 function handleCC(ch, cc, val, remote) {
