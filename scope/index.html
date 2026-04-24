@@ -1,0 +1,2027 @@
+<!-- /-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\ -->
+<!-- |                                                                         | -->
+<!-- \ @@@@@@@@  @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@@@@@   @@@ @@@      / -->
+<!-- - @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@ @@@      - -->
+<!-- / @@!       @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!  @@@  @@! !@@      \ -->
+<!-- | !@!       !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!  @!@  !@! @!!      | -->
+<!-- \ @!!!:!    @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!@@!@!    !@!@!       / -->
+<!-- - !!!!!:    !@!  !!!    !!!    !!@!@!    !@!  !!!  !!@!!!      @!!!       - -->
+<!-- / !!:       !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:         !!:        \ -->
+<!-- | :!:       :!:  !:!    :!:    :!:  !:!  :!:  !:!  :!:         :!:        | -->
+<!-- \  :: ::::   ::   ::     ::    ::   :::  ::::: ::   ::          ::        / -->
+<!-- - : :: ::   ::    :      :      :   : :   : :  :    :           :         - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \ @@@  @@@  @@@   @@@@@@   @@@@@@@    @@@@@@   @@@  @@@  @@@  @@@@@@@     / -->
+<!-- - @@@  @@@  @@@  @@@@@@@@  @@@@@@@@  @@@@@@@   @@@  @@@  @@@  @@@@@@@@    - -->
+<!-- / @@!  @@!  @@!  @@!  @@@  @@!  @@@  !@@       @@!  @@@  @@!  @@!  @@@    \ -->
+<!-- | !@!  !@!  !@!  !@!  @!@  !@!  @!@  !@!       !@!  @!@  !@!  !@!  @!@    | -->
+<!-- \ @!!  !!@  @!@  @!@  !@!  @!@!!@!   !!@@!!    @!@!@!@!  !!@  @!@@!@!     / -->
+<!-- - !@!  !!!  !@!  !@!  !!!  !!@!@!     !!@!!!   !!!@!!!!  !!!  !!@!!!      - -->
+<!-- / !!:  !!:  !!:  !!:  !!!  !!: :!!        !:!  !!:  !!!  !!:  !!:         \ -->
+<!-- | :!:  :!:  :!:  :!:  !:!  :!:  !:!      !:!   :!:  !:!  :!:  :!:         | -->
+<!-- \  :::: :: :::   ::::: ::  ::   :::  :::: ::   ::   :::   ::   ::         / -->
+<!-- -   :: :  : :     : :  :    :   : :  :: : :     :   : :  :     :          - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EW // OSCILLOSCOPE</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=VT323&display=swap"
+      rel="stylesheet"
+    />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@v0.171.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@v0.171.0/examples/jsm/"
+        }
+      }
+    </script>
+    <style>
+      /* ── Reset ──────────────────────────────────────────────────── */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* ── Design tokens ──────────────────────────────────────────── */
+      :root {
+        --bg: transparent;
+        --surface: rgba(0, 6, 18, 0.65);
+        --border: rgba(0, 100, 160, 0.45);
+        --border-hi: rgba(0, 212, 255, 0.75);
+        --text: #d0eeff;
+        --dim: #005070;
+        --accent: #00d4ff;
+        --violet: #aa44ff;
+        --orange: #ff8c22;
+        --panel-glow: drop-shadow(0 0 6px rgba(0, 212, 255, 0.18))
+          drop-shadow(0 0 28px rgba(0, 100, 160, 0.12));
+        --font: "VT323", "Courier New", monospace;
+      }
+
+      /* ── Keyframes ──────────────────────────────────────────────── */
+      @keyframes title-glow {
+        0%,
+        100% {
+          text-shadow:
+            0 0 8px rgba(0, 212, 255, 0.8),
+            0 0 28px rgba(0, 212, 255, 0.3);
+        }
+        50% {
+          text-shadow:
+            0 0 16px rgba(0, 212, 255, 1),
+            0 0 48px rgba(0, 212, 255, 0.6),
+            0 0 80px rgba(0, 100, 160, 0.25);
+        }
+      }
+      @keyframes blink {
+        50% {
+          opacity: 0;
+        }
+      }
+      @keyframes con-fade {
+        to {
+          opacity: 1;
+        }
+      }
+      @keyframes scan-pulse {
+        0%,
+        100% {
+          opacity: 0.6;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
+      @keyframes border-flicker {
+        0%,
+        96%,
+        100% {
+          border-color: rgba(0, 100, 160, 0.45);
+        }
+        97% {
+          border-color: rgba(0, 212, 255, 0.9);
+        }
+        98% {
+          border-color: rgba(0, 100, 160, 0.25);
+        }
+        99% {
+          border-color: rgba(0, 212, 255, 0.65);
+        }
+      }
+      @keyframes active-pulse {
+        0%,
+        100% {
+          box-shadow: 0 0 6px rgba(0, 212, 255, 0.4);
+        }
+        50% {
+          box-shadow:
+            0 0 16px rgba(0, 212, 255, 0.8),
+            0 0 32px rgba(0, 212, 255, 0.3);
+        }
+      }
+
+      /* ── Background layers ──────────────────────────────────────── */
+      html {
+        background: #00060e;
+      }
+      body {
+        background: transparent;
+      }
+
+      #galaxy-bg {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 0;
+        pointer-events: none;
+      }
+      #grid-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 0;
+        pointer-events: none;
+        background-image:
+          linear-gradient(rgba(0, 100, 160, 0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(0, 100, 160, 0.04) 1px, transparent 1px);
+        background-size: 44px 44px;
+      }
+      #scanlines {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 9999;
+        pointer-events: none;
+        background: repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 3px,
+          rgba(0, 0, 0, 0.07) 3px,
+          rgba(0, 0, 0, 0.07) 4px
+        );
+      }
+
+      /* ── Base ───────────────────────────────────────────────────── */
+      body {
+        color: var(--text);
+        font-family: var(--font);
+        min-height: 100vh;
+        font-size: 22px;
+        line-height: 1.4;
+        position: relative;
+      }
+
+      /* ── Scrollbar ──────────────────────────────────────────────── */
+      ::-webkit-scrollbar {
+        width: 4px;
+        background: #000;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(0, 100, 160, 0.55);
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(0, 212, 255, 0.55);
+      }
+
+      /* ── App shell ──────────────────────────────────────────────── */
+      #app {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 20px 16px;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* ── Header ─────────────────────────────────────────────────── */
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border);
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .hud-title {
+        font-family: var(--font);
+        font-size: 2rem;
+        letter-spacing: 0.45em;
+        color: var(--accent);
+        animation: title-glow 3s ease-in-out infinite;
+        line-height: 1;
+        text-transform: uppercase;
+      }
+      #meta {
+        display: flex;
+        gap: 18px;
+        color: var(--dim);
+        font-size: 0.95rem;
+        align-items: baseline;
+        letter-spacing: 0.06em;
+        flex-wrap: wrap;
+      }
+      #meta a {
+        color: var(--dim);
+        text-decoration: none;
+        transition:
+          color 0.15s,
+          text-shadow 0.15s;
+      }
+      #meta a:hover {
+        color: var(--accent);
+        text-shadow: 0 0 8px rgba(0, 212, 255, 0.6);
+      }
+
+      /* ── HUD panel ──────────────────────────────────────────────── */
+      .hud-panel {
+        position: relative;
+        background: var(--surface);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        border: 1px solid var(--border);
+        filter: var(--panel-glow);
+        padding: 14px 16px;
+        margin-bottom: 12px;
+        animation: border-flicker 14s linear infinite;
+      }
+
+      /* ── Section title ──────────────────────────────────────────── */
+      .section-title {
+        font-size: 0.72rem;
+        color: rgba(0, 180, 230, 0.85);
+        text-shadow:
+          0 0 8px rgba(0, 212, 255, 0.5),
+          0 0 20px rgba(0, 100, 160, 0.25);
+        letter-spacing: 0.28em;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+      }
+
+      /* ── Scope screen ───────────────────────────────────────────── */
+      #scope-screen-wrap {
+        position: relative;
+        clip-path: polygon(
+          0 0,
+          calc(100% - 14px) 0,
+          100% 14px,
+          100% 100%,
+          14px 100%,
+          0 calc(100% - 14px)
+        );
+      }
+      #scopeCanvas {
+        display: block;
+        width: 100%;
+        height: 460px;
+        background: #000810;
+      }
+      /* Corner brackets */
+      .corner {
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        pointer-events: none;
+        z-index: 2;
+      }
+      .corner.tl {
+        top: 4px;
+        left: 4px;
+        border-top: 2px solid var(--accent);
+        border-left: 2px solid var(--accent);
+      }
+      .corner.tr {
+        top: 4px;
+        right: 4px;
+        border-top: 2px solid var(--accent);
+        border-right: 2px solid var(--accent);
+      }
+      .corner.bl {
+        bottom: 4px;
+        left: 4px;
+        border-bottom: 2px solid var(--accent);
+        border-left: 2px solid var(--accent);
+      }
+      .corner.br {
+        bottom: 4px;
+        right: 4px;
+        border-bottom: 2px solid var(--accent);
+        border-right: 2px solid var(--accent);
+      }
+
+      /* ── Stats row ──────────────────────────────────────────────── */
+      #stats-row {
+        display: flex;
+        gap: 0;
+        margin-top: 10px;
+        border-top: 1px solid var(--border);
+        padding-top: 8px;
+      }
+      .stat-block {
+        flex: 1;
+        text-align: center;
+        padding: 2px 0;
+        border-right: 1px solid var(--border);
+      }
+      .stat-block:last-child {
+        border-right: none;
+      }
+      .stat-label {
+        font-size: 0.62rem;
+        color: var(--dim);
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        display: block;
+      }
+      .stat-value {
+        font-size: 1.25rem;
+        color: var(--accent);
+        text-shadow: 0 0 8px rgba(0, 212, 255, 0.6);
+        letter-spacing: 0.05em;
+        display: block;
+      }
+      .stat-value.active {
+        animation: active-pulse 1.8s ease-in-out infinite;
+      }
+
+      /* ── Controls layout ────────────────────────────────────────── */
+      #controls-row {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        margin-bottom: 12px;
+      }
+      #options-row {
+        display: flex;
+        gap: 16px;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        border-top: 1px solid var(--border);
+        padding-top: 10px;
+      }
+      .ctrl-group {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 120px;
+      }
+      .ctrl-group.grow {
+        flex: 1;
+      }
+      .ctrl-label {
+        font-size: 0.65rem;
+        color: var(--dim);
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+      }
+      .ctrl-readout {
+        font-size: 0.9rem;
+        color: var(--accent);
+        text-shadow: 0 0 5px rgba(0, 212, 255, 0.4);
+        letter-spacing: 0.06em;
+        min-width: 60px;
+        display: inline-block;
+      }
+
+      /* ── Buttons ────────────────────────────────────────────────── */
+      button {
+        background: rgba(0, 0, 0, 0.45);
+        color: var(--dim);
+        border: 1px solid var(--border);
+        padding: 5px 14px;
+        cursor: pointer;
+        font-family: var(--font);
+        font-size: 0.9rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        clip-path: polygon(
+          0 0,
+          calc(100% - 6px) 0,
+          100% 6px,
+          100% 100%,
+          6px 100%,
+          0 calc(100% - 6px)
+        );
+        transition:
+          color 0.1s,
+          background 0.1s,
+          border-color 0.1s,
+          text-shadow 0.1s;
+        outline: none;
+        white-space: nowrap;
+      }
+      button:hover:not(:disabled) {
+        background: rgba(0, 212, 255, 0.08);
+        border-color: var(--border-hi);
+        color: var(--accent);
+        text-shadow: 0 0 8px rgba(0, 212, 255, 0.7);
+      }
+      button:active:not(:disabled) {
+        background: rgba(0, 212, 255, 0.16);
+      }
+      button:disabled {
+        opacity: 0.22;
+        cursor: not-allowed;
+      }
+      button.btn-active {
+        background: rgba(0, 212, 255, 0.1);
+        border-color: var(--accent);
+        color: var(--accent);
+        text-shadow: 0 0 7px rgba(0, 212, 255, 0.7);
+      }
+      button.btn-start-active {
+        background: rgba(170, 68, 255, 0.12);
+        border-color: var(--violet);
+        color: var(--violet);
+        text-shadow: 0 0 7px rgba(170, 68, 255, 0.7);
+      }
+      button.btn-orange {
+        border-color: rgba(255, 140, 34, 0.4);
+        color: var(--orange);
+      }
+      button.btn-orange:hover:not(:disabled) {
+        background: rgba(255, 140, 34, 0.1);
+        border-color: var(--orange);
+        text-shadow: 0 0 8px rgba(255, 140, 34, 0.7);
+      }
+      #btn-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+      #btn-actions button {
+        width: 110px;
+      }
+
+      /* ── Select ─────────────────────────────────────────────────── */
+      select {
+        -webkit-appearance: none;
+        appearance: none;
+        background-color: rgba(0, 0, 0, 0.45);
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpolygon points='0,0 10,0 5,6' fill='%23005070'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 8px center;
+        color: var(--text);
+        border: 1px solid var(--border);
+        padding: 5px 26px 5px 8px;
+        font-family: var(--font);
+        font-size: 0.9rem;
+        letter-spacing: 0.05em;
+        cursor: pointer;
+        outline: none;
+        width: 100%;
+        clip-path: polygon(
+          0 0,
+          calc(100% - 5px) 0,
+          100% 5px,
+          100% 100%,
+          5px 100%,
+          0 calc(100% - 5px)
+        );
+      }
+      select:focus {
+        border-color: var(--border-hi);
+      }
+      select option {
+        background: #000c18;
+        color: var(--text);
+      }
+
+      /* ── Range sliders ──────────────────────────────────────────── */
+      input[type="range"] {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 100%;
+        height: 3px;
+        background: rgba(0, 100, 160, 0.3);
+        outline: none;
+        border: none;
+        cursor: pointer;
+        vertical-align: middle;
+      }
+      input[type="range"]::-webkit-slider-runnable-track {
+        height: 3px;
+        background: rgba(0, 100, 160, 0.3);
+      }
+      input[type="range"]::-moz-range-track {
+        height: 3px;
+        background: rgba(0, 100, 160, 0.3);
+        border: none;
+      }
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 11px;
+        height: 11px;
+        background: var(--accent);
+        cursor: pointer;
+        transform: rotate(45deg);
+        box-shadow:
+          0 0 6px var(--accent),
+          0 0 14px rgba(0, 212, 255, 0.35);
+        margin-top: -4px;
+      }
+      input[type="range"]::-moz-range-thumb {
+        width: 11px;
+        height: 11px;
+        background: var(--accent);
+        cursor: pointer;
+        transform: rotate(45deg);
+        border: none;
+        box-shadow: 0 0 6px var(--accent);
+      }
+
+      /* ── Device row ─────────────────────────────────────────────── */
+      #device-row {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+      }
+      #device-row select {
+        flex: 1;
+      }
+
+      /* ── Blink cursor ───────────────────────────────────────────── */
+      .cursor-blink {
+        color: var(--dim);
+        animation: blink 1s step-end infinite;
+      }
+
+      /* ── About modal ────────────────────────────────────────────── */
+      #modal-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        background: rgba(0, 4, 12, 0.82);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      #modal-overlay.open {
+        display: flex;
+      }
+      #modal-box {
+        position: relative;
+        background: rgba(0, 6, 18, 0.92);
+        border: 1px solid var(--border-hi);
+        filter: var(--panel-glow);
+        max-width: 640px;
+        width: 100%;
+        max-height: 88vh;
+        display: flex;
+        flex-direction: column;
+        clip-path: polygon(
+          0 0,
+          calc(100% - 18px) 0,
+          100% 18px,
+          100% 100%,
+          18px 100%,
+          0 calc(100% - 18px)
+        );
+      }
+      #modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px 8px;
+        border-bottom: 1px solid var(--border);
+        flex-shrink: 0;
+      }
+      #modal-header .section-title {
+        margin: 0;
+      }
+      #modal-close {
+        background: none;
+        border: 1px solid var(--border);
+        color: var(--dim);
+        font-size: 1rem;
+        padding: 2px 9px 3px;
+        clip-path: polygon(
+          0 0,
+          calc(100% - 4px) 0,
+          100% 4px,
+          100% 100%,
+          4px 100%,
+          0 calc(100% - 4px)
+        );
+      }
+      #modal-close:hover {
+        color: var(--accent);
+        border-color: var(--accent);
+      }
+      #modal-body {
+        overflow-y: auto;
+        padding: 16px;
+        flex: 1;
+        font-size: 0.9rem;
+        line-height: 1.6;
+      }
+      #modal-body::-webkit-scrollbar {
+        width: 3px;
+        background: transparent;
+      }
+      #modal-body::-webkit-scrollbar-thumb {
+        background: rgba(0, 212, 255, 0.3);
+      }
+      .modal-section {
+        margin-bottom: 18px;
+      }
+      .modal-section h3 {
+        font-size: 0.68rem;
+        color: var(--accent);
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        text-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+        margin-bottom: 8px;
+        border-bottom: 1px solid rgba(0, 100, 160, 0.3);
+        padding-bottom: 4px;
+      }
+      .modal-section p,
+      .modal-section li {
+        color: var(--text);
+        font-size: 0.88rem;
+      }
+      .modal-section ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .modal-section ul li {
+        padding: 2px 0 2px 14px;
+        position: relative;
+      }
+      .modal-section ul li::before {
+        content: "›";
+        position: absolute;
+        left: 0;
+        color: var(--accent);
+      }
+      .modal-kv {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: 3px 14px;
+      }
+      .modal-kv dt {
+        color: var(--accent);
+        font-size: 0.82rem;
+        letter-spacing: 0.08em;
+        white-space: nowrap;
+      }
+      .modal-kv dd {
+        color: var(--text);
+        font-size: 0.82rem;
+        margin: 0;
+      }
+      #modal-footer {
+        padding: 10px 16px 12px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+      #modal-footer span {
+        font-size: 0.65rem;
+        color: var(--dim);
+        letter-spacing: 0.15em;
+      }
+      #bug-link {
+        font-family: var(--font);
+        font-size: 0.78rem;
+        letter-spacing: 0.14em;
+        color: var(--orange);
+        text-decoration: none;
+        border: 1px solid rgba(255, 140, 34, 0.35);
+        padding: 3px 12px;
+        clip-path: polygon(
+          0 0,
+          calc(100% - 5px) 0,
+          100% 5px,
+          100% 100%,
+          5px 100%,
+          0 calc(100% - 5px)
+        );
+        transition:
+          background 0.1s,
+          border-color 0.1s,
+          text-shadow 0.1s;
+      }
+      #bug-link:hover {
+        background: rgba(255, 140, 34, 0.1);
+        border-color: var(--orange);
+        text-shadow: 0 0 8px rgba(255, 140, 34, 0.7);
+      }
+      #ew-footer {
+        border-top: 1px solid var(--border);
+        padding: 6px 0;
+        text-align: center;
+        margin-top: 4px;
+      }
+      #ew-footer-link {
+        font-family: var(--font);
+        font-size: 0.75rem;
+        letter-spacing: 0.25em;
+        color: rgba(0, 80, 120, 0.6);
+        text-decoration: none;
+        text-transform: uppercase;
+        transition:
+          color 0.2s,
+          text-shadow 0.2s;
+      }
+      #ew-footer-link:hover {
+        color: var(--accent);
+        text-shadow: 0 0 8px rgba(0, 212, 255, 0.5);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Background layers -->
+    <canvas id="galaxy-bg"></canvas>
+    <div id="grid-bg"></div>
+    <div id="scanlines"></div>
+
+    <div id="app">
+      <!-- Header -->
+      <header>
+        <span class="hud-title">SCOPE</span>
+        <div id="meta">
+          <a href="https://www.entropyworship.com">ENTROPY WORSHIP</a>
+          <span style="color: var(--border)">|</span>
+          <span>build 1.0.24.04.26</span>
+          <span class="cursor-blink">_</span>
+          <button
+            onclick="openAbout()"
+            style="
+              padding: 3px 10px;
+              font-size: 0.72rem;
+              letter-spacing: 0.18em;
+            "
+          >
+            ABOUT
+          </button>
+        </div>
+      </header>
+
+      <!-- Scope display panel -->
+      <div class="hud-panel">
+        <div id="scope-screen-wrap">
+          <canvas id="scopeCanvas"></canvas>
+          <div class="corner tl"></div>
+          <div class="corner tr"></div>
+          <div class="corner bl"></div>
+          <div class="corner br"></div>
+        </div>
+
+        <div id="stats-row">
+          <div class="stat-block">
+            <span class="stat-label">FREQ EST</span>
+            <span class="stat-value" id="freqDisplay">--- Hz</span>
+          </div>
+          <div class="stat-block">
+            <span class="stat-label">PEAK AMP</span>
+            <span class="stat-value" id="ampDisplay">--- dB</span>
+          </div>
+          <div class="stat-block">
+            <span class="stat-label">SAMPLE RATE</span>
+            <span class="stat-value" id="srDisplay">--- kHz</span>
+          </div>
+          <div class="stat-block">
+            <span class="stat-label">STATUS</span>
+            <span class="stat-value" id="statusDisplay">STANDBY</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Controls panel -->
+      <div class="hud-panel">
+        <div id="controls-row">
+          <div class="ctrl-group grow">
+            <span class="ctrl-label">TIME / DIV</span>
+            <input
+              type="range"
+              id="timeScale"
+              min="1"
+              max="12"
+              value="4"
+              step="1"
+            />
+            <span class="ctrl-readout" id="timeScaleLabel">~21 ms</span>
+          </div>
+
+          <div class="ctrl-group grow">
+            <span class="ctrl-label">VOLT / DIV</span>
+            <input
+              type="range"
+              id="ampScale"
+              min="1"
+              max="8"
+              value="4"
+              step="1"
+            />
+            <span class="ctrl-readout" id="ampScaleLabel">1.00x</span>
+          </div>
+
+          <div class="ctrl-group grow">
+            <span class="ctrl-label">TRIGGER LVL</span>
+            <input
+              type="range"
+              id="triggerLevel"
+              min="-100"
+              max="100"
+              value="0"
+              step="1"
+            />
+            <span class="ctrl-readout" id="triggerLabel">0</span>
+          </div>
+
+          <div id="btn-actions">
+            <button id="startBtn">START</button>
+            <button id="freezeBtn" disabled>FREEZE</button>
+          </div>
+        </div>
+
+        <div id="options-row">
+          <div class="ctrl-group">
+            <span class="ctrl-label">TRACE COLOR</span>
+            <div style="display: flex; gap: 5px; flex-wrap: wrap">
+              <button
+                class="btn-active color-btn"
+                data-color="#00d4ff"
+                onclick="setTraceColor(this)"
+              >
+                CYN
+              </button>
+              <button
+                class="color-btn"
+                data-color="#aa44ff"
+                onclick="setTraceColor(this)"
+              >
+                VLT
+              </button>
+              <button
+                class="color-btn"
+                data-color="#ff8c22"
+                onclick="setTraceColor(this)"
+              >
+                ORG
+              </button>
+              <button
+                class="color-btn"
+                data-color="#ffffff"
+                onclick="setTraceColor(this)"
+              >
+                WHT
+              </button>
+            </div>
+          </div>
+
+          <div class="ctrl-group">
+            <span class="ctrl-label">DISPLAY MODE</span>
+            <div style="display: flex; gap: 5px; flex-wrap: wrap">
+              <button
+                class="btn-active mode-btn"
+                data-mode="line"
+                onclick="setDisplayMode(this)"
+              >
+                LINE
+              </button>
+              <button
+                class="mode-btn"
+                data-mode="fill"
+                onclick="setDisplayMode(this)"
+              >
+                FILL
+              </button>
+              <button
+                class="mode-btn"
+                data-mode="dots"
+                onclick="setDisplayMode(this)"
+              >
+                DOTS
+              </button>
+            </div>
+          </div>
+
+          <div class="ctrl-group">
+            <span class="ctrl-label">VIEW</span>
+            <div style="display: flex; gap: 5px; flex-wrap: wrap">
+              <button
+                class="view-btn"
+                data-view="wave"
+                onclick="setViewMode(this)"
+              >
+                WAVE
+              </button>
+              <button
+                class="view-btn"
+                data-view="spec"
+                onclick="setViewMode(this)"
+              >
+                SPEC
+              </button>
+              <button
+                class="btn-active view-btn"
+                data-view="both"
+                onclick="setViewMode(this)"
+              >
+                BOTH
+              </button>
+            </div>
+          </div>
+
+          <div class="ctrl-group" id="smooth-group">
+            <span class="ctrl-label">SPEC SMOOTH</span>
+            <input
+              type="range"
+              id="smoothing"
+              min="0"
+              max="97"
+              value="80"
+              step="1"
+            />
+            <span class="ctrl-readout" id="smoothingLabel">0.80</span>
+          </div>
+
+          <div class="ctrl-group grow">
+            <span class="ctrl-label">AUDIO INPUT</span>
+            <div id="device-row">
+              <select id="deviceSelect">
+                <option value="">-- press SCAN or START --</option>
+              </select>
+              <button id="scanBtn" style="padding: 5px 10px">SCAN</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- /#app -->
+
+    <!-- About modal -->
+    <div id="modal-overlay">
+      <div id="modal-box">
+        <div id="modal-header">
+          <span class="section-title">// SCOPE — USER GUIDE</span>
+          <button id="modal-close" onclick="closeAbout()">✕</button>
+        </div>
+        <div id="modal-body">
+          <div class="modal-section">
+            <h3>View modes</h3>
+            <dl class="modal-kv">
+              <dt>WAVE</dt>
+              <dd>
+                Time-domain waveform with edge trigger. Use TIME/DIV and
+                VOLT/DIV to zoom.
+              </dd>
+              <dt>SPEC</dt>
+              <dd>
+                Frequency spectrum on a log scale from 20 Hz to Nyquist. Orange
+                markers show peak hold.
+              </dd>
+              <dt>BOTH</dt>
+              <dd>
+                Split view — waveform in the top half, spectrum in the bottom
+                half.
+              </dd>
+            </dl>
+          </div>
+
+          <div class="modal-section">
+            <h3>Controls</h3>
+            <dl class="modal-kv">
+              <dt>TIME / DIV</dt>
+              <dd>
+                Zooms the waveform window from ~3 ms to ~43 ms per screen.
+              </dd>
+              <dt>VOLT / DIV</dt>
+              <dd>
+                Vertical gain. 1.00× is unity; increase to amplify small
+                signals.
+              </dd>
+              <dt>TRIGGER LVL</dt>
+              <dd>
+                Rising zero-crossing threshold. Keeps the waveform locked in
+                place. Adjust if the trace rolls.
+              </dd>
+              <dt>SPEC SMOOTH</dt>
+              <dd>
+                Spectrum time-averaging (0 = raw and noisy, 0.97 = heavily
+                smoothed). Affects SPEC and BOTH views.
+              </dd>
+              <dt>FREEZE</dt>
+              <dd>Pauses the display while keeping audio capture active.</dd>
+            </dl>
+          </div>
+
+          <div class="modal-section">
+            <h3>Trace options</h3>
+            <ul>
+              <li>
+                <strong>Color</strong> — CYN / VLT / ORG / WHT. Also changes
+                background color.
+              </li>
+              <li>
+                <strong>LINE</strong> — single-pixel trace. Clearest for
+                high-frequency signals.
+              </li>
+              <li>
+                <strong>FILL</strong> — filled waveform area. Good for showing
+                envelope shape.
+              </li>
+              <li>
+                <strong>DOTS</strong> — individual sample points. Useful for
+                seeing sample density.
+              </li>
+            </ul>
+          </div>
+
+          <div class="modal-section">
+            <h3>Audio input</h3>
+            <ul>
+              <li>
+                Click <strong>SCAN</strong> to enumerate devices without
+                starting capture — useful if your interface was plugged in after
+                page load.
+              </li>
+              <li>
+                Select a device from the dropdown before or after hitting START.
+                Switching while running reconnects instantly.
+              </li>
+              <li>
+                <strong>DAW / software routing (macOS)</strong> — install
+                <a
+                  href="https://github.com/ExistentialAudio/BlackHole"
+                  target="_blank"
+                  style="color: var(--accent)"
+                  >BlackHole</a
+                >, set your DAW output to BlackHole, select BlackHole as the
+                input here.
+              </li>
+              <li>
+                <strong>DAW / software routing (Windows)</strong> — use
+                <a
+                  href="https://vb-audio.com/Cable/"
+                  target="_blank"
+                  style="color: var(--accent)"
+                  >VB-Audio Virtual Cable</a
+                >
+                the same way.
+              </li>
+              <li>
+                <strong>Hardware interface</strong> — appears in the device list
+                automatically once mic permission is granted.
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div id="modal-footer">
+          <a id="bug-link" href="#" target="_blank">⚠ REPORT A BUG</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Three.js Background — Audio-reactive point cloud -->
+    <script type="module">
+      import * as THREE from "three";
+
+      const bgCanvas = document.getElementById("galaxy-bg");
+      const renderer = new THREE.WebGLRenderer({
+        canvas: bgCanvas,
+        alpha: true,
+        antialias: false,
+      });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setSize(window.innerWidth, window.innerHeight);
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(
+        58,
+        window.innerWidth / window.innerHeight,
+        1,
+        3000,
+      );
+      camera.position.set(0, 180, 460);
+      camera.lookAt(0, 20, 0);
+
+      // ── Point-cloud grid ──────────────────────────────────────────
+      // COLS = frequency axis (X), ROWS = depth axis (Z), Y = audio height
+      const COLS = 72;
+      const ROWS = 36;
+      const N = COLS * ROWS;
+
+      const POS = new Float32Array(N * 3);
+      const ACOL = new Float32Array(N * 3); // attribute named 'aColor'
+      const ASZ = new Float32Array(N); // attribute named 'aSize'
+
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          const i = r * COLS + c;
+          POS[i * 3] = (c / (COLS - 1) - 0.5) * 820;
+          POS[i * 3 + 1] = 0;
+          // Z from -80 (far back → appears near horizon/top) to +300 (near camera → appears at screen bottom)
+          POS[i * 3 + 2] = (r / (ROWS - 1)) * 380 - 80;
+          // Base color: visible dim cyan so idle state is clear
+          ACOL[i * 3] = 0.0;
+          ACOL[i * 3 + 1] = 0.38;
+          ACOL[i * 3 + 2] = 0.72;
+          ASZ[i] = 4.0;
+        }
+      }
+
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute("position", new THREE.BufferAttribute(POS, 3));
+      geo.setAttribute("aColor", new THREE.BufferAttribute(ACOL, 3));
+      geo.setAttribute("aSize", new THREE.BufferAttribute(ASZ, 1));
+
+      // Glowing disc shader — avoid 'color' / 'size' names (reserved in some drivers)
+      const mat = new THREE.ShaderMaterial({
+        uniforms: { dpr: { value: renderer.getPixelRatio() } },
+        vertexShader: `
+      attribute vec3  aColor;
+      attribute float aSize;
+      varying   vec3  vColor;
+      uniform   float dpr;
+      void main() {
+        vColor = aColor;
+        vec4 mv = modelViewMatrix * vec4(position, 1.0);
+        gl_PointSize = max(aSize * dpr * (500.0 / -mv.z), 2.5);
+        gl_Position  = projectionMatrix * mv;
+      }
+    `,
+        fragmentShader: `
+      varying vec3 vColor;
+      void main() {
+        float d = length(gl_PointCoord - 0.5);
+        if (d > 0.5) discard;
+        float a = 1.0 - smoothstep(0.18, 0.5, d);
+        gl_FragColor = vec4(vColor, a * 0.92);
+      }
+    `,
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+      });
+
+      scene.add(new THREE.Points(geo, mat));
+
+      window.addEventListener("resize", () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        mat.uniforms.dpr.value = renderer.getPixelRatio();
+      });
+
+      // ── Frequency → bin mapping ───────────────────────────────────
+      let bandBins = null;
+
+      function buildBandBins(fftSize, sampleRate) {
+        const binCount = fftSize / 2;
+        const nyquist = sampleRate / 2;
+        const logMin = Math.log10(20);
+        const logMax = Math.log10(nyquist);
+        const bins = new Uint16Array(COLS);
+        for (let c = 0; c < COLS; c++) {
+          const f = Math.pow(10, logMin + (c / (COLS - 1)) * (logMax - logMin));
+          bins[c] = Math.min(
+            binCount - 1,
+            Math.round((f / nyquist) * binCount),
+          );
+        }
+        return bins;
+      }
+
+      const freqBands = new Float32Array(COLS); // spectrum: 0–1
+      const waveBands = new Float32Array(COLS); // waveform: signed –1 to +1
+
+      // ── Render loop ───────────────────────────────────────────────
+      const MAX_SPEC = 300;
+      const MAX_WAVE = 220;
+
+      (function animate() {
+        requestAnimationFrame(animate);
+
+        const analyser = window._scopeAnalyser;
+        const vMode = window._scopeViewMode || "both";
+
+        if (analyser && !bandBins) {
+          bandBins = buildBandBins(
+            analyser.fftSize,
+            analyser.context.sampleRate,
+          );
+        }
+        if (!analyser) bandBins = null;
+
+        // ── Sample audio data ──────────────────────────────────────
+        if (analyser && bandBins) {
+          if (vMode === "wave") {
+            const tdData = new Uint8Array(analyser.fftSize);
+            analyser.getByteTimeDomainData(tdData);
+            for (let c = 0; c < COLS; c++) {
+              const idx = Math.floor((c / (COLS - 1)) * (tdData.length - 1));
+              waveBands[c] = (tdData[idx] - 128) / 128;
+            }
+            for (let c = 0; c < COLS; c++) freqBands[c] *= 0.88;
+          } else {
+            const raw = new Uint8Array(analyser.frequencyBinCount);
+            analyser.getByteFrequencyData(raw);
+            for (let c = 0; c < COLS; c++) {
+              const v = raw[bandBins[c]] / 255;
+              freqBands[c] +=
+                (v - freqBands[c]) * (v > freqBands[c] ? 0.8 : 0.22);
+            }
+            for (let c = 0; c < COLS; c++) waveBands[c] *= 0.9;
+          }
+        } else {
+          // No audio — decay everything toward zero
+          for (let c = 0; c < COLS; c++) {
+            freqBands[c] *= 0.8;
+            waveBands[c] *= 0.8;
+          }
+        }
+
+        // ── Update each point ──────────────────────────────────────
+        for (let r = 0; r < ROWS; r++) {
+          const rowFade = 0.72 + (r / (ROWS - 1)) * 0.28;
+          const waveColShift = Math.floor((r / (ROWS - 1)) * 6);
+
+          for (let c = 0; c < COLS; c++) {
+            const i = r * COLS + c;
+
+            if (vMode === "wave") {
+              const wc = Math.min(COLS - 1, c + waveColShift);
+              const val = waveBands[wc] * rowFade;
+              const targetY = val * MAX_WAVE;
+
+              POS[i * 3 + 1] += (targetY - POS[i * 3 + 1]) * 0.42;
+              const y = POS[i * 3 + 1];
+
+              if (y >= 0) {
+                const hp = Math.min(1, y / MAX_WAVE);
+                ACOL[i * 3] = 0.0;
+                ACOL[i * 3 + 1] = 0.38 + hp * 0.62;
+                ACOL[i * 3 + 2] = 0.72 + hp * 0.28;
+                ASZ[i] = 3.5 + hp * 7.5;
+              } else {
+                const hn = Math.min(1, -y / MAX_WAVE);
+                ACOL[i * 3] = 0.0 + hn * 0.667;
+                ACOL[i * 3 + 1] = 0.38 - hn * 0.113;
+                ACOL[i * 3 + 2] = 0.72 + hn * 0.28;
+                ASZ[i] = 3.5 + hn * 7.5;
+              }
+            } else {
+              const amp = freqBands[c] * rowFade;
+              const targetY = Math.pow(amp, 0.65) * MAX_SPEC;
+
+              POS[i * 3 + 1] += (targetY - POS[i * 3 + 1]) * 0.38;
+              const y = POS[i * 3 + 1];
+              const hn = Math.max(0, Math.min(1, y / MAX_SPEC));
+              const h2 = hn * hn;
+
+              ACOL[i * 3] = h2 * 0.6 + hn * 0.1;
+              ACOL[i * 3 + 1] = 0.38 + hn * 0.62;
+              ACOL[i * 3 + 2] = 0.72 + hn * 0.28;
+              ASZ[i] = 4.0 + hn * 7.0;
+            }
+          }
+        }
+
+        geo.attributes.position.needsUpdate = true;
+        geo.attributes.aColor.needsUpdate = true;
+        geo.attributes.aSize.needsUpdate = true;
+
+        renderer.render(scene, camera);
+      })();
+    </script>
+
+    <!-- Oscilloscope Logic -->
+    <script>
+      const scopeCanvas = document.getElementById("scopeCanvas");
+      const ctx = scopeCanvas.getContext("2d");
+
+      const ANALYSER_SIZE = 4096;
+      const PEAK_DECAY = 0.994;
+
+      let audioCtx = null;
+      let analyser = null;
+      let micSource = null;
+      let currentStream = null;
+      let animFrame = null;
+      let running = false;
+      let frozen = false;
+
+      let traceColor = "#00d4ff";
+      let displayMode = "line";
+      let viewMode = "both";
+      let timeScale = 4;
+      let ampScale = 4;
+      let trigLvl = 0;
+
+      let peakHold = new Float32Array(ANALYSER_SIZE / 2);
+
+      // ── Canvas sizing ─────────────────────────────────────────────
+      function resizeCanvas() {
+        scopeCanvas.width = scopeCanvas.offsetWidth;
+        scopeCanvas.height = scopeCanvas.offsetHeight;
+        if (!running) drawIdle();
+      }
+      window.addEventListener("resize", resizeCanvas);
+      setTimeout(resizeCanvas, 80);
+
+      // ── View height ───────────────────────────────────────────────
+      function applyViewHeight() {
+        scopeCanvas.style.height = viewMode === "both" ? "460px" : "300px";
+        setTimeout(() => {
+          scopeCanvas.width = scopeCanvas.offsetWidth;
+          scopeCanvas.height = scopeCanvas.offsetHeight;
+          if (!running) drawIdle();
+        }, 30);
+      }
+
+      // ── Controls ──────────────────────────────────────────────────
+      document
+        .getElementById("timeScale")
+        .addEventListener("input", function () {
+          timeScale = parseInt(this.value);
+          const sr = audioCtx ? audioCtx.sampleRate : 48000;
+          const ms = (ANALYSER_SIZE / timeScale / sr) * 1000;
+          document.getElementById("timeScaleLabel").textContent =
+            "~" + ms.toFixed(0) + " ms";
+        });
+
+      document
+        .getElementById("ampScale")
+        .addEventListener("input", function () {
+          ampScale = parseInt(this.value);
+          document.getElementById("ampScaleLabel").textContent =
+            (ampScale / 4).toFixed(2) + "x";
+        });
+
+      document
+        .getElementById("triggerLevel")
+        .addEventListener("input", function () {
+          trigLvl = parseInt(this.value);
+          document.getElementById("triggerLabel").textContent = trigLvl;
+        });
+
+      document
+        .getElementById("smoothing")
+        .addEventListener("input", function () {
+          const v = parseInt(this.value) / 100;
+          document.getElementById("smoothingLabel").textContent = v.toFixed(2);
+          if (analyser) analyser.smoothingTimeConstant = v;
+        });
+
+      document
+        .getElementById("startBtn")
+        .addEventListener("click", async () => {
+          if (running) stopScope();
+          else await startScope();
+        });
+
+      document.getElementById("freezeBtn").addEventListener("click", () => {
+        frozen = !frozen;
+        const btn = document.getElementById("freezeBtn");
+        btn.textContent = frozen ? "UNFREEZE" : "FREEZE";
+        btn.classList.toggle("btn-active", frozen);
+      });
+
+      document.getElementById("scanBtn").addEventListener("click", async () => {
+        const btn = document.getElementById("scanBtn");
+        btn.textContent = "...";
+        try {
+          const s = await navigator.mediaDevices.getUserMedia({ audio: true });
+          s.getTracks().forEach((t) => t.stop());
+          await populateDevices(false);
+        } catch (e) {
+          setStatus("PERM ERR");
+        } finally {
+          btn.textContent = "SCAN";
+        }
+      });
+
+      document
+        .getElementById("deviceSelect")
+        .addEventListener("change", async function () {
+          if (running) await switchDevice(this.value);
+        });
+
+      function setTraceColor(btn) {
+        document.querySelectorAll(".color-btn").forEach((b) => {
+          b.classList.remove("btn-active");
+          if (b.dataset.color === "#ff8c22") b.className = b.className; // keep orange class
+        });
+        btn.classList.add("btn-active");
+        traceColor = btn.dataset.color;
+      }
+
+      function setDisplayMode(btn) {
+        document
+          .querySelectorAll(".mode-btn")
+          .forEach((b) => b.classList.remove("btn-active"));
+        btn.classList.add("btn-active");
+        displayMode = btn.dataset.mode;
+      }
+
+      function setViewMode(btn) {
+        document
+          .querySelectorAll(".view-btn")
+          .forEach((b) => b.classList.remove("btn-active"));
+        btn.classList.add("btn-active");
+        viewMode = btn.dataset.view;
+        const titles = {
+          wave: "// WAVEFORM DISPLAY",
+          spec: "// SPECTRUM DISPLAY",
+          both: "// WAVEFORM + SPECTRUM",
+        };
+        document.getElementById("display-title").textContent =
+          titles[viewMode] || "// DISPLAY";
+        peakHold.fill(0);
+        window._scopeViewMode = viewMode;
+        applyViewHeight();
+      }
+
+      window.setTraceColor = setTraceColor;
+      window.setDisplayMode = setDisplayMode;
+      window.setViewMode = setViewMode;
+
+      function setStatus(text) {
+        document.getElementById("statusDisplay").textContent = text;
+      }
+
+      // ── Device enumeration ────────────────────────────────────────
+      async function populateDevices(preserveSelection) {
+        try {
+          const devices = await navigator.mediaDevices.enumerateDevices();
+          const sel = document.getElementById("deviceSelect");
+          const prev = sel.value;
+          sel.innerHTML = "";
+          const inputs = devices.filter((d) => d.kind === "audioinput");
+          if (inputs.length === 0) {
+            sel.innerHTML = '<option value="">-- no devices found --</option>';
+            return;
+          }
+          inputs.forEach((d, i) => {
+            const opt = document.createElement("option");
+            opt.value = d.deviceId;
+            opt.textContent = d.label || "Input " + (i + 1);
+            sel.appendChild(opt);
+          });
+          if (
+            preserveSelection &&
+            [...sel.options].some((o) => o.value === prev)
+          )
+            sel.value = prev;
+        } catch (e) {
+          /* no-op */
+        }
+      }
+
+      // ── Live device switch ────────────────────────────────────────
+      async function switchDevice(deviceId) {
+        if (!running) return;
+        try {
+          setStatus("SWITCHING");
+          const constraints = {
+            audio: deviceId ? { deviceId: { exact: deviceId } } : true,
+          };
+          const newStream =
+            await navigator.mediaDevices.getUserMedia(constraints);
+          if (micSource) {
+            micSource.disconnect();
+            micSource = null;
+          }
+          if (currentStream) {
+            currentStream.getTracks().forEach((t) => t.stop());
+          }
+          currentStream = newStream;
+          micSource = audioCtx.createMediaStreamSource(newStream);
+          micSource.connect(analyser);
+          setStatus("ACTIVE");
+        } catch (err) {
+          setStatus("SRC ERR");
+          console.error("Device switch error:", err);
+        }
+      }
+
+      // ── Start / Stop ──────────────────────────────────────────────
+      async function startScope() {
+        try {
+          const deviceId = document.getElementById("deviceSelect").value;
+          const constraints = {
+            audio: deviceId ? { deviceId: { exact: deviceId } } : true,
+          };
+          const stream = await navigator.mediaDevices.getUserMedia(constraints);
+
+          currentStream = stream;
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          analyser = audioCtx.createAnalyser();
+          analyser.fftSize = ANALYSER_SIZE;
+          analyser.smoothingTimeConstant =
+            parseInt(document.getElementById("smoothing").value) / 100;
+          analyser.minDecibels = -100;
+          analyser.maxDecibels = -10;
+
+          micSource = audioCtx.createMediaStreamSource(stream);
+          micSource.connect(analyser);
+          window._scopeAnalyser = analyser; // expose to Three.js background
+
+          running = true;
+          frozen = false;
+          peakHold.fill(0);
+          window._scopeViewMode = viewMode;
+
+          const startBtn = document.getElementById("startBtn");
+          startBtn.textContent = "STOP";
+          startBtn.classList.add("btn-start-active");
+
+          document.getElementById("freezeBtn").disabled = false;
+          document.getElementById("srDisplay").textContent =
+            (audioCtx.sampleRate / 1000).toFixed(1) + " kHz";
+
+          const ms = (ANALYSER_SIZE / timeScale / audioCtx.sampleRate) * 1000;
+          document.getElementById("timeScaleLabel").textContent =
+            "~" + ms.toFixed(0) + " ms";
+
+          document.getElementById("statusDisplay").classList.add("active");
+          setStatus("ACTIVE");
+
+          await populateDevices(true);
+          drawLoop();
+        } catch (err) {
+          setStatus("MIC ERR");
+          console.error("Mic error:", err);
+        }
+      }
+
+      function stopScope() {
+        running = false;
+        if (animFrame) {
+          cancelAnimationFrame(animFrame);
+          animFrame = null;
+        }
+        if (micSource) {
+          micSource.disconnect();
+          micSource = null;
+        }
+        if (currentStream) {
+          currentStream.getTracks().forEach((t) => t.stop());
+          currentStream = null;
+        }
+        if (audioCtx) {
+          audioCtx.close();
+          audioCtx = null;
+        }
+        analyser = null;
+        window._scopeAnalyser = null;
+
+        const startBtn = document.getElementById("startBtn");
+        startBtn.textContent = "START";
+        startBtn.classList.remove("btn-start-active");
+
+        document.getElementById("freezeBtn").disabled = true;
+        document.getElementById("freezeBtn").classList.remove("btn-active");
+        document.getElementById("freezeBtn").textContent = "FREEZE";
+        document.getElementById("statusDisplay").classList.remove("active");
+
+        document.getElementById("freqDisplay").textContent = "--- Hz";
+        document.getElementById("ampDisplay").textContent = "--- dB";
+        document.getElementById("srDisplay").textContent = "--- kHz";
+        setStatus("STANDBY");
+
+        drawIdle();
+      }
+
+      // ── Trigger ───────────────────────────────────────────────────
+      function findTrigger(data, threshold) {
+        const center = 128 + Math.round((threshold * 128) / 100);
+        for (let i = 1; i < data.length - 1; i++) {
+          if (data[i - 1] < center && data[i] >= center) return i;
+        }
+        return 0;
+      }
+
+      // ── Frequency estimate ────────────────────────────────────────
+      function estimateFreq(data, sampleRate) {
+        let crossings = 0;
+        for (let i = 1; i < data.length; i++) {
+          if (data[i - 1] < 128 && data[i] >= 128) crossings++;
+        }
+        if (crossings < 2) return null;
+        return (crossings * sampleRate) / (2 * data.length);
+      }
+
+      // ── Graticule (with y offset) ─────────────────────────────────
+      function drawGraticule(W, yTop, H) {
+        const COLS = 10,
+          ROWS = 8;
+        ctx.save();
+        ctx.strokeStyle = "#001830";
+        ctx.lineWidth = 0.5;
+        for (let i = 0; i <= COLS; i++) {
+          const x = (i / COLS) * W;
+          ctx.beginPath();
+          ctx.moveTo(x, yTop);
+          ctx.lineTo(x, yTop + H);
+          ctx.stroke();
+        }
+        for (let j = 0; j <= ROWS; j++) {
+          const y = yTop + (j / ROWS) * H;
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(W, y);
+          ctx.stroke();
+        }
+        ctx.strokeStyle = "#002a48";
+        ctx.lineWidth = 0.9;
+        ctx.beginPath();
+        ctx.moveTo(0, yTop + H / 2);
+        ctx.lineTo(W, yTop + H / 2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(W / 2, yTop);
+        ctx.lineTo(W / 2, yTop + H);
+        ctx.stroke();
+        ctx.strokeStyle = "#003a60";
+        ctx.lineWidth = 0.5;
+        const tk = 5;
+        for (let i = 0; i <= COLS; i++) {
+          const x = (i / COLS) * W;
+          ctx.beginPath();
+          ctx.moveTo(x, yTop + H / 2 - tk);
+          ctx.lineTo(x, yTop + H / 2 + tk);
+          ctx.stroke();
+        }
+        for (let j = 0; j <= ROWS; j++) {
+          const y = yTop + (j / ROWS) * H;
+          ctx.beginPath();
+          ctx.moveTo(W / 2 - tk, y);
+          ctx.lineTo(W / 2 + tk, y);
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      // ── Waveform region ───────────────────────────────────────────
+      function drawWaveformRegion(yTop, H) {
+        const W = scopeCanvas.width;
+        const data = new Uint8Array(analyser.fftSize);
+        analyser.getByteTimeDomainData(data);
+
+        drawGraticule(W, yTop, H);
+
+        // Trigger level line
+        const trigCenter = 128 + Math.round((trigLvl * 128) / 100);
+        const trigY =
+          yTop + H / 2 - ((trigCenter - 128) / 128) * (H / 2) * (ampScale / 4);
+        ctx.save();
+        ctx.strokeStyle = "rgba(255,140,34,0.45)";
+        ctx.lineWidth = 1;
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath();
+        ctx.moveTo(0, trigY);
+        ctx.lineTo(W, trigY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = "rgba(255,140,34,0.7)";
+        ctx.beginPath();
+        ctx.moveTo(8, trigY);
+        ctx.lineTo(18, trigY - 5);
+        ctx.lineTo(18, trigY + 5);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+
+        const trigStart = findTrigger(data, trigLvl);
+        const sampleSpan = Math.max(64, Math.floor(ANALYSER_SIZE / timeScale));
+        const slice = data.slice(trigStart, trigStart + sampleSpan);
+        if (slice.length === 0) return;
+
+        // Stats
+        let maxDev = 0;
+        for (let i = 0; i < slice.length; i++) {
+          const dev = Math.abs(slice[i] - 128);
+          if (dev > maxDev) maxDev = dev;
+        }
+        const peakDB =
+          maxDev > 0 ? (20 * Math.log10(maxDev / 128)).toFixed(1) : null;
+        document.getElementById("ampDisplay").textContent =
+          peakDB !== null ? peakDB + " dB" : "-∞ dB";
+        const freq = estimateFreq(data, audioCtx.sampleRate);
+        document.getElementById("freqDisplay").textContent = freq
+          ? Math.round(freq) + " Hz"
+          : "--- Hz";
+
+        // Waveform trace — clip to region
+        const gain = ampScale / 4;
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(0, yTop, W, H);
+        ctx.clip();
+        ctx.shadowColor = traceColor;
+        ctx.shadowBlur = 9;
+        ctx.strokeStyle = traceColor;
+        ctx.lineWidth = 1.5;
+
+        if (displayMode === "dots") {
+          ctx.shadowBlur = 5;
+          const step = Math.max(1, Math.floor(slice.length / 800));
+          for (let i = 0; i < slice.length; i += step) {
+            const x = (i / slice.length) * W;
+            const y = yTop + H / 2 - ((slice[i] - 128) / 128) * (H / 2) * gain;
+            ctx.fillStyle = traceColor;
+            ctx.beginPath();
+            ctx.arc(x, y, 1.2, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        } else {
+          ctx.beginPath();
+          for (let i = 0; i < slice.length; i++) {
+            const x = (i / slice.length) * W;
+            const y = yTop + H / 2 - ((slice[i] - 128) / 128) * (H / 2) * gain;
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          }
+          if (displayMode === "fill") {
+            ctx.lineTo(W, yTop + H / 2);
+            ctx.lineTo(0, yTop + H / 2);
+            ctx.closePath();
+            ctx.fillStyle = traceColor + "18";
+            ctx.fill();
+            ctx.shadowBlur = 11;
+            ctx.beginPath();
+            for (let i = 0; i < slice.length; i++) {
+              const x = (i / slice.length) * W;
+              const y =
+                yTop + H / 2 - ((slice[i] - 128) / 128) * (H / 2) * gain;
+              if (i === 0) ctx.moveTo(x, y);
+              else ctx.lineTo(x, y);
+            }
+          }
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
+      // ── Spectrum region ───────────────────────────────────────────
+      function drawSpectrumRegion(yTop, H) {
+        const W = scopeCanvas.width;
+        const binCount = analyser.frequencyBinCount;
+        const freqData = new Uint8Array(binCount);
+        analyser.getByteFrequencyData(freqData);
+
+        const nyquist = audioCtx.sampleRate / 2;
+        const LOG_MIN = Math.log10(20);
+        const LOG_MAX = Math.log10(nyquist);
+
+        const xToBin = new Uint16Array(W);
+        for (let x = 0; x < W; x++) {
+          const freq = Math.pow(10, LOG_MIN + (x / W) * (LOG_MAX - LOG_MIN));
+          xToBin[x] = Math.min(
+            binCount - 1,
+            Math.round((freq / nyquist) * binCount),
+          );
+        }
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(0, yTop, W, H);
+        ctx.clip();
+
+        // dB grid lines
+        ctx.font = "13px VT323, monospace";
+        ctx.textAlign = "right";
+        const dbLines = [-10, -20, -30, -40, -60, -80];
+        dbLines.forEach((db) => {
+          const norm =
+            (db - analyser.minDecibels) /
+            (analyser.maxDecibels - analyser.minDecibels);
+          const y = yTop + H - norm * H;
+          ctx.strokeStyle =
+            db === -20 ? "rgba(0,100,160,0.3)" : "rgba(0,60,100,0.18)";
+          ctx.lineWidth = 0.7;
+          ctx.beginPath();
+          ctx.moveTo(0, y);
+          ctx.lineTo(W, y);
+          ctx.stroke();
+          ctx.fillStyle = "rgba(0,150,200,0.45)";
+          ctx.fillText(db + "dB", W - 2, y - 2);
+        });
+
+        // Frequency axis labels
+        const freqLabels = [
+          20, 50, 100, 200, 500, 1000, 2000, 5000, 10000, 20000,
+        ];
+        ctx.textAlign = "center";
+        freqLabels.forEach((f) => {
+          if (f < 20 || f > nyquist) return;
+          const x = Math.round(
+            ((Math.log10(f) - LOG_MIN) / (LOG_MAX - LOG_MIN)) * W,
+          );
+          ctx.strokeStyle = "rgba(0,60,100,0.25)";
+          ctx.lineWidth = 0.5;
+          ctx.beginPath();
+          ctx.moveTo(x, yTop);
+          ctx.lineTo(x, yTop + H);
+          ctx.stroke();
+          ctx.fillStyle = "rgba(0,150,200,0.45)";
+          ctx.fillText(f >= 1000 ? f / 1000 + "k" : f + "", x, yTop + H - 2);
+        });
+
+        // Gradient fill
+        const grad = ctx.createLinearGradient(0, yTop, 0, yTop + H);
+        grad.addColorStop(0, traceColor + "cc");
+        grad.addColorStop(1, traceColor + "00");
+
+        ctx.beginPath();
+        let firstBar = true;
+        for (let x = 0; x < W; x++) {
+          const norm = freqData[xToBin[x]] / 255;
+          const barY = yTop + H - norm * H;
+          if (firstBar) {
+            ctx.moveTo(x, yTop + H);
+            ctx.lineTo(x, barY);
+            firstBar = false;
+          } else ctx.lineTo(x, barY);
+          if (norm > peakHold[x]) peakHold[x] = norm;
+          else peakHold[x] *= PEAK_DECAY;
+        }
+        ctx.lineTo(W - 1, yTop + H);
+        ctx.closePath();
+        ctx.fillStyle = grad;
+        ctx.fill();
+
+        // Trace line
+        ctx.beginPath();
+        for (let x = 0; x < W; x++) {
+          const y = yTop + H - (freqData[xToBin[x]] / 255) * H;
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.strokeStyle = traceColor;
+        ctx.lineWidth = 1.5;
+        ctx.shadowColor = traceColor;
+        ctx.shadowBlur = 8;
+        ctx.stroke();
+        ctx.shadowBlur = 0;
+
+        // Peak hold markers
+        ctx.fillStyle = "#ff8c22";
+        for (let x = 0; x < W; x++) {
+          if (peakHold[x] > 0.01) {
+            ctx.fillRect(x, Math.round(yTop + H - peakHold[x] * H), 1, 2);
+          }
+        }
+
+        // Dominant frequency stat
+        let maxBin = 1,
+          maxVal = 0;
+        const minBin = Math.round((20 / nyquist) * binCount);
+        for (let i = minBin; i < binCount; i++) {
+          if (freqData[i] > maxVal) {
+            maxVal = freqData[i];
+            maxBin = i;
+          }
+        }
+        const domFreq = (maxBin / binCount) * nyquist;
+        document.getElementById("freqDisplay").textContent =
+          maxVal > 10
+            ? domFreq >= 1000
+              ? (domFreq / 1000).toFixed(2) + " kHz"
+              : Math.round(domFreq) + " Hz"
+            : "--- Hz";
+
+        ctx.restore();
+      }
+
+      // ── Draw loop ─────────────────────────────────────────────────
+      function drawLoop() {
+        if (!running) return;
+        animFrame = requestAnimationFrame(drawLoop);
+        if (frozen) return;
+
+        const W = scopeCanvas.width;
+        const H = scopeCanvas.height;
+        if (W === 0 || H === 0) return;
+
+        ctx.fillStyle = "#000810";
+        ctx.fillRect(0, 0, W, H);
+
+        if (viewMode === "wave") {
+          drawWaveformRegion(0, H);
+        } else if (viewMode === "spec") {
+          drawSpectrumRegion(0, H);
+          document.getElementById("ampDisplay").textContent = "--- dB";
+        } else {
+          // both — top half wave, bottom half spectrum
+          const half = Math.floor(H / 2) - 1;
+          drawWaveformRegion(0, half);
+          ctx.save();
+          ctx.strokeStyle = "rgba(0,100,160,0.4)";
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(0, half);
+          ctx.lineTo(W, half);
+          ctx.stroke();
+          ctx.restore();
+          drawSpectrumRegion(half + 1, H - half - 1);
+        }
+      }
+
+      // ── Idle screen ───────────────────────────────────────────────
+      function drawIdle() {
+        const W = scopeCanvas.width;
+        const H = scopeCanvas.height;
+        if (W === 0 || H === 0) return;
+
+        ctx.fillStyle = "#000810";
+        ctx.fillRect(0, 0, W, H);
+        drawGraticule(W, 0, H);
+
+        ctx.save();
+        ctx.shadowColor = "#00d4ff";
+        ctx.shadowBlur = 7;
+        ctx.strokeStyle = "rgba(0,212,255,0.5)";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(0, H / 2);
+        ctx.lineTo(W, H / 2);
+        ctx.stroke();
+        ctx.restore();
+
+        ctx.font = "20px VT323, monospace";
+        ctx.fillStyle = "rgba(0,212,255,0.4)";
+        ctx.textAlign = "center";
+        ctx.fillText("[ PRESS START ]", W / 2, H / 2 - 20);
+        ctx.font = "14px VT323, monospace";
+        ctx.fillStyle = "rgba(0,100,160,0.5)";
+        ctx.fillText("AWAITING SIGNAL", W / 2, H / 2 + 16);
+      }
+
+      // ── About modal ───────────────────────────────────────────────
+      function openAbout() {
+        // Build bug-report URL with live context
+        const body = [
+          "**Tool:** SCOPE v1.0.24.04.26",
+          "**URL:** " + location.href,
+          "**Browser:** " + navigator.userAgent,
+          "**Screen:** " + screen.width + "×" + screen.height,
+          "**Audio running:** " + (running ? "yes" : "no"),
+          "**View mode:** " + viewMode,
+          "",
+          "**Describe the bug:**",
+          "<!-- What happened? What did you expect? Steps to reproduce? -->",
+        ].join("\n");
+        document.getElementById("bug-link").href =
+          "https://github.com/brianbjames/entropy_worship/issues/new" +
+          "?title=" +
+          encodeURIComponent("SCOPE bug: ") +
+          "&body=" +
+          encodeURIComponent(body);
+        document.getElementById("modal-overlay").classList.add("open");
+      }
+
+      function closeAbout() {
+        document.getElementById("modal-overlay").classList.remove("open");
+      }
+
+      document
+        .getElementById("modal-overlay")
+        .addEventListener("click", function (e) {
+          if (e.target === this) closeAbout();
+        });
+
+      document.addEventListener("keydown", function (e) {
+        if (e.key === "Escape") closeAbout();
+      });
+
+      window.openAbout = openAbout;
+      window.closeAbout = closeAbout;
+
+      // ── Init ──────────────────────────────────────────────────────
+      populateDevices(false);
+    </script>
+  </body>
+</html>
