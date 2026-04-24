@@ -1309,6 +1309,25 @@ strong {
   letter-spacing: 0.04em;
 }
 
+.help-footer {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+.help-bug-link {
+  font-family: var(--font);
+  font-size: 0.82rem;
+  letter-spacing: 0.12em;
+  color: rgba(255, 34, 34, 0.45);
+  text-decoration: none;
+  transition: color 0.2s, text-shadow 0.2s;
+}
+.help-bug-link:hover {
+  color: var(--accent);
+  text-shadow: 0 0 8px rgba(255, 34, 34, 0.5);
+}
+
 /* ── Footer ──────────────────────────────────────────────────── */
 #ew-footer {
   border-top: 1px solid var(--border);
