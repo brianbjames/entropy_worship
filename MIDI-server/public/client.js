@@ -197,7 +197,7 @@ function renderRooms(list) {
   if (!el) return;
   const others = (list || []).filter((r) => r.name !== ROOM);
   if (!others.length) {
-    el.innerHTML = '<span class="label-dim">NO OTHER ROOn MS AVAILABLE</span>';
+    el.innerHTML = '<span class="label-dim">NO OTHER ROOMS AVAILABLE</span>';
     return;
   }
   el.innerHTML = "";
