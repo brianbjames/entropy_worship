@@ -360,19 +360,19 @@
               </tr>
               <tr>
                 <td class="hk">THRU</td>
-                <td>Pass MIDI input through to the output device</td>
+                <td>Route all MIDI input (notes, CC, clock, etc.) to the output device locally — useful for passing a keyboard or controller through to a synth</td>
               </tr>
               <tr>
                 <td class="hk">CLK ↑</td>
-                <td>Relay MIDI clock (0xF8) messages to the output device</td>
+                <td>Relay incoming hardware clock (0xF8) to all peers over the network, so their MIDI outputs also receive the raw clock signal</td>
               </tr>
               <tr>
                 <td class="hk">CLK GEN</td>
-                <td>Generate MIDI clock to the output device, locked to room BPM. Sends Start/Stop on transport</td>
+                <td>Generate MIDI clock to your output device from the server BPM. Sends Start (0xFA) and Stop (0xFC) on transport — use this to sync external hardware to the room</td>
               </tr>
               <tr>
                 <td class="hk">CLK SYNC</td>
-                <td>Slave the room BPM and transport to an incoming hardware MIDI clock. Sends play/stop to all peers on Start/Stop</td>
+                <td>Slave the room BPM and transport to an incoming hardware clock — use this when a hardware sequencer or DAW is the master. Pair with CLK ↑ to also distribute its clock pulses to peers</td>
               </tr>
               <tr>
                 <td class="hk">PANIC</td>
