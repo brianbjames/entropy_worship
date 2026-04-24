@@ -104,6 +104,11 @@ let myClientId = null;
 let clockRelayEnabled = false;
 let clickEnabled = false;
 let roomPrivate = false;
+let clockGenEnabled = false;
+let clockSyncEnabled = false;
+let clockGenTimer = null;
+let clockGenNextPulsePerf = null;
+let clockSyncLastBpm = 0;
 
 // ── Tone.js Instruments ──────────────────────────────────────
 let padSynth, clickSynth;
@@ -165,6 +170,7 @@ function startSequencer(epoch) {
   schedulerTick();
   schedulerTimer = setInterval(schedulerTick, SCHEDULER_MS);
   state.playing = true;
+  if (clockGenEnabled) clockGenStart(epoch);
   updateTransportUI();
 }
 
@@ -177,7 +183,36 @@ function stopSequencer(updateUI = true) {
   lastScheduledIdx = -1;
   state.playing = false;
   state.currentStep = -1;
+  if (clockGenEnabled) clockGenStop();
   if (updateUI) updateTransportUI();
+}
+
+// ── Clock Generator ──────────────────────────────────────────
+function clockGenStart(epoch) {
+  const msUntilEpoch = epoch - (Date.now() + serverTimeOffset);
+  clockGenNextPulsePerf = performance.now() + msUntilEpoch;
+  sendToOutput([0xfa]);
+  clearInterval(clockGenTimer);
+  clockGenTimer = setInterval(clockGenPump, 10);
+}
+
+function clockGenStop() {
+  clearInterval(clockGenTimer);
+  clockGenTimer = null;
+  clockGenNextPulsePerf = null;
+  sendToOutput([0xfc]);
+}
+
+function clockGenPump() {
+  if (!clockGenEnabled || !selectedOutput || clockGenNextPulsePerf === null) return;
+  const msPerPulse = (60000 / state.bpm) / 24;
+  const horizon = performance.now() + 50;
+  while (clockGenNextPulsePerf <= horizon) {
+    if (clockGenNextPulsePerf >= performance.now() - 5) {
+      try { selectedOutput.send([0xf8], clockGenNextPulsePerf); } catch (_) {}
+    }
+    clockGenNextPulsePerf += msPerPulse;
+  }
 }
 
 // ── UI ───────────────────────────────────────────────────────
@@ -380,6 +415,24 @@ function initUI() {
     ws.send(JSON.stringify({ type: "clockRelay", enabled: clockRelayEnabled }));
   });
 
+  // Clock generator — sends 0xF8/FA/FC to MIDI output, locked to server BPM
+  document.getElementById("clock-gen-btn").addEventListener("click", () => {
+    clockGenEnabled = !clockGenEnabled;
+    document.getElementById("clock-gen-btn").classList.toggle("active", clockGenEnabled);
+    if (!clockGenEnabled) {
+      if (clockGenTimer) clockGenStop();
+    } else if (state.playing && epochMs !== null) {
+      clockGenStart(epochMs);
+    }
+  });
+
+  // Clock sync — slaves room BPM and transport to incoming hardware clock
+  document.getElementById("clock-sync-btn").addEventListener("click", () => {
+    clockSyncEnabled = !clockSyncEnabled;
+    clockSyncLastBpm = 0;
+    document.getElementById("clock-sync-btn").classList.toggle("active", clockSyncEnabled);
+  });
+
   // Room privacy toggle
   document.getElementById("privacy-btn").addEventListener("click", () => {
     roomPrivate = !roomPrivate;
@@ -462,6 +515,8 @@ function populateMidiDevices(access) {
   select.style.display = access.inputs.size > 0 ? "inline-block" : "none";
   document.getElementById("clock-relay-btn").style.display =
     access.inputs.size > 0 ? "inline-block" : "none";
+  document.getElementById("clock-sync-btn").style.display =
+    access.inputs.size > 0 ? "inline-block" : "none";
   selectMidiInput(select.value);
 }
 
@@ -500,6 +555,9 @@ function populateMidiOutputs(access) {
   select.style.display = hasOutputs ? "inline-block" : "none";
   arrow.style.display = hasOutputs ? "inline" : "none";
   document.getElementById("thru-btn").style.display = hasOutputs
+    ? "inline-block"
+    : "none";
+  document.getElementById("clock-gen-btn").style.display = hasOutputs
     ? "inline-block"
     : "none";
   if (prevVal && [...access.outputs.keys()].includes(prevVal))
@@ -686,11 +744,23 @@ function handleSysMsg(status, bytes, remote) {
         );
         const el = document.getElementById("clock-bpm");
         if (el) el.textContent = `♩${bpm}`;
+        if (clockSyncEnabled && !remote && clockTickTimes.length >= 8) {
+          if (bpm >= 60 && bpm <= 200 && bpm !== clockSyncLastBpm) {
+            clockSyncLastBpm = bpm;
+            state.bpm = bpm;
+            document.getElementById("bpm").value = bpm;
+            document.getElementById("bpm-val").textContent = bpm;
+            if (ws.readyState === WebSocket.OPEN)
+              ws.send(JSON.stringify({ type: "bpm", bpm }));
+          }
+        }
       }
       return;
     }
     case 0xfa:
       logMidiRow("Clock", null, "Start", "", remote);
+      if (clockSyncEnabled && !remote && ws.readyState === WebSocket.OPEN)
+        ws.send(JSON.stringify({ type: "play" }));
       break;
     case 0xfb:
       logMidiRow("Clock", null, "Continue", "", remote);
@@ -700,6 +770,8 @@ function handleSysMsg(status, bytes, remote) {
       const el = document.getElementById("clock-bpm");
       if (el) el.textContent = "";
       logMidiRow("Clock", null, "Stop", "", remote);
+      if (clockSyncEnabled && !remote && ws.readyState === WebSocket.OPEN)
+        ws.send(JSON.stringify({ type: "stop" }));
       break;
     }
     case 0xfe:

@@ -113,6 +113,8 @@
             </select>
             <button id="thru-btn">THRU</button>
             <button id="clock-relay-btn">CLK ↑</button>
+            <button id="clock-gen-btn">CLK GEN</button>
+            <button id="clock-sync-btn">CLK SYNC</button>
             <button id="panic-btn">⚠ PANIC</button>
           </div>
           <div id="midi-channel-row" style="display: none">
@@ -360,6 +362,14 @@
               <tr>
                 <td class="hk">CLK ↑</td>
                 <td>Relay MIDI clock (0xF8) messages to the output device</td>
+              </tr>
+              <tr>
+                <td class="hk">CLK GEN</td>
+                <td>Generate MIDI clock to the output device, locked to room BPM. Sends Start/Stop on transport</td>
+              </tr>
+              <tr>
+                <td class="hk">CLK SYNC</td>
+                <td>Slave the room BPM and transport to an incoming hardware MIDI clock. Sends play/stop to all peers on Start/Stop</td>
               </tr>
               <tr>
                 <td class="hk">PANIC</td>

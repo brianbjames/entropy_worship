@@ -7,10 +7,12 @@ A collaborative, web-based MIDI relay and performance tool with real-time networ
 - **Multi-user collaboration** — Multiple clients connect to named rooms and share state in real time
 - **NTP-style clock sync** — Epoch-based scheduling keeps all clients locked to the same tempo
 - **Piano roll editor** — Canvas-based note editor with drag-and-drop MIDI file import and `.mid` export
-- **Web MIDI API** — Send/receive MIDI to/from external hardware (inputs, outputs, clock relay)
+- **Web MIDI API** — Send/receive MIDI to/from external hardware (inputs, outputs, clock relay, clock generation, clock sync)
 - **MIDI recording** — Record incoming MIDI and export as `.mid` files
 - **Virtual keyboard** — On-screen keyboard for playing notes into the piano roll or MIDI output
 - **Monitor panel** — Live display of incoming CC values, Program Changes, and Pitch Bend per channel
+- **Private rooms** — Mark a room private to hide it from the available rooms panel
+- **Available rooms panel** — Live list of all public, occupied rooms with one-click join
 - **Click track** — Built-in metronome with downbeat accent, toggled from the transport bar
 - **Built-in synths** — Tone.js pad synth and click synth for in-browser playback
 - **Retro CRT aesthetic** — Scanlines, galaxy background (Three.js), VT323 font
@@ -67,7 +69,9 @@ Open `http://localhost:3000` in a browser.
 - Select an input device to receive MIDI from hardware
 - Select an output device to route piano roll and keyboard notes to external gear
 - **THRU** — Pass MIDI input through to the output device
-- **CLK ↑** — Relay MIDI clock (0xF8) messages to the output device
+- **CLK ↑** — Relay incoming MIDI clock (0xF8) from hardware to all room peers
+- **CLK GEN** — Generate MIDI clock to the output device, locked to the room BPM; sends Start/Stop on transport
+- **CLK SYNC** — Slave the room BPM and transport to an incoming hardware MIDI clock; sends play/stop to all peers on Start/Stop
 - **PANIC** — Send all-notes-off to the output device
 
 ### Monitor Panel
@@ -85,13 +89,15 @@ Displays live incoming MIDI data:
 
 ### Rooms
 
-Connect multiple browser tabs or devices to the same room:
+On first load a random room name is generated and set in the URL. To join a specific room, enter its name and click **JOIN**, or navigate directly:
 
 ```
 http://localhost:3000?room=my-room
 ```
 
 All play/stop commands, BPM changes, and piano roll state are broadcast to all peers in the room. Header shows your latency (`you Xms`) and total player count.
+
+Toggle **PUBLIC / PRIVATE** in the room bar to control whether the room appears in the **// AVAILABLE ROOMS //** panel, which lists all public, occupied rooms on the server with a one-click join link.
 
 ## File Structure
 
