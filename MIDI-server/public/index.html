@@ -37,6 +37,9 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="style.css" />
+    <script type="importmap">
+      {"imports": {"three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}
+    </script>
   </head>
   <body>
     <canvas id="galaxy-bg"></canvas>
@@ -448,9 +451,8 @@
       </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tone@14.8/build/Tone.js"></script>
-    <script src="galaxy.js"></script>
+    <script type="module" src="galaxy.js"></script>
     <script src="client.js"></script>
     <script src="piano-roll.js"></script>
   </body>

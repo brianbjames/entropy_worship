@@ -385,16 +385,19 @@ function initUI() {
   updateTransportUI();
 
   document.getElementById("play-btn").addEventListener("click", () => {
-    ws.send(JSON.stringify({ type: "play" }));
+    if (ws.readyState === WebSocket.OPEN)
+      ws.send(JSON.stringify({ type: "play" }));
   });
   document.getElementById("stop-btn").addEventListener("click", () => {
-    ws.send(JSON.stringify({ type: "stop" }));
+    if (ws.readyState === WebSocket.OPEN)
+      ws.send(JSON.stringify({ type: "stop" }));
   });
   document.getElementById("bpm").addEventListener("input", (e) => {
     const bpm = +e.target.value;
     state.bpm = bpm;
     document.getElementById("bpm-val").textContent = bpm;
-    ws.send(JSON.stringify({ type: "bpm", bpm }));
+    if (ws.readyState === WebSocket.OPEN)
+      ws.send(JSON.stringify({ type: "bpm", bpm }));
   });
 
   document.getElementById("panic-btn").addEventListener("click", panic);
@@ -412,7 +415,8 @@ function initUI() {
     document
       .getElementById("clock-relay-btn")
       .classList.toggle("active", clockRelayEnabled);
-    ws.send(JSON.stringify({ type: "clockRelay", enabled: clockRelayEnabled }));
+    if (ws.readyState === WebSocket.OPEN)
+      ws.send(JSON.stringify({ type: "clockRelay", enabled: clockRelayEnabled }));
   });
 
   // Clock generator — sends 0xF8/FA/FC to MIDI output, locked to server BPM
@@ -437,7 +441,8 @@ function initUI() {
   document.getElementById("privacy-btn").addEventListener("click", () => {
     roomPrivate = !roomPrivate;
     updatePrivacyBtn();
-    ws.send(JSON.stringify({ type: "setPrivate", private: roomPrivate }));
+    if (ws.readyState === WebSocket.OPEN)
+      ws.send(JSON.stringify({ type: "setPrivate", private: roomPrivate }));
   });
 
   // Auto-request MIDI access
