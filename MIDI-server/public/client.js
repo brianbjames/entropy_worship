@@ -23,6 +23,31 @@ document.getElementById("unlock-btn").addEventListener("click", async () => {
   modal.addEventListener("click", (e) => {
     if (e.target === modal) modal.classList.remove("open");
   });
+
+  // Bug report link — builds a pre-filled GitHub issue with runtime context
+  document.querySelector(".help-bug-link").addEventListener("click", (e) => {
+    e.preventDefault();
+    const body = [
+      "**Describe the bug**",
+      "<!-- What happened? What did you expect to happen? -->",
+      "",
+      "**Steps to reproduce**",
+      "1. ",
+      "",
+      "**Context**",
+      `- URL: ${location.href}`,
+      `- Room: ${typeof ROOM !== "undefined" ? ROOM : "—"}`,
+      `- BPM: ${typeof state !== "undefined" ? state.bpm : "—"}`,
+      `- Playing: ${typeof state !== "undefined" ? state.playing : "—"}`,
+      `- MIDI available: ${!!navigator.requestMIDIAccess}`,
+      `- Browser: ${navigator.userAgent}`,
+    ].join("\n");
+    const url =
+      "https://github.com/brianbjames/entropy_worship/issues/new" +
+      "?labels=bug&title=Bug%3A+&body=" +
+      encodeURIComponent(body);
+    window.open(url, "_blank", "noopener");
+  });
 })();
 
 // ── Browser compatibility warning ───────────────────────────
@@ -172,7 +197,7 @@ function renderRooms(list) {
   if (!el) return;
   const others = (list || []).filter((r) => r.name !== ROOM);
   if (!others.length) {
-    el.innerHTML = '<span class="label-dim">NO OTHER ROOMS AVAILABLE</span>';
+    el.innerHTML = '<span class="label-dim">NO OTHER ROOn MS AVAILABLE</span>';
     return;
   }
   el.innerHTML = "";
