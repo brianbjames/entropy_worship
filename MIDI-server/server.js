@@ -40,6 +40,7 @@ const MIME = {
   ".html": "text/html",
   ".css": "text/css",
   ".js": "application/javascript",
+  ".wav": "audio/wav",
 };
 
 // ── HTTP static file server ──────────────────────────────────

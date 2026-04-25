@@ -57,7 +57,7 @@ const NOTE_NAMES_PR = [
 const prNotes = []; // { note, beatStart, beatDur, ch, vel }
 let prEnabled = false;
 let prBars = 4;
-let prScrollPitch = 84; // MIDI note at top of viewport (C6)
+let prScrollPitch = 49; // MIDI note at top of viewport — centers around C2 (36)
 let prScrollBeat = 0; // beat offset at left edge
 let prZoom = 0; // set to prMinZoom() on first prResize()
 let prRowH = 10; // px per semitone
@@ -68,6 +68,20 @@ let prGridW = 1,
   prGridH = 1; // logical (CSS) grid dimensions
 let prDpr = 1;
 
+// ── Pattern bank ────────────────────────────────────────────
+const PR_PAT_COUNT = 16;
+const prBank = Array.from({ length: PR_PAT_COUNT }, () => []);
+const prBankBars = Array(PR_PAT_COUNT).fill(4); // bar length per pattern
+let prCurrentPat = 0;
+let prQueuedPat = null;
+let prQueueMode = false; // false = instant, true = queue at loop end
+
+// Chain sequencer
+const PR_CHAIN_LEN = 16;
+const prChain = Array(PR_CHAIN_LEN).fill(-1);
+let prChainEnabled = false;
+let prChainPos = 0;
+
 // ── Helpers ──────────────────────────────────────────────────
 function prVisibleRows() {
   return Math.ceil(prGridH / prRowH);
@@ -75,9 +89,9 @@ function prVisibleRows() {
 function prTotalBeat() {
   return prBars * 4;
 }
-// Minimum zoom that keeps the full pattern filling the canvas (no dead zone)
+// Minimum zoom level — allow zooming out to see 2x the pattern length
 function prMinZoom() {
-  return prGridW > 0 ? Math.max(5, prGridW / prTotalBeat()) : 5;
+  return prGridW > 0 ? Math.max(4, prGridW / (prTotalBeat() * 2)) : 4;
 }
 function prBeatToX(beat) {
   return (beat - prScrollBeat) * prZoom;
@@ -97,6 +111,112 @@ function prClamp(v, lo, hi) {
 function prSnapBeat(b) {
   return Math.round(b / 0.25) * 0.25;
 } // 1/16 snap
+
+function prZoomTo(newZoom) {
+  prZoom = prClamp(newZoom, prMinZoom(), 400);
+  const visBts = prGridW / prZoom;
+  const maxScroll = Math.max(0, prTotalBeat() + visBts * 0.5 - visBts);
+  prScrollBeat = prClamp(prScrollBeat, 0, maxScroll);
+  drawAll();
+}
+
+function prFitZoom() {
+  prZoomTo(prGridW / prTotalBeat());
+  prScrollBeat = 0;
+  drawAll();
+}
+
+// ── Pattern bank helpers ────────────────────────────────────
+function prSaveCurrent() {
+  prBankBars[prCurrentPat] = prBars;
+  prBank[prCurrentPat] = prNotes.map((n) => ({ ...n }));
+}
+
+function prLoadPattern(idx) {
+  prBars = prBankBars[idx] || 4;
+  document.getElementById("pr-bars").value = prBars;
+  prNotes.length = 0;
+  prBank[idx].forEach((n) => prNotes.push({ ...n }));
+  prCurrentPat = idx;
+  prQueuedPat = null;
+  prScrollBeat = 0;
+  prZoom = prClamp(prGridW / prTotalBeat(), prMinZoom(), 400);
+  drawAll();
+  prUpdatePatternBtns();
+}
+
+function prSwitchPattern(idx) {
+  if (idx === prCurrentPat && prQueuedPat === null) return;
+  prSaveCurrent();
+  if (prQueueMode && prEnabled && typeof epochMs !== "undefined" && epochMs !== null) {
+    prQueuedPat = idx;
+    prUpdatePatternBtns();
+  } else {
+    prLoadPattern(idx);
+  }
+}
+
+function prUpdatePatternBtns() {
+  document.querySelectorAll("#pr-pattern-btns .pat-btn").forEach((btn) => {
+    const i = +btn.dataset.pat;
+    btn.classList.toggle("active", i === prCurrentPat);
+    btn.classList.toggle("queued", i === prQueuedPat);
+  });
+}
+
+// ── Chain helpers ────────────────────────────────────────────
+function prChainAdvance() {
+  for (let i = 1; i <= PR_CHAIN_LEN; i++) {
+    const pos = (prChainPos + i) % PR_CHAIN_LEN;
+    if (prChain[pos] >= 0) return pos;
+  }
+  return null;
+}
+
+function prChainFirstActive() {
+  for (let i = 0; i < PR_CHAIN_LEN; i++) {
+    if (prChain[i] >= 0) return i;
+  }
+  return null;
+}
+
+function prRenderChainSlots() {
+  const container = document.getElementById("pr-chain-slots");
+  container.innerHTML = "";
+  for (let i = 0; i < PR_CHAIN_LEN; i++) {
+    const slot = document.createElement("select");
+    slot.className = "chain-slot";
+    slot.dataset.idx = i;
+
+    const emptyOpt = document.createElement("option");
+    emptyOpt.value = "-1";
+    emptyOpt.textContent = "--";
+    slot.appendChild(emptyOpt);
+
+    for (let p = 0; p < PR_PAT_COUNT; p++) {
+      const opt = document.createElement("option");
+      opt.value = p;
+      opt.textContent = p + 1;
+      slot.appendChild(opt);
+    }
+
+    slot.value = prChain[i];
+    slot.addEventListener("change", (e) => {
+      prChain[i] = +e.target.value;
+    });
+    container.appendChild(slot);
+  }
+}
+
+function prUpdateChainUI() {
+  document.querySelectorAll("#pr-chain-slots .chain-slot").forEach((slot) => {
+    slot.classList.toggle("chain-active", prChainEnabled && +slot.dataset.idx === prChainPos && prChain[prChainPos] >= 0);
+  });
+  document.getElementById("pr-chain-pos").textContent =
+    prChainEnabled && prChain[prChainPos] >= 0
+      ? `${prChainPos + 1}/${PR_CHAIN_LEN}`
+      : "";
+}
 
 // ── Draw: keys panel ─────────────────────────────────────────
 function drawKeys() {
@@ -120,12 +240,18 @@ function drawKeys() {
       ctx.fillRect(0, y + prRowH - 1, w - 1, 1);
     }
 
-    // Octave label at each C
+    // Octave label at each C, note number on all keys
     if (semi === 0) {
       const oct = Math.floor(n / 12) - 1;
       ctx.fillStyle = "#05af90";
       ctx.font = '7px "Courier New", monospace';
       ctx.fillText(`C${oct}`, 2, y + prRowH - 2);
+      ctx.fillStyle = "rgba(5,175,144,0.5)";
+      ctx.fillText(n, w - 16, y + prRowH - 2);
+    } else if (prRowH >= 8) {
+      ctx.fillStyle = isBlack ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.3)";
+      ctx.font = '6px "Courier New", monospace';
+      ctx.fillText(n, isBlack ? w * 0.6 + 2 : w - 16, y + prRowH - 2);
     }
   }
 
@@ -146,7 +272,7 @@ function drawRuler() {
 
   const beatStart = Math.floor(prScrollBeat);
   const patternEnd = prTotalBeat();
-  const beatEnd = Math.min(patternEnd, Math.ceil(prScrollBeat + prGridW / prZoom) + 1);
+  const beatEnd = Math.ceil(prScrollBeat + prGridW / prZoom) + 1;
 
   for (let b = beatStart; b <= beatEnd; b++) {
     const x = prBeatToX(b);
@@ -154,16 +280,19 @@ function drawRuler() {
     const bar = Math.floor(b / 4);
     const beatInBar = b % 4;
     const isBar = beatInBar === 0;
+    const pastEnd = b >= patternEnd;
 
-    ctx.strokeStyle = isBar ? "rgba(255,34,34,0.7)" : "rgba(255,34,34,0.3)";
+    ctx.strokeStyle = pastEnd
+      ? (isBar ? "rgba(102,12,12,0.4)" : "rgba(102,12,12,0.15)")
+      : (isBar ? "rgba(255,34,34,0.7)" : "rgba(255,34,34,0.3)");
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(x, isBar ? 0 : h * 0.5);
     ctx.lineTo(x, h);
     ctx.stroke();
 
-    if (isBar && b < patternEnd) {
-      ctx.fillStyle = "#ff3c3c";
+    if (isBar) {
+      ctx.fillStyle = pastEnd ? "rgba(102,12,12,0.5)" : "#ff3c3c";
       ctx.font = '9px "Courier New", monospace';
       ctx.fillText(`${bar + 1}`, x + 3, h - 5);
     } else if (!isBar) {
@@ -175,8 +304,8 @@ function drawRuler() {
     // 1/16th subdivision ticks
     for (let sub = 1; sub < 4; sub++) {
       const sx = x + (sub / 4) * prZoom;
-      if (sx < 0 || sx > prGridW || sx > prBeatToX(patternEnd)) continue;
-      ctx.strokeStyle = "rgba(102,12,12,0.3)";
+      if (sx < 0 || sx > prGridW) continue;
+      ctx.strokeStyle = pastEnd ? "rgba(102,12,12,0.1)" : "rgba(102,12,12,0.3)";
       ctx.beginPath();
       ctx.moveTo(sx, h * 0.75);
       ctx.lineTo(sx, h);
@@ -186,7 +315,7 @@ function drawRuler() {
 
   // Shade dead zone beyond pattern end
   const endX = prBeatToX(patternEnd);
-  if (endX < w) {
+  if (endX < w - 1) {
     ctx.fillStyle = "rgba(0,0,0,0.55)";
     ctx.fillRect(Math.max(0, endX), 0, w - Math.max(0, endX), h);
   }
@@ -226,16 +355,19 @@ function drawGrid(playBeat) {
     }
   }
 
-  // Vertical beat/bar lines — capped at pattern end
+  // Vertical beat/bar lines
   const beatStart = Math.floor(prScrollBeat);
   const patternEnd = prTotalBeat();
-  const beatEnd = Math.min(patternEnd, Math.ceil(prScrollBeat + w / prZoom) + 1);
+  const beatEnd = Math.ceil(prScrollBeat + w / prZoom) + 1;
 
   for (let b = beatStart; b <= beatEnd; b++) {
     const x = prBeatToX(b);
     if (x < 0 || x > w) continue;
     const isBar = b % 4 === 0;
-    ctx.strokeStyle = isBar ? "rgba(255,34,34,0.22)" : "rgba(102,12,12,0.18)";
+    const pastEnd = b >= patternEnd;
+    ctx.strokeStyle = pastEnd
+      ? (isBar ? "rgba(102,12,12,0.1)" : "rgba(102,12,12,0.06)")
+      : (isBar ? "rgba(255,34,34,0.22)" : "rgba(102,12,12,0.18)");
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(x, 0);
@@ -245,8 +377,8 @@ function drawGrid(playBeat) {
     // 1/16 subdivisions
     for (let sub = 1; sub < 4; sub++) {
       const sx = x + (sub / 4) * prZoom;
-      if (sx < 0 || sx > w || sx > prBeatToX(patternEnd)) continue;
-      ctx.strokeStyle = "rgba(102,12,12,0.08)";
+      if (sx < 0 || sx > w) continue;
+      ctx.strokeStyle = pastEnd ? "rgba(102,12,12,0.03)" : "rgba(102,12,12,0.08)";
       ctx.beginPath();
       ctx.moveTo(sx, 0);
       ctx.lineTo(sx, h);
@@ -256,7 +388,7 @@ function drawGrid(playBeat) {
 
   // Dead zone: shade area past pattern end
   const endX = prBeatToX(patternEnd);
-  if (endX < w) {
+  if (endX < w - 1) {
     ctx.fillStyle = "rgba(0,0,0,0.55)";
     ctx.fillRect(Math.max(0, endX), 0, w - Math.max(0, endX), h);
   }
@@ -308,12 +440,16 @@ function prResize() {
   const ruler = document.getElementById("pr-ruler");
   const grid = document.getElementById("pr-grid");
 
-  prGridW = wrap.clientWidth - PR_KEYS_W;
-  prGridH = wrap.clientHeight - PR_RULER_H;
+  prGridW = Math.floor(wrap.clientWidth - PR_KEYS_W);
+  prGridH = Math.floor(wrap.clientHeight - PR_RULER_H);
 
-  // Enforce no dead zone after resize (canvas may have grown wider)
+  // Clamp zoom to minimum after resize; on first load fit to pattern
+  if (prZoom === 0) {
+    prZoom = prGridW > 0 ? prGridW / prTotalBeat() : prMinZoom();
+  }
   prZoom = Math.max(prZoom, prMinZoom());
-  const maxScroll = Math.max(0, prTotalBeat() - prGridW / prZoom);
+  const visibleBeats = prGridW / prZoom;
+  const maxScroll = Math.max(0, prTotalBeat() + visibleBeats * 0.5 - visibleBeats);
   prScrollBeat = Math.min(prScrollBeat, maxScroll);
 
   // Keys
@@ -410,7 +546,8 @@ function prOnMouseMove(e) {
     n.note = note;
     prDrag.didMove = true;
   } else if (prDrag.mode === "add") {
-    const end = prClamp(prSnapBeat(beat), 0.25, prTotalBeat());
+    const endSnap = Math.ceil(beat / 0.25) * 0.25;
+    const end = prClamp(endSnap, 0.25, prTotalBeat());
     n.beatDur = Math.max(0.25, end - prDrag.origBeat);
   }
   drawAll();
@@ -429,11 +566,13 @@ function prOnWheel(e) {
   const delta = e.deltaY;
   if (e.ctrlKey || e.metaKey) {
     prZoom = prClamp(prZoom * (delta > 0 ? 0.85 : 1.18), prMinZoom(), 400);
-    // Clamp scroll so we don't drift past the end of the pattern
-    const maxScroll = Math.max(0, prTotalBeat() - prGridW / prZoom);
+    // Clamp scroll — allow scrolling half a screen past the pattern end
+    const visBts = prGridW / prZoom;
+    const maxScroll = Math.max(0, prTotalBeat() + visBts * 0.5 - visBts);
     prScrollBeat = prClamp(prScrollBeat, 0, maxScroll);
   } else if (e.shiftKey) {
-    const maxScroll = Math.max(0, prTotalBeat() - prGridW / prZoom);
+    const visBts = prGridW / prZoom;
+    const maxScroll = Math.max(0, prTotalBeat() + visBts * 0.5 - visBts);
     prScrollBeat = prClamp(prScrollBeat + delta / prZoom, 0, maxScroll);
   } else {
     prScrollPitch = prClamp(
@@ -474,6 +613,37 @@ function prSchedulerTick() {
 
   for (let idx = Math.max(0, prLastPrIdx + 1); idx <= horizonIdx; idx++) {
     const patBeat = (idx * subDiv) % totalBeat;
+
+    // Queue / chain resolution at loop boundary
+    if (patBeat < subDiv) {
+      if (prChainEnabled) {
+        prSaveCurrent();
+        const nextPos = prChainAdvance();
+        if (nextPos !== null) {
+          prChainPos = nextPos;
+          const patIdx = prChain[nextPos];
+          prBars = prBankBars[patIdx] || 4;
+          document.getElementById("pr-bars").value = prBars;
+          prNotes.length = 0;
+          prBank[patIdx].forEach((n) => prNotes.push({ ...n }));
+          prCurrentPat = patIdx;
+          drawAll();
+          prUpdatePatternBtns();
+          prUpdateChainUI();
+        }
+      } else if (prQueuedPat !== null) {
+        prSaveCurrent();
+        prBars = prBankBars[prQueuedPat] || 4;
+        document.getElementById("pr-bars").value = prBars;
+        prNotes.length = 0;
+        prBank[prQueuedPat].forEach((n) => prNotes.push({ ...n }));
+        prCurrentPat = prQueuedPat;
+        prQueuedPat = null;
+        drawAll();
+        prUpdatePatternBtns();
+      }
+    }
+
     const slotEnd = patBeat + subDiv;
     const stepServerMs = epochMs + idx * subMs;
     const audioT = serverToAudio(stepServerMs);
@@ -776,6 +946,7 @@ function exportPrMid() {
   });
   document.getElementById("pr-clear-btn").addEventListener("click", () => {
     prNotes.length = 0;
+    prSaveCurrent();
     drawAll();
   });
   document.getElementById("pr-bars").addEventListener("change", (e) => {
@@ -792,6 +963,11 @@ function exportPrMid() {
   document
     .getElementById("pr-export-btn")
     .addEventListener("click", exportPrMid);
+
+  // Zoom controls
+  document.getElementById("pr-zoom-in").addEventListener("click", () => prZoomTo(prZoom * 1.4));
+  document.getElementById("pr-zoom-out").addEventListener("click", () => prZoomTo(prZoom * 0.7));
+  document.getElementById("pr-zoom-fit").addEventListener("click", prFitZoom);
 
   // Drag-and-drop MIDI import
   const dropZone = document.getElementById("pr-drop-zone");
@@ -837,4 +1013,42 @@ function exportPrMid() {
   prResize();
   requestAnimationFrame(prResize);
   window.addEventListener("resize", prResize);
+
+  // ── Pattern selector UI ─────────────────────────────────────
+  (function prInitPatternBtns() {
+    const container = document.getElementById("pr-pattern-btns");
+    for (let i = 0; i < PR_PAT_COUNT; i++) {
+      const btn = document.createElement("button");
+      btn.className = "pat-btn";
+      btn.textContent = i + 1;
+      btn.dataset.pat = i;
+      if (i === prCurrentPat) btn.classList.add("active");
+      btn.addEventListener("click", () => prSwitchPattern(i));
+      container.appendChild(btn);
+    }
+  })();
+
+  document.getElementById("pr-queue-btn").addEventListener("click", () => {
+    prQueueMode = !prQueueMode;
+    const btn = document.getElementById("pr-queue-btn");
+    btn.textContent = prQueueMode ? "QUEUE" : "INSTANT";
+    btn.classList.toggle("active", prQueueMode);
+  });
+
+  // ── Chain sequencer UI ──────────────────────────────────────
+  prRenderChainSlots();
+
+  document.getElementById("pr-chain-btn").addEventListener("click", () => {
+    prChainEnabled = !prChainEnabled;
+    document.getElementById("pr-chain-btn").classList.toggle("active", prChainEnabled);
+    if (prChainEnabled) {
+      const first = prChainFirstActive();
+      if (first !== null) {
+        prChainPos = first;
+        prSaveCurrent();
+        prLoadPattern(prChain[first]);
+      }
+    }
+    prUpdateChainUI();
+  });
 })();

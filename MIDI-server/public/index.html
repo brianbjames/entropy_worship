@@ -181,6 +181,68 @@
             <strong id="vkb-vel-val">80</strong>
           </label>
         </div>
+        <div id="synth-controls">
+          <div id="synth-top-row">
+            <span class="label-dim">SYNTH</span>
+            <select id="synth-type">
+              <option value="triangle">TRIANGLE</option>
+              <option value="fm">FM</option>
+            </select>
+            <span id="fm-params" style="display:none">
+              <label class="label-dim">MOD
+                <input type="range" id="fm-mod-index" min="0" max="30" value="10" step="0.5" />
+                <strong id="fm-mod-val">10</strong>
+              </label>
+              <label class="label-dim">HARM
+                <input type="range" id="fm-harmonicity" min="0.5" max="12" value="3" step="0.25" />
+                <strong id="fm-harm-val">3</strong>
+              </label>
+            </span>
+          </div>
+          <div id="synth-env-row">
+            <span class="label-dim">ENV</span>
+            <label class="label-dim">A
+              <input type="range" id="env-attack" min="0.001" max="2" value="0.02" step="0.001" />
+              <strong id="env-a-val">0.02</strong>
+            </label>
+            <label class="label-dim">D
+              <input type="range" id="env-decay" min="0.01" max="2" value="0.1" step="0.01" />
+              <strong id="env-d-val">0.1</strong>
+            </label>
+            <label class="label-dim">S
+              <input type="range" id="env-sustain" min="0" max="1" value="0.4" step="0.01" />
+              <strong id="env-s-val">0.4</strong>
+            </label>
+            <label class="label-dim">R
+              <input type="range" id="env-release" min="0.01" max="4" value="0.2" step="0.01" />
+              <strong id="env-r-val">0.2</strong>
+            </label>
+          </div>
+          <div id="synth-lfo-row">
+            <span class="label-dim">LFO</span>
+            <button id="lfo-toggle-btn">OFF</button>
+            <select id="lfo-wave">
+              <option value="sine">SIN</option>
+              <option value="triangle">TRI</option>
+              <option value="square">SQR</option>
+              <option value="sawtooth">SAW</option>
+            </select>
+            <label class="label-dim">RATE
+              <input type="range" id="lfo-rate" min="0.1" max="30" value="4" step="0.1" />
+              <strong id="lfo-rate-val">4</strong>
+              <span class="label-dim">Hz</span>
+            </label>
+            <label class="label-dim">PITCH
+              <input type="range" id="lfo-pitch-amt" min="0" max="1200" value="0" step="1" />
+              <strong id="lfo-pitch-val">0</strong>
+              <span class="label-dim">¢</span>
+            </label>
+            <label class="label-dim" id="lfo-fm-label" style="display:none">FM
+              <input type="range" id="lfo-fm-amt" min="0" max="20" value="0" step="0.5" />
+              <strong id="lfo-fm-val">0</strong>
+            </label>
+          </div>
+        </div>
         <div id="vkb-scroll"><div id="vkb"></div></div>
       </div>
 
@@ -189,6 +251,16 @@
         <div id="pr-toolbar">
           <button id="pr-toggle-btn">PR ON</button>
           <button id="pr-clear-btn">CLEAR</button>
+          <div id="pr-pattern-row" class="pattern-row">
+            <span class="label-dim">PAT</span>
+            <span id="pr-pattern-btns"></span>
+            <button id="pr-queue-btn" class="pattern-queue-btn">INSTANT</button>
+          </div>
+          <div id="pr-chain-row" class="chain-row">
+            <button id="pr-chain-btn" class="chain-toggle-btn">CHAIN</button>
+            <span id="pr-chain-slots"></span>
+            <span id="pr-chain-pos" class="label-dim"></span>
+          </div>
           <label class="label-dim"
             >BARS
             <input type="number" id="pr-bars" min="1" max="32" value="4" />
@@ -204,12 +276,44 @@
           </label>
           <div id="pr-drop-zone">↓ DROP .MID</div>
           <button id="pr-export-btn">↓ EXPORT .MID</button>
+          <span id="pr-zoom-controls">
+            <button id="pr-zoom-out">−</button>
+            <button id="pr-zoom-fit">FIT</button>
+            <button id="pr-zoom-in">+</button>
+          </span>
         </div>
         <div id="pr-canvas-wrap">
           <canvas id="pr-keys"></canvas>
           <canvas id="pr-ruler"></canvas>
           <canvas id="pr-grid"></canvas>
         </div>
+      </div>
+
+      <div id="dm-section" class="hud-panel clip-tl">
+        <div class="section-title">// EW909 //</div>
+        <div id="dm-toolbar">
+          <button id="dm-toggle-btn">909 ON</button>
+          <button id="dm-clear-btn">CLEAR</button>
+          <label class="label-dim">STEPS
+            <input type="number" id="dm-steps" min="1" max="64" value="16" />
+          </label>
+          <div id="dm-pattern-row" class="pattern-row">
+            <span class="label-dim">PAT</span>
+            <span id="dm-pattern-btns"></span>
+            <button id="dm-queue-btn" class="pattern-queue-btn">INSTANT</button>
+          </div>
+          <div id="dm-chain-row" class="chain-row">
+            <button id="dm-chain-btn" class="chain-toggle-btn">CHAIN</button>
+            <span id="dm-chain-slots"></span>
+            <span id="dm-chain-pos" class="label-dim"></span>
+          </div>
+        </div>
+        <div id="dm-grid"></div>
+      </div>
+
+      <div id="mixer-section" class="hud-panel clip-bl">
+        <div class="section-title">// MIXER //</div>
+        <div id="mixer-strips"></div>
       </div>
 
       <div id="midi-section" class="hud-panel clip-tr">
@@ -455,5 +559,7 @@
     <script type="module" src="galaxy.js"></script>
     <script src="client.js"></script>
     <script src="piano-roll.js"></script>
+    <script src="drum-machine.js"></script>
+    <script src="mixer.js"></script>
   </body>
 </html>

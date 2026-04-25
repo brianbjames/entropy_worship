@@ -112,20 +112,110 @@ let clockSyncLastBpm = 0;
 
 // ── Tone.js Instruments ──────────────────────────────────────
 let padSynth, clickSynth;
+let currentSynthType = "triangle";
+let lfoEnabled = false;
+let lfoRafId = null;
 
-function initSynths() {
-  padSynth = new Tone.PolySynth(Tone.Synth, {
-    oscillator: { type: "triangle" },
-    envelope: { attack: 0.02, decay: 0.1, sustain: 0.4, release: 0.2 },
-  }).toDestination();
+// ── Mixer channels ──────────────────────────────────────────
+let masterChannel, padChannel, clickChannel;
 
-  clickSynth = new Tone.Synth({
-    oscillator: { type: "sine" },
-    envelope: { attack: 0.001, decay: 0.04, sustain: 0, release: 0.01 },
-  }).toDestination();
+function initMixerChannels() {
+  if (masterChannel) return; // only init once
+  masterChannel = new Tone.Channel({ volume: 0 }).toDestination();
+  padChannel = new Tone.Channel({ volume: -8 }).connect(masterChannel);
+  clickChannel = new Tone.Channel({ volume: -6 }).connect(masterChannel);
+}
 
-  padSynth.volume.value = -8;
-  clickSynth.volume.value = -6;
+function getEnvValues() {
+  return {
+    attack: +document.getElementById("env-attack").value,
+    decay: +document.getElementById("env-decay").value,
+    sustain: +document.getElementById("env-sustain").value,
+    release: +document.getElementById("env-release").value,
+  };
+}
+
+function initSynths(type) {
+  type = type || "triangle";
+  currentSynthType = type;
+
+  initMixerChannels();
+  if (typeof dmConnectChannels === "function") dmConnectChannels();
+
+  if (lfoRafId) { stopLFO(); }
+  if (padSynth) {
+    try { padSynth.releaseAll(); } catch (_) {}
+    padSynth.dispose();
+  }
+
+  const env = getEnvValues();
+
+  if (type === "fm") {
+    padSynth = new Tone.PolySynth(Tone.FMSynth, {
+      harmonicity: +document.getElementById("fm-harmonicity").value,
+      modulationIndex: +document.getElementById("fm-mod-index").value,
+      oscillator: { type: "sine" },
+      envelope: env,
+      modulation: { type: "sine" },
+      modulationEnvelope: { attack: 0.01, decay: 0.2, sustain: 0.3, release: 0.3 },
+    }).connect(padChannel);
+  } else {
+    padSynth = new Tone.PolySynth(Tone.Synth, {
+      oscillator: { type: "triangle" },
+      envelope: env,
+    }).connect(padChannel);
+  }
+
+  if (lfoEnabled) initLFO();
+
+  if (!clickSynth) {
+    clickSynth = new Tone.Synth({
+      oscillator: { type: "sine" },
+      envelope: { attack: 0.001, decay: 0.04, sustain: 0, release: 0.01 },
+    }).connect(clickChannel);
+  }
+}
+
+function initLFO() {
+  stopLFO();
+  if (!padSynth) return;
+
+  const baseMod = currentSynthType === "fm"
+    ? +document.getElementById("fm-mod-index").value : 0;
+  const startTime = Tone.context.currentTime;
+
+  function lfoTick() {
+    const t = Tone.context.currentTime - startTime;
+    const rate = +document.getElementById("lfo-rate").value;
+    const phase = (t * rate) % 1;
+    const wave = document.getElementById("lfo-wave").value;
+    let raw;
+    switch (wave) {
+      case "sine":     raw = Math.sin(phase * 2 * Math.PI); break;
+      case "triangle": raw = 1 - 4 * Math.abs(phase - 0.5); break;
+      case "sawtooth": raw = 2 * phase - 1; break;
+      case "square":   raw = phase < 0.5 ? 1 : -1; break;
+      default:         raw = 0;
+    }
+
+    const pitchAmt = +document.getElementById("lfo-pitch-amt").value;
+    if (pitchAmt > 0 && padSynth) {
+      padSynth.set({ detune: raw * pitchAmt });
+    }
+    if (currentSynthType === "fm" && padSynth) {
+      const fmAmt = +document.getElementById("lfo-fm-amt").value;
+      if (fmAmt > 0) {
+        padSynth.set({ modulationIndex: baseMod + raw * fmAmt });
+      }
+    }
+    lfoRafId = requestAnimationFrame(lfoTick);
+  }
+  lfoRafId = requestAnimationFrame(lfoTick);
+}
+
+function stopLFO() {
+  if (lfoRafId) { cancelAnimationFrame(lfoRafId); lfoRafId = null; }
+  if (padSynth) padSynth.set({ detune: 0 });
 }
 
 // ── Epoch-based scheduler ────────────────────────────────────
@@ -255,7 +345,8 @@ if (!new URLSearchParams(location.search).get("room")) {
   history.replaceState(null, "", `?room=${name}`);
 }
 
-const WS_SERVER = "wss://midi-server-production.up.railway.app";
+const WS_PROD = "wss://midi-server-production.up.railway.app";
+const IS_LOCAL = location.hostname === "localhost" || location.hostname === "127.0.0.1";
 const ROOM = new URLSearchParams(location.search).get("room");
 
 // ── Room join — wired immediately, no unlock required ────────
@@ -274,7 +365,7 @@ document.getElementById("room-input").addEventListener("keydown", (e) => {
 });
 
 const wsProto = location.protocol === "https:" ? "wss:" : "ws:";
-const wsBase = WS_SERVER || `${wsProto}//${location.host}`;
+const wsBase = IS_LOCAL ? `${wsProto}//${location.host}` : WS_PROD;
 const wsUrl = `${wsBase}?room=${encodeURIComponent(ROOM)}`;
 const ws = new WebSocket(wsUrl);
 
@@ -407,6 +498,71 @@ function initUI() {
     document
       .getElementById("click-btn")
       .classList.toggle("active", clickEnabled);
+  });
+
+  // Synth type selector
+  document.getElementById("synth-type").addEventListener("change", (e) => {
+    const type = e.target.value;
+    initSynths(type);
+    document.getElementById("fm-params").style.display =
+      type === "fm" ? "" : "none";
+    document.getElementById("lfo-fm-label").style.display =
+      type === "fm" ? "" : "none";
+  });
+
+  document.getElementById("fm-mod-index").addEventListener("input", (e) => {
+    const val = +e.target.value;
+    document.getElementById("fm-mod-val").textContent = val;
+    if (currentSynthType === "fm" && padSynth) {
+      padSynth.set({ modulationIndex: val });
+    }
+  });
+
+  document.getElementById("fm-harmonicity").addEventListener("input", (e) => {
+    const val = +e.target.value;
+    document.getElementById("fm-harm-val").textContent = val;
+    if (currentSynthType === "fm" && padSynth) {
+      padSynth.set({ harmonicity: val });
+    }
+  });
+
+  // ADSR envelope controls
+  ["attack", "decay", "sustain", "release"].forEach((param) => {
+    const el = document.getElementById("env-" + param);
+    const valId = "env-" + param[0] + "-val";
+    el.addEventListener("input", (e) => {
+      const val = +e.target.value;
+      document.getElementById(valId).textContent = val;
+      if (padSynth) padSynth.set({ envelope: { [param]: val } });
+    });
+  });
+
+  // LFO controls
+  document.getElementById("lfo-toggle-btn").addEventListener("click", () => {
+    lfoEnabled = !lfoEnabled;
+    document.getElementById("lfo-toggle-btn").textContent = lfoEnabled ? "ON" : "OFF";
+    document.getElementById("lfo-toggle-btn").classList.toggle("active", lfoEnabled);
+    if (lfoEnabled) {
+      initLFO();
+    } else {
+      stopLFO();
+    }
+  });
+
+  document.getElementById("lfo-rate").addEventListener("input", (e) => {
+    document.getElementById("lfo-rate-val").textContent = +e.target.value;
+  });
+
+  document.getElementById("lfo-pitch-amt").addEventListener("input", (e) => {
+    document.getElementById("lfo-pitch-val").textContent = +e.target.value;
+  });
+
+  document.getElementById("lfo-fm-amt").addEventListener("input", (e) => {
+    document.getElementById("lfo-fm-val").textContent = +e.target.value;
+  });
+
+  document.getElementById("lfo-wave").addEventListener("change", () => {
+    // waveform read live in lfoTick — no action needed
   });
 
   // Clock relay

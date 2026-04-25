@@ -591,6 +591,46 @@ strong {
   letter-spacing: 0.05em;
 }
 
+/* ── Synth selector ────────────────────────────────────────── */
+#synth-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+}
+#synth-top-row,
+#synth-env-row,
+#synth-lfo-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+#synth-controls select {
+  min-width: 80px;
+}
+#fm-params {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+#synth-controls input[type="range"] {
+  width: 60px;
+}
+#synth-env-row strong,
+#synth-lfo-row strong,
+#fm-params strong {
+  min-width: 24px;
+  font-size: 0.85rem;
+}
+#lfo-toggle-btn {
+  font-size: 0.8rem;
+  padding: 2px 8px;
+  min-width: 36px;
+}
+
 /* ── MIDI io ─────────────────────────────────────────────────── */
 #midi-controls {
   display: flex;
@@ -884,6 +924,218 @@ strong {
   color: var(--dim);
 }
 
+/* ── Pattern selector (shared) ───────────────────────────────── */
+.pattern-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.pat-btn {
+  width: 22px;
+  height: 20px;
+  min-width: 22px;
+  font-family: var(--font);
+  font-size: 0.7rem;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.4);
+  color: var(--dim);
+  border-radius: 2px;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.12s, border-color 0.12s;
+}
+.pat-btn:hover {
+  border-color: var(--border-hi);
+  color: var(--text);
+}
+.pat-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #000;
+}
+.pat-btn.queued {
+  border-color: var(--yellow);
+  color: var(--yellow);
+  animation: pat-pulse 0.6s ease-in-out infinite alternate;
+}
+@keyframes pat-pulse {
+  from { opacity: 0.5; }
+  to   { opacity: 1; }
+}
+.pattern-queue-btn {
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  margin-left: 4px;
+}
+
+/* ── Chain sequencer ────────────────────────────────────────── */
+.chain-row {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-wrap: wrap;
+}
+.chain-toggle-btn {
+  font-size: 0.7rem;
+  padding: 2px 6px;
+}
+.chain-slot {
+  width: 34px;
+  min-width: 34px;
+  font-family: var(--font);
+  font-size: 0.7rem;
+  padding: 1px 2px;
+  background: rgba(0, 0, 0, 0.5);
+  color: var(--dim);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  cursor: pointer;
+}
+.chain-slot:focus {
+  border-color: var(--border-hi);
+  color: var(--text);
+}
+.chain-slot.chain-active {
+  border-color: var(--yellow);
+  color: var(--yellow);
+  background: rgba(206, 200, 35, 0.1);
+}
+
+/* ── EW909 Drum Machine ─────────────────────────────────────── */
+#dm-section {
+  margin-top: 12px;
+}
+#dm-toolbar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+#dm-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-x: auto;
+}
+.dm-row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.dm-row-label {
+  width: 54px;
+  min-width: 54px;
+  font-size: 0.75rem;
+  color: var(--dim);
+  text-align: right;
+  padding-right: 6px;
+  letter-spacing: 0.04em;
+}
+.dm-step {
+  width: 22px;
+  height: 22px;
+  min-width: 22px;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 3px;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.1s;
+}
+.dm-step:hover {
+  border-color: var(--border-hi);
+}
+.dm-step.active {
+  background: rgb(51, 1, 1);
+  border-color: var(--accent);
+}
+.dm-step.playing {
+  background: var(--yellow);
+  border-color: var(--yellow);
+}
+.dm-step.active.playing {
+  background: var(--accent);
+  border-color: #ff6644;
+}
+
+/* ── Mixer ──────────────────────────────────────────────────── */
+#mixer-section {
+  margin-top: 12px;
+}
+#mixer-strips {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.mx-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 20px;
+  padding: 0 4px;
+}
+.mx-master {
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 3px;
+  margin-bottom: 2px;
+}
+.mx-label {
+  width: 28px;
+  min-width: 28px;
+  font-size: 0.6rem;
+  color: var(--dim);
+  text-align: right;
+  letter-spacing: 0.02em;
+}
+.mx-master .mx-label {
+  color: var(--accent);
+}
+.mx-mute,
+.mx-solo {
+  width: 16px;
+  height: 14px;
+  font-family: var(--font);
+  font-size: 0.55rem;
+  padding: 0;
+  border: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.4);
+  color: var(--dim);
+  border-radius: 2px;
+  cursor: pointer;
+  line-height: 1;
+}
+.mx-mute.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #000;
+}
+.mx-solo.active {
+  background: var(--yellow);
+  border-color: var(--yellow);
+  color: #000;
+}
+.mx-fader {
+  flex: 1;
+  height: 10px;
+  cursor: pointer;
+  accent-color: var(--teal);
+}
+.mx-db {
+  width: 28px;
+  min-width: 28px;
+  font-size: 0.55rem;
+  color: var(--teal);
+  text-align: right;
+}
+.mx-pan {
+  width: 32px;
+  min-width: 32px;
+  height: 10px;
+  cursor: pointer;
+  accent-color: var(--blue);
+}
+
 /* ── MIDI log ───────────────────────────────────────────────── */
 #midi-log {
   display: flex;
@@ -978,6 +1230,17 @@ strong {
   gap: 10px;
   flex-wrap: wrap;
   margin-bottom: 10px;
+}
+#pr-zoom-controls {
+  display: flex;
+  gap: 2px;
+  margin-left: auto;
+}
+#pr-zoom-controls button {
+  width: 26px;
+  height: 22px;
+  font-size: 0.85rem;
+  padding: 0;
 }
 
 #pr-canvas-wrap {
