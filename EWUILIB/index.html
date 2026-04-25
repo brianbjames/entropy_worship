@@ -1,0 +1,2823 @@
+<!-- /-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\ -->
+<!-- |                                                                         | -->
+<!-- \ @@@@@@@@  @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@@@@@   @@@ @@@      / -->
+<!-- - @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@ @@@      - -->
+<!-- / @@!       @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!  @@@  @@! !@@      \ -->
+<!-- | !@!       !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!  @!@  !@! @!!      | -->
+<!-- \ @!!!:!    @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!@@!@!    !@!@!       / -->
+<!-- - !!!!!:    !@!  !!!    !!!    !!@!@!    !@!  !!!  !!@!!!      @!!!       - -->
+<!-- / !!:       !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:         !!:        \ -->
+<!-- | :!:       :!:  !:!    :!:    :!:  !:!  :!:  !:!  :!:         :!:        | -->
+<!-- \  :: ::::   ::   ::     ::    ::   :::  ::::: ::   ::          ::        / -->
+<!-- - : :: ::   ::    :      :      :   : :   : :  :    :           :         - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \ @@@  @@@  @@@   @@@@@@   @@@@@@@    @@@@@@   @@@  @@@  @@@  @@@@@@@     / -->
+<!-- - @@@  @@@  @@@  @@@@@@@@  @@@@@@@@  @@@@@@@   @@@  @@@  @@@  @@@@@@@@    - -->
+<!-- / @@!  @@!  @@!  @@!  @@@  @@!  @@@  !@@       @@!  @@@  @@!  @@!  @@@    \ -->
+<!-- | !@!  !@!  !@!  !@!  @!@  !@!  @!@  !@!       !@!  @!@  !@!  !@!  @!@    | -->
+<!-- \ @!!  !!@  @!@  @!@  !@!  @!@!!@!   !!@@!!    @!@!@!@!  !!@  @!@@!@!     / -->
+<!-- - !@!  !!!  !@!  !@!  !!!  !!@!@!     !!@!!!   !!!@!!!!  !!!  !!@!!!      - -->
+<!-- / !!:  !!:  !!:  !!:  !!!  !!: :!!        !:!  !!:  !!!  !!:  !!:         \ -->
+<!-- | :!:  :!:  :!:  :!:  !:!  :!:  !:!      !:!   :!:  !:!  :!:  :!:         | -->
+<!-- \  :::: :: :::   ::::: ::  ::   :::  :::: ::   ::   :::   ::   ::         / -->
+<!-- -   :: :  : :     : :  :    :   : :  :: : :     :   : :  :     :          - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EW // UI LIBRARY</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=VT323&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css"
+    />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@v0.171.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@v0.171.0/examples/jsm/"
+        }
+      }
+    </script>
+    <style>
+      /* ── Reset ──────────────────────────────────────────────────── */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* ── Design tokens ──────────────────────────────────────────── */
+      :root {
+        /* RGB component sets — used for rgba(var(--X-rgb), alpha) */
+        --accent-rgb:  255, 170, 0;
+        --rose-rgb:    255, 68,  119;
+        --mint-rgb:    0,   255, 187;
+        --border-rgb:  160, 72,  0;
+        --dim-rgb:     122, 68,  0;
+        /* Solid colors (hex shortcuts) */
+        --accent: #ffaa00;
+        --rose:   #ff4477;
+        --mint:   #00ffbb;
+        --text:   #fff4cc;
+        --dim:    #7a4400;
+        /* Surfaces */
+        --html-bg:   #0e0600;
+        --surface:   rgba(18, 8, 0, 0.68);
+        --surface-hi:rgba(28, 14, 0, 0.82);
+        --border:    rgba(var(--border-rgb), 0.42);
+        --border-hi: rgba(var(--accent-rgb), 0.78);
+        --panel-glow: drop-shadow(0 0 6px rgba(var(--accent-rgb), 0.18))
+          drop-shadow(0 0 28px rgba(var(--border-rgb), 0.12));
+        --font: "VT323", "Courier New", monospace;
+      }
+
+      /* ── Keyframes ──────────────────────────────────────────────── */
+      @keyframes title-glow {
+        0%,
+        100% {
+          text-shadow:
+            0 0 8px rgba(var(--accent-rgb), 0.8),
+            0 0 28px rgba(var(--accent-rgb), 0.3);
+        }
+        50% {
+          text-shadow:
+            0 0 18px rgba(var(--accent-rgb), 1),
+            0 0 52px rgba(var(--accent-rgb), 0.65),
+            0 0 88px rgba(var(--border-rgb), 0.28);
+        }
+      }
+      @keyframes blink {
+        50% {
+          opacity: 0;
+        }
+      }
+      @keyframes border-flicker {
+        0%,
+        95%,
+        100% {
+          border-color: rgba(var(--border-rgb), 0.42);
+        }
+        96% {
+          border-color: rgba(var(--accent-rgb), 0.92);
+        }
+        97% {
+          border-color: rgba(var(--border-rgb), 0.22);
+        }
+        98.5% {
+          border-color: rgba(var(--accent-rgb), 0.68);
+        }
+      }
+      @keyframes active-pulse {
+        0%,
+        100% {
+          box-shadow: 0 0 6px rgba(var(--accent-rgb), 0.4);
+        }
+        50% {
+          box-shadow:
+            0 0 18px rgba(var(--accent-rgb), 0.85),
+            0 0 36px rgba(var(--accent-rgb), 0.32);
+        }
+      }
+      @keyframes rose-pulse {
+        0%,
+        100% {
+          box-shadow: 0 0 6px rgba(var(--rose-rgb), 0.4);
+        }
+        50% {
+          box-shadow:
+            0 0 18px rgba(var(--rose-rgb), 0.85),
+            0 0 36px rgba(var(--rose-rgb), 0.28);
+        }
+      }
+      @keyframes mint-pulse {
+        0%,
+        100% {
+          box-shadow: 0 0 6px rgba(var(--mint-rgb), 0.4);
+        }
+        50% {
+          box-shadow:
+            0 0 18px rgba(var(--mint-rgb), 0.85),
+            0 0 36px rgba(var(--mint-rgb), 0.22);
+        }
+      }
+      @keyframes scan-sweep {
+        0% {
+          top: -4px;
+          opacity: 0.6;
+        }
+        90% {
+          opacity: 0.6;
+        }
+        100% {
+          top: 100%;
+          opacity: 0;
+        }
+      }
+      @keyframes status-dot-on {
+        0%,
+        100% {
+          opacity: 1;
+          box-shadow: 0 0 4px currentColor, 0 0 12px currentColor;
+        }
+        50% {
+          opacity: 0.5;
+          box-shadow: 0 0 2px currentColor;
+        }
+      }
+      @keyframes bar-fill {
+        from {
+          width: 0;
+        }
+      }
+      @keyframes fade-in-up {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      /* ── Background layers ──────────────────────────────────────── */
+      html {
+        background: var(--html-bg);
+      }
+      body {
+        background: transparent;
+      }
+
+      #galaxy-bg {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 0;
+        pointer-events: none;
+      }
+      #grid-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 0;
+        pointer-events: none;
+        background-image:
+          linear-gradient(rgba(var(--border-rgb), 0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(var(--border-rgb), 0.04) 1px, transparent 1px);
+        background-size: 44px 44px;
+      }
+      #scanlines {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 9999;
+        pointer-events: none;
+        background: repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 3px,
+          rgba(0, 0, 0, 0.06) 3px,
+          rgba(0, 0, 0, 0.06) 4px
+        );
+      }
+
+      /* ── Base ───────────────────────────────────────────────────── */
+      body {
+        color: var(--text);
+        font-family: var(--font);
+        min-height: 100vh;
+        font-size: 20px;
+        line-height: 1.45;
+        position: relative;
+      }
+
+      /* ── Scrollbar ──────────────────────────────────────────────── */
+      ::-webkit-scrollbar {
+        width: 4px;
+        background: #000;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(var(--border-rgb), 0.55);
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(var(--accent-rgb), 0.55);
+      }
+
+      /* ── App shell ──────────────────────────────────────────────── */
+      #app {
+        max-width: 1040px;
+        margin: 0 auto;
+        padding: 20px 16px 60px;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* ── Header ─────────────────────────────────────────────────── */
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 14px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border);
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .hud-title {
+        font-family: var(--font);
+        font-size: 2.1rem;
+        letter-spacing: 0.48em;
+        color: var(--accent);
+        animation: title-glow 3.2s ease-in-out infinite;
+        line-height: 1;
+        text-transform: uppercase;
+      }
+      #meta {
+        display: flex;
+        gap: 18px;
+        color: var(--dim);
+        font-size: 0.95rem;
+        align-items: baseline;
+        letter-spacing: 0.06em;
+        flex-wrap: wrap;
+      }
+      #meta a {
+        color: var(--dim);
+        text-decoration: none;
+        transition:
+          color 0.15s,
+          text-shadow 0.15s;
+      }
+      #meta a:hover {
+        color: var(--accent);
+        text-shadow: 0 0 8px rgba(var(--accent-rgb), 0.6);
+      }
+
+      /* ── HUD panel ──────────────────────────────────────────────── */
+      .hud-panel {
+        position: relative;
+        background: var(--surface);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        border: 1px solid var(--border);
+        filter: var(--panel-glow);
+        padding: 16px 18px;
+        margin-bottom: 14px;
+        animation: border-flicker 16s linear infinite;
+      }
+      .hud-panel.clip-tr {
+        clip-path: polygon(
+          0 0,
+          calc(100% - 16px) 0,
+          100% 16px,
+          100% 100%,
+          0 100%
+        );
+      }
+      .hud-panel.clip-br {
+        clip-path: polygon(
+          0 0,
+          100% 0,
+          100% calc(100% - 16px),
+          calc(100% - 16px) 100%,
+          0 100%
+        );
+      }
+      .hud-panel.clip-both {
+        clip-path: polygon(
+          0 0,
+          calc(100% - 16px) 0,
+          100% 16px,
+          100% calc(100% - 16px),
+          calc(100% - 16px) 100%,
+          16px 100%,
+          0 calc(100% - 16px)
+        );
+      }
+
+      /* ── Section title ──────────────────────────────────────────── */
+      .section-title {
+        font-size: 0.72rem;
+        color: rgba(var(--accent-rgb), 0.85);
+        text-shadow:
+          0 0 8px rgba(var(--accent-rgb), 0.5),
+          0 0 20px rgba(var(--border-rgb), 0.25);
+        letter-spacing: 0.28em;
+        margin-bottom: 14px;
+        text-transform: uppercase;
+      }
+      .section-title.rose {
+        color: rgba(var(--rose-rgb), 0.85);
+        text-shadow:
+          0 0 8px rgba(var(--rose-rgb), 0.5),
+          0 0 20px rgba(var(--rose-rgb), 0.18);
+      }
+      .section-title.mint {
+        color: rgba(var(--mint-rgb), 0.85);
+        text-shadow:
+          0 0 8px rgba(var(--mint-rgb), 0.5),
+          0 0 20px rgba(var(--mint-rgb), 0.18);
+      }
+
+      /* ── Page section label ─────────────────────────────────────── */
+      .page-section {
+        margin-bottom: 8px;
+      }
+      .page-section-label {
+        font-size: 0.65rem;
+        letter-spacing: 0.35em;
+        color: var(--dim);
+        text-transform: uppercase;
+        margin-bottom: 10px;
+        padding-left: 2px;
+        border-left: 2px solid var(--accent);
+        padding-left: 8px;
+      }
+
+      /* ── Two-column grid ────────────────────────────────────────── */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-bottom: 14px;
+      }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 14px;
+        margin-bottom: 14px;
+      }
+      @media (max-width: 700px) {
+        .grid-2,
+        .grid-3 {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* ── Inline swatch row ──────────────────────────────────────── */
+      .swatch-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 10px;
+      }
+      .swatch {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+      }
+      .swatch-dot {
+        width: 40px;
+        height: 40px;
+        clip-path: polygon(
+          0 8px,
+          8px 0,
+          calc(100% - 8px) 0,
+          100% 8px,
+          100% calc(100% - 8px),
+          calc(100% - 8px) 100%,
+          8px 100%,
+          0 calc(100% - 8px)
+        );
+      }
+      .swatch-label {
+        font-size: 0.62rem;
+        letter-spacing: 0.08em;
+        color: var(--dim);
+      }
+
+      /* ── Typography samples ─────────────────────────────────────── */
+      .type-h1 {
+        font-size: 2.4rem;
+        letter-spacing: 0.3em;
+        color: var(--accent);
+        animation: title-glow 3s ease-in-out infinite;
+      }
+      .type-h2 {
+        font-size: 1.7rem;
+        letter-spacing: 0.22em;
+        color: var(--text);
+      }
+      .type-h3 {
+        font-size: 1.3rem;
+        letter-spacing: 0.18em;
+        color: var(--text);
+        opacity: 0.85;
+      }
+      .type-h4 {
+        font-size: 1.05rem;
+        letter-spacing: 0.14em;
+        color: var(--dim);
+        text-transform: uppercase;
+      }
+      .type-label {
+        font-size: 0.72rem;
+        letter-spacing: 0.28em;
+        color: rgba(var(--accent-rgb), 0.75);
+        text-transform: uppercase;
+      }
+      .type-mono {
+        font-family: var(--font);
+        font-size: 1rem;
+        color: var(--mint);
+        letter-spacing: 0.05em;
+      }
+      .type-dim {
+        font-size: 0.9rem;
+        color: var(--dim);
+        letter-spacing: 0.06em;
+      }
+      .type-blink {
+        color: var(--rose);
+        animation: blink 1.1s step-end infinite;
+      }
+
+      /* ── Buttons ────────────────────────────────────────────────── */
+      .btn-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      button,
+      .btn {
+        font-family: var(--font);
+        font-size: 0.82rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text);
+        padding: 5px 16px;
+        cursor: pointer;
+        transition:
+          border-color 0.14s,
+          color 0.14s,
+          background 0.14s,
+          box-shadow 0.14s;
+        outline: none;
+        clip-path: polygon(
+          0 0,
+          calc(100% - 8px) 0,
+          100% 8px,
+          100% 100%,
+          8px 100%,
+          0 calc(100% - 8px)
+        );
+      }
+      button:hover,
+      .btn:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+        box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.35);
+      }
+      button.active,
+      .btn-active {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: rgba(var(--accent-rgb), 0.1);
+        animation: active-pulse 2s ease-in-out infinite;
+      }
+      button.btn-rose {
+        border-color: rgba(var(--rose-rgb), 0.5);
+        color: var(--rose);
+      }
+      button.btn-rose:hover {
+        border-color: var(--rose);
+        box-shadow: 0 0 10px rgba(var(--rose-rgb), 0.38);
+      }
+      button.btn-rose.active {
+        border-color: var(--rose);
+        background: rgba(var(--rose-rgb), 0.1);
+        animation: rose-pulse 2s ease-in-out infinite;
+      }
+      button.btn-mint {
+        border-color: rgba(var(--mint-rgb), 0.38);
+        color: var(--mint);
+      }
+      button.btn-mint:hover {
+        border-color: var(--mint);
+        box-shadow: 0 0 10px rgba(var(--mint-rgb), 0.32);
+      }
+      button.btn-mint.active {
+        border-color: var(--mint);
+        background: rgba(var(--mint-rgb), 0.08);
+        animation: mint-pulse 2s ease-in-out infinite;
+      }
+      button:disabled,
+      .btn-disabled {
+        opacity: 0.32;
+        cursor: not-allowed;
+        pointer-events: none;
+      }
+      button.btn-lg {
+        font-size: 1rem;
+        padding: 8px 24px;
+        letter-spacing: 0.22em;
+      }
+      button.btn-sm {
+        font-size: 0.68rem;
+        padding: 3px 10px;
+        letter-spacing: 0.16em;
+      }
+      button.btn-icon {
+        padding: 5px 10px;
+        letter-spacing: 0.06em;
+      }
+      button.btn-full {
+        width: 100%;
+        clip-path: none;
+      }
+      button.btn-square {
+        clip-path: none;
+        border-radius: 0;
+      }
+
+      /* ── Form controls ──────────────────────────────────────────── */
+      .control-group {
+        margin-bottom: 14px;
+      }
+      .control-label {
+        display: block;
+        font-size: 0.65rem;
+        letter-spacing: 0.22em;
+        color: var(--dim);
+        text-transform: uppercase;
+        margin-bottom: 5px;
+      }
+
+      /* Range slider */
+      input[type="range"] {
+        -webkit-appearance: none;
+        width: 100%;
+        height: 3px;
+        background: linear-gradient(
+          90deg,
+          var(--accent) 0%,
+          var(--accent) var(--val, 50%),
+          rgba(var(--border-rgb), 0.28) var(--val, 50%),
+          rgba(var(--border-rgb), 0.28) 100%
+        );
+        outline: none;
+        cursor: pointer;
+      }
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 14px;
+        height: 14px;
+        background: var(--accent);
+        transform: rotate(45deg);
+        box-shadow: 0 0 6px rgba(var(--accent-rgb), 0.6);
+        cursor: pointer;
+        transition: box-shadow 0.12s;
+      }
+      input[type="range"]::-webkit-slider-thumb:hover {
+        box-shadow: 0 0 14px rgba(var(--accent-rgb), 0.9);
+      }
+      input[type="range"]::-moz-range-thumb {
+        width: 14px;
+        height: 14px;
+        background: var(--accent);
+        border: none;
+        transform: rotate(45deg);
+        box-shadow: 0 0 6px rgba(var(--accent-rgb), 0.6);
+        cursor: pointer;
+      }
+      input[type="range"].rose-range {
+        background: linear-gradient(
+          90deg,
+          var(--rose) 0%,
+          var(--rose) var(--val, 50%),
+          rgba(var(--rose-rgb), 0.28) var(--val, 50%),
+          rgba(var(--rose-rgb), 0.28) 100%
+        );
+      }
+      input[type="range"].rose-range::-webkit-slider-thumb {
+        background: var(--rose);
+        box-shadow: 0 0 6px rgba(var(--rose-rgb), 0.6);
+      }
+      input[type="range"].mint-range {
+        background: linear-gradient(
+          90deg,
+          var(--mint) 0%,
+          var(--mint) var(--val, 50%),
+          rgba(var(--mint-rgb), 0.28) var(--val, 50%),
+          rgba(var(--mint-rgb), 0.28) 100%
+        );
+      }
+      input[type="range"].mint-range::-webkit-slider-thumb {
+        background: var(--mint);
+        box-shadow: 0 0 6px rgba(var(--mint-rgb), 0.6);
+      }
+      .range-readout {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.65rem;
+        color: var(--dim);
+        letter-spacing: 0.1em;
+        margin-top: 3px;
+      }
+      .range-val {
+        color: var(--accent);
+      }
+
+      /* Select */
+      select {
+        font-family: var(--font);
+        font-size: 0.82rem;
+        letter-spacing: 0.12em;
+        background: var(--surface);
+        color: var(--text);
+        border: 1px solid var(--border);
+        padding: 5px 10px;
+        outline: none;
+        cursor: pointer;
+        width: 100%;
+        appearance: none;
+        -webkit-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23ffaa00' opacity='0.5'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        padding-right: 28px;
+      }
+      select:hover,
+      select:focus {
+        border-color: var(--accent);
+      }
+      select option {
+        background: #1a0a00;
+        color: var(--text);
+      }
+
+      /* Text input */
+      input[type="text"],
+      input[type="number"],
+      textarea {
+        font-family: var(--font);
+        font-size: 0.82rem;
+        letter-spacing: 0.1em;
+        background: var(--surface);
+        color: var(--text);
+        border: 1px solid var(--border);
+        padding: 6px 10px;
+        outline: none;
+        width: 100%;
+        transition:
+          border-color 0.14s,
+          box-shadow 0.14s;
+      }
+      input[type="text"]:focus,
+      input[type="number"]:focus,
+      textarea:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.25);
+      }
+      input::placeholder,
+      textarea::placeholder {
+        color: var(--dim);
+        opacity: 0.7;
+      }
+      textarea {
+        resize: vertical;
+        min-height: 70px;
+      }
+
+      /* Checkbox / Radio */
+      .check-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+        cursor: pointer;
+      }
+      .check-row input[type="checkbox"],
+      .check-row input[type="radio"] {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 16px;
+        height: 16px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        cursor: pointer;
+        position: relative;
+        flex-shrink: 0;
+        transition:
+          border-color 0.14s,
+          background 0.14s;
+      }
+      .check-row input[type="radio"] {
+        border-radius: 50%;
+      }
+      .check-row input[type="checkbox"]:checked,
+      .check-row input[type="radio"]:checked {
+        border-color: var(--accent);
+        background: rgba(var(--accent-rgb), 0.18);
+      }
+      .check-row input[type="checkbox"]:checked::after {
+        content: "✕";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 10px;
+        color: var(--accent);
+        line-height: 1;
+      }
+      .check-row input[type="radio"]:checked::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--accent);
+        box-shadow: 0 0 6px rgba(255, 170, 0, 0.8);
+      }
+      .check-label {
+        font-size: 0.82rem;
+        letter-spacing: 0.1em;
+        color: var(--text);
+      }
+
+      /* Toggle switch */
+      .toggle-wrap {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        margin-bottom: 8px;
+      }
+      .toggle-track {
+        width: 38px;
+        height: 18px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        position: relative;
+        transition:
+          border-color 0.14s,
+          background 0.14s;
+      }
+      .toggle-track.on {
+        border-color: var(--accent);
+        background: rgba(var(--accent-rgb), 0.12);
+        box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.3);
+      }
+      .toggle-thumb {
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 12px;
+        height: 12px;
+        background: var(--dim);
+        transition:
+          left 0.15s,
+          background 0.15s;
+        transform: rotate(45deg);
+      }
+      .toggle-track.on .toggle-thumb {
+        left: 22px;
+        background: var(--accent);
+        box-shadow: 0 0 6px rgba(var(--accent-rgb), 0.7);
+      }
+      .toggle-label {
+        font-size: 0.78rem;
+        letter-spacing: 0.12em;
+        color: var(--text);
+      }
+
+      /* ── Stats blocks ───────────────────────────────────────────── */
+      .stats-row {
+        display: flex;
+        gap: 0;
+        border-top: 1px solid var(--border);
+        padding-top: 10px;
+      }
+      .stat-block {
+        flex: 1;
+        text-align: center;
+        padding: 4px 0;
+        border-right: 1px solid var(--border);
+      }
+      .stat-block:last-child {
+        border-right: none;
+      }
+      .stat-label {
+        font-size: 0.58rem;
+        letter-spacing: 0.22em;
+        color: var(--dim);
+        text-transform: uppercase;
+      }
+      .stat-val {
+        font-size: 1.3rem;
+        color: var(--accent);
+        letter-spacing: 0.08em;
+      }
+      .stat-val.rose {
+        color: var(--rose);
+      }
+      .stat-val.mint {
+        color: var(--mint);
+      }
+      .stat-unit {
+        font-size: 0.62rem;
+        color: var(--dim);
+        letter-spacing: 0.1em;
+        margin-left: 2px;
+      }
+
+      /* ── Screen / display wrap ──────────────────────────────────── */
+      .screen-wrap {
+        position: relative;
+        clip-path: polygon(
+          0 0,
+          calc(100% - 14px) 0,
+          100% 14px,
+          100% 100%,
+          14px 100%,
+          0 calc(100% - 14px)
+        );
+      }
+      .screen-inner {
+        display: block;
+        width: 100%;
+        background: #0e0400;
+        border: 1px solid var(--border);
+        padding: 20px;
+        min-height: 120px;
+        font-family: var(--font);
+        font-size: 0.9rem;
+        letter-spacing: 0.08em;
+        color: var(--mint);
+        position: relative;
+      }
+      .screen-scan {
+        position: absolute;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(var(--accent-rgb), 0.3),
+          transparent
+        );
+        animation: scan-sweep 3.5s linear infinite;
+        pointer-events: none;
+      }
+      .corner {
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        pointer-events: none;
+        z-index: 2;
+      }
+      .corner.tl {
+        top: 4px;
+        left: 4px;
+        border-top: 2px solid var(--accent);
+        border-left: 2px solid var(--accent);
+      }
+      .corner.tr {
+        top: 4px;
+        right: 4px;
+        border-top: 2px solid var(--accent);
+        border-right: 2px solid var(--accent);
+      }
+      .corner.bl {
+        bottom: 4px;
+        left: 4px;
+        border-bottom: 2px solid var(--accent);
+        border-left: 2px solid var(--accent);
+      }
+      .corner.br {
+        bottom: 4px;
+        right: 4px;
+        border-bottom: 2px solid var(--accent);
+        border-right: 2px solid var(--accent);
+      }
+
+      /* ── Table ──────────────────────────────────────────────────── */
+      .hud-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.82rem;
+        letter-spacing: 0.08em;
+      }
+      .hud-table th {
+        font-size: 0.62rem;
+        letter-spacing: 0.24em;
+        color: var(--dim);
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--border);
+        padding: 6px 10px 8px;
+        text-align: left;
+      }
+      .hud-table td {
+        padding: 7px 10px;
+        border-bottom: 1px solid rgba(var(--border-rgb), 0.18);
+        color: var(--text);
+        vertical-align: middle;
+      }
+      .hud-table tr:hover td {
+        background: rgba(var(--accent-rgb), 0.04);
+      }
+      .hud-table .td-accent {
+        color: var(--accent);
+        letter-spacing: 0.12em;
+      }
+      .hud-table .td-rose {
+        color: var(--rose);
+      }
+      .hud-table .td-mint {
+        color: var(--mint);
+      }
+      .hud-table .td-dim {
+        color: var(--dim);
+        font-size: 0.72rem;
+      }
+
+      /* ── Status indicators ──────────────────────────────────────── */
+      .status-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 18px;
+        align-items: center;
+        margin-bottom: 12px;
+      }
+      .status-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.78rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+      .status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .status-dot.live {
+        color: var(--mint);
+        background: var(--mint);
+        animation: status-dot-on 1.4s ease-in-out infinite;
+      }
+      .status-dot.warn {
+        color: var(--accent);
+        background: var(--accent);
+        animation: status-dot-on 0.8s ease-in-out infinite;
+      }
+      .status-dot.error {
+        color: var(--rose);
+        background: var(--rose);
+        animation: status-dot-on 0.4s ease-in-out infinite;
+      }
+      .status-dot.offline {
+        background: var(--dim);
+        opacity: 0.5;
+      }
+
+      /* Progress / signal bar */
+      .bar-wrap {
+        margin-bottom: 10px;
+      }
+      .bar-header {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.65rem;
+        letter-spacing: 0.18em;
+        color: var(--dim);
+        margin-bottom: 4px;
+        text-transform: uppercase;
+      }
+      .bar-track {
+        height: 6px;
+        background: rgba(var(--border-rgb), 0.18);
+        position: relative;
+        overflow: hidden;
+      }
+      .bar-fill {
+        height: 100%;
+        background: var(--accent);
+        animation: bar-fill 1s cubic-bezier(0.22, 1, 0.36, 1) both;
+        position: relative;
+      }
+      .bar-fill::after {
+        content: "";
+        position: absolute;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: 4px;
+        background: rgba(255, 255, 200, 0.6);
+        filter: blur(1px);
+      }
+      .bar-fill.rose {
+        background: var(--rose);
+      }
+      .bar-fill.rose::after {
+        background: rgba(255, 180, 200, 0.6);
+      }
+      .bar-fill.mint {
+        background: var(--mint);
+      }
+      .bar-fill.mint::after {
+        background: rgba(180, 255, 230, 0.6);
+      }
+
+      /* ── Code / token display ───────────────────────────────────── */
+      .code-block {
+        background: rgba(8, 3, 0, 0.85);
+        border: 1px solid rgba(var(--border-rgb), 0.28);
+        padding: 12px 14px;
+        font-family: "Courier New", monospace;
+        font-size: 0.78rem;
+        color: var(--mint);
+        letter-spacing: 0.04em;
+        line-height: 1.6;
+        overflow-x: auto;
+      }
+      .code-block .tok-prop {
+        color: rgba(var(--accent-rgb), 0.85);
+      }
+      .code-block .tok-val {
+        color: var(--text);
+      }
+      .code-block .tok-comment {
+        color: var(--dim);
+        font-style: italic;
+      }
+
+      /* ── Notification / alert ───────────────────────────────────── */
+      .alert {
+        padding: 9px 14px;
+        border-left: 3px solid var(--accent);
+        background: rgba(var(--accent-rgb), 0.06);
+        font-size: 0.82rem;
+        letter-spacing: 0.08em;
+        margin-bottom: 10px;
+      }
+      .alert.rose {
+        border-left-color: var(--rose);
+        background: rgba(var(--rose-rgb), 0.06);
+      }
+      .alert.mint {
+        border-left-color: var(--mint);
+        background: rgba(var(--mint-rgb), 0.05);
+      }
+      .alert-title {
+        font-size: 0.65rem;
+        letter-spacing: 0.22em;
+        color: var(--accent);
+        text-transform: uppercase;
+        margin-bottom: 3px;
+      }
+      .alert.rose .alert-title {
+        color: var(--rose);
+      }
+      .alert.mint .alert-title {
+        color: var(--mint);
+      }
+
+      /* ── Breadcrumb / nav trail ─────────────────────────────────── */
+      .breadcrumb {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        font-size: 0.68rem;
+        letter-spacing: 0.14em;
+        color: var(--dim);
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+      }
+      .breadcrumb a {
+        color: var(--dim);
+        text-decoration: none;
+        transition: color 0.14s;
+      }
+      .breadcrumb a:hover {
+        color: var(--accent);
+      }
+      .breadcrumb .sep {
+        color: rgba(var(--border-rgb), 0.55);
+      }
+      .breadcrumb .current {
+        color: var(--accent);
+      }
+
+      /* ── Tag / badge ────────────────────────────────────────────── */
+      .tag-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+      .tag {
+        font-size: 0.62rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        padding: 2px 9px;
+        border: 1px solid var(--border);
+        color: var(--dim);
+      }
+      .tag.accent {
+        border-color: rgba(255, 170, 0, 0.5);
+        color: var(--accent);
+        background: rgba(255, 170, 0, 0.07);
+      }
+      .tag.rose {
+        border-color: rgba(255, 68, 119, 0.5);
+        color: var(--rose);
+        background: rgba(255, 68, 119, 0.06);
+      }
+      .tag.mint {
+        border-color: rgba(0, 255, 187, 0.38);
+        color: var(--mint);
+        background: rgba(0, 255, 187, 0.05);
+      }
+
+      /* ── Divider ────────────────────────────────────────────────── */
+      .hud-divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 14px 0;
+        position: relative;
+      }
+      .hud-divider::before {
+        content: "◈";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #0e0600;
+        padding: 0 8px;
+        font-size: 0.7rem;
+        color: var(--dim);
+        letter-spacing: 0.1em;
+      }
+
+      /* ── Tooltip demo ───────────────────────────────────────────── */
+      .tooltip-wrap {
+        position: relative;
+        display: inline-block;
+      }
+      .tooltip-wrap .tooltip-tip {
+        visibility: hidden;
+        opacity: 0;
+        position: absolute;
+        bottom: calc(100% + 6px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--surface-hi);
+        border: 1px solid var(--border-hi);
+        padding: 4px 10px;
+        font-size: 0.65rem;
+        letter-spacing: 0.12em;
+        color: var(--text);
+        white-space: nowrap;
+        pointer-events: none;
+        transition:
+          opacity 0.12s,
+          visibility 0.12s;
+        z-index: 100;
+      }
+      .tooltip-wrap:hover .tooltip-tip {
+        visibility: visible;
+        opacity: 1;
+      }
+
+      /* ── Animation showcase ─────────────────────────────────────── */
+      .anim-demo-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        align-items: center;
+        margin-bottom: 10px;
+      }
+      .anim-box {
+        padding: 8px 18px;
+        border: 1px solid var(--border);
+        font-size: 0.78rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: var(--text);
+        min-width: 120px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+      }
+      .anim-box.demo-title-glow {
+        color: var(--accent);
+        animation: title-glow 3s ease-in-out infinite;
+      }
+      .anim-box.demo-flicker {
+        animation: border-flicker 4s linear infinite;
+      }
+      .anim-box.demo-active {
+        border-color: var(--accent);
+        color: var(--accent);
+        animation: active-pulse 2s ease-in-out infinite;
+      }
+      .anim-box.demo-blink {
+        color: var(--rose);
+        animation: blink 1.1s step-end infinite;
+      }
+      .anim-box.demo-fade-in {
+        animation: fade-in-up 1.2s ease both;
+      }
+
+      /* ── Composite panel ────────────────────────────────────────── */
+      .composite-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 12px;
+      }
+      .composite-sub {
+        font-size: 0.65rem;
+        letter-spacing: 0.22em;
+        color: var(--dim);
+        text-transform: uppercase;
+      }
+
+      /* ── Section anchors / nav ──────────────────────────────────── */
+      .toc {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 18px;
+        margin-bottom: 20px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--border);
+      }
+      .toc a {
+        font-size: 0.68rem;
+        letter-spacing: 0.18em;
+        color: var(--dim);
+        text-decoration: none;
+        text-transform: uppercase;
+        transition: color 0.14s;
+      }
+      .toc a:hover {
+        color: var(--accent);
+      }
+
+      section[id] {
+        scroll-margin-top: 24px;
+      }
+
+      /* ── Theme switcher UI ──────────────────────────────────────── */
+      #theme-bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        margin-bottom: 14px;
+        flex-wrap: wrap;
+      }
+      #theme-bar-label {
+        font-size: 0.62rem;
+        letter-spacing: 0.26em;
+        color: var(--dim);
+        text-transform: uppercase;
+        flex-shrink: 0;
+      }
+      .theme-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        cursor: pointer;
+        border: none;
+        background: none;
+        padding: 4px 6px;
+        clip-path: none;
+        animation: none;
+        box-shadow: none;
+        transition: opacity 0.14s;
+        opacity: 0.55;
+      }
+      .theme-btn:hover { opacity: 0.9; }
+      .theme-btn.current { opacity: 1; }
+      .theme-btn .theme-dot {
+        width: 22px;
+        height: 22px;
+        clip-path: polygon(0 6px,6px 0,calc(100% - 6px) 0,100% 6px,100% calc(100% - 6px),calc(100% - 6px) 100%,6px 100%,0 calc(100% - 6px));
+        transition: box-shadow 0.14s;
+      }
+      .theme-btn.current .theme-dot {
+        box-shadow: 0 0 10px currentColor;
+      }
+      .theme-btn .theme-name {
+        font-size: 0.52rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--dim);
+        transition: color 0.14s;
+      }
+      .theme-btn.current .theme-name,
+      .theme-btn:hover .theme-name {
+        color: var(--text);
+      }
+
+      /* ── 8 theme overrides ──────────────────────────────────────── */
+
+      /* 1 — AMBER (default, already in :root) */
+
+      /* 2 — PHOSPHOR : classic CRT green */
+      html.theme-phosphor {
+        --accent-rgb:  0,   255, 65;
+        --rose-rgb:    57,  255, 20;
+        --mint-rgb:    200, 255, 100;
+        --border-rgb:  0,   100, 30;
+        --dim-rgb:     0,   72,  22;
+        --html-bg:     #000d02;
+        --surface:     rgba(0, 12, 4, 0.72);
+        --surface-hi:  rgba(0, 20, 6, 0.86);
+        --border:      rgba(0, 100, 30, 0.42);
+        --border-hi:   rgba(0, 255, 65, 0.78);
+        --text:        #ccffdd;
+        --dim:         #006020;
+        --accent:      #00ff41;
+        --rose:        #39ff14;
+        --mint:        #c8ff64;
+        --panel-glow:  drop-shadow(0 0 6px rgba(0,255,65,0.18))
+                       drop-shadow(0 0 28px rgba(0,100,30,0.12));
+      }
+
+      /* 3 — COBALT : icy cold blue */
+      html.theme-cobalt {
+        --accent-rgb:  0,   140, 255;
+        --rose-rgb:    0,   210, 255;
+        --mint-rgb:    255, 136, 68;
+        --border-rgb:  0,   60,  140;
+        --dim-rgb:     0,   44,  100;
+        --html-bg:     #00040e;
+        --surface:     rgba(0, 4, 18, 0.72);
+        --surface-hi:  rgba(0, 6, 28, 0.86);
+        --border:      rgba(0, 60, 140, 0.42);
+        --border-hi:   rgba(0, 140, 255, 0.78);
+        --text:        #d0eeff;
+        --dim:         #003880;
+        --accent:      #008cff;
+        --rose:        #00d2ff;
+        --mint:        #ff8844;
+        --panel-glow:  drop-shadow(0 0 6px rgba(0,140,255,0.18))
+                       drop-shadow(0 0 28px rgba(0,60,140,0.12));
+      }
+
+      /* 4 — PLASMA : purple / magenta */
+      html.theme-plasma {
+        --accent-rgb:  200, 68,  255;
+        --rose-rgb:    255, 68,  200;
+        --mint-rgb:    68,  255, 200;
+        --border-rgb:  100, 0,   160;
+        --dim-rgb:     68,  0,   100;
+        --html-bg:     #080012;
+        --surface:     rgba(10, 0, 22, 0.72);
+        --surface-hi:  rgba(16, 0, 32, 0.86);
+        --border:      rgba(100, 0, 160, 0.42);
+        --border-hi:   rgba(200, 68, 255, 0.78);
+        --text:        #f4ccff;
+        --dim:         #620090;
+        --accent:      #c844ff;
+        --rose:        #ff44c8;
+        --mint:        #44ffc8;
+        --panel-glow:  drop-shadow(0 0 6px rgba(200,68,255,0.18))
+                       drop-shadow(0 0 28px rgba(100,0,160,0.12));
+      }
+
+      /* 5 — DANGER : red alert */
+      html.theme-danger {
+        --accent-rgb:  255, 44,  55;
+        --rose-rgb:    255, 165, 0;
+        --mint-rgb:    255, 240, 0;
+        --border-rgb:  140, 0,   20;
+        --dim-rgb:     100, 0,   15;
+        --html-bg:     #0e0000;
+        --surface:     rgba(18, 0, 0, 0.72);
+        --surface-hi:  rgba(28, 0, 0, 0.86);
+        --border:      rgba(140, 0, 20, 0.42);
+        --border-hi:   rgba(255, 44, 55, 0.78);
+        --text:        #ffe4e4;
+        --dim:         #880010;
+        --accent:      #ff2c37;
+        --rose:        #ffa500;
+        --mint:        #fff000;
+        --panel-glow:  drop-shadow(0 0 6px rgba(255,44,55,0.18))
+                       drop-shadow(0 0 28px rgba(140,0,20,0.12));
+      }
+
+      /* 6 — MATRIX : deep grid green */
+      html.theme-matrix {
+        --accent-rgb:  0,   255, 136;
+        --rose-rgb:    0,   200, 80;
+        --mint-rgb:    180, 255, 68;
+        --border-rgb:  0,   100, 50;
+        --dim-rgb:     0,   68,  34;
+        --html-bg:     #000e04;
+        --surface:     rgba(0, 12, 6, 0.72);
+        --surface-hi:  rgba(0, 20, 8, 0.86);
+        --border:      rgba(0, 100, 50, 0.42);
+        --border-hi:   rgba(0, 255, 136, 0.78);
+        --text:        #ccffe8;
+        --dim:         #006030;
+        --accent:      #00ff88;
+        --rose:        #00c850;
+        --mint:        #b4ff44;
+        --panel-glow:  drop-shadow(0 0 6px rgba(0,255,136,0.18))
+                       drop-shadow(0 0 28px rgba(0,100,50,0.12));
+      }
+
+      /* 7 — SOLAR : warm orange */
+      html.theme-solar {
+        --accent-rgb:  255, 100, 0;
+        --rose-rgb:    255, 220, 0;
+        --mint-rgb:    0,   220, 200;
+        --border-rgb:  140, 50,  0;
+        --dim-rgb:     100, 38,  0;
+        --html-bg:     #0e0300;
+        --surface:     rgba(18, 6, 0, 0.72);
+        --surface-hi:  rgba(28, 10, 0, 0.86);
+        --border:      rgba(140, 50, 0, 0.42);
+        --border-hi:   rgba(255, 100, 0, 0.78);
+        --text:        #fff0cc;
+        --dim:         #8c3000;
+        --accent:      #ff6400;
+        --rose:        #ffdc00;
+        --mint:        #00dcc8;
+        --panel-glow:  drop-shadow(0 0 6px rgba(255,100,0,0.18))
+                       drop-shadow(0 0 28px rgba(140,50,0,0.12));
+      }
+
+      /* 8 — ARCTIC : ice frost */
+      html.theme-arctic {
+        --accent-rgb:  136, 238, 255;
+        --rose-rgb:    68,  136, 255;
+        --mint-rgb:    255, 68,  200;
+        --border-rgb:  30,  100, 140;
+        --dim-rgb:     20,  68,  100;
+        --html-bg:     #00050e;
+        --surface:     rgba(0, 6, 18, 0.72);
+        --surface-hi:  rgba(0, 8, 26, 0.86);
+        --border:      rgba(30, 100, 140, 0.42);
+        --border-hi:   rgba(136, 238, 255, 0.78);
+        --text:        #e8f8ff;
+        --dim:         #1e6488;
+        --accent:      #88eeff;
+        --rose:        #4488ff;
+        --mint:        #ff44c8;
+        --panel-glow:  drop-shadow(0 0 6px rgba(136,238,255,0.18))
+                       drop-shadow(0 0 28px rgba(30,100,140,0.12));
+      }
+
+      /* ── Augmented-UI demo helpers ──────────────────────────────── */
+      .aug-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 18px;
+        margin-bottom: 18px;
+      }
+      .aug-grid-wide {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 18px;
+        margin-bottom: 18px;
+      }
+      .aug-demo {
+        padding: 20px 18px 16px;
+        background: rgba(18, 8, 0, 0.72);
+        color: var(--text);
+        font-family: var(--font);
+        font-size: 0.8rem;
+        letter-spacing: 0.1em;
+        min-height: 80px;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        gap: 4px;
+      }
+      .aug-demo-label {
+        font-size: 0.58rem;
+        letter-spacing: 0.22em;
+        color: var(--dim);
+        text-transform: uppercase;
+        margin-top: 6px;
+      }
+      .aug-demo-title {
+        color: var(--accent);
+        font-size: 0.92rem;
+        letter-spacing: 0.14em;
+      }
+
+      /* Base aug token used on all demo boxes */
+      .aug-demo {
+        --aug-border-all: 1px;
+        --aug-inlay-all: 0.55rem;
+      }
+      /* Accent (amber) border */
+      .aug-amber  { --aug-border-bg: rgba(var(--accent-rgb), 0.75); }
+      /* Rose border */
+      .aug-rose   { --aug-border-bg: rgba(var(--rose-rgb), 0.75); }
+      /* Mint border */
+      .aug-mint   { --aug-border-bg: rgba(var(--mint-rgb), 0.68); }
+      /* Gradient border */
+      .aug-grad   { --aug-border-bg: linear-gradient(135deg, var(--accent), var(--rose), var(--mint)); }
+      /* Inlay tints */
+      .aug-inlay-amber { --aug-inlay-bg: rgba(var(--accent-rgb), 0.12); }
+      .aug-inlay-rose  { --aug-inlay-bg: rgba(var(--rose-rgb),   0.10); }
+      .aug-inlay-mint  { --aug-inlay-bg: rgba(var(--mint-rgb),   0.08); }
+      /* Corner sizes */
+      .aug-sm  { --aug-tl:0.6rem; --aug-tr:0.6rem; --aug-br:0.6rem; --aug-bl:0.6rem; }
+      .aug-md  { --aug-tl:1rem;   --aug-tr:1rem;   --aug-br:1rem;   --aug-bl:1rem;   }
+      .aug-lg  { --aug-tl:1.6rem; --aug-tr:1.6rem; --aug-br:1.6rem; --aug-bl:1.6rem; }
+    </style>
+  </head>
+  <body>
+    <!-- ── Three.js background ── -->
+    <canvas id="galaxy-bg"></canvas>
+
+    <!-- ── Grid overlay ── -->
+    <div id="grid-bg"></div>
+
+    <!-- ── Scanline overlay ── -->
+    <div id="scanlines"></div>
+
+    <!-- ── App ─────────────────────────────────────────────────────── -->
+    <div id="app">
+      <header>
+        <h1 class="hud-title">EW // UILIB</h1>
+        <div id="meta">
+          <span>build 1.0.24.04.26</span>
+          <a href="../index.html">◂ HOME</a>
+          <a href="../scope/index.html">SCOPE</a>
+          <a href="../MIDI-server/public/index.html">MIDISERVER</a>
+        </div>
+      </header>
+
+      <!-- ── Theme switcher ── -->
+      <div id="theme-bar">
+        <span id="theme-bar-label">// COLOR SCHEME</span>
+        <button class="theme-btn current" data-theme="amber" onclick="setTheme('amber',this)">
+          <div class="theme-dot" style="background:#ffaa00;color:#ffaa00"></div>
+          <span class="theme-name">AMBER</span>
+        </button>
+        <button class="theme-btn" data-theme="phosphor" onclick="setTheme('phosphor',this)">
+          <div class="theme-dot" style="background:#00ff41;color:#00ff41"></div>
+          <span class="theme-name">PHOSPHOR</span>
+        </button>
+        <button class="theme-btn" data-theme="cobalt" onclick="setTheme('cobalt',this)">
+          <div class="theme-dot" style="background:#008cff;color:#008cff"></div>
+          <span class="theme-name">COBALT</span>
+        </button>
+        <button class="theme-btn" data-theme="plasma" onclick="setTheme('plasma',this)">
+          <div class="theme-dot" style="background:#c844ff;color:#c844ff"></div>
+          <span class="theme-name">PLASMA</span>
+        </button>
+        <button class="theme-btn" data-theme="danger" onclick="setTheme('danger',this)">
+          <div class="theme-dot" style="background:#ff2c37;color:#ff2c37"></div>
+          <span class="theme-name">DANGER</span>
+        </button>
+        <button class="theme-btn" data-theme="matrix" onclick="setTheme('matrix',this)">
+          <div class="theme-dot" style="background:#00ff88;color:#00ff88"></div>
+          <span class="theme-name">MATRIX</span>
+        </button>
+        <button class="theme-btn" data-theme="solar" onclick="setTheme('solar',this)">
+          <div class="theme-dot" style="background:#ff6400;color:#ff6400"></div>
+          <span class="theme-name">SOLAR</span>
+        </button>
+        <button class="theme-btn" data-theme="arctic" onclick="setTheme('arctic',this)">
+          <div class="theme-dot" style="background:#88eeff;color:#88eeff"></div>
+          <span class="theme-name">ARCTIC</span>
+        </button>
+      </div>
+
+      <!-- Table of contents -->
+      <nav class="toc">
+        <a href="#s-tokens">TOKENS</a>
+        <a href="#s-type">TYPE</a>
+        <a href="#s-buttons">BUTTONS</a>
+        <a href="#s-sliders">SLIDERS</a>
+        <a href="#s-inputs">INPUTS</a>
+        <a href="#s-stats">STATS</a>
+        <a href="#s-screen">SCREEN</a>
+        <a href="#s-table">TABLE</a>
+        <a href="#s-status">STATUS</a>
+        <a href="#s-alerts">ALERTS</a>
+        <a href="#s-tags">TAGS</a>
+        <a href="#s-anim">ANIM</a>
+        <a href="#s-composite">COMPOSITE</a>
+        <a href="#s-aug">AUG-UI</a>
+      </nav>
+
+      <!-- ── DESIGN TOKENS ─────────────────────────────────────────── -->
+      <section id="s-tokens" class="page-section">
+        <div class="page-section-label">// Design Tokens</div>
+        <div class="hud-panel clip-tr">
+          <div class="section-title">// COLOR PALETTE //</div>
+          <div class="swatch-row">
+            <div class="swatch">
+              <div class="swatch-dot" style="background:var(--accent);box-shadow:0 0 12px rgba(var(--accent-rgb),0.5)"></div>
+              <span class="swatch-label">--accent</span>
+            </div>
+            <div class="swatch">
+              <div class="swatch-dot" style="background:var(--rose);box-shadow:0 0 10px rgba(var(--rose-rgb),0.4)"></div>
+              <span class="swatch-label">--rose</span>
+            </div>
+            <div class="swatch">
+              <div class="swatch-dot" style="background:var(--mint);box-shadow:0 0 10px rgba(var(--mint-rgb),0.35)"></div>
+              <span class="swatch-label">--mint</span>
+            </div>
+            <div class="swatch">
+              <div class="swatch-dot" style="background:var(--text)"></div>
+              <span class="swatch-label">--text</span>
+            </div>
+            <div class="swatch">
+              <div class="swatch-dot" style="background:var(--surface);border:1px solid var(--border)"></div>
+              <span class="swatch-label">--surface</span>
+            </div>
+            <div class="swatch">
+              <div class="swatch-dot" style="background:var(--border)"></div>
+              <span class="swatch-label">--border</span>
+            </div>
+            <div class="swatch">
+              <div class="swatch-dot" style="background:var(--dim)"></div>
+              <span class="swatch-label">--dim</span>
+            </div>
+            <div class="swatch">
+              <div class="swatch-dot" style="background:var(--html-bg);border:1px solid var(--border)"></div>
+              <span class="swatch-label">html bg</span>
+            </div>
+          </div>
+          <div class="code-block">
+<span class="tok-comment">/* root tokens */</span>
+<span class="tok-prop">--accent</span>: <span class="tok-val" id="cb-accent">?</span>;
+<span class="tok-prop">--rose</span>:   <span class="tok-val" id="cb-rose">?</span>;
+<span class="tok-prop">--mint</span>:   <span class="tok-val" id="cb-mint">?</span>;
+<span class="tok-prop">--surface</span>: <span class="tok-val" id="cb-surface">?</span>;
+<span class="tok-prop">--border</span>:  <span class="tok-val" id="cb-border">?</span>;
+<span class="tok-prop">--text</span>:    <span class="tok-val" id="cb-text">?</span>;
+<span class="tok-prop">--dim</span>:     <span class="tok-val" id="cb-dim">?</span>;
+<span class="tok-prop">--font</span>:    <span class="tok-val">"VT323", "Courier New", monospace</span>;</div>
+        </div>
+      </section>
+
+      <!-- ── TYPOGRAPHY ────────────────────────────────────────────── -->
+      <section id="s-type" class="page-section">
+        <div class="page-section-label">// Typography</div>
+        <div class="hud-panel clip-both">
+          <div class="section-title">// TYPE SCALE //</div>
+          <p class="type-h1">HEADING ONE</p>
+          <p class="type-h2">HEADING TWO</p>
+          <p class="type-h3">Heading Three</p>
+          <p class="type-h4">Heading Four — Subheading</p>
+          <hr class="hud-divider" style="margin:10px 0" />
+          <p class="type-label">SECTION LABEL — 0.72rem letterspacing 0.28em</p>
+          <p class="type-mono">0x00FA → MINT MONO CODE STRING</p>
+          <p class="type-dim">Dim body copy — metadata, annotations, secondary information</p>
+          <p>Default body — <span style="color:var(--accent)">accent highlight</span> — <span style="color:var(--rose)">rose highlight</span> — <span style="color:var(--mint)">mint highlight</span></p>
+          <div style="margin-top:10px">
+            <span class="type-blink">▮ CURSOR BLINK</span>
+            &nbsp;&nbsp;
+            <span style="color:var(--accent);letter-spacing:0.3em">◈ SEPARATOR GLYPH ◈</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── BUTTONS ───────────────────────────────────────────────── -->
+      <section id="s-buttons" class="page-section">
+        <div class="page-section-label">// Buttons</div>
+        <div class="hud-panel">
+          <div class="section-title">// BUTTON VARIANTS //</div>
+          <div class="btn-row">
+            <button>DEFAULT</button>
+            <button class="active">ACTIVE</button>
+            <button class="btn-rose">ROSE</button>
+            <button class="btn-rose active">ROSE ACT</button>
+            <button class="btn-mint">MINT</button>
+            <button class="btn-mint active">MINT ACT</button>
+            <button disabled>DISABLED</button>
+          </div>
+          <div class="section-title rose">// SIZES //</div>
+          <div class="btn-row">
+            <button class="btn-lg">LARGE BTN</button>
+            <button>MEDIUM BTN</button>
+            <button class="btn-sm">SMALL</button>
+            <button class="btn-icon">◀</button>
+            <button class="btn-icon">▶</button>
+            <button class="btn-icon">■</button>
+            <button class="btn-icon">⟳</button>
+          </div>
+          <div class="section-title mint">// FULL WIDTH / SQUARE //</div>
+          <div class="btn-row" style="flex-direction:column;align-items:stretch">
+            <button class="btn-full">FULL WIDTH BUTTON — clip-path: none</button>
+            <div style="display:flex;gap:10px">
+              <button class="btn-square" style="flex:1">SQUARE CORNERS</button>
+              <button class="btn-square btn-rose" style="flex:1">SQUARE ROSE</button>
+              <button class="btn-square btn-mint" style="flex:1">SQUARE MINT</button>
+            </div>
+          </div>
+          <div class="section-title">// TOOLTIP DEMO //</div>
+          <div class="btn-row">
+            <div class="tooltip-wrap">
+              <button>HOVER ME</button>
+              <span class="tooltip-tip">// TOOLTIP CONTENT HERE</span>
+            </div>
+            <div class="tooltip-wrap">
+              <button class="btn-rose">ROSE TIP</button>
+              <span class="tooltip-tip" style="border-color:rgba(255,68,119,0.6);color:var(--rose)">SECONDARY TOOLTIP</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── SLIDERS ───────────────────────────────────────────────── -->
+      <section id="s-sliders" class="page-section">
+        <div class="page-section-label">// Range Sliders</div>
+        <div class="grid-2">
+          <div class="hud-panel">
+            <div class="section-title">// ACCENT SLIDERS //</div>
+            <div class="control-group">
+              <span class="control-label">GAIN</span>
+              <input type="range" id="sl-gain" min="0" max="100" value="72" style="--val:72%" />
+              <div class="range-readout"><span>0</span><span class="range-val" id="sl-gain-val">72</span><span>100</span></div>
+            </div>
+            <div class="control-group">
+              <span class="control-label">FREQUENCY</span>
+              <input type="range" id="sl-freq" min="20" max="20000" value="8400" style="--val:42%" />
+              <div class="range-readout"><span>20 Hz</span><span class="range-val" id="sl-freq-val">8.4 kHz</span><span>20k</span></div>
+            </div>
+            <div class="control-group">
+              <span class="control-label">THRESHOLD</span>
+              <input type="range" id="sl-thresh" min="-60" max="0" value="-18" style="--val:70%" />
+              <div class="range-readout"><span>-60</span><span class="range-val" id="sl-thresh-val">-18 dB</span><span>0</span></div>
+            </div>
+          </div>
+          <div class="hud-panel">
+            <div class="section-title rose">// ROSE + MINT SLIDERS //</div>
+            <div class="control-group">
+              <span class="control-label">CUTOFF</span>
+              <input type="range" class="rose-range" id="sl-cut" min="0" max="100" value="55" style="--val:55%" />
+              <div class="range-readout"><span>0</span><span class="range-val" id="sl-cut-val" style="color:var(--rose)">55</span><span>100</span></div>
+            </div>
+            <div class="control-group">
+              <span class="control-label">RESONANCE</span>
+              <input type="range" class="rose-range" id="sl-res" min="0" max="100" value="30" style="--val:30%" />
+              <div class="range-readout"><span>0</span><span class="range-val" id="sl-res-val" style="color:var(--rose)">30</span><span>100</span></div>
+            </div>
+            <div class="control-group">
+              <span class="control-label">DEPTH</span>
+              <input type="range" class="mint-range" id="sl-depth" min="0" max="100" value="88" style="--val:88%" />
+              <div class="range-readout"><span>0</span><span class="range-val" id="sl-depth-val" style="color:var(--mint)">88</span><span>100</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── INPUTS ────────────────────────────────────────────────── -->
+      <section id="s-inputs" class="page-section">
+        <div class="page-section-label">// Form Inputs</div>
+        <div class="grid-2">
+          <div class="hud-panel">
+            <div class="section-title">// TEXT / SELECT //</div>
+            <div class="control-group">
+              <label class="control-label" for="inp-text">TEXT INPUT</label>
+              <input type="text" id="inp-text" placeholder="ENTER VALUE…" />
+            </div>
+            <div class="control-group">
+              <label class="control-label" for="inp-num">NUMERIC INPUT</label>
+              <input type="number" id="inp-num" placeholder="0.00" />
+            </div>
+            <div class="control-group">
+              <label class="control-label" for="inp-sel">SELECT DROPDOWN</label>
+              <select id="inp-sel">
+                <option value="">— SELECT MODE —</option>
+                <option>ALPHA CHANNEL</option>
+                <option>BETA CHANNEL</option>
+                <option>GAMMA CHANNEL</option>
+                <option>DELTA CHANNEL</option>
+              </select>
+            </div>
+            <div class="control-group">
+              <label class="control-label" for="inp-ta">TEXTAREA</label>
+              <textarea id="inp-ta" placeholder="MULTI-LINE INPUT…"></textarea>
+            </div>
+          </div>
+          <div class="hud-panel">
+            <div class="section-title rose">// CHECKBOXES + RADIOS //</div>
+            <div class="control-group">
+              <span class="control-label">CHECKBOXES</span>
+              <label class="check-row">
+                <input type="checkbox" checked />
+                <span class="check-label">OPTION ALPHA — checked</span>
+              </label>
+              <label class="check-row">
+                <input type="checkbox" />
+                <span class="check-label">OPTION BETA — unchecked</span>
+              </label>
+              <label class="check-row">
+                <input type="checkbox" disabled />
+                <span class="check-label" style="opacity:0.38">OPTION GAMMA — disabled</span>
+              </label>
+            </div>
+            <div class="control-group">
+              <span class="control-label">RADIO GROUP</span>
+              <label class="check-row">
+                <input type="radio" name="demo-radio" checked />
+                <span class="check-label">MODE ALPHA</span>
+              </label>
+              <label class="check-row">
+                <input type="radio" name="demo-radio" />
+                <span class="check-label">MODE BETA</span>
+              </label>
+              <label class="check-row">
+                <input type="radio" name="demo-radio" />
+                <span class="check-label">MODE GAMMA</span>
+              </label>
+            </div>
+            <div class="section-title mint">// TOGGLES //</div>
+            <div class="toggle-wrap" onclick="this.querySelector('.toggle-track').classList.toggle('on')">
+              <div class="toggle-track on"><div class="toggle-thumb"></div></div>
+              <span class="toggle-label">SYSTEM ACTIVE</span>
+            </div>
+            <div class="toggle-wrap" onclick="this.querySelector('.toggle-track').classList.toggle('on')">
+              <div class="toggle-track"><div class="toggle-thumb"></div></div>
+              <span class="toggle-label">OVERDRIVE MODE</span>
+            </div>
+            <div class="toggle-wrap" onclick="this.querySelector('.toggle-track').classList.toggle('on')">
+              <div class="toggle-track on"><div class="toggle-thumb"></div></div>
+              <span class="toggle-label">AUTO-SYNC</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── STATS ─────────────────────────────────────────────────── -->
+      <section id="s-stats" class="page-section">
+        <div class="page-section-label">// Stats &amp; Readouts</div>
+        <div class="hud-panel">
+          <div class="section-title">// STAT BLOCKS //</div>
+          <div class="stats-row">
+            <div class="stat-block">
+              <div class="stat-label">FREQUENCY</div>
+              <div class="stat-val">440<span class="stat-unit">Hz</span></div>
+            </div>
+            <div class="stat-block">
+              <div class="stat-label">AMPLITUDE</div>
+              <div class="stat-val">-12<span class="stat-unit">dBFS</span></div>
+            </div>
+            <div class="stat-block">
+              <div class="stat-label">LATENCY</div>
+              <div class="stat-val rose">18<span class="stat-unit">ms</span></div>
+            </div>
+            <div class="stat-block">
+              <div class="stat-label">SAMPLE RATE</div>
+              <div class="stat-val mint">48k<span class="stat-unit">Hz</span></div>
+            </div>
+            <div class="stat-block">
+              <div class="stat-label">STATUS</div>
+              <div class="stat-val" style="font-size:1rem;letter-spacing:0.04em">◈ LIVE</div>
+            </div>
+          </div>
+        </div>
+        <div class="grid-3">
+          <div class="hud-panel" style="text-align:center">
+            <div class="stat-label">TOTAL EVENTS</div>
+            <div class="stat-val" style="font-size:2.2rem;display:block">1,024</div>
+            <div class="type-dim">processed</div>
+          </div>
+          <div class="hud-panel" style="text-align:center">
+            <div class="stat-label">PEAK LOAD</div>
+            <div class="stat-val rose" style="font-size:2.2rem;display:block">87%</div>
+            <div class="type-dim">of capacity</div>
+          </div>
+          <div class="hud-panel" style="text-align:center">
+            <div class="stat-label">UPTIME</div>
+            <div class="stat-val mint" style="font-size:2.2rem;display:block">99.9%</div>
+            <div class="type-dim">last 30 days</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── SCREEN DISPLAY ────────────────────────────────────────── -->
+      <section id="s-screen" class="page-section">
+        <div class="page-section-label">// Screen Display</div>
+        <div class="hud-panel">
+          <div class="section-title">// CHAMFERED SCREEN + CORNERS //</div>
+          <div class="screen-wrap">
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
+            <div class="screen-inner">
+              <div class="screen-scan"></div>
+              <span style="color:var(--accent);letter-spacing:0.14em">▸ SYSTEM READY — NOMINAL</span><br />
+              <span style="color:var(--mint)">0xFA38 INIT_SEQUENCE COMPLETE</span><br />
+              <span style="color:var(--dim)">— ENTROPY WORSHIP SUBSYSTEM v1.0.24.04.26 —</span><br />
+              <span style="color:var(--text)">CLOCK: <span style="color:var(--accent)">96 BPM</span> &nbsp; PHASE: <span style="color:var(--mint)">0.000</span> &nbsp; SYNC: <span style="color:var(--rose)">DRIFT +0.3ms</span></span><br />
+              <span style="color:var(--dim)">_</span><span class="type-blink">▮</span>
+            </div>
+          </div>
+        </div>
+        <div class="grid-2">
+          <div class="hud-panel clip-tr">
+            <div class="section-title">// CLIP-PATH: TOP-RIGHT //</div>
+            <p class="type-dim">Panel with top-right chamfer. clip-path polygon cuts the corner at 16px.</p>
+          </div>
+          <div class="hud-panel clip-br">
+            <div class="section-title">// CLIP-PATH: BOTTOM-RIGHT //</div>
+            <p class="type-dim">Panel with bottom-right chamfer. Standard HUD asymmetric cut.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── TABLE ─────────────────────────────────────────────────── -->
+      <section id="s-table" class="page-section">
+        <div class="page-section-label">// Table</div>
+        <div class="hud-panel clip-tr">
+          <div class="section-title">// DATA TABLE //</div>
+          <table class="hud-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>IDENTIFIER</th>
+                <th>CHANNEL</th>
+                <th>VALUE</th>
+                <th>STATE</th>
+                <th>TIMESTAMP</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="td-dim">001</td>
+                <td class="td-accent">ALPHA.NODE</td>
+                <td>CH-01</td>
+                <td class="td-mint">0xFF</td>
+                <td><span class="tag mint">LIVE</span></td>
+                <td class="td-dim">04.26.24 09:31:07</td>
+              </tr>
+              <tr>
+                <td class="td-dim">002</td>
+                <td class="td-accent">BETA.NODE</td>
+                <td>CH-04</td>
+                <td class="td-accent">0x7F</td>
+                <td><span class="tag accent">ACTIVE</span></td>
+                <td class="td-dim">04.26.24 09:31:12</td>
+              </tr>
+              <tr>
+                <td class="td-dim">003</td>
+                <td class="td-accent">GAMMA.NODE</td>
+                <td>CH-10</td>
+                <td class="td-rose">0x00</td>
+                <td><span class="tag rose">FAULT</span></td>
+                <td class="td-dim">04.26.24 09:30:58</td>
+              </tr>
+              <tr>
+                <td class="td-dim">004</td>
+                <td class="td-accent">DELTA.NODE</td>
+                <td>CH-16</td>
+                <td class="td-dim">—</td>
+                <td><span class="tag">OFFLINE</span></td>
+                <td class="td-dim">04.26.24 09:29:44</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── STATUS INDICATORS ─────────────────────────────────────── -->
+      <section id="s-status" class="page-section">
+        <div class="page-section-label">// Status Indicators</div>
+        <div class="hud-panel">
+          <div class="section-title">// STATUS DOTS //</div>
+          <div class="status-row">
+            <div class="status-item">
+              <div class="status-dot live"></div>
+              <span style="color:var(--mint)">LIVE</span>
+            </div>
+            <div class="status-item">
+              <div class="status-dot warn"></div>
+              <span style="color:var(--accent)">WARNING</span>
+            </div>
+            <div class="status-item">
+              <div class="status-dot error"></div>
+              <span style="color:var(--rose)">FAULT</span>
+            </div>
+            <div class="status-item">
+              <div class="status-dot offline"></div>
+              <span style="color:var(--dim)">OFFLINE</span>
+            </div>
+          </div>
+          <div class="section-title rose">// SIGNAL BARS //</div>
+          <div class="bar-wrap">
+            <div class="bar-header"><span>CPU LOAD</span><span style="color:var(--accent)">72%</span></div>
+            <div class="bar-track"><div class="bar-fill" style="width:72%"></div></div>
+          </div>
+          <div class="bar-wrap">
+            <div class="bar-header"><span>MEMORY</span><span style="color:var(--rose)">88%</span></div>
+            <div class="bar-track"><div class="bar-fill rose" style="width:88%"></div></div>
+          </div>
+          <div class="bar-wrap">
+            <div class="bar-header"><span>THROUGHPUT</span><span style="color:var(--mint)">44%</span></div>
+            <div class="bar-track"><div class="bar-fill mint" style="width:44%"></div></div>
+          </div>
+          <div class="bar-wrap">
+            <div class="bar-header"><span>QUEUE DEPTH</span><span style="color:var(--dim)">12%</span></div>
+            <div class="bar-track"><div class="bar-fill" style="width:12%;background:var(--dim)"></div></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── ALERTS ────────────────────────────────────────────────── -->
+      <section id="s-alerts" class="page-section">
+        <div class="page-section-label">// Alerts &amp; Notifications</div>
+        <div class="hud-panel clip-both">
+          <div class="section-title">// ALERT VARIANTS //</div>
+          <div class="alert">
+            <div class="alert-title">// NOMINAL ALERT</div>
+            System operating within expected parameters. No action required.
+          </div>
+          <div class="alert rose">
+            <div class="alert-title">// FAULT DETECTED</div>
+            Node GAMMA.NODE has reported a non-recoverable error on CH-10. Inspect signal path.
+          </div>
+          <div class="alert mint">
+            <div class="alert-title">// SYNC ACQUIRED</div>
+            External clock source locked. Drift compensation active: <span style="color:var(--mint)">Δ +0.3ms</span>.
+          </div>
+        </div>
+      </section>
+
+      <!-- ── TAGS ──────────────────────────────────────────────────── -->
+      <section id="s-tags" class="page-section">
+        <div class="page-section-label">// Tags, Badges &amp; Breadcrumbs</div>
+        <div class="hud-panel">
+          <div class="section-title">// TAGS //</div>
+          <div class="tag-row">
+            <span class="tag">DEFAULT</span>
+            <span class="tag accent">ACCENT</span>
+            <span class="tag rose">FAULT</span>
+            <span class="tag mint">LIVE</span>
+            <span class="tag accent">V1.0</span>
+            <span class="tag rose">DEPRECATED</span>
+            <span class="tag mint">NEW</span>
+            <span class="tag">ARCHIVED</span>
+          </div>
+          <div class="section-title rose">// BREADCRUMB //</div>
+          <div class="breadcrumb">
+            <a href="#">HOME</a>
+            <span class="sep">◂</span>
+            <a href="#">SYSTEMS</a>
+            <span class="sep">◂</span>
+            <a href="#">AUDIO</a>
+            <span class="sep">◂</span>
+            <span class="current">UILIB</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── ANIMATIONS ────────────────────────────────────────────── -->
+      <section id="s-anim" class="page-section">
+        <div class="page-section-label">// Animations</div>
+        <div class="hud-panel clip-br">
+          <div class="section-title">// KEYFRAME DEMOS //</div>
+          <div class="anim-demo-row">
+            <div class="anim-box demo-title-glow">TITLE GLOW</div>
+            <div class="anim-box demo-flicker">BORDER FLICKER</div>
+            <div class="anim-box demo-active">ACTIVE PULSE</div>
+            <div class="anim-box demo-blink">BLINK</div>
+            <div class="anim-box demo-fade-in">FADE IN UP</div>
+          </div>
+          <div class="code-block" style="margin-top:12px">
+<span class="tok-comment">/* title-glow — 3s ease-in-out infinite */</span>
+<span class="tok-prop">animation</span>: <span class="tok-val">title-glow 3s ease-in-out infinite</span>;
+
+<span class="tok-comment">/* border-flicker — 16s linear infinite */</span>
+<span class="tok-prop">animation</span>: <span class="tok-val">border-flicker 16s linear infinite</span>;
+
+<span class="tok-comment">/* active-pulse — 2s ease-in-out infinite */</span>
+<span class="tok-prop">animation</span>: <span class="tok-val">active-pulse 2s ease-in-out infinite</span>;
+
+<span class="tok-comment">/* blink — 1.1s step-end infinite */</span>
+<span class="tok-prop">animation</span>: <span class="tok-val">blink 1.1s step-end infinite</span>;
+
+<span class="tok-comment">/* fade-in-up — 1.2s cubic ease both (one-shot) */</span>
+<span class="tok-prop">animation</span>: <span class="tok-val">fade-in-up 1.2s ease both</span>;</div>
+        </div>
+      </section>
+
+      <!-- ── COMPOSITE PANEL ───────────────────────────────────────── -->
+      <section id="s-composite" class="page-section">
+        <div class="page-section-label">// Composite Example</div>
+        <div class="hud-panel clip-tr">
+          <div class="composite-header">
+            <div>
+              <div class="section-title" style="margin-bottom:2px">// SIGNAL PROCESSOR — CHANNEL ALPHA //</div>
+              <div class="composite-sub">ENTROPY WORSHIP — DSP MODULE v1.0</div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <div class="status-dot live"></div>
+              <span class="type-label" style="color:var(--mint)">LIVE</span>
+            </div>
+          </div>
+
+          <div class="grid-2" style="margin-bottom:0">
+            <div>
+              <div class="control-group">
+                <span class="control-label">INPUT GAIN</span>
+                <input type="range" id="comp-gain" min="0" max="100" value="65" style="--val:65%" />
+                <div class="range-readout"><span>0</span><span class="range-val" id="comp-gain-v">65</span><span>100</span></div>
+              </div>
+              <div class="control-group">
+                <span class="control-label">LPF CUTOFF</span>
+                <input type="range" class="rose-range" id="comp-lpf" min="0" max="100" value="42" style="--val:42%" />
+                <div class="range-readout"><span>20Hz</span><span class="range-val" id="comp-lpf-v" style="color:var(--rose)">8.4 kHz</span><span>20k</span></div>
+              </div>
+              <div class="control-group">
+                <span class="control-label">WET/DRY MIX</span>
+                <input type="range" class="mint-range" id="comp-mix" min="0" max="100" value="80" style="--val:80%" />
+                <div class="range-readout"><span>DRY</span><span class="range-val" id="comp-mix-v" style="color:var(--mint)">80%</span><span>WET</span></div>
+              </div>
+              <div class="control-group">
+                <span class="control-label">OUTPUT BUS</span>
+                <select>
+                  <option>MAIN L+R</option>
+                  <option>AUX SEND A</option>
+                  <option>AUX SEND B</option>
+                  <option>MONITOR</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <div class="screen-wrap" style="margin-bottom:12px">
+                <div class="corner tl"></div>
+                <div class="corner tr"></div>
+                <div class="corner bl"></div>
+                <div class="corner br"></div>
+                <div class="screen-inner" style="min-height:80px;font-size:0.8rem">
+                  <div class="screen-scan"></div>
+                  <span style="color:var(--dim)">▸ CH_ALPHA STATUS</span><br />
+                  FREQ: <span style="color:var(--accent)">440 Hz</span> &nbsp; PEAK: <span style="color:var(--rose)">-12 dBFS</span><br />
+                  CLOCK: <span style="color:var(--mint)">96 BPM SYNC</span> &nbsp; LAT: <span style="color:var(--accent)">18ms</span>
+                </div>
+              </div>
+
+              <div class="bar-wrap">
+                <div class="bar-header"><span>SIGNAL LEVEL</span><span style="color:var(--accent)">-12 dBFS</span></div>
+                <div class="bar-track"><div class="bar-fill" style="width:65%"></div></div>
+              </div>
+              <div class="bar-wrap">
+                <div class="bar-header"><span>PEAK HOLD</span><span style="color:var(--rose)">-6 dBFS</span></div>
+                <div class="bar-track"><div class="bar-fill rose" style="width:80%"></div></div>
+              </div>
+
+              <div class="stats-row" style="padding-top:8px;margin-top:8px">
+                <div class="stat-block">
+                  <div class="stat-label">IN</div>
+                  <div class="stat-val" style="font-size:1.1rem">-18<span class="stat-unit">dB</span></div>
+                </div>
+                <div class="stat-block">
+                  <div class="stat-label">GR</div>
+                  <div class="stat-val rose" style="font-size:1.1rem">-6<span class="stat-unit">dB</span></div>
+                </div>
+                <div class="stat-block">
+                  <div class="stat-label">OUT</div>
+                  <div class="stat-val mint" style="font-size:1.1rem">-12<span class="stat-unit">dB</span></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <hr class="hud-divider" />
+          <div class="btn-row">
+            <button class="active">▶ PROCESS</button>
+            <button class="btn-rose">■ BYPASS</button>
+            <button class="btn-mint">⟳ RESET</button>
+            <button disabled>EXPORT</button>
+            <span style="flex:1"></span>
+            <span class="type-dim" style="align-self:center">◈ CH-ALPHA ◈ 48kHz ◈ 32bit</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── AUGMENTED-UI ──────────────────────────────────────────── -->
+      <section id="s-aug" class="page-section">
+        <div class="page-section-label">// Augmented-UI</div>
+
+        <!-- ── Clip corners ── -->
+        <div class="hud-panel clip-tr">
+          <div class="section-title">// CLIP CORNERS — border modifier //</div>
+          <div class="aug-grid">
+
+            <div class="aug-demo aug-amber aug-md"
+                 data-augmented-ui="tl-clip border">
+              <span class="aug-demo-title">tl-clip</span>
+              <span class="aug-demo-label">top-left clip / border</span>
+            </div>
+
+            <div class="aug-demo aug-amber aug-md"
+                 data-augmented-ui="tr-clip border">
+              <span class="aug-demo-title">tr-clip</span>
+              <span class="aug-demo-label">top-right clip / border</span>
+            </div>
+
+            <div class="aug-demo aug-amber aug-md"
+                 data-augmented-ui="br-clip border">
+              <span class="aug-demo-title">br-clip</span>
+              <span class="aug-demo-label">bottom-right clip / border</span>
+            </div>
+
+            <div class="aug-demo aug-amber aug-md"
+                 data-augmented-ui="bl-clip border">
+              <span class="aug-demo-title">bl-clip</span>
+              <span class="aug-demo-label">bottom-left clip / border</span>
+            </div>
+
+            <div class="aug-demo aug-rose aug-md"
+                 data-augmented-ui="tr-clip bl-clip border">
+              <span class="aug-demo-title">tr-clip bl-clip</span>
+              <span class="aug-demo-label">diagonal pair / rose</span>
+            </div>
+
+            <div class="aug-demo aug-mint aug-md"
+                 data-augmented-ui="tl-clip br-clip border">
+              <span class="aug-demo-title">tl-clip br-clip</span>
+              <span class="aug-demo-label">diagonal pair / mint</span>
+            </div>
+
+            <div class="aug-demo aug-amber aug-lg"
+                 data-augmented-ui="tl-clip tr-clip br-clip bl-clip border">
+              <span class="aug-demo-title">all-clip</span>
+              <span class="aug-demo-label">all four corners / large</span>
+            </div>
+
+            <div class="aug-demo aug-grad aug-md"
+                 style="--aug-border-all:2px"
+                 data-augmented-ui="tl-clip br-clip border">
+              <span class="aug-demo-title">gradient border</span>
+              <span class="aug-demo-label">linear-gradient border-bg</span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ── Clip axis variants ── -->
+        <div class="hud-panel">
+          <div class="section-title rose">// CLIP AXIS VARIANTS — -x / -y //</div>
+          <div class="aug-grid">
+
+            <div class="aug-demo aug-amber aug-md"
+                 data-augmented-ui="tl-clip-x border">
+              <span class="aug-demo-title">tl-clip-x</span>
+              <span class="aug-demo-label">horizontal clip axis</span>
+            </div>
+
+            <div class="aug-demo aug-amber aug-md"
+                 data-augmented-ui="tl-clip-y border">
+              <span class="aug-demo-title">tl-clip-y</span>
+              <span class="aug-demo-label">vertical clip axis</span>
+            </div>
+
+            <div class="aug-demo aug-rose aug-md"
+                 data-augmented-ui="tr-clip-x bl-clip-y border">
+              <span class="aug-demo-title">tr-clip-x bl-clip-y</span>
+              <span class="aug-demo-label">mixed axis pair / rose</span>
+            </div>
+
+            <div class="aug-demo aug-mint aug-md"
+                 data-augmented-ui="tl-clip-y tr-clip-x br-clip-y bl-clip-x border">
+              <span class="aug-demo-title">alternating axes</span>
+              <span class="aug-demo-label">all corners, alternating x/y</span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ── Both: border + inlay ── -->
+        <div class="hud-panel clip-both">
+          <div class="section-title mint">// BOTH — border + inlay //</div>
+          <div class="aug-grid">
+
+            <div class="aug-demo aug-amber aug-inlay-amber aug-md"
+                 style="--aug-border-all:1px"
+                 data-augmented-ui="tl-clip br-clip both">
+              <span class="aug-demo-title">tl-clip br-clip both</span>
+              <span class="aug-demo-label">amber border + amber inlay</span>
+            </div>
+
+            <div class="aug-demo aug-rose aug-inlay-rose aug-md"
+                 style="--aug-border-all:1px"
+                 data-augmented-ui="tr-clip bl-clip both">
+              <span class="aug-demo-title">tr-clip bl-clip both</span>
+              <span class="aug-demo-label">rose border + rose inlay</span>
+            </div>
+
+            <div class="aug-demo aug-mint aug-inlay-mint aug-md"
+                 style="--aug-border-all:1px"
+                 data-augmented-ui="tl-clip tr-clip br-clip bl-clip both">
+              <span class="aug-demo-title">all-clip both</span>
+              <span class="aug-demo-label">mint border + mint inlay</span>
+            </div>
+
+            <div class="aug-demo aug-grad aug-md"
+                 style="--aug-border-all:2px;--aug-inlay-bg:rgba(255,170,0,0.08);--aug-inlay-all:0.7rem"
+                 data-augmented-ui="tr-clip bl-clip both">
+              <span class="aug-demo-title">gradient both</span>
+              <span class="aug-demo-label">gradient border + thick inlay</span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ── Round + Scoop corners ── -->
+        <div class="hud-panel clip-tr">
+          <div class="section-title">// ROUND + SCOOP CORNERS //</div>
+          <div class="aug-grid">
+
+            <div class="aug-demo aug-amber aug-md"
+                 data-augmented-ui="tl-round border">
+              <span class="aug-demo-title">tl-round</span>
+              <span class="aug-demo-label">single round corner</span>
+            </div>
+
+            <div class="aug-demo aug-rose aug-md"
+                 data-augmented-ui="tl-round tr-round br-round bl-round border">
+              <span class="aug-demo-title">all-round</span>
+              <span class="aug-demo-label">all four rounded / rose</span>
+            </div>
+
+            <div class="aug-demo aug-mint aug-md"
+                 data-augmented-ui="tl-round br-round border">
+              <span class="aug-demo-title">tl-round br-round</span>
+              <span class="aug-demo-label">diagonal round pair / mint</span>
+            </div>
+
+            <div class="aug-demo aug-amber aug-md"
+                 data-augmented-ui="tl-scoop border">
+              <span class="aug-demo-title">tl-scoop</span>
+              <span class="aug-demo-label">concave scoop / top-left</span>
+            </div>
+
+            <div class="aug-demo aug-rose aug-md"
+                 data-augmented-ui="tr-scoop bl-scoop border">
+              <span class="aug-demo-title">tr-scoop bl-scoop</span>
+              <span class="aug-demo-label">diagonal scoop pair / rose</span>
+            </div>
+
+            <div class="aug-demo aug-grad aug-md"
+                 style="--aug-border-all:2px"
+                 data-augmented-ui="tl-round tr-scoop br-round bl-scoop border">
+              <span class="aug-demo-title">mixed round + scoop</span>
+              <span class="aug-demo-label">alternating shape / gradient</span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ── Step + Rect corners ── -->
+        <div class="hud-panel clip-br">
+          <div class="section-title rose">// STEP + RECT CORNERS //</div>
+          <div class="aug-grid">
+
+            <div class="aug-demo aug-amber aug-md"
+                 data-augmented-ui="tl-step border">
+              <span class="aug-demo-title">tl-step</span>
+              <span class="aug-demo-label">staircase corner</span>
+            </div>
+
+            <div class="aug-demo aug-rose aug-md"
+                 data-augmented-ui="tr-step bl-step border">
+              <span class="aug-demo-title">tr-step bl-step</span>
+              <span class="aug-demo-label">stepped diagonal pair / rose</span>
+            </div>
+
+            <div class="aug-demo aug-mint aug-md"
+                 data-augmented-ui="tl-step tr-step br-step bl-step border">
+              <span class="aug-demo-title">all-step</span>
+              <span class="aug-demo-label">all stepped corners / mint</span>
+            </div>
+
+            <div class="aug-demo aug-amber aug-md"
+                 data-augmented-ui="tl-rect border">
+              <span class="aug-demo-title">tl-rect</span>
+              <span class="aug-demo-label">rectangular protrusion</span>
+            </div>
+
+            <div class="aug-demo aug-rose aug-md"
+                 data-augmented-ui="tr-rect bl-rect border">
+              <span class="aug-demo-title">tr-rect bl-rect</span>
+              <span class="aug-demo-label">rect diagonal pair / rose</span>
+            </div>
+
+            <div class="aug-demo aug-grad aug-md"
+                 style="--aug-border-all:2px"
+                 data-augmented-ui="tl-step tr-rect br-step bl-rect border">
+              <span class="aug-demo-title">step + rect mix</span>
+              <span class="aug-demo-label">alternating step/rect / gradient</span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ── Hex shapes ── -->
+        <div class="hud-panel">
+          <div class="section-title mint">// ALL-HEX + ALL-HEX-ALT //</div>
+          <div class="aug-grid-wide">
+
+            <div class="aug-demo aug-amber aug-lg"
+                 style="--aug-border-all:2px;min-height:100px"
+                 data-augmented-ui="all-hex border">
+              <span class="aug-demo-title">all-hex</span>
+              <span class="aug-demo-label">hexagonal shape / amber</span>
+            </div>
+
+            <div class="aug-demo aug-rose aug-lg"
+                 style="--aug-border-all:2px;min-height:100px"
+                 data-augmented-ui="all-hex-alt border">
+              <span class="aug-demo-title">all-hex-alt</span>
+              <span class="aug-demo-label">alternate hex orientation / rose</span>
+            </div>
+
+            <div class="aug-demo aug-mint aug-lg"
+                 style="--aug-border-all:2px;--aug-inlay-bg:rgba(0,255,187,0.08);min-height:100px"
+                 data-augmented-ui="all-hex both">
+              <span class="aug-demo-title">all-hex both</span>
+              <span class="aug-demo-label">hex + border + inlay / mint</span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ── Variable corner sizes ── -->
+        <div class="hud-panel clip-tr">
+          <div class="section-title">// VARIABLE CORNER SIZES //</div>
+          <div class="aug-grid-wide">
+
+            <div class="aug-demo aug-amber"
+                 style="--aug-border-all:1px;--aug-tl:2rem;--aug-tr:0.4rem;--aug-br:1.2rem;--aug-bl:0.4rem"
+                 data-augmented-ui="tl-clip tr-clip br-clip bl-clip border">
+              <span class="aug-demo-title">asymmetric sizes</span>
+              <span class="aug-demo-label">--aug-tl:2rem / tr:0.4rem / br:1.2rem / bl:0.4rem</span>
+            </div>
+
+            <div class="aug-demo aug-rose"
+                 style="--aug-border-all:1px;--aug-tr:2.5rem;--aug-bl:2.5rem;--aug-tl:0.4rem;--aug-br:0.4rem"
+                 data-augmented-ui="tl-clip tr-clip br-clip bl-clip border">
+              <span class="aug-demo-title">opposite emphasis</span>
+              <span class="aug-demo-label">--aug-tr:2.5rem / bl:2.5rem (dominant diagonal)</span>
+            </div>
+
+            <div class="aug-demo aug-grad"
+                 style="--aug-border-all:2px;--aug-tl:3rem;--aug-tl-extend1:60%;--aug-tr:0.5rem;--aug-br:0.5rem;--aug-bl:0.5rem"
+                 data-augmented-ui="tl-clip tr-clip br-clip bl-clip border">
+              <span class="aug-demo-title">extend1 — long cut</span>
+              <span class="aug-demo-label">--aug-tl:3rem --aug-tl-extend1:60%</span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ── Border weight ── -->
+        <div class="hud-panel clip-both">
+          <div class="section-title rose">// BORDER WEIGHT + THICK INLAY //</div>
+          <div class="aug-grid">
+
+            <div class="aug-demo aug-amber aug-md"
+                 style="--aug-border-all:1px"
+                 data-augmented-ui="tl-clip br-clip border">
+              <span class="aug-demo-title">1px border</span>
+              <span class="aug-demo-label">--aug-border-all: 1px</span>
+            </div>
+
+            <div class="aug-demo aug-amber aug-md"
+                 style="--aug-border-all:2px"
+                 data-augmented-ui="tl-clip br-clip border">
+              <span class="aug-demo-title">2px border</span>
+              <span class="aug-demo-label">--aug-border-all: 2px</span>
+            </div>
+
+            <div class="aug-demo aug-amber aug-md"
+                 style="--aug-border-all:4px"
+                 data-augmented-ui="tl-clip br-clip border">
+              <span class="aug-demo-title">4px border</span>
+              <span class="aug-demo-label">--aug-border-all: 4px</span>
+            </div>
+
+            <div class="aug-demo aug-mint aug-md"
+                 style="--aug-border-all:2px;--aug-inlay-bg:rgba(0,255,187,0.15);--aug-inlay-all:1rem"
+                 data-augmented-ui="tl-clip tr-clip br-clip bl-clip both">
+              <span class="aug-demo-title">thick inlay</span>
+              <span class="aug-demo-label">--aug-inlay-all: 1rem (corner accent fill)</span>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ── CSS token reference ── -->
+        <div class="hud-panel clip-br">
+          <div class="section-title">// CSS VARIABLES REFERENCE //</div>
+          <div class="code-block">
+<span class="tok-comment">/* CDN import */</span>
+<span class="tok-val">&lt;link rel="stylesheet" href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css"&gt;</span>
+
+<span class="tok-comment">/* HTML usage */</span>
+<span class="tok-val">&lt;div data-augmented-ui="tl-clip tr-clip br-clip bl-clip both"&gt;…&lt;/div&gt;</span>
+
+<span class="tok-comment">/* border */</span>
+<span class="tok-prop">--aug-border-all</span>:  <span class="tok-val">1px</span>;        <span class="tok-comment">/* border width on all sides */</span>
+<span class="tok-prop">--aug-border-bg</span>:   <span class="tok-val">#ffaa00</span>;    <span class="tok-comment">/* solid, gradient, or image */</span>
+<span class="tok-prop">--aug-border-opacity</span>: <span class="tok-val">1</span>;          <span class="tok-comment">/* 0–1 */</span>
+
+<span class="tok-comment">/* inlay (corner accent fill) */</span>
+<span class="tok-prop">--aug-inlay-all</span>:   <span class="tok-val">0.55rem</span>;    <span class="tok-comment">/* inlay offset from corner */</span>
+<span class="tok-prop">--aug-inlay-bg</span>:    <span class="tok-val">rgba(255,170,0,0.12)</span>;
+<span class="tok-prop">--aug-inlay-opacity</span>: <span class="tok-val">1</span>;
+
+<span class="tok-comment">/* per-corner size */</span>
+<span class="tok-prop">--aug-tl</span>: <span class="tok-val">1rem</span>;   <span class="tok-prop">--aug-tr</span>: <span class="tok-val">1rem</span>;   <span class="tok-prop">--aug-br</span>: <span class="tok-val">1rem</span>;   <span class="tok-prop">--aug-bl</span>: <span class="tok-val">1rem</span>;
+
+<span class="tok-comment">/* extend — stretches the clip along an axis (0–100%) */</span>
+<span class="tok-prop">--aug-tl-extend1</span>:  <span class="tok-val">30%</span>;       <span class="tok-comment">/* extends cut along X */</span>
+<span class="tok-prop">--aug-tl-extend2</span>:  <span class="tok-val">30%</span>;       <span class="tok-comment">/* extends cut along Y */</span>
+
+<span class="tok-comment">/* modifiers in data-augmented-ui="" */</span>
+<span class="tok-comment">/* border  — enable border                              */</span>
+<span class="tok-comment">/* inlay   — enable inlay only                          */</span>
+<span class="tok-comment">/* both    — enable border AND inlay                    */</span>
+<span class="tok-comment">/* shapes: clip clip-x clip-y / round / scoop / rect / step */</span>
+<span class="tok-comment">/* all-hex / all-hex-alt — full hexagonal outline shape */</span></div>
+        </div>
+
+      </section>
+
+    </div><!-- #app -->
+
+    <!-- ── Three.js ambient background ─────────────────────────────── -->
+    <script type="module">
+      import * as THREE from "three";
+
+      const canvas = document.getElementById("galaxy-bg");
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true });
+      renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+      renderer.setClearColor(0x000000, 0);
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(55, innerWidth / innerHeight, 1, 2000);
+      camera.position.set(0, 60, 380);
+      camera.lookAt(0, 0, 0);
+
+      function resize() {
+        renderer.setSize(innerWidth, innerHeight);
+        camera.aspect = innerWidth / innerHeight;
+        camera.updateProjectionMatrix();
+      }
+      resize();
+      addEventListener("resize", resize);
+
+      // ── Particle field ──────────────────────────────────────────────
+      const COLS = 64, ROWS = 32, N = COLS * ROWS;
+      const positions = new Float32Array(N * 3);
+      const colors    = new Float32Array(N * 3);
+      const sizes     = new Float32Array(N);
+      const phases    = new Float32Array(N); // per-point phase offset
+
+      for (let i = 0; i < N; i++) {
+        const c = i % COLS, r = Math.floor(i / COLS);
+        positions[i * 3]     = (c / (COLS - 1) - 0.5) * 700;
+        positions[i * 3 + 1] = 0;
+        positions[i * 3 + 2] = (r / (ROWS - 1) - 0.5) * 360;
+        sizes[i]  = 1.8 + Math.random() * 2.4;
+        phases[i] = Math.random() * Math.PI * 2;
+      }
+
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+      geo.setAttribute("aColor",   new THREE.BufferAttribute(colors,    3));
+      geo.setAttribute("aSize",    new THREE.BufferAttribute(sizes,     1));
+
+      const mat = new THREE.ShaderMaterial({
+        uniforms: { dpr: { value: renderer.getPixelRatio() } },
+        vertexShader: `
+          attribute vec3 aColor;
+          attribute float aSize;
+          uniform float dpr;
+          varying vec3 vCol;
+          void main() {
+            vCol = aColor;
+            vec4 mv = modelViewMatrix * vec4(position, 1.0);
+            gl_PointSize = max(aSize * dpr * (420.0 / -mv.z), 1.5);
+            gl_Position = projectionMatrix * mv;
+          }
+        `,
+        fragmentShader: `
+          varying vec3 vCol;
+          void main() {
+            vec2 uv = gl_PointCoord - 0.5;
+            float r = dot(uv, uv);
+            if (r > 0.25) discard;
+            float a = 1.0 - smoothstep(0.1, 0.25, r);
+            gl_FragColor = vec4(vCol, a * 0.72);
+          }
+        `,
+        transparent: true,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+      });
+
+      const mesh = new THREE.Points(geo, mat);
+      scene.add(mesh);
+
+      // ── Idle drift wave ─────────────────────────────────────────────
+      let t = 0;
+      function animate() {
+        requestAnimationFrame(animate);
+        t += 0.008;
+
+        const posArr = geo.attributes.position.array;
+        const colArr = geo.attributes.aColor.array;
+
+        for (let i = 0; i < N; i++) {
+          const c = i % COLS, r = Math.floor(i / COLS);
+          const nx = c / (COLS - 1);
+          const ph = phases[i];
+          const wave1 = Math.sin(nx * 5.2 + t * 0.9 + ph) * 0.5
+                      + Math.sin(nx * 2.8 + t * 0.55 + ph * 0.7) * 0.5;
+          const amp = wave1 * 22;
+
+          posArr[i * 3 + 1] = amp;
+
+          // color: dim base → accent peak
+          const h  = Math.max(0, amp / 22);
+          const lo = Math.max(0, -amp / 22);
+          const [ar, ag, ab] = window._themeAccent || [1.0, 0.67, 0];
+          const [dr, dg, db] = window._themeDim    || [0.28, 0.10, 0];
+          colArr[i * 3]     = dr + h * (ar - dr);
+          colArr[i * 3 + 1] = dg + h * (ag - dg);
+          colArr[i * 3 + 2] = db + h * (ab - db) + lo * 0.12;
+        }
+
+        geo.attributes.position.needsUpdate = true;
+        geo.attributes.aColor.needsUpdate   = true;
+
+        mesh.rotation.y = Math.sin(t * 0.06) * 0.06;
+
+        renderer.render(scene, camera);
+      }
+      animate();
+    </script>
+
+    <!-- ── Slider live readout ───────────────────────────────────────── -->
+    <script>
+      function wireRange(id, valId, fmt) {
+        const el = document.getElementById(id);
+        const out = document.getElementById(valId);
+        if (!el || !out) return;
+        function update() {
+          const pct = ((el.value - el.min) / (el.max - el.min)) * 100;
+          el.style.setProperty("--val", pct + "%");
+          out.textContent = fmt ? fmt(el.value) : el.value;
+        }
+        el.addEventListener("input", update);
+        update();
+      }
+
+      wireRange("sl-gain",   "sl-gain-val",   v => v);
+      wireRange("sl-freq",   "sl-freq-val",   v => v >= 1000 ? (v / 1000).toFixed(1) + " kHz" : v + " Hz");
+      wireRange("sl-thresh", "sl-thresh-val", v => v + " dB");
+      wireRange("sl-cut",    "sl-cut-val",    v => v);
+      wireRange("sl-res",    "sl-res-val",    v => v);
+      wireRange("sl-depth",  "sl-depth-val",  v => v);
+      wireRange("comp-gain", "comp-gain-v",   v => v);
+      wireRange("comp-lpf",  "comp-lpf-v",    v => {
+        const hz = 20 * Math.pow(1000, v / 100);
+        return hz >= 1000 ? (hz / 1000).toFixed(1) + " kHz" : Math.round(hz) + " Hz";
+      });
+      wireRange("comp-mix",  "comp-mix-v",    v => v + "%");
+    </script>
+
+    <!-- ── Theme switcher JS ──────────────────────────────────────── -->
+    <script>
+      // Per-theme RGB tuples for Three.js — [accent R,G,B normalised 0-1], [dim R,G,B]
+      const THEME_COLORS = {
+        amber:    { accent:[1.00,0.667,0.00], dim:[0.28,0.10,0.00] },
+        phosphor: { accent:[0.00,1.000,0.25], dim:[0.00,0.22,0.06] },
+        cobalt:   { accent:[0.00,0.549,1.00], dim:[0.00,0.12,0.38] },
+        plasma:   { accent:[0.78,0.267,1.00], dim:[0.22,0.00,0.30] },
+        danger:   { accent:[1.00,0.172,0.22], dim:[0.32,0.00,0.04] },
+        matrix:   { accent:[0.00,1.000,0.53], dim:[0.00,0.24,0.10] },
+        solar:    { accent:[1.00,0.392,0.00], dim:[0.30,0.10,0.00] },
+        arctic:   { accent:[0.53,0.933,1.00], dim:[0.06,0.20,0.32] },
+      };
+
+      function setTheme(name, btn) {
+        // Update <html> class
+        const html = document.documentElement;
+        html.className = name === 'amber' ? '' : `theme-${name}`;
+
+        // Update switcher button states
+        document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('current'));
+        (btn || document.querySelector(`.theme-btn[data-theme="${name}"]`))
+          ?.classList.add('current');
+
+        // Push colors to Three.js
+        const tc = THEME_COLORS[name] || THEME_COLORS.amber;
+        window._themeAccent = tc.accent;
+        window._themeDim    = tc.dim;
+
+        // Update the token code-block — read computed values after class switch
+        requestAnimationFrame(() => {
+          const cs = getComputedStyle(html);
+          const get = v => cs.getPropertyValue(v).trim();
+          const el = id => document.getElementById(id);
+          if (el('cb-accent'))  el('cb-accent').textContent  = get('--accent');
+          if (el('cb-rose'))    el('cb-rose').textContent    = get('--rose');
+          if (el('cb-mint'))    el('cb-mint').textContent    = get('--mint');
+          if (el('cb-surface')) el('cb-surface').textContent = get('--surface');
+          if (el('cb-border'))  el('cb-border').textContent  = get('--border');
+          if (el('cb-text'))    el('cb-text').textContent    = get('--text');
+          if (el('cb-dim'))     el('cb-dim').textContent     = get('--dim');
+        });
+
+        // Persist
+        localStorage.setItem('ew-uilib-theme', name);
+      }
+
+      // Restore saved theme on load
+      (function () {
+        const saved = localStorage.getItem('ew-uilib-theme') || 'amber';
+        // Set theme colors immediately (Three.js may already be running)
+        const tc = THEME_COLORS[saved] || THEME_COLORS.amber;
+        window._themeAccent = tc.accent;
+        window._themeDim    = tc.dim;
+        // Apply class + seed code block (amber still needs the first read)
+        setTheme(saved);
+      })();
+    </script>
+  </body>
+</html>

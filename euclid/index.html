@@ -1,0 +1,904 @@
+<!-- /-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\ -->
+<!-- |                                                                         | -->
+<!-- \ @@@@@@@@  @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@@@@@   @@@ @@@      / -->
+<!-- - @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@ @@@      - -->
+<!-- / @@!       @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!  @@@  @@! !@@      \ -->
+<!-- | !@!       !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!  @!@  !@! @!!      | -->
+<!-- \ @!!!:!    @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!@@!@!    !@!@!       / -->
+<!-- - !!!!!:    !@!  !!!    !!!    !!@!@!    !@!  !!!  !!@!!!      @!!!       - -->
+<!-- / !!:       !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:         !!:        \ -->
+<!-- | :!:       :!:  !:!    :!:    :!:  !:!  :!:  !:!  :!:         :!:        | -->
+<!-- \  :: ::::   ::   ::     ::    ::   :::  ::::: ::   ::          ::        / -->
+<!-- - : :: ::   ::    :      :      :   : :   : :  :    :           :         - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \ @@@  @@@  @@@   @@@@@@   @@@@@@@    @@@@@@   @@@  @@@  @@@  @@@@@@@     / -->
+<!-- - @@@  @@@  @@@  @@@@@@@@  @@@@@@@@  @@@@@@@   @@@  @@@  @@@  @@@@@@@@    - -->
+<!-- / @@!  @@!  @@!  @@!  @@@  @@!  @@@  !@@       @@!  @@@  @@!  @@!  @@@    \ -->
+<!-- | !@!  !@!  !@!  !@!  @!@  !@!  @!@  !@!       !@!  @!@  !@!  !@!  @!@    | -->
+<!-- \ @!!  !!@  @!@  @!@  !@!  @!@!!@!   !!@@!!    @!@!@!@!  !!@  @!@@!@!     / -->
+<!-- - !@!  !!!  !@!  !@!  !!!  !!@!@!     !!@!!!   !!!@!!!!  !!!  !!@!!!      - -->
+<!-- / !!:  !!:  !!:  !!:  !!!  !!: :!!        !:!  !!:  !!!  !!:  !!:         \ -->
+<!-- | :!:  :!:  :!:  :!:  !:!  :!:  !:!      !:!   :!:  !:!  :!:  :!:         | -->
+<!-- \  :::: :: :::   ::::: ::  ::   :::  :::: ::   ::   :::   ::   ::         / -->
+<!-- -   :: :  : :     : :  :    :   : :  :: : :     :   : :  :     :          - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ENTROPY WORSHIP EUCLID</title>
+    <meta name="description" content="ENTROPY WORSHIP EUCLID - Euclidean Rhythm Generator" />
+    <meta name="keywords" content="Dark, Techno, Electronic, Industrial, Euclidean, Rhythm, Bjorklund, Sequencer, Experimental, Music" />
+    <meta itemprop="name" content="ENTROPY WORSHIP EUCLID" />
+    <meta itemprop="description" content="Euclidean Rhythm Generator" />
+    <meta name="twitter:url" content="https://www.entropyworship.com" />
+    <meta name="twitter:site" content="@EntropyWorship" />
+    <meta name="twitter:title" content="ENTROPY WORSHIP EUCLID" />
+    <meta name="twitter:description" content="Euclidean Rhythm Generator" />
+    <meta name="twitter:creator" content="@EntropyWorship" />
+    <meta property="og:title" content="ENTROPY WORSHIP EUCLID" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://www.entropyworship.com" />
+    <meta property="og:description" content="Euclidean Rhythm Generator" />
+    <meta property="og:site_name" content="ENTROPY WORSHIP EUCLID" />
+
+    <!-- Augmented UI -->
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css" />
+    <!-- Parent SciUI CSS -->
+    <link href="../styles/styles.css" rel="stylesheet" />
+    <link href="../styles/cyberpunk.css" rel="stylesheet" />
+    <link href="../styles/style_overrides.css" rel="stylesheet" />
+
+    <style>
+      /* ── Global ── */
+      body {
+        background-color: #00060e;
+        color: white;
+        padding: 10px 0;
+        font-family: "VT323-Regular", monospace;
+      }
+
+      /* ── Layout ── */
+      .ew-container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 0 12px;
+      }
+
+      /* ── Header ── */
+      .header-panel {
+        background: linear-gradient(160deg, rgba(30, 5, 5, 0.92) 0%, rgba(10, 5, 15, 0.92) 100%);
+        padding: 14px 22px;
+        margin-bottom: 16px;
+        --aug-border-all: 2px;
+        --aug-border-bg: rgba(232, 15, 15, 0.65);
+        --aug-inlay-all: 5px;
+        --aug-inlay-bg: rgba(200, 0, 0, 0.07);
+        --aug-tl: 28px;
+        --aug-br: 28px;
+        --aug-tr: 10px;
+        --aug-bl: 10px;
+      }
+      .header-panel a {
+        text-decoration: none;
+      }
+      .heading {
+        color: #e80f0fcc;
+        font-size: 1.5rem;
+        margin: 0 0 2px;
+        letter-spacing: 0.08em;
+      }
+      .subheading {
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.55);
+        margin: 0;
+        letter-spacing: 0.1em;
+      }
+
+      /* ── Transport ── */
+      #transport {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        padding: 10px 16px;
+        margin-bottom: 16px;
+        background: rgba(4, 4, 14, 0.9);
+        --aug-border-all: 2px;
+        --aug-border-bg: rgba(160, 0, 0, 0.55);
+        --aug-inlay-all: 4px;
+        --aug-inlay-bg: rgba(180, 0, 0, 0.05);
+        --aug-tl: 18px;
+        --aug-br: 18px;
+        --aug-tr: 6px;
+        --aug-bl: 6px;
+      }
+
+      /* ── Augmented Buttons ── */
+      .aug-btn {
+        background: rgba(8, 2, 2, 0.8);
+        color: rgba(220, 80, 80, 1);
+        border: none;
+        cursor: pointer;
+        padding: 5px 18px;
+        font-family: "VT323-Regular", monospace;
+        font-size: 17px;
+        letter-spacing: 0.12em;
+        --aug-border-all: 2px;
+        --aug-border-bg: rgba(200, 0, 0, 0.5);
+        --aug-tl: 11px;
+        --aug-br: 11px;
+      }
+      .aug-btn:hover {
+        --aug-border-bg: rgba(255, 60, 60, 0.95);
+        color: #ff5050;
+      }
+      .aug-btn:active {
+        --aug-border-bg: rgba(255, 255, 255, 0.4);
+        color: white;
+      }
+      .aug-btn.warning {
+        color: #ffdd00;
+        --aug-border-bg: rgba(200, 160, 0, 0.6);
+      }
+      .aug-btn.warning:hover {
+        --aug-border-bg: rgba(255, 220, 0, 0.9);
+        color: #ffe44d;
+      }
+      .aug-btn.secondary {
+        color: rgba(180, 180, 180, 0.7);
+        --aug-border-bg: rgba(100, 100, 100, 0.4);
+      }
+      .aug-btn.secondary:hover {
+        --aug-border-bg: rgba(160, 160, 160, 0.7);
+        color: rgba(220, 220, 220, 0.9);
+      }
+
+      /* ── BPM Group ── */
+      .bpm-group {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 12px;
+        background: rgba(4, 4, 14, 0.9);
+        --aug-border-all: 2px;
+        --aug-border-bg: rgba(160, 0, 0, 0.4);
+        --aug-tr: 12px;
+        --aug-bl: 12px;
+      }
+      .bpm-label {
+        font-size: 18px;
+        color: rgba(255, 255, 255, 0.55);
+        letter-spacing: 0.08em;
+      }
+      #bpm-input {
+        width: 58px;
+        background: transparent;
+        color: white;
+        border: none;
+        padding: 2px 4px;
+        font-family: "VT323-Regular", monospace;
+        font-size: 20px;
+        outline: none;
+        border-bottom: 1px solid rgba(200, 0, 0, 0.4);
+      }
+      #bpm-input:focus {
+        border-bottom-color: rgba(255, 60, 60, 0.8);
+      }
+
+      /* ── Beat dot ── */
+      #beat-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background: #ff2020;
+        border-radius: 50%;
+        opacity: 0;
+        flex-shrink: 0;
+        box-shadow: 0 0 6px #ff2020;
+      }
+
+      /* ── Track Grid ── */
+      .tracks-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 12px;
+        padding-bottom: 16px;
+      }
+
+      /* ── Track Cards ── */
+      .track-card {
+        background: rgba(8, 8, 18, 0.9);
+        padding: 12px;
+        --aug-border-all: 2px;
+        --aug-border-bg: rgba(200, 0, 0, 0.45);
+        --aug-inlay-all: 4px;
+        --aug-inlay-bg: rgba(200, 0, 0, 0.05);
+        --aug-tl: 20px;
+        --aug-br: 20px;
+      }
+      .track-0 { --aug-border-bg: rgba(255,  32,  32, 0.65); --aug-inlay-bg: rgba(255,  32,  32, 0.06); }
+      .track-1 { --aug-border-bg: rgba(  0, 212, 255, 0.65); --aug-inlay-bg: rgba(  0, 212, 255, 0.06); }
+      .track-2 { --aug-border-bg: rgba(255, 220,   0, 0.65); --aug-inlay-bg: rgba(255, 220,   0, 0.06); }
+      .track-3 { --aug-border-bg: rgba(255,   0, 170, 0.65); --aug-inlay-bg: rgba(255,   0, 170, 0.06); }
+      .track-4 { --aug-border-bg: rgba(255, 136,   0, 0.65); --aug-inlay-bg: rgba(255, 136,   0, 0.06); }
+      .track-5 { --aug-border-bg: rgba(  0, 255, 136, 0.65); --aug-inlay-bg: rgba(  0, 255, 136, 0.06); }
+
+      /* ── Canvas ── */
+      .track-canvas {
+        display: block;
+        margin: 0 auto 8px;
+      }
+
+      /* ── Track Name ── */
+      .track-name {
+        font-size: 22px;
+        text-align: center;
+        letter-spacing: 0.14em;
+        margin-bottom: 8px;
+      }
+
+      /* ── Controls ── */
+      .ctrl-row {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 5px;
+      }
+      .ctrl-label {
+        font-size: 14px;
+        width: 52px;
+        flex-shrink: 0;
+        color: rgba(255, 255, 255, 0.45);
+        letter-spacing: 0.06em;
+      }
+      .ctrl-val {
+        font-size: 14px;
+        width: 28px;
+        text-align: right;
+        flex-shrink: 0;
+        color: rgba(220, 80, 80, 1);
+      }
+
+      /* ── Range Sliders ── */
+      input[type="range"] {
+        flex: 1;
+        -webkit-appearance: none;
+        height: 3px;
+        background: rgba(180, 0, 0, 0.3);
+        outline: none;
+        border-radius: 0;
+        cursor: pointer;
+      }
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 10px;
+        height: 10px;
+        background: #cc1111;
+        border-radius: 0;
+        cursor: pointer;
+        clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+      }
+      input[type="range"]::-moz-range-thumb {
+        width: 10px;
+        height: 10px;
+        background: #cc1111;
+        border-radius: 0;
+        border: none;
+        cursor: pointer;
+      }
+
+      /* ── Voice Select ── */
+      .voice-select {
+        flex: 1;
+        background-color: rgba(5, 5, 16, 0.9);
+        color: rgba(220, 80, 80, 1);
+        border: 1px solid rgba(180, 0, 0, 0.35);
+        font-family: "VT323-Regular", monospace;
+        font-size: 14px;
+        padding: 2px 4px;
+        outline: none;
+      }
+      .voice-select:focus {
+        border-color: rgba(255, 60, 60, 0.7);
+      }
+
+      /* ── Mute Button ── */
+      .btn-mute {
+        font-size: 13px;
+        padding: 2px 10px;
+        line-height: 1.3;
+        flex-shrink: 0;
+        --aug-tl: 7px;
+        --aug-br: 7px;
+      }
+      .btn-mute.muted {
+        opacity: 0.28;
+      }
+
+      /* ── Beat flash ── */
+      @keyframes beat-flash {
+        0%   { opacity: 1; }
+        100% { opacity: 0; }
+      }
+      .beat-flash {
+        animation: beat-flash 0.08s ease-out forwards;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="ew-container">
+
+      <!-- Header -->
+      <div data-augmented-ui="tl-clip br-clip both" class="header-panel">
+        <a href="../index.html">
+          <h1 class="heading cyber-glitch-2">ENTROPY WORSHIP</h1>
+        </a>
+        <h2 class="subheading">EUCLID build 1.0</h2>
+      </div>
+
+      <!-- Transport -->
+      <div data-augmented-ui="tl-clip br-clip both" id="transport">
+        <button id="startStop" data-augmented-ui="tl-clip br-clip border" class="aug-btn">START</button>
+        <div data-augmented-ui="tr-clip bl-clip border" class="bpm-group">
+          <span class="bpm-label">BPM</span>
+          <input type="number" id="bpm-input" value="120" min="20" max="300" />
+        </div>
+        <button id="randomizeBtn" data-augmented-ui="tl-clip br-clip border" class="aug-btn warning">RANDOMIZE</button>
+        <button id="resetBtn"     data-augmented-ui="tl-clip br-clip border" class="aug-btn secondary">RESET</button>
+        <span id="beat-dot"></span>
+      </div>
+
+      <!-- Track Grid -->
+      <div class="tracks-grid" id="tracksGrid"></div>
+
+    </div>
+
+    <script>
+      // ─────────────────────────────────────────────────────────────────────────────
+      // EUCLIDEAN ALGORITHM  (Bresenham / Bjorklund equivalent)
+      // Distributes `beats` pulses as evenly as possible across `steps` slots,
+      // then rotates the result by `offset`.
+      // ─────────────────────────────────────────────────────────────────────────────
+      function euclidean(beats, steps, offset) {
+        beats = Math.max(0, Math.min(Math.round(beats), steps));
+        steps = Math.max(1, Math.round(steps));
+        offset = ((Math.round(offset) % steps) + steps) % steps;
+
+        const pattern = [];
+        let bucket = 0;
+        for (let i = 0; i < steps; i++) {
+          bucket += beats;
+          if (bucket >= steps) {
+            pattern.push(1);
+            bucket -= steps;
+          } else {
+            pattern.push(0);
+          }
+        }
+        return pattern.slice(offset).concat(pattern.slice(0, offset));
+      }
+
+      // ─────────────────────────────────────────────────────────────────────────────
+      // TRACK DATA
+      // ─────────────────────────────────────────────────────────────────────────────
+      const TRACK_COLORS = [
+        "#ff2020",
+        "#00d4ff",
+        "#ffdd00",
+        "#ff00aa",
+        "#ff8800",
+        "#00ff88",
+      ];
+
+      const VOICE_OPTIONS = ["kick", "snare", "hihat", "clap", "ride", "sub"];
+
+      const DEFAULTS = [
+        { name: "KICK",  steps: 16, beats: 4, offset: 0, voice: "kick",  muted: false, vol: 0.82 },
+        { name: "SNARE", steps: 16, beats: 3, offset: 4, voice: "snare", muted: false, vol: 0.72 },
+        { name: "HIHAT", steps: 16, beats: 7, offset: 2, voice: "hihat", muted: false, vol: 0.5  },
+        { name: "CLAP",  steps: 12, beats: 3, offset: 0, voice: "clap",  muted: false, vol: 0.65 },
+        { name: "RIDE",  steps: 24, beats: 7, offset: 0, voice: "ride",  muted: false, vol: 0.42 },
+        { name: "SUB",   steps:  8, beats: 2, offset: 1, voice: "sub",   muted: false, vol: 0.9  },
+      ];
+
+      let tracks = DEFAULTS.map((t) => ({ ...t }));
+
+      // ─────────────────────────────────────────────────────────────────────────────
+      // WEB AUDIO SYNTHESIS
+      // ─────────────────────────────────────────────────────────────────────────────
+      let audioCtx = null;
+      let masterGain = null;
+
+      function initAudio() {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          masterGain = audioCtx.createGain();
+          masterGain.gain.value = 0.85;
+          masterGain.connect(audioCtx.destination);
+        }
+        if (audioCtx.state === "suspended") audioCtx.resume();
+      }
+
+      function makeNoiseBuffer(duration) {
+        const len = Math.ceil(audioCtx.sampleRate * duration);
+        const buf = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+        const d = buf.getChannelData(0);
+        for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+        return buf;
+      }
+
+      function noiseSource(duration) {
+        const src = audioCtx.createBufferSource();
+        src.buffer = makeNoiseBuffer(duration);
+        return src;
+      }
+
+      function triggerKick(t, vol) {
+        const osc = audioCtx.createOscillator();
+        osc.frequency.setValueAtTime(100, t);
+        osc.frequency.exponentialRampToValueAtTime(38, t + 0.28);
+        const g = audioCtx.createGain();
+        g.gain.setValueAtTime(vol, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.42);
+        osc.connect(g);
+        g.connect(masterGain);
+        osc.start(t);
+        osc.stop(t + 0.45);
+
+        const ns = noiseSource(0.04);
+        const hp = audioCtx.createBiquadFilter();
+        hp.type = "highpass";
+        hp.frequency.value = 90;
+        const ng = audioCtx.createGain();
+        ng.gain.setValueAtTime(vol * 0.35, t);
+        ng.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
+        ns.connect(hp);
+        hp.connect(ng);
+        ng.connect(masterGain);
+        ns.start(t);
+        ns.stop(t + 0.04);
+      }
+
+      function triggerSnare(t, vol) {
+        const ns = noiseSource(0.22);
+        const bp = audioCtx.createBiquadFilter();
+        bp.type = "bandpass";
+        bp.frequency.value = 1500;
+        bp.Q.value = 0.6;
+        const g = audioCtx.createGain();
+        g.gain.setValueAtTime(vol * 0.9, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+        ns.connect(bp);
+        bp.connect(g);
+        g.connect(masterGain);
+        ns.start(t);
+        ns.stop(t + 0.22);
+
+        const osc = audioCtx.createOscillator();
+        osc.frequency.value = 190;
+        const og = audioCtx.createGain();
+        og.gain.setValueAtTime(vol * 0.45, t);
+        og.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+        osc.connect(og);
+        og.connect(masterGain);
+        osc.start(t);
+        osc.stop(t + 0.12);
+      }
+
+      function triggerHihat(t, vol) {
+        const dur = 0.065;
+        const ns = noiseSource(dur);
+        const hp = audioCtx.createBiquadFilter();
+        hp.type = "highpass";
+        hp.frequency.value = 7500;
+        const bp = audioCtx.createBiquadFilter();
+        bp.type = "bandpass";
+        bp.frequency.value = 10500;
+        bp.Q.value = 0.9;
+        const g = audioCtx.createGain();
+        g.gain.setValueAtTime(vol * 0.65, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+        ns.connect(hp);
+        hp.connect(bp);
+        bp.connect(g);
+        g.connect(masterGain);
+        ns.start(t);
+        ns.stop(t + dur);
+      }
+
+      function triggerClap(t, vol) {
+        for (let i = 0; i < 3; i++) {
+          const dt = t + i * 0.011;
+          const ns = noiseSource(0.07);
+          const bp = audioCtx.createBiquadFilter();
+          bp.type = "bandpass";
+          bp.frequency.value = 1200;
+          bp.Q.value = 0.45;
+          const g = audioCtx.createGain();
+          g.gain.setValueAtTime(vol * 0.55, dt);
+          g.gain.exponentialRampToValueAtTime(0.001, dt + 0.09);
+          ns.connect(bp);
+          bp.connect(g);
+          g.connect(masterGain);
+          ns.start(dt);
+          ns.stop(dt + 0.09);
+        }
+      }
+
+      function triggerRide(t, vol) {
+        const dur = 0.38;
+        const ns = noiseSource(dur);
+        const bp = audioCtx.createBiquadFilter();
+        bp.type = "bandpass";
+        bp.frequency.value = 4600;
+        bp.Q.value = 2.2;
+        const hp = audioCtx.createBiquadFilter();
+        hp.type = "highpass";
+        hp.frequency.value = 3200;
+        const g = audioCtx.createGain();
+        g.gain.setValueAtTime(vol * 0.45, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+        ns.connect(bp);
+        bp.connect(hp);
+        hp.connect(g);
+        g.connect(masterGain);
+        ns.start(t);
+        ns.stop(t + dur);
+      }
+
+      function triggerSub(t, vol) {
+        const osc = audioCtx.createOscillator();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(50, t);
+        osc.frequency.exponentialRampToValueAtTime(38, t + 0.35);
+        const g = audioCtx.createGain();
+        g.gain.setValueAtTime(vol, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.52);
+        osc.connect(g);
+        g.connect(masterGain);
+        osc.start(t);
+        osc.stop(t + 0.55);
+      }
+
+      function triggerVoice(voice, vol, t) {
+        if (!audioCtx) return;
+        switch (voice) {
+          case "kick":  triggerKick(t, vol);  break;
+          case "snare": triggerSnare(t, vol); break;
+          case "hihat": triggerHihat(t, vol); break;
+          case "clap":  triggerClap(t, vol);  break;
+          case "ride":  triggerRide(t, vol);  break;
+          case "sub":   triggerSub(t, vol);   break;
+        }
+      }
+
+      // ─────────────────────────────────────────────────────────────────────────────
+      // SEQUENCER
+      // ─────────────────────────────────────────────────────────────────────────────
+      let isPlaying = false;
+      let currentStep = 0;
+      let timerId = null;
+      let bpm = 120;
+      const beatDot = document.getElementById("beat-dot");
+
+      function stepDurationMs() {
+        return (60 / bpm / 4) * 1000;
+      }
+
+      function tick() {
+        const now = audioCtx.currentTime;
+        let anyHit = false;
+        tracks.forEach((track) => {
+          if (track.muted) return;
+          const pattern = euclidean(track.beats, track.steps, track.offset);
+          if (pattern[currentStep % track.steps] === 1) {
+            triggerVoice(track.voice, track.vol, now);
+            anyHit = true;
+          }
+        });
+        currentStep++;
+
+        if (anyHit) {
+          beatDot.style.opacity = "1";
+          beatDot.classList.remove("beat-flash");
+          void beatDot.offsetWidth;
+          beatDot.classList.add("beat-flash");
+        }
+      }
+
+      function startSequencer() {
+        initAudio();
+        isPlaying = true;
+        currentStep = 0;
+        timerId = setInterval(tick, stepDurationMs());
+        document.getElementById("startStop").textContent = "STOP";
+      }
+
+      function stopSequencer() {
+        isPlaying = false;
+        clearInterval(timerId);
+        timerId = null;
+        currentStep = 0;
+        document.getElementById("startStop").textContent = "START";
+      }
+
+      document.getElementById("startStop").addEventListener("click", () => {
+        if (isPlaying) stopSequencer();
+        else startSequencer();
+      });
+
+      document.getElementById("bpm-input").addEventListener("input", (e) => {
+        bpm = Math.max(20, Math.min(300, parseInt(e.target.value) || 120));
+        if (isPlaying) {
+          clearInterval(timerId);
+          timerId = setInterval(tick, stepDurationMs());
+        }
+      });
+
+      // ─────────────────────────────────────────────────────────────────────────────
+      // CANVAS RENDERING
+      // ─────────────────────────────────────────────────────────────────────────────
+      const canvases = [];
+
+      function drawRing(canvas, track, trackIdx) {
+        const c = canvas.getContext("2d");
+        const W = canvas.width;
+        const H = canvas.height;
+        const cx = W / 2;
+        const cy = H / 2;
+        const R = W * 0.36;
+        const color = TRACK_COLORS[trackIdx % TRACK_COLORS.length];
+
+        c.clearRect(0, 0, W, H);
+
+        c.beginPath();
+        c.arc(cx, cy, R + 16, 0, Math.PI * 2);
+        c.fillStyle = "rgba(0, 3, 10, 0.75)";
+        c.fill();
+
+        c.beginPath();
+        c.arc(cx, cy, R, 0, Math.PI * 2);
+        c.strokeStyle = "rgba(255,255,255,0.07)";
+        c.lineWidth = 1;
+        c.stroke();
+
+        const pattern = euclidean(track.beats, track.steps, track.offset);
+        const n = track.steps;
+        const curIdx = isPlaying ? currentStep % n : -1;
+
+        if (isPlaying && curIdx >= 0) {
+          const a = (curIdx / n) * Math.PI * 2 - Math.PI / 2;
+          c.beginPath();
+          c.moveTo(cx, cy);
+          c.lineTo(cx + R * Math.cos(a), cy + R * Math.sin(a));
+          c.strokeStyle = "rgba(255,255,255,0.14)";
+          c.lineWidth = 1;
+          c.stroke();
+        }
+
+        const beatR  = Math.max(2.5, Math.min(7, 100 / n));
+        const emptyR = Math.max(1.4, Math.min(3.2, 55 / n));
+
+        for (let i = 0; i < n; i++) {
+          const a = (i / n) * Math.PI * 2 - Math.PI / 2;
+          const x = cx + R * Math.cos(a);
+          const y = cy + R * Math.sin(a);
+          const isBeat = pattern[i] === 1;
+          const isCur  = i === curIdx;
+
+          c.shadowBlur = 0;
+
+          if (isCur) {
+            c.beginPath();
+            c.arc(x, y, isBeat ? beatR + 2 : emptyR + 2, 0, Math.PI * 2);
+            c.fillStyle = "rgba(255,255,255,0.95)";
+            c.shadowColor = "white";
+            c.shadowBlur = 14;
+            c.fill();
+            c.shadowBlur = 0;
+          } else if (isBeat) {
+            c.beginPath();
+            c.arc(x, y, beatR, 0, Math.PI * 2);
+            c.fillStyle = color;
+            c.shadowColor = color;
+            c.shadowBlur = 16;
+            c.fill();
+            c.shadowBlur = 0;
+          } else {
+            c.beginPath();
+            c.arc(x, y, emptyR, 0, Math.PI * 2);
+            c.fillStyle = "rgba(255,255,255,0.16)";
+            c.fill();
+          }
+        }
+
+        c.shadowBlur = 0;
+        c.font = "15px VT323-Regular, monospace";
+        c.fillStyle = "rgba(255,255,255,0.45)";
+        c.textAlign = "center";
+        c.textBaseline = "middle";
+        c.fillText(`${track.beats}:${track.steps}`, cx, cy);
+      }
+
+      function animLoop() {
+        tracks.forEach((track, i) => {
+          if (canvases[i]) drawRing(canvases[i], track, i);
+        });
+        requestAnimationFrame(animLoop);
+      }
+
+      // ─────────────────────────────────────────────────────────────────────────────
+      // BUILD TRACK UI
+      // ─────────────────────────────────────────────────────────────────────────────
+      function buildTrackCards() {
+        const grid = document.getElementById("tracksGrid");
+        grid.innerHTML = "";
+        canvases.length = 0;
+
+        tracks.forEach((track, i) => {
+          const color = TRACK_COLORS[i % TRACK_COLORS.length];
+
+          // Canvas
+          const canvas = document.createElement("canvas");
+          canvas.width = 180;
+          canvas.height = 180;
+          canvas.className = "track-canvas";
+          canvases[i] = canvas;
+
+          // Track name
+          const nameEl = document.createElement("div");
+          nameEl.className = "track-name";
+          nameEl.style.color = color;
+          nameEl.textContent = track.name;
+
+          // ── Voice selector + Mute ──
+          const voiceRow = document.createElement("div");
+          voiceRow.className = "ctrl-row";
+
+          const voiceLbl = document.createElement("span");
+          voiceLbl.className = "ctrl-label";
+          voiceLbl.textContent = "VOICE";
+
+          const voiceSel = document.createElement("select");
+          voiceSel.className = "voice-select";
+          VOICE_OPTIONS.forEach((v) => {
+            const opt = document.createElement("option");
+            opt.value = v;
+            opt.textContent = v.toUpperCase();
+            if (v === track.voice) opt.selected = true;
+            voiceSel.appendChild(opt);
+          });
+          voiceSel.addEventListener("change", (e) => {
+            tracks[i].voice = e.target.value;
+          });
+
+          const muteBtn = document.createElement("button");
+          muteBtn.setAttribute("data-augmented-ui", "tl-clip br-clip border");
+          muteBtn.className = `aug-btn btn-mute${track.muted ? " muted" : ""}`;
+          muteBtn.style.color = color;
+          muteBtn.style.setProperty("--aug-border-bg", color);
+          muteBtn.textContent = track.muted ? "MUTED" : "MUTE";
+          muteBtn.addEventListener("click", () => {
+            tracks[i].muted = !tracks[i].muted;
+            muteBtn.classList.toggle("muted", tracks[i].muted);
+            muteBtn.textContent = tracks[i].muted ? "MUTED" : "MUTE";
+          });
+
+          voiceRow.append(voiceLbl, voiceSel, muteBtn);
+
+          // ── Helper: build a labelled slider ──
+          function mkSlider(min, max, step, value) {
+            const sl = document.createElement("input");
+            sl.type  = "range";
+            sl.min   = min;
+            sl.max   = max;
+            sl.step  = step;
+            sl.value = value;
+            return sl;
+          }
+          function mkVal(txt) {
+            const sp = document.createElement("span");
+            sp.className = "ctrl-val";
+            sp.textContent = txt;
+            return sp;
+          }
+          function mkRow(labelTxt, slider, valSpan) {
+            const row = document.createElement("div");
+            row.className = "ctrl-row";
+            const lbl = document.createElement("span");
+            lbl.className = "ctrl-label";
+            lbl.textContent = labelTxt;
+            row.append(lbl, slider, valSpan);
+            return row;
+          }
+
+          const stepsSlider  = mkSlider(4, 32, 1, track.steps);
+          const stepsVal     = mkVal(track.steps);
+          const beatsSlider  = mkSlider(0, track.steps, 1, track.beats);
+          const beatsVal     = mkVal(track.beats);
+          const offsetSlider = mkSlider(0, Math.max(0, track.steps - 1), 1, track.offset);
+          const offsetVal    = mkVal(track.offset);
+          const volSlider    = mkSlider(0, 1, 0.01, track.vol);
+          const volVal       = mkVal(track.vol.toFixed(2));
+
+          stepsSlider.addEventListener("input", () => {
+            const n = Math.round(parseFloat(stepsSlider.value));
+            tracks[i].steps = n;
+            stepsVal.textContent = n;
+
+            beatsSlider.max = n;
+            if (tracks[i].beats > n) {
+              tracks[i].beats = n;
+              beatsSlider.value = n;
+              beatsVal.textContent = n;
+            }
+
+            const offMax = Math.max(0, n - 1);
+            offsetSlider.max = offMax;
+            if (tracks[i].offset >= n) {
+              tracks[i].offset = 0;
+              offsetSlider.value = 0;
+              offsetVal.textContent = 0;
+            }
+          });
+
+          beatsSlider.addEventListener("input", () => {
+            tracks[i].beats = Math.round(parseFloat(beatsSlider.value));
+            beatsVal.textContent = tracks[i].beats;
+          });
+
+          offsetSlider.addEventListener("input", () => {
+            tracks[i].offset = Math.round(parseFloat(offsetSlider.value));
+            offsetVal.textContent = tracks[i].offset;
+          });
+
+          volSlider.addEventListener("input", () => {
+            tracks[i].vol = parseFloat(volSlider.value);
+            volVal.textContent = tracks[i].vol.toFixed(2);
+          });
+
+          const stepsRow  = mkRow("STEPS",  stepsSlider,  stepsVal);
+          const beatsRow  = mkRow("BEATS",  beatsSlider,  beatsVal);
+          const offsetRow = mkRow("OFFSET", offsetSlider, offsetVal);
+          const volRow    = mkRow("VOL",    volSlider,    volVal);
+
+          // Assemble card with augmented-ui
+          const card = document.createElement("div");
+          card.setAttribute("data-augmented-ui", "tl-clip br-clip both");
+          card.className = `track-card track-${i}`;
+          card.append(canvas, nameEl, voiceRow, stepsRow, beatsRow, offsetRow, volRow);
+
+          grid.appendChild(card);
+        });
+      }
+
+      // ─────────────────────────────────────────────────────────────────────────────
+      // RANDOMIZE / RESET
+      // ─────────────────────────────────────────────────────────────────────────────
+      document.getElementById("randomizeBtn").addEventListener("click", () => {
+        tracks.forEach((t) => {
+          t.steps  = Math.floor(Math.random() * 25) + 8;
+          t.beats  = Math.floor(Math.random() * t.steps) + 1;
+          t.offset = Math.floor(Math.random() * t.steps);
+        });
+        buildTrackCards();
+      });
+
+      document.getElementById("resetBtn").addEventListener("click", () => {
+        tracks = DEFAULTS.map((t) => ({ ...t }));
+        buildTrackCards();
+      });
+
+      // ─────────────────────────────────────────────────────────────────────────────
+      // INIT
+      // ─────────────────────────────────────────────────────────────────────────────
+      buildTrackCards();
+      animLoop();
+    </script>
+  </body>
+</html>
