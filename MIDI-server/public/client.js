@@ -140,7 +140,7 @@ function initSynths(type) {
   currentSynthType = type;
 
   initMixerChannels();
-  if (typeof dmConnectChannels === "function") dmConnectChannels();
+  try { if (typeof dmConnectChannels === "function") dmConnectChannels(); } catch (_) {}
 
   if (lfoRafId) { stopLFO(); }
   if (padSynth) {
@@ -601,24 +601,6 @@ function initUI() {
       ws.send(JSON.stringify({ type: "setPrivate", private: roomPrivate }));
   });
 
-  // Auto-request MIDI access
-  if (navigator.requestMIDIAccess) {
-    navigator
-      .requestMIDIAccess({ sysex: true })
-      .then((access) => {
-        populateMidiDevices(access);
-        populateMidiOutputs(access);
-        populateChannelSelects();
-        access.onstatechange = () => {
-          populateMidiDevices(access);
-          populateMidiOutputs(access);
-        };
-      })
-      .catch(() => {
-        // MIDI denied — selects stay hidden, no hard failure
-      });
-  }
-
   // Virtual keyboard
   const vkbCh = document.getElementById("vkb-ch");
   for (let i = 1; i <= 16; i++) {
@@ -650,6 +632,24 @@ let thruEnabled = false;
 let filterChannel = 0;
 let remapChannel = 0;
 let clockTickTimes = [];
+
+// ── Auto-request MIDI access (runs at load, no unlock needed) ──
+if (navigator.requestMIDIAccess) {
+  navigator
+    .requestMIDIAccess({ sysex: true })
+    .then((access) => {
+      populateMidiDevices(access);
+      populateMidiOutputs(access);
+      populateChannelSelects();
+      access.onstatechange = () => {
+        populateMidiDevices(access);
+        populateMidiOutputs(access);
+      };
+    })
+    .catch(() => {
+      // MIDI denied — selects stay hidden, no hard failure
+    });
+}
 
 function midiNoteName(n) {
   return (
