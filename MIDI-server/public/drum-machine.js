@@ -53,8 +53,8 @@ for (const [kit, files] of Object.entries(DM_KITS)) {
 const DM_INSTRUMENTS = [
   { name: "KICK",   sample: "kick",       file: "909/kick-1.wav",       note: 36 },
   { name: "SNARE",  sample: "snare",      file: "909/snare-1.wav",      note: 38 },
-  { name: "TOM-L",  sample: "tomL",       file: "909/tom-low-1.wav",    note: 45 },
-  { name: "TOM-H",  sample: "tomH",       file: "909/tom-high-1.wav",   note: 50 },
+  { name: "TOM-L",  sample: "tomL",       file: "909/tom-low-1.wav",    note: 43 },
+  { name: "TOM-H",  sample: "tomH",       file: "909/tom-high-1.wav",   note: 48 },
   { name: "CLAP",   sample: "clap",       file: "909/clap-1.wav",       note: 39 },
   { name: "HH-O",   sample: "hihatOpen",  file: "909/hihat-open-1.wav", note: 46 },
   { name: "HH-C",   sample: "hihatClose", file: "909/hihat-close-1.wav",note: 42 },

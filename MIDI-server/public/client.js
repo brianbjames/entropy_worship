@@ -925,7 +925,7 @@ function handleSysMsg(status, bytes, remote) {
     }
     case 0xfa:
       logMidiRow("Clock", null, "Start", "", remote);
-      if (clockSyncEnabled && !remote && ws.readyState === WebSocket.OPEN)
+      if (!remote && ws.readyState === WebSocket.OPEN)
         ws.send(JSON.stringify({ type: "play" }));
       break;
     case 0xfb:
@@ -936,7 +936,7 @@ function handleSysMsg(status, bytes, remote) {
       const el = document.getElementById("clock-bpm");
       if (el) el.textContent = "";
       logMidiRow("Clock", null, "Stop", "", remote);
-      if (clockSyncEnabled && !remote && ws.readyState === WebSocket.OPEN)
+      if (!remote && ws.readyState === WebSocket.OPEN)
         ws.send(JSON.stringify({ type: "stop" }));
       break;
     }
