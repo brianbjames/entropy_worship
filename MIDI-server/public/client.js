@@ -923,11 +923,25 @@ function handleSysMsg(status, bytes, remote) {
       }
       return;
     }
-    case 0xfa:
+    case 0xfa: {
       logMidiRow("Clock", null, "Start", "", remote);
-      if (!remote && ws.readyState === WebSocket.OPEN)
-        ws.send(JSON.stringify({ type: "play" }));
+      if (!remote && ws.readyState === WebSocket.OPEN) {
+        // Sync BPM from clock pulses if available
+        if (clockTickTimes.length >= 4) {
+          const span = clockTickTimes[clockTickTimes.length - 1] - clockTickTimes[0];
+          const bpm = Math.round(((clockTickTimes.length - 1) / span) * 60000 / 24);
+          if (bpm >= 60 && bpm <= 200) {
+            state.bpm = bpm;
+            document.getElementById("bpm").value = bpm;
+            document.getElementById("bpm-val").textContent = bpm;
+            ws.send(JSON.stringify({ type: "bpm", bpm }));
+          }
+        }
+        // Start immediately — tell server to use epoch = now
+        ws.send(JSON.stringify({ type: "play", epoch: Date.now() + serverTimeOffset }));
+      }
       break;
+    }
     case 0xfb:
       logMidiRow("Clock", null, "Continue", "", remote);
       break;

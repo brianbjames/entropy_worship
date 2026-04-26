@@ -199,7 +199,9 @@ wss.on("connection", (ws, req) => {
 
       case "play": {
         room.seqState.playing = true;
-        room.seqState.epoch = Date.now() + 300;
+        // Use client-provided epoch for hardware sync, otherwise 300ms ahead
+        room.seqState.epoch =
+          typeof msg.epoch === "number" ? msg.epoch : Date.now() + 300;
         broadcastAll(room, {
           type: "play",
           epoch: room.seqState.epoch,
