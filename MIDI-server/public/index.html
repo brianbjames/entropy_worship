@@ -38,7 +38,11 @@
     />
     <link rel="stylesheet" href="style.css" />
     <script type="importmap">
-      {"imports": {"three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"
+        }
+      }
     </script>
   </head>
   <body>
@@ -169,7 +173,7 @@
       </div>
 
       <div id="vkb-section" class="hud-panel clip-tr">
-        <div class="section-title">// VIRTUAL KEYBOARD //</div>
+        <div class="section-title">// KEYBOARD //</div>
         <div id="vkb-controls">
           <label class="label-dim"
             >CH
@@ -188,33 +192,81 @@
               <option value="triangle">TRIANGLE</option>
               <option value="fm">FM</option>
             </select>
-            <span id="fm-params" style="display:none">
-              <label class="label-dim">MOD
-                <input type="range" id="fm-mod-index" min="0" max="30" value="10" step="0.5" />
+            <span id="fm-params" style="display: none">
+              <label class="label-dim"
+                >MOD
+                <input
+                  type="range"
+                  id="fm-mod-index"
+                  min="0"
+                  max="30"
+                  value="10"
+                  step="0.5"
+                />
                 <strong id="fm-mod-val">10</strong>
               </label>
-              <label class="label-dim">HARM
-                <input type="range" id="fm-harmonicity" min="0.5" max="12" value="3" step="0.25" />
+              <label class="label-dim"
+                >HARM
+                <input
+                  type="range"
+                  id="fm-harmonicity"
+                  min="0.5"
+                  max="12"
+                  value="3"
+                  step="0.25"
+                />
                 <strong id="fm-harm-val">3</strong>
               </label>
             </span>
           </div>
           <div id="synth-env-row">
             <span class="label-dim">ENV</span>
-            <label class="label-dim">A
-              <input type="range" id="env-attack" min="0.001" max="2" value="0.02" step="0.001" />
+            <label class="label-dim"
+              >A
+              <input
+                type="range"
+                id="env-attack"
+                min="0.001"
+                max="2"
+                value="0.02"
+                step="0.001"
+              />
               <strong id="env-a-val">0.02</strong>
             </label>
-            <label class="label-dim">D
-              <input type="range" id="env-decay" min="0.01" max="2" value="0.1" step="0.01" />
+            <label class="label-dim"
+              >D
+              <input
+                type="range"
+                id="env-decay"
+                min="0.01"
+                max="2"
+                value="0.1"
+                step="0.01"
+              />
               <strong id="env-d-val">0.1</strong>
             </label>
-            <label class="label-dim">S
-              <input type="range" id="env-sustain" min="0" max="1" value="0.4" step="0.01" />
+            <label class="label-dim"
+              >S
+              <input
+                type="range"
+                id="env-sustain"
+                min="0"
+                max="1"
+                value="0.4"
+                step="0.01"
+              />
               <strong id="env-s-val">0.4</strong>
             </label>
-            <label class="label-dim">R
-              <input type="range" id="env-release" min="0.01" max="4" value="0.2" step="0.01" />
+            <label class="label-dim"
+              >R
+              <input
+                type="range"
+                id="env-release"
+                min="0.01"
+                max="4"
+                value="0.2"
+                step="0.01"
+              />
               <strong id="env-r-val">0.2</strong>
             </label>
           </div>
@@ -227,18 +279,42 @@
               <option value="square">SQR</option>
               <option value="sawtooth">SAW</option>
             </select>
-            <label class="label-dim">RATE
-              <input type="range" id="lfo-rate" min="0.1" max="30" value="4" step="0.1" />
+            <label class="label-dim"
+              >RATE
+              <input
+                type="range"
+                id="lfo-rate"
+                min="0.1"
+                max="30"
+                value="4"
+                step="0.1"
+              />
               <strong id="lfo-rate-val">4</strong>
               <span class="label-dim">Hz</span>
             </label>
-            <label class="label-dim">PITCH
-              <input type="range" id="lfo-pitch-amt" min="0" max="1200" value="0" step="1" />
+            <label class="label-dim"
+              >PITCH
+              <input
+                type="range"
+                id="lfo-pitch-amt"
+                min="0"
+                max="1200"
+                value="0"
+                step="1"
+              />
               <strong id="lfo-pitch-val">0</strong>
               <span class="label-dim">¢</span>
             </label>
-            <label class="label-dim" id="lfo-fm-label" style="display:none">FM
-              <input type="range" id="lfo-fm-amt" min="0" max="20" value="0" step="0.5" />
+            <label class="label-dim" id="lfo-fm-label" style="display: none"
+              >FM
+              <input
+                type="range"
+                id="lfo-fm-amt"
+                min="0"
+                max="20"
+                value="0"
+                step="0.5"
+              />
               <strong id="lfo-fm-val">0</strong>
             </label>
           </div>
@@ -247,7 +323,7 @@
       </div>
 
       <div id="pr-section" class="hud-panel clip-tl">
-        <div class="section-title">// PIANO ROLL //</div>
+        <div class="section-title">// NOTE EDITOR //</div>
         <div id="pr-toolbar">
           <button id="pr-toggle-btn">PR ON</button>
           <button id="pr-clear-btn">CLEAR</button>
@@ -290,11 +366,12 @@
       </div>
 
       <div id="dm-section" class="hud-panel clip-tl">
-        <div class="section-title">// EW909 //</div>
+        <div class="section-title">// 909 CLONE //</div>
         <div id="dm-toolbar">
-          <button id="dm-toggle-btn">909 ON</button>
+          <button id="dm-toggle-btn">ENABLE</button>
           <button id="dm-clear-btn">CLEAR</button>
-          <label class="label-dim">STEPS
+          <label class="label-dim"
+            >STEPS
             <input type="number" id="dm-steps" min="1" max="64" value="16" />
           </label>
           <div id="dm-pattern-row" class="pattern-row">
@@ -389,7 +466,49 @@
               <tr>
                 <td class="hk">BPM</td>
                 <td>
-                  Drag the slider to change tempo — broadcasts to all peers
+                  Drag the slider to change tempo (60–200) — broadcasts to all
+                  peers
+                </td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="help-section">
+            <div class="section-title">// ROOMS</div>
+            <table class="help-table">
+              <tr>
+                <td class="hk">JOIN</td>
+                <td>
+                  Enter a room name and join — share the name with collaborators
+                  to sync. All play/stop, BPM, and MIDI data broadcasts to
+                  everyone in the room
+                </td>
+              </tr>
+              <tr>
+                <td class="hk">PUBLIC / PRIVATE</td>
+                <td>
+                  Toggle room visibility — public rooms appear in the rooms list
+                  for all connected users; private rooms are hidden
+                </td>
+              </tr>
+              <tr>
+                <td class="hk">AVAILABLE ROOMS</td>
+                <td>
+                  Lists all public rooms with player count and BPM — click to
+                  join
+                </td>
+              </tr>
+              <tr>
+                <td class="hk">you Xms</td>
+                <td>
+                  Your round-trip latency to the server, shown in the header
+                </td>
+              </tr>
+              <tr>
+                <td class="hk">Δ</td>
+                <td>
+                  Clock offset from the server (NTP-style sync keeps all peers
+                  aligned)
                 </td>
               </tr>
             </table>
@@ -399,12 +518,23 @@
             <div class="section-title">// PIANO ROLL</div>
             <table class="help-table">
               <tr>
+                <td class="hk">ENABLE</td>
+                <td>
+                  Enable piano roll playback (routes to synth and/or MIDI
+                  output)
+                </td>
+              </tr>
+              <tr>
                 <td class="hk">Left-click empty</td>
                 <td>Add a note, snapped to 1/16th beat</td>
               </tr>
               <tr>
+                <td class="hk">Left-click + drag</td>
+                <td>Draw a note and set its duration by dragging right</td>
+              </tr>
+              <tr>
                 <td class="hk">Left-click note</td>
-                <td>Delete the note</td>
+                <td>Delete the note (click without dragging)</td>
               </tr>
               <tr>
                 <td class="hk">Drag note</td>
@@ -416,38 +546,148 @@
               </tr>
               <tr>
                 <td class="hk">Scroll wheel</td>
-                <td>Scroll pitch range (vertical)</td>
+                <td>Scroll pitch range — full MIDI range 0–127 (C-1 to G9)</td>
               </tr>
               <tr>
                 <td class="hk">Shift + scroll</td>
                 <td>Scroll time (horizontal)</td>
               </tr>
               <tr>
-                <td class="hk">Ctrl + scroll</td>
+                <td class="hk">Ctrl/Cmd + scroll</td>
                 <td>Zoom horizontal</td>
               </tr>
               <tr>
-                <td class="hk">↓ DROP .MID</td>
-                <td>Drag a .mid file onto the zone to import it</td>
-              </tr>
-              <tr>
-                <td class="hk">↓ EXPORT .MID</td>
-                <td>Download the current roll as a MIDI file</td>
-              </tr>
-              <tr>
-                <td class="hk">PR ON</td>
-                <td>
-                  Enable piano roll playback (routes to synth and/or MIDI
-                  output)
-                </td>
+                <td class="hk">+ / − / FIT</td>
+                <td>Zoom in, zoom out, or fit the full pattern to the view</td>
               </tr>
               <tr>
                 <td class="hk">BARS</td>
-                <td>Pattern length in bars (1 / 2 / 4 / 8)</td>
+                <td>Pattern length in bars (1–32)</td>
               </tr>
               <tr>
                 <td class="hk">CH / VEL</td>
                 <td>Channel and velocity for new notes</td>
+              </tr>
+              <tr>
+                <td class="hk">↓ DROP .MID</td>
+                <td>
+                  Drag a .mid file onto the zone to import — auto-sets bars and
+                  BPM from the file
+                </td>
+              </tr>
+              <tr>
+                <td class="hk">↓ EXPORT .MID</td>
+                <td>Download the current roll as a Standard MIDI file</td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="help-section">
+            <div class="section-title">// PATTERN BANK + CHAIN</div>
+            <p>Both the piano roll and drum machine share the same pattern and chain system.</p>
+            <table class="help-table">
+              <tr>
+                <td class="hk">PAT 1–16</td>
+                <td>
+                  16 pattern slots — click to switch. Each pattern stores its
+                  own notes/steps and bar/step length
+                </td>
+              </tr>
+              <tr>
+                <td class="hk">INSTANT / QUEUE</td>
+                <td>
+                  INSTANT switches patterns immediately; QUEUE waits until the
+                  current pattern loops, then switches — useful during live
+                  playback
+                </td>
+              </tr>
+              <tr>
+                <td class="hk">CHAIN</td>
+                <td>
+                  Enable chain sequencer mode — set up a sequence of patterns
+                  using the 16 chain slots (dropdowns). Patterns advance
+                  automatically at each loop boundary. Empty slots (--) are
+                  skipped
+                </td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="help-section">
+            <div class="section-title">// EW909 DRUM MACHINE</div>
+            <table class="help-table">
+              <tr>
+                <td class="hk">ENABLE</td>
+                <td>Enable drum machine playback</td>
+              </tr>
+              <tr>
+                <td class="hk">GRID</td>
+                <td>
+                  Click cells to toggle steps on/off — rows are drum sounds
+                  (kick, snare, hi-hats, toms, clap, cymbal, rim, ride),
+                  columns are steps
+                </td>
+              </tr>
+              <tr>
+                <td class="hk">STEPS</td>
+                <td>Number of steps per pattern (1–64, default 16)</td>
+              </tr>
+              <tr>
+                <td class="hk">CLEAR</td>
+                <td>Clear all steps in the current pattern</td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="help-section">
+            <div class="section-title">// SYNTH + KEYBOARD</div>
+            <table class="help-table">
+              <tr>
+                <td class="hk">KEYBOARD</td>
+                <td>
+                  Virtual 52-key keyboard (A0–C8) — click or touch to play.
+                  Notes route to the built-in synth, MIDI output, and broadcast
+                  to room peers
+                </td>
+              </tr>
+              <tr>
+                <td class="hk">SYNTH TYPE</td>
+                <td>
+                  TRIANGLE (PolySynth) or FM (frequency modulation with MOD
+                  index and HARM harmonicity controls)
+                </td>
+              </tr>
+              <tr>
+                <td class="hk">ENV A/D/S/R</td>
+                <td>
+                  Amplitude envelope — Attack, Decay, Sustain, Release
+                </td>
+              </tr>
+              <tr>
+                <td class="hk">LFO</td>
+                <td>
+                  Low-frequency oscillator — toggle on/off, select waveform
+                  (SIN/TRI/SQR/SAW), set rate in Hz, pitch modulation in cents,
+                  and FM modulation depth (FM synth only)
+                </td>
+              </tr>
+              <tr>
+                <td class="hk">CH / VEL</td>
+                <td>MIDI channel and velocity for keyboard output</td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="help-section">
+            <div class="section-title">// MIXER</div>
+            <table class="help-table">
+              <tr>
+                <td class="hk">FADERS</td>
+                <td>
+                  Per-channel volume strips for master, pad synth, click,
+                  and each drum sound (kick, snare, toms, clap, hi-hats,
+                  cymbal, rim, ride)
+                </td>
               </tr>
             </table>
           </div>
@@ -458,25 +698,41 @@
               <tr>
                 <td class="hk">INPUT / OUTPUT</td>
                 <td>
-                  Select hardware MIDI devices (requires browser MIDI
-                  permission)
+                  Select hardware MIDI devices (requires Chrome/Edge with MIDI
+                  permission — HTTPS required)
                 </td>
               </tr>
               <tr>
                 <td class="hk">THRU</td>
-                <td>Route all MIDI input (notes, CC, clock, etc.) to the output device locally — useful for passing a keyboard or controller through to a synth</td>
+                <td>
+                  Route all MIDI input (notes, CC, clock, etc.) to the output
+                  device locally — useful for passing a keyboard or controller
+                  through to a synth
+                </td>
               </tr>
               <tr>
                 <td class="hk">CLK ↑</td>
-                <td>Relay incoming hardware clock (0xF8) to all peers over the network, so their MIDI outputs also receive the raw clock signal</td>
+                <td>
+                  Relay incoming hardware clock (0xF8) to all peers over the
+                  network, so their MIDI outputs also receive the raw clock
+                  signal
+                </td>
               </tr>
               <tr>
                 <td class="hk">CLK GEN</td>
-                <td>Generate MIDI clock to your output device from the server BPM. Sends Start (0xFA) and Stop (0xFC) on transport — use this to sync external hardware to the room</td>
+                <td>
+                  Generate MIDI clock to your output device from the server BPM.
+                  Sends Start (0xFA) and Stop (0xFC) on transport — use this to
+                  sync external hardware to the room
+                </td>
               </tr>
               <tr>
                 <td class="hk">CLK SYNC</td>
-                <td>Slave the room BPM and transport to an incoming hardware clock — use this when a hardware sequencer or DAW is the master. Pair with CLK ↑ to also distribute its clock pulses to peers</td>
+                <td>
+                  Slave the room BPM and transport to an incoming hardware clock
+                  — use this when a hardware sequencer or DAW is the master.
+                  Pair with CLK ↑ to also distribute its clock pulses to peers
+                </td>
               </tr>
               <tr>
                 <td class="hk">PANIC</td>
@@ -527,19 +783,9 @@
               </tr>
               <tr>
                 <td class="hk">↓ EXPORT .MID</td>
-                <td>Download the recording as a .mid file</td>
+                <td>Download the recording as a Standard MIDI file</td>
               </tr>
             </table>
-          </div>
-
-          <div class="help-section">
-            <div class="section-title">// ROOMS</div>
-            <p>
-              Connect multiple browser tabs or devices to the same room by
-              entering the same room name. All play/stop commands, BPM changes,
-              and piano roll state broadcast to all peers. Your latency is shown
-              in the header as <span class="hk">you Xms</span>.
-            </p>
           </div>
 
           <div class="help-footer">
