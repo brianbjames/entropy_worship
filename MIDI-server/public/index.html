@@ -189,7 +189,10 @@
           <div id="synth-top-row">
             <span class="label-dim">SYNTH</span>
             <select id="synth-type">
+              <option value="sine">SINE</option>
               <option value="triangle">TRIANGLE</option>
+              <option value="sawtooth">SAWTOOTH</option>
+              <option value="square">SQUARE</option>
               <option value="fm">FM</option>
             </select>
             <span id="fm-params" style="display: none">
@@ -656,8 +659,9 @@
               <tr>
                 <td class="hk">SYNTH TYPE</td>
                 <td>
-                  TRIANGLE (PolySynth) or FM (frequency modulation with MOD
-                  index and HARM harmonicity controls)
+                  SINE, TRIANGLE, SAWTOOTH, SQUARE (basic waveforms) or FM
+                  (frequency modulation with MOD index and HARM harmonicity
+                  controls)
                 </td>
               </tr>
               <tr>

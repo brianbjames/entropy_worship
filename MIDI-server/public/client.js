@@ -112,7 +112,7 @@ let clockSyncLastBpm = 0;
 
 // ── Tone.js Instruments ──────────────────────────────────────
 let padSynth, clickSynth;
-let currentSynthType = "triangle";
+let currentSynthType = "sine";
 let lfoEnabled = false;
 let lfoRafId = null;
 
@@ -136,7 +136,7 @@ function getEnvValues() {
 }
 
 function initSynths(type) {
-  type = type || "triangle";
+  type = type || "sine";
   currentSynthType = type;
 
   initMixerChannels();
@@ -161,7 +161,7 @@ function initSynths(type) {
     }).connect(padChannel);
   } else {
     padSynth = new Tone.PolySynth(Tone.Synth, {
-      oscillator: { type: "triangle" },
+      oscillator: { type: type },
       envelope: env,
     }).connect(padChannel);
   }

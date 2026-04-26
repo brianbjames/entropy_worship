@@ -8,17 +8,59 @@
 const DM_TICK_MS = 20;
 const DM_LOOKAHEAD = 100;
 
+// ── Kit registry ───────────────────────────────────────────
+// Each kit is a folder under samples/. To add a new kit:
+// 1. Create the folder (e.g. samples/707/)
+// 2. Add an entry here with the filenames
+const DM_KITS = {
+  "909": [
+    "kick-1.wav", "kick-2.wav", "snare-1.wav",
+    "tom-low-1.wav", "tom-high-1.wav", "clap-1.wav",
+    "hihat-open-1.wav", "hihat-close-1.wav",
+    "cymbal-1.wav", "rim-1.wav", "ride-1.wav",
+  ],
+  "808": [
+    "kick-1.wav", "kick-2.wav", "kick-3.wav", "kick-4.wav",
+    "kick-5.wav", "kick-6.wav", "kick-7.wav", "kick-8.wav",
+    "kick-9.wav", "kick-10.wav",
+    "snare-1.wav", "snare-2.wav", "snare-3.wav", "snare-4.wav",
+    "snare-5.wav", "snare-6.wav", "snare-7.wav", "snare-8.wav",
+    "snare-9.wav", "snare-10.wav",
+    "clap-1.wav", "clap-2.wav", "clap-4.wav", "clap-5.wav",
+    "clap-6.wav", "clap-7.wav", "clap-8.wav", "clap-9.wav",
+    "clap-10.wav",
+    "hihat-close-1.wav", "hihat-close-2.wav", "hihat-close-3.wav",
+    "hihat-close-4.wav", "hihat-close-5.wav", "hihat-close-6.wav",
+    "hihat-close-7.wav", "hihat-close-8.wav", "hihat-close-9.wav",
+    "hihat-close-10.wav",
+    "hihat-open-1.wav", "hihat-open-2.wav", "hihat-open-3.wav",
+    "hihat-open-4.wav", "hihat-open-5.wav", "hihat-open-6.wav",
+    "hihat-open-7.wav", "hihat-open-8.wav",
+    "tom-low-1.wav", "tom-low-2.wav", "tom-low-3.wav", "tom-low-4.wav",
+    "tom-high-1.wav", "tom-high-2.wav",
+    "clave-1.wav", "clave-2.wav", "clave-3.wav", "clave-4.wav",
+  ],
+};
+
+// Build flat list of all sample paths: "909/kick-1.wav", "808/snare-3.wav", etc.
+const DM_ALL_SAMPLES = [];
+for (const [kit, files] of Object.entries(DM_KITS)) {
+  for (const file of files) {
+    DM_ALL_SAMPLES.push(`${kit}/${file}`);
+  }
+}
+
 const DM_INSTRUMENTS = [
-  { name: "KICK",   sample: "kick",       file: "kick.wav" },
-  { name: "SNARE",  sample: "snare",      file: "snare.wav" },
-  { name: "TOM-L",  sample: "tomL",       file: "tom-l.wav" },
-  { name: "TOM-H",  sample: "tomH",       file: "tom-h.wav" },
-  { name: "CLAP",   sample: "clap",       file: "clap.wav" },
-  { name: "HH-O",   sample: "hihatOpen",  file: "hihat-open.wav" },
-  { name: "HH-C",   sample: "hihatClose", file: "hihat-close.wav" },
-  { name: "CYMBAL", sample: "cymbal",     file: "cymbal.wav" },
-  { name: "RIM",    sample: "rim",        file: "rim.wav" },
-  { name: "RIDE",   sample: "ride",       file: "ride.wav" },
+  { name: "KICK",   sample: "kick",       file: "909/kick-1.wav" },
+  { name: "SNARE",  sample: "snare",      file: "909/snare-1.wav" },
+  { name: "TOM-L",  sample: "tomL",       file: "909/tom-low-1.wav" },
+  { name: "TOM-H",  sample: "tomH",       file: "909/tom-high-1.wav" },
+  { name: "CLAP",   sample: "clap",       file: "909/clap-1.wav" },
+  { name: "HH-O",   sample: "hihatOpen",  file: "909/hihat-open-1.wav" },
+  { name: "HH-C",   sample: "hihatClose", file: "909/hihat-close-1.wav" },
+  { name: "CYMBAL", sample: "cymbal",     file: "909/cymbal-1.wav" },
+  { name: "RIM",    sample: "rim",        file: "909/rim-1.wav" },
+  { name: "RIDE",   sample: "ride",       file: "909/ride-1.wav" },
 ];
 
 let dmSteps = 16;
@@ -44,25 +86,54 @@ let dmChainPos = 0; // current position in chain
 
 let dmEnabled = false;
 let dmLastIdx = -1;
-const dmPlayerMap = {};  // keyed by sample name
-const dmChannelMap = {}; // keyed by sample name — Tone.Channel per drum
+const dmPlayerMap = {};  // keyed by sample path (e.g. "909/kick-1.wav")
+const dmChannelMap = {}; // keyed by instrument sample name — Tone.Channel per drum
 let dmLoaded = false;
 
-// ── Load samples via individual Tone.Player + Channel ───────
+// Per-row sample assignment — indexes match DM_INSTRUMENTS
+const dmInstrumentFile = DM_INSTRUMENTS.map(inst => inst.file);
+
+// ── Load ALL samples from all kits via individual Tone.Player ──
 function dmLoadSamples() {
-  DM_INSTRUMENTS.forEach((inst) => {
-    dmPlayerMap[inst.sample] = new Tone.Player(`samples/${inst.file}`);
+  DM_ALL_SAMPLES.forEach((samplePath) => {
+    if (!dmPlayerMap[samplePath]) {
+      dmPlayerMap[samplePath] = new Tone.Player(`samples/${samplePath}`);
+    }
   });
   Tone.loaded().then(() => { dmLoaded = true; });
 }
 
 // Called after masterChannel exists (from initSynths → initMixerChannels)
 function dmConnectChannels() {
-  DM_INSTRUMENTS.forEach((inst) => {
-    if (dmChannelMap[inst.sample]) return; // already connected
-    dmChannelMap[inst.sample] = new Tone.Channel({ volume: 0 }).connect(masterChannel);
-    dmPlayerMap[inst.sample].connect(dmChannelMap[inst.sample]);
+  DM_INSTRUMENTS.forEach((inst, i) => {
+    if (!dmChannelMap[inst.sample]) {
+      dmChannelMap[inst.sample] = new Tone.Channel({ volume: 0 }).connect(masterChannel);
+    }
+    // Connect currently assigned sample to this instrument's channel
+    const file = dmInstrumentFile[i];
+    if (dmPlayerMap[file]) {
+      dmPlayerMap[file].disconnect();
+      dmPlayerMap[file].connect(dmChannelMap[inst.sample]);
+    }
   });
+}
+
+// ── Swap sample for a drum row ──────────────────────────────
+function dmSwapSample(rowIdx, filename) {
+  const inst = DM_INSTRUMENTS[rowIdx];
+  // Disconnect old player from this row's channel
+  const oldFile = dmInstrumentFile[rowIdx];
+  if (dmPlayerMap[oldFile]) {
+    try { dmPlayerMap[oldFile].disconnect(); } catch (_) {}
+  }
+  // Update assignment
+  dmInstrumentFile[rowIdx] = filename;
+  // Connect new player to this row's channel
+  const channel = dmChannelMap[inst.sample];
+  if (dmPlayerMap[filename] && channel) {
+    dmPlayerMap[filename].disconnect();
+    dmPlayerMap[filename].connect(channel);
+  }
 }
 
 // ── Pattern bank helpers ────────────────────────────────────
@@ -150,7 +221,7 @@ function dmSchedulerTick() {
 
     for (let i = 0; i < DM_INSTRUMENTS.length; i++) {
       if (dmPattern[i][step]) {
-        const player = dmPlayerMap[DM_INSTRUMENTS[i].sample];
+        const player = dmPlayerMap[dmInstrumentFile[i]];
         if (player && player.loaded) player.start(audioT);
       }
     }
@@ -187,6 +258,23 @@ function dmRenderGrid() {
     label.className = "dm-row-label";
     label.textContent = inst.name;
     row.appendChild(label);
+
+    // Sample selector dropdown
+    const sel = document.createElement("select");
+    sel.className = "dm-sample-sel";
+    DM_ALL_SAMPLES.forEach((samplePath) => {
+      const opt = document.createElement("option");
+      opt.value = samplePath;
+      // Display as "909 / kick-1" style
+      const parts = samplePath.split("/");
+      opt.textContent = parts[0] + " / " + parts[1].replace(/\.wav$/, "");
+      sel.appendChild(opt);
+    });
+    sel.value = dmInstrumentFile[rowIdx];
+    sel.addEventListener("change", (e) => {
+      dmSwapSample(rowIdx, e.target.value);
+    });
+    row.appendChild(sel);
 
     for (let s = 0; s < dmSteps; s++) {
       const btn = document.createElement("button");

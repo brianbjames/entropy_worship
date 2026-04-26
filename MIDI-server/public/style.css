@@ -1032,6 +1032,23 @@ strong {
   padding-right: 6px;
   letter-spacing: 0.04em;
 }
+.dm-sample-sel {
+  width: 120px;
+  min-width: 120px;
+  font-family: inherit;
+  font-size: 0.65rem;
+  background: rgba(0, 0, 0, 0.5);
+  color: var(--dim);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1px 2px;
+  cursor: pointer;
+}
+.dm-sample-sel:hover,
+.dm-sample-sel:focus {
+  border-color: var(--border-hi);
+  color: var(--fg);
+}
 .dm-step {
   width: 22px;
   height: 22px;
