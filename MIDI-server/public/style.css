@@ -975,6 +975,7 @@ strong {
   align-items: center;
   gap: 3px;
   flex-wrap: wrap;
+  flex-basis: 100%;
 }
 .chain-toggle-btn {
   font-size: 0.7rem;
@@ -1010,6 +1011,7 @@ strong {
   display: flex;
   gap: 8px;
   align-items: center;
+  flex-wrap: wrap;
   margin-bottom: 8px;
 }
 #dm-grid {
@@ -1048,6 +1050,55 @@ strong {
 .dm-sample-sel:focus {
   border-color: var(--border-hi);
   color: var(--fg);
+}
+.dm-note-input {
+  width: 36px;
+  min-width: 36px;
+  font-family: inherit;
+  font-size: 0.65rem;
+  background: rgba(0, 0, 0, 0.5);
+  color: var(--dim);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1px 2px;
+  text-align: center;
+}
+.dm-note-input:hover,
+.dm-note-input:focus {
+  border-color: var(--border-hi);
+  color: var(--fg);
+}
+#dm-drop-zone {
+  display: inline-block;
+  background: rgba(0, 0, 0, 0.45);
+  color: var(--dim);
+  border: 1px dashed var(--border);
+  padding: 6px 16px;
+  cursor: default;
+  font-family: var(--font);
+  font-size: 0.95rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  clip-path: polygon(
+    0 0,
+    calc(100% - 6px) 0,
+    100% 6px,
+    100% 100%,
+    6px 100%,
+    0 calc(100% - 6px)
+  );
+  transition:
+    color 0.15s,
+    background 0.15s,
+    border-color 0.15s;
+  user-select: none;
+}
+#dm-drop-zone:hover,
+#dm-drop-zone.drag-over {
+  background: rgba(5, 175, 144, 0.12);
+  border-color: var(--teal);
+  color: var(--teal);
+  text-shadow: 0 0 8px rgba(5, 175, 144, 0.7);
 }
 .dm-step {
   width: 22px;
@@ -1235,6 +1286,7 @@ strong {
     border-color 0.15s;
   user-select: none;
 }
+#pr-drop-zone:hover,
 #pr-drop-zone.drag-over {
   background: rgba(5, 175, 144, 0.12);
   border-color: var(--teal);
@@ -1554,6 +1606,11 @@ strong {
 }
 
 /* ── Available Rooms panel ───────────────────────────────────── */
+.panel-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 8px 0 4px;
+}
 #rooms-list {
   display: flex;
   flex-direction: column;

@@ -814,6 +814,11 @@ function handleMidiData(bytes, remote) {
             d2 / 127,
           );
         }
+        // Trigger drum machine voice if note matches
+        if (typeof dmHandleMidiNote === "function") {
+          const dmCh = typeof dmMidiChannel !== "undefined" ? dmMidiChannel : 9;
+          if ((status & 0x0f) === dmCh) dmHandleMidiNote(d1, d2);
+        }
         logMidiRow("Note On", ch, midiNoteName(d1), `v:${d2}`, remote);
         break;
       }

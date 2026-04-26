@@ -85,20 +85,6 @@
         </div>
       </header>
 
-      <div id="room-bar">
-        <span class="label-dim">// ROOM</span>
-        <input
-          id="room-input"
-          type="text"
-          placeholder="ROOM-ID"
-          maxlength="32"
-          spellcheck="false"
-          autocomplete="off"
-        />
-        <button id="room-join-btn">JOIN</button>
-        <button id="privacy-btn">PUBLIC</button>
-      </div>
-
       <div id="controls" class="hud-panel clip-br">
         <div class="section-title">// TRANSPORT //</div>
         <button id="play-btn">▶ PLAY</button>
@@ -338,7 +324,6 @@
           <div id="pr-chain-row" class="chain-row">
             <button id="pr-chain-btn" class="chain-toggle-btn">CHAIN</button>
             <span id="pr-chain-slots"></span>
-            <span id="pr-chain-pos" class="label-dim"></span>
           </div>
           <label class="label-dim"
             >BARS
@@ -348,13 +333,13 @@
             >CH
             <select id="pr-ch"></select
           ></label>
+          <div id="pr-drop-zone">↓ DROP .MID</div>
+          <button id="pr-export-btn">↓ EXPORT .MID</button>
           <label class="label-dim"
             >VEL
             <input type="range" id="pr-vel" min="1" max="127" value="100" />
             <strong id="pr-vel-val">100</strong>
           </label>
-          <div id="pr-drop-zone">↓ DROP .MID</div>
-          <button id="pr-export-btn">↓ EXPORT .MID</button>
           <span id="pr-zoom-controls">
             <button id="pr-zoom-out">−</button>
             <button id="pr-zoom-fit">FIT</button>
@@ -369,14 +354,10 @@
       </div>
 
       <div id="dm-section" class="hud-panel clip-tl">
-        <div class="section-title">// 909 CLONE //</div>
+        <div class="section-title">// DRUM MACHINE //</div>
         <div id="dm-toolbar">
           <button id="dm-toggle-btn">ENABLE</button>
           <button id="dm-clear-btn">CLEAR</button>
-          <label class="label-dim"
-            >STEPS
-            <input type="number" id="dm-steps" min="1" max="64" value="16" />
-          </label>
           <div id="dm-pattern-row" class="pattern-row">
             <span class="label-dim">PAT</span>
             <span id="dm-pattern-btns"></span>
@@ -385,8 +366,17 @@
           <div id="dm-chain-row" class="chain-row">
             <button id="dm-chain-btn" class="chain-toggle-btn">CHAIN</button>
             <span id="dm-chain-slots"></span>
-            <span id="dm-chain-pos" class="label-dim"></span>
           </div>
+          <label class="label-dim"
+            >STEPS
+            <input type="number" id="dm-steps" min="1" max="64" value="16" />
+          </label>
+          <label class="label-dim"
+            >CH
+            <select id="dm-ch"></select
+          ></label>
+          <div id="dm-drop-zone">↓ DROP .MID</div>
+          <button id="dm-export-btn">↓ EXPORT .MID</button>
         </div>
         <div id="dm-grid"></div>
       </div>
@@ -404,6 +394,21 @@
       </div>
 
       <div id="rooms-section" class="hud-panel clip-bl">
+        <div class="section-title">// ROOMS //</div>
+        <div id="room-bar">
+          <span class="label-dim">// ROOM</span>
+          <input
+            id="room-input"
+            type="text"
+            placeholder="ROOM-ID"
+            maxlength="32"
+            spellcheck="false"
+            autocomplete="off"
+          />
+          <button id="room-join-btn">JOIN</button>
+          <button id="privacy-btn">PUBLIC</button>
+        </div>
+        <hr class="panel-divider" />
         <div class="section-title">// AVAILABLE ROOMS //</div>
         <div id="rooms-list">
           <span class="label-dim">NO ROOMS AVAILABLE</span>

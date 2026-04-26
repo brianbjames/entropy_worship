@@ -51,16 +51,16 @@ for (const [kit, files] of Object.entries(DM_KITS)) {
 }
 
 const DM_INSTRUMENTS = [
-  { name: "KICK",   sample: "kick",       file: "909/kick-1.wav" },
-  { name: "SNARE",  sample: "snare",      file: "909/snare-1.wav" },
-  { name: "TOM-L",  sample: "tomL",       file: "909/tom-low-1.wav" },
-  { name: "TOM-H",  sample: "tomH",       file: "909/tom-high-1.wav" },
-  { name: "CLAP",   sample: "clap",       file: "909/clap-1.wav" },
-  { name: "HH-O",   sample: "hihatOpen",  file: "909/hihat-open-1.wav" },
-  { name: "HH-C",   sample: "hihatClose", file: "909/hihat-close-1.wav" },
-  { name: "CYMBAL", sample: "cymbal",     file: "909/cymbal-1.wav" },
-  { name: "RIM",    sample: "rim",        file: "909/rim-1.wav" },
-  { name: "RIDE",   sample: "ride",       file: "909/ride-1.wav" },
+  { name: "KICK",   sample: "kick",       file: "909/kick-1.wav",       note: 36 },
+  { name: "SNARE",  sample: "snare",      file: "909/snare-1.wav",      note: 38 },
+  { name: "TOM-L",  sample: "tomL",       file: "909/tom-low-1.wav",    note: 45 },
+  { name: "TOM-H",  sample: "tomH",       file: "909/tom-high-1.wav",   note: 50 },
+  { name: "CLAP",   sample: "clap",       file: "909/clap-1.wav",       note: 39 },
+  { name: "HH-O",   sample: "hihatOpen",  file: "909/hihat-open-1.wav", note: 46 },
+  { name: "HH-C",   sample: "hihatClose", file: "909/hihat-close-1.wav",note: 42 },
+  { name: "CYMBAL", sample: "cymbal",     file: "909/cymbal-1.wav",     note: 49 },
+  { name: "RIM",    sample: "rim",        file: "909/rim-1.wav",        note: 37 },
+  { name: "RIDE",   sample: "ride",       file: "909/ride-1.wav",       note: 51 },
 ];
 
 let dmSteps = 16;
@@ -92,6 +92,12 @@ let dmLoaded = false;
 
 // Per-row sample assignment — indexes match DM_INSTRUMENTS
 const dmInstrumentFile = DM_INSTRUMENTS.map(inst => inst.file);
+
+// Per-row MIDI note assignment — GM drum map defaults
+const dmInstrumentNote = DM_INSTRUMENTS.map(inst => inst.note);
+
+// MIDI channel for drum output/input (0-indexed, default ch 10 = index 9)
+let dmMidiChannel = 9;
 
 // ── Load ALL samples from all kits via individual Tone.Player ──
 function dmLoadSamples() {
@@ -223,6 +229,14 @@ function dmSchedulerTick() {
       if (dmPattern[i][step]) {
         const player = dmPlayerMap[dmInstrumentFile[i]];
         if (player && player.loaded) player.start(audioT);
+
+        // Send MIDI Note On/Off to hardware output
+        const midiNote = dmInstrumentNote[i];
+        const delayMs = Math.max(0, (audioT - Tone.context.currentTime) * 1000);
+        setTimeout(() => {
+          sendToOutput([0x90 | dmMidiChannel, midiNote, 100]);
+          setTimeout(() => sendToOutput([0x80 | dmMidiChannel, midiNote, 0]), subMs * 0.9);
+        }, delayMs);
       }
     }
     dmLastIdx = idx;
@@ -275,6 +289,20 @@ function dmRenderGrid() {
       dmSwapSample(rowIdx, e.target.value);
     });
     row.appendChild(sel);
+
+    // MIDI note number input
+    const noteInput = document.createElement("input");
+    noteInput.type = "number";
+    noteInput.className = "dm-note-input";
+    noteInput.min = 0;
+    noteInput.max = 127;
+    noteInput.value = dmInstrumentNote[rowIdx];
+    noteInput.title = "MIDI note number";
+    noteInput.addEventListener("change", (e) => {
+      dmInstrumentNote[rowIdx] = Math.max(0, Math.min(127, +e.target.value || 0));
+      e.target.value = dmInstrumentNote[rowIdx];
+    });
+    row.appendChild(noteInput);
 
     for (let s = 0; s < dmSteps; s++) {
       const btn = document.createElement("button");
@@ -424,10 +452,6 @@ function dmUpdateChainUI() {
   document.querySelectorAll("#dm-chain-slots .chain-slot").forEach((slot) => {
     slot.classList.toggle("chain-active", dmChainEnabled && +slot.dataset.idx === dmChainPos && dmChain[dmChainPos] >= 0);
   });
-  document.getElementById("dm-chain-pos").textContent =
-    dmChainEnabled && dmChain[dmChainPos] >= 0
-      ? `${dmChainPos + 1}/${DM_CHAIN_LEN}`
-      : "";
 }
 
 document.getElementById("dm-chain-btn").addEventListener("click", () => {
@@ -444,8 +468,172 @@ document.getElementById("dm-chain-btn").addEventListener("click", () => {
   dmUpdateChainUI();
 });
 
+// ── MIDI input: trigger drum voice by note ──────────────────
+function dmHandleMidiNote(note, vel) {
+  if (!dmLoaded) return;
+  for (let i = 0; i < DM_INSTRUMENTS.length; i++) {
+    if (dmInstrumentNote[i] === note && vel > 0) {
+      const player = dmPlayerMap[dmInstrumentFile[i]];
+      if (player && player.loaded) player.start(Tone.now());
+      return;
+    }
+  }
+}
+
+// ── MIDI export ─────────────────────────────────────────────
+function dmExportMid() {
+  const division = 480;
+  const microsBeat = Math.round(60_000_000 / state.bpm);
+  const tpb = division;
+  const stepTicks = tpb / 4; // 1/16th note in ticks
+  const noteDurTicks = Math.max(1, Math.round(stepTicks * 0.9));
+
+  const trackData = [];
+  // Tempo meta event
+  trackData.push(
+    ...vlq(0), 0xff, 0x51, 0x03,
+    (microsBeat >> 16) & 0xff,
+    (microsBeat >> 8) & 0xff,
+    microsBeat & 0xff,
+  );
+
+  const events = [];
+  for (let i = 0; i < DM_INSTRUMENTS.length; i++) {
+    const midiNote = dmInstrumentNote[i];
+    for (let s = 0; s < dmSteps; s++) {
+      if (dmPattern[i][s]) {
+        const onTick = s * stepTicks;
+        const offTick = onTick + noteDurTicks;
+        events.push({ tick: onTick, bytes: [0x90 | dmMidiChannel, midiNote, 100] });
+        events.push({ tick: offTick, bytes: [0x80 | dmMidiChannel, midiNote, 0] });
+      }
+    }
+  }
+  if (events.length === 0) return;
+
+  events.sort((a, b) => a.tick - b.tick || a.bytes[0] - b.bytes[0]);
+
+  let prev = 0;
+  for (const { tick, bytes } of events) {
+    trackData.push(...vlq(Math.max(0, tick - prev)), ...bytes);
+    prev = tick;
+  }
+  trackData.push(...vlq(0), 0xff, 0x2f, 0x00);
+
+  const buf = [
+    0x4d, 0x54, 0x68, 0x64, 0x00, 0x00, 0x00, 0x06,
+    0x00, 0x00, 0x00, 0x01,
+    (division >> 8) & 0xff, division & 0xff,
+    0x4d, 0x54, 0x72, 0x6b,
+    (trackData.length >> 24) & 0xff, (trackData.length >> 16) & 0xff,
+    (trackData.length >> 8) & 0xff, trackData.length & 0xff,
+    ...trackData,
+  ];
+
+  const blob = new Blob([new Uint8Array(buf)], { type: "audio/midi" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `drums-${new Date().toISOString().slice(0, 19).replace(/:/g, "-")}.mid`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── MIDI import ─────────────────────────────────────────────
+function dmImportMidi(parsed) {
+  const { division, notes } = parsed;
+  const bpt = 1 / division; // beats per tick
+
+  // Build note-to-row lookup
+  const noteToRow = {};
+  for (let i = 0; i < DM_INSTRUMENTS.length; i++) {
+    noteToRow[dmInstrumentNote[i]] = i;
+  }
+
+  // Clear current pattern
+  dmPattern.forEach((row) => row.fill(false));
+
+  let maxStep = 0;
+  for (const { note, tickOn } of notes) {
+    const rowIdx = noteToRow[note];
+    if (rowIdx === undefined) continue;
+    const beat = tickOn * bpt;
+    const step = Math.round(beat / 0.25);
+    if (step < 0) continue;
+    maxStep = Math.max(maxStep, step);
+    if (step < dmSteps) {
+      dmPattern[rowIdx][step] = true;
+    }
+  }
+
+  // Auto-resize steps if pattern is longer
+  if (maxStep >= dmSteps) {
+    const newSteps = Math.min(64, maxStep + 1);
+    dmResizeSteps(newSteps);
+    document.getElementById("dm-steps").value = dmSteps;
+    // Re-import into resized pattern
+    dmPattern.forEach((row) => row.fill(false));
+    for (const { note, tickOn } of notes) {
+      const rowIdx = noteToRow[note];
+      if (rowIdx === undefined) continue;
+      const step = Math.round((tickOn * bpt) / 0.25);
+      if (step >= 0 && step < dmSteps) {
+        dmPattern[rowIdx][step] = true;
+      }
+    }
+  }
+
+  dmSaveCurrent();
+  dmRenderGrid();
+}
+
 // ── Init ────────────────────────────────────────────────────
 dmLoadSamples();
 dmRenderGrid();
 dmRenderPatternBtns();
 dmRenderChainSlots();
+
+// Channel selector
+(function () {
+  const chSel = document.getElementById("dm-ch");
+  for (let i = 0; i < 16; i++) {
+    const o = document.createElement("option");
+    o.value = i;
+    o.textContent = `ch ${i + 1}`;
+    chSel.appendChild(o);
+  }
+  chSel.value = dmMidiChannel;
+  chSel.addEventListener("change", (e) => { dmMidiChannel = +e.target.value; });
+})();
+
+// Export button
+document.getElementById("dm-export-btn").addEventListener("click", dmExportMid);
+
+// Drag-and-drop MIDI import
+(function () {
+  const dropZone = document.getElementById("dm-drop-zone");
+  dropZone.addEventListener("dragover", (e) => {
+    e.preventDefault();
+    dropZone.classList.add("drag-over");
+  });
+  dropZone.addEventListener("dragleave", () => {
+    dropZone.classList.remove("drag-over");
+  });
+  dropZone.addEventListener("drop", (e) => {
+    e.preventDefault();
+    dropZone.classList.remove("drag-over");
+    const file = e.dataTransfer.files[0];
+    if (!file) return;
+    if (file.size > 2_000_000) { console.warn("MIDI file too large (>2MB)"); return; }
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const parsed = parseMidi(ev.target.result);
+        if (parsed) dmImportMidi(parsed);
+      } catch (err) {
+        console.error("MIDI parse error", err);
+      }
+    };
+    reader.readAsArrayBuffer(file);
+  });
+})();

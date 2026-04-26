@@ -212,10 +212,6 @@ function prUpdateChainUI() {
   document.querySelectorAll("#pr-chain-slots .chain-slot").forEach((slot) => {
     slot.classList.toggle("chain-active", prChainEnabled && +slot.dataset.idx === prChainPos && prChain[prChainPos] >= 0);
   });
-  document.getElementById("pr-chain-pos").textContent =
-    prChainEnabled && prChain[prChainPos] >= 0
-      ? `${prChainPos + 1}/${PR_CHAIN_LEN}`
-      : "";
 }
 
 // ── Draw: keys panel ─────────────────────────────────────────
@@ -957,7 +953,7 @@ function exportPrMid() {
   for (let i = 0; i < 16; i++) {
     const o = document.createElement("option");
     o.value = i;
-    o.textContent = i === 9 ? "ch 10 (drums)" : `ch ${i + 1}`;
+    o.textContent = `ch ${i + 1}`;
     chSel.appendChild(o);
   }
 
