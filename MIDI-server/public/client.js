@@ -416,11 +416,12 @@ ws.onmessage = ({ data }) => {
       break;
 
     case "play":
-      startSequencer(msg.epoch);
+      // Skip if already playing at this epoch (hardware sync already started locally)
+      if (!state.playing || epochMs !== msg.epoch) startSequencer(msg.epoch);
       break;
 
     case "stop":
-      stopSequencer();
+      if (state.playing) stopSequencer();
       break;
 
     case "bpm":
@@ -925,7 +926,7 @@ function handleSysMsg(status, bytes, remote) {
     }
     case 0xfa: {
       logMidiRow("Clock", null, "Start", "", remote);
-      if (!remote && ws.readyState === WebSocket.OPEN) {
+      if (!remote) {
         // Sync BPM from clock pulses if available
         if (clockTickTimes.length >= 4) {
           const span = clockTickTimes[clockTickTimes.length - 1] - clockTickTimes[0];
@@ -934,11 +935,19 @@ function handleSysMsg(status, bytes, remote) {
             state.bpm = bpm;
             document.getElementById("bpm").value = bpm;
             document.getElementById("bpm-val").textContent = bpm;
-            ws.send(JSON.stringify({ type: "bpm", bpm }));
+            if (ws.readyState === WebSocket.OPEN)
+              ws.send(JSON.stringify({ type: "bpm", bpm }));
           }
         }
-        // Start immediately — tell server to use epoch = now
-        ws.send(JSON.stringify({ type: "play", epoch: Date.now() + serverTimeOffset }));
+        // Start sequencer locally IMMEDIATELY — no server round-trip
+        const localEpoch = Date.now() + serverTimeOffset;
+        startSequencer(localEpoch);
+        // Enable continuous clock sync from hardware
+        clockSyncEnabled = true;
+        document.getElementById("clock-sync-btn").classList.add("active");
+        // Notify server/peers
+        if (ws.readyState === WebSocket.OPEN)
+          ws.send(JSON.stringify({ type: "play", epoch: localEpoch }));
       }
       break;
     }
@@ -950,8 +959,16 @@ function handleSysMsg(status, bytes, remote) {
       const el = document.getElementById("clock-bpm");
       if (el) el.textContent = "";
       logMidiRow("Clock", null, "Stop", "", remote);
-      if (!remote && ws.readyState === WebSocket.OPEN)
-        ws.send(JSON.stringify({ type: "stop" }));
+      if (!remote) {
+        // Stop sequencer locally IMMEDIATELY
+        stopSequencer();
+        // Disable clock sync
+        clockSyncEnabled = false;
+        document.getElementById("clock-sync-btn").classList.remove("active");
+        // Notify server/peers
+        if (ws.readyState === WebSocket.OPEN)
+          ws.send(JSON.stringify({ type: "stop" }));
+      }
       break;
     }
     case 0xfe:
