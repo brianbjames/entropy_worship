@@ -184,7 +184,9 @@ function dmSwitchPattern(idx) {
 const _dmOrigStart = startSequencer;
 const _dmOrigStop = stopSequencer;
 window.startSequencer = function (epoch) {
-  dmLastIdx = -1;
+  const beatMs = (60 / state.bpm) * 1000;
+  const subMs = beatMs * 0.25;
+  dmLastIdx = Math.floor((Date.now() + serverTimeOffset - epoch) / subMs) - 1;
   _dmOrigStart(epoch);
 };
 window.stopSequencer = function (upd) {

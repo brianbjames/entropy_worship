@@ -610,7 +610,9 @@ function prOnWheel(e) {
 const _prOrigStart = startSequencer;
 const _prOrigStop = stopSequencer;
 window.startSequencer = function (epoch) {
-  prLastPrIdx = -1;
+  const beatMs = (60 / state.bpm) * 1000;
+  const subMs = beatMs * 0.25;
+  prLastPrIdx = Math.floor((Date.now() + serverTimeOffset - epoch) / subMs) - 1;
   _prOrigStart(epoch);
 };
 window.stopSequencer = function (upd) {
