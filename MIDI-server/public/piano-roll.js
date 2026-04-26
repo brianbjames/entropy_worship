@@ -31,9 +31,9 @@
 // ============================================================
 
 // ── Constants ────────────────────────────────────────────────
-const PR_NOTE_MIN = 21; // A0
-const PR_NOTE_MAX = 108; // C8
-const PR_KEYS_W = 52; // px: left key panel width
+const PR_NOTE_MIN = 0; // C-1
+const PR_NOTE_MAX = 127; // G9
+const PR_KEYS_W = 56; // px: left key panel width
 const PR_RULER_H = 24; // px: top ruler height
 const PR_LOOKAHEAD = 100; // ms: matches client.js LOOKAHEAD_MS
 const PR_TICK_MS = 20; // ms: matches client.js SCHEDULER_MS
@@ -57,7 +57,7 @@ const NOTE_NAMES_PR = [
 const prNotes = []; // { note, beatStart, beatDur, ch, vel }
 let prEnabled = false;
 let prBars = 4;
-let prScrollPitch = 49; // MIDI note at top of viewport — centers around C2 (36)
+let prScrollPitch = 72; // MIDI note at top of viewport — centers around middle C area
 let prScrollBeat = 0; // beat offset at left edge
 let prZoom = 0; // set to prMinZoom() on first prResize()
 let prRowH = 10; // px per semitone
@@ -230,9 +230,13 @@ function drawKeys() {
     if (y + prRowH < 0 || y > prGridH) continue;
     const semi = n % 12;
     const isBlack = !WHITE_SEMIS_PR.has(semi);
+    const oct = Math.floor(n / 12) - 1;
+    const noteName = NOTE_NAMES_PR[semi] + oct;
+    const isC = semi === 0;
 
+    // Key background
     ctx.fillStyle = isBlack ? "#140a0a" : "rgba(210,195,195,0.88)";
-    ctx.fillRect(0, y, isBlack ? w * 0.6 : w - 1, prRowH - (isBlack ? 0 : 1));
+    ctx.fillRect(0, y, isBlack ? w * 0.55 : w - 1, prRowH - (isBlack ? 0 : 1));
 
     // White key bottom border
     if (!isBlack) {
@@ -240,18 +244,39 @@ function drawKeys() {
       ctx.fillRect(0, y + prRowH - 1, w - 1, 1);
     }
 
-    // Octave label at each C, note number on all keys
-    if (semi === 0) {
-      const oct = Math.floor(n / 12) - 1;
-      ctx.fillStyle = "#05af90";
-      ctx.font = '7px "Courier New", monospace';
-      ctx.fillText(`C${oct}`, 2, y + prRowH - 2);
-      ctx.fillStyle = "rgba(5,175,144,0.5)";
-      ctx.fillText(n, w - 16, y + prRowH - 2);
-    } else if (prRowH >= 8) {
-      ctx.fillStyle = isBlack ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.3)";
-      ctx.font = '6px "Courier New", monospace';
-      ctx.fillText(n, isBlack ? w * 0.6 + 2 : w - 16, y + prRowH - 2);
+    // C keys get a subtle highlight stripe
+    if (isC) {
+      ctx.fillStyle = "rgba(5,175,144,0.08)";
+      ctx.fillRect(0, y, w - 1, prRowH - 1);
+    }
+
+    // Labels — note name on left, MIDI number on right
+    if (prRowH >= 8) {
+      const textY = y + prRowH - 2;
+      const numX = w - 18;
+      if (isC) {
+        // C notes: bright teal, larger font
+        ctx.font = 'bold 9px "Courier New", monospace';
+        ctx.fillStyle = "#05af90";
+        ctx.fillText(noteName, 2, textY);
+        ctx.font = '8px "Courier New", monospace';
+        ctx.fillStyle = "#05af90";
+        ctx.fillText(n, numX, textY);
+      } else if (isBlack) {
+        // Black keys: light text on dark bg
+        ctx.font = '8px "Courier New", monospace';
+        ctx.fillStyle = "rgba(255,255,255,0.55)";
+        ctx.fillText(noteName, 2, textY);
+        ctx.fillStyle = "rgba(255,255,255,0.35)";
+        ctx.fillText(n, numX, textY);
+      } else {
+        // White keys: dark text
+        ctx.font = '8px "Courier New", monospace';
+        ctx.fillStyle = "rgba(0,0,0,0.55)";
+        ctx.fillText(noteName, 2, textY);
+        ctx.fillStyle = "rgba(0,0,0,0.35)";
+        ctx.fillText(n, numX, textY);
+      }
     }
   }
 
@@ -577,7 +602,7 @@ function prOnWheel(e) {
   } else {
     prScrollPitch = prClamp(
       prScrollPitch + (delta > 0 ? -2 : 2),
-      PR_NOTE_MIN + prVisibleRows(),
+      PR_NOTE_MIN + Math.max(0, Math.floor(prGridH / prRowH) - 1),
       PR_NOTE_MAX,
     );
   }
@@ -848,7 +873,7 @@ function importParsedMidi({ tempoUs, division, notes }) {
     const avg = prNotes.reduce((s, n) => s + n.note, 0) / prNotes.length;
     prScrollPitch = prClamp(
       Math.round(avg) + Math.floor(prVisibleRows() / 2),
-      PR_NOTE_MIN + prVisibleRows(),
+      PR_NOTE_MIN + Math.max(0, Math.floor(prGridH / prRowH) - 1),
       PR_NOTE_MAX,
     );
   }
