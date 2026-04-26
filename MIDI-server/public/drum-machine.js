@@ -238,12 +238,11 @@ function dmSchedulerTick() {
         const delayMs = Math.max(0, (audioT - Tone.context.currentTime) * 1000);
         setTimeout(() => {
           const onBytes = [0x90 | dmMidiChannel, midiNote, dmVelocity];
-          handleMidiData(onBytes, false);
+          logMidiRow("Note On", dmMidiChannel + 1, midiNoteName(midiNote), `v:${dmVelocity}`, false);
           sendToOutput(onBytes);
           setTimeout(() => {
-            const offBytes = [0x80 | dmMidiChannel, midiNote, 0];
-            handleMidiData(offBytes, false);
-            sendToOutput(offBytes);
+            logMidiRow("Note Off", dmMidiChannel + 1, midiNoteName(midiNote), "", false);
+            sendToOutput([0x80 | dmMidiChannel, midiNote, 0]);
           }, subMs * 0.9);
         }, delayMs);
       }
