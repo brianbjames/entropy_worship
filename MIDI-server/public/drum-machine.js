@@ -99,6 +99,9 @@ const dmInstrumentNote = DM_INSTRUMENTS.map(inst => inst.note);
 // MIDI channel for drum output/input (0-indexed, default ch 10 = index 9)
 let dmMidiChannel = 9;
 
+// Velocity for MIDI output (1-127)
+let dmVelocity = 100;
+
 // ── Load ALL samples from all kits via individual Tone.Player ──
 function dmLoadSamples() {
   DM_ALL_SAMPLES.forEach((samplePath) => {
@@ -230,12 +233,18 @@ function dmSchedulerTick() {
         const player = dmPlayerMap[dmInstrumentFile[i]];
         if (player && player.loaded) player.start(audioT);
 
-        // Send MIDI Note On/Off to hardware output
+        // Send MIDI Note On/Off to hardware output + log
         const midiNote = dmInstrumentNote[i];
         const delayMs = Math.max(0, (audioT - Tone.context.currentTime) * 1000);
         setTimeout(() => {
-          sendToOutput([0x90 | dmMidiChannel, midiNote, 100]);
-          setTimeout(() => sendToOutput([0x80 | dmMidiChannel, midiNote, 0]), subMs * 0.9);
+          const onBytes = [0x90 | dmMidiChannel, midiNote, dmVelocity];
+          handleMidiData(onBytes, false);
+          sendToOutput(onBytes);
+          setTimeout(() => {
+            const offBytes = [0x80 | dmMidiChannel, midiNote, 0];
+            handleMidiData(offBytes, false);
+            sendToOutput(offBytes);
+          }, subMs * 0.9);
         }, delayMs);
       }
     }
@@ -504,7 +513,7 @@ function dmExportMid() {
       if (dmPattern[i][s]) {
         const onTick = s * stepTicks;
         const offTick = onTick + noteDurTicks;
-        events.push({ tick: onTick, bytes: [0x90 | dmMidiChannel, midiNote, 100] });
+        events.push({ tick: onTick, bytes: [0x90 | dmMidiChannel, midiNote, dmVelocity] });
         events.push({ tick: offTick, bytes: [0x80 | dmMidiChannel, midiNote, 0] });
       }
     }
@@ -608,6 +617,12 @@ dmRenderChainSlots();
 
 // Export button
 document.getElementById("dm-export-btn").addEventListener("click", dmExportMid);
+
+// Velocity slider
+document.getElementById("dm-vel").addEventListener("input", (e) => {
+  dmVelocity = +e.target.value;
+  document.getElementById("dm-vel-val").textContent = dmVelocity;
+});
 
 // Drag-and-drop MIDI import
 (function () {
