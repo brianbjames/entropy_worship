@@ -1127,40 +1127,31 @@ strong {
   border-color: #ff6644;
 }
 
-/* ── Mixer ──────────────────────────────────────────────────── */
-#mixer-section {
-  margin-top: 12px;
-}
-#mixer-strips {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-}
-.mx-row {
-  display: flex;
+/* ── Inline Mixer Faders ───────────────────────────────────── */
+.mx-inline {
+  display: inline-flex;
   align-items: center;
-  gap: 4px;
-  height: 20px;
-  padding: 0 4px;
+  gap: 3px;
 }
-.mx-master {
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 3px;
-  margin-bottom: 2px;
-}
-.mx-label {
-  width: 28px;
-  min-width: 28px;
+.mx-inline-label {
   font-size: 0.6rem;
   color: var(--dim);
-  text-align: right;
   letter-spacing: 0.02em;
 }
-.mx-master .mx-label {
-  color: var(--accent);
+.mx-inline-fader {
+  width: 50px;
+  height: 10px;
+  cursor: pointer;
+  accent-color: var(--teal);
 }
-.mx-mute,
-.mx-solo {
+.mx-inline-db {
+  width: 24px;
+  min-width: 24px;
+  font-size: 0.55rem;
+  color: var(--teal);
+  text-align: right;
+}
+.mx-inline-mute {
   width: 16px;
   height: 14px;
   font-family: var(--font);
@@ -1173,35 +1164,10 @@ strong {
   cursor: pointer;
   line-height: 1;
 }
-.mx-mute.active {
+.mx-inline-mute.active {
   background: var(--accent);
   border-color: var(--accent);
   color: #000;
-}
-.mx-solo.active {
-  background: var(--yellow);
-  border-color: var(--yellow);
-  color: #000;
-}
-.mx-fader {
-  flex: 1;
-  height: 10px;
-  cursor: pointer;
-  accent-color: var(--teal);
-}
-.mx-db {
-  width: 28px;
-  min-width: 28px;
-  font-size: 0.55rem;
-  color: var(--teal);
-  text-align: right;
-}
-.mx-pan {
-  width: 32px;
-  min-width: 32px;
-  height: 10px;
-  cursor: pointer;
-  accent-color: var(--blue);
 }
 
 /* ── MIDI log ───────────────────────────────────────────────── */

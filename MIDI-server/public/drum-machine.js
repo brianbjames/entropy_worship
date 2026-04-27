@@ -330,6 +330,11 @@ function dmRenderGrid() {
       row.appendChild(btn);
     }
 
+    // Volume fader for this drum voice
+    if (typeof mixerBuildDrumFader === "function") {
+      row.appendChild(mixerBuildDrumFader(inst.sample));
+    }
+
     grid.appendChild(row);
   });
 }

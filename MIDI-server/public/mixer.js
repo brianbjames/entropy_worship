@@ -1,97 +1,78 @@
 /* ── Mixer ────────────────────────────────────────────────────
-   Per-channel Volume, Pan, Mute, Solo for all instruments.
-   Compact vertical layout — one row per channel.
+   Inline volume faders placed next to the synth they control.
+   Master in transport, pad/click in keyboard, drums in grid rows.
    ──────────────────────────────────────────────────────────── */
 
-const MIXER_STRIPS = [
-  { id: "master", label: "MST",    get ch() { return masterChannel; } },
-  { id: "pad",    label: "PAD",    get ch() { return padChannel; } },
-  { id: "click",  label: "CLK",    get ch() { return clickChannel; } },
-  { id: "kick",   label: "KICK",   get ch() { return dmChannelMap.kick; } },
-  { id: "snare",  label: "SNR",    get ch() { return dmChannelMap.snare; } },
-  { id: "tomL",   label: "TML",    get ch() { return dmChannelMap.tomL; } },
-  { id: "tomH",   label: "TMH",    get ch() { return dmChannelMap.tomH; } },
-  { id: "clap",   label: "CLP",    get ch() { return dmChannelMap.clap; } },
-  { id: "hhO",    label: "HHO",    get ch() { return dmChannelMap.hihatOpen; } },
-  { id: "hhC",    label: "HHC",    get ch() { return dmChannelMap.hihatClose; } },
-  { id: "cymbal", label: "CYM",    get ch() { return dmChannelMap.cymbal; } },
-  { id: "rim",    label: "RIM",    get ch() { return dmChannelMap.rim; } },
-  { id: "ride",   label: "RDE",    get ch() { return dmChannelMap.ride; } },
-];
+function mixerBuildFader(getChannel, label) {
+  const wrap = document.createElement("span");
+  wrap.className = "mx-inline";
+
+  const lbl = document.createElement("span");
+  lbl.className = "mx-inline-label";
+  lbl.textContent = label;
+  wrap.appendChild(lbl);
+
+  const fader = document.createElement("input");
+  fader.type = "range";
+  fader.className = "mx-inline-fader";
+  fader.min = -40;
+  fader.max = 6;
+  fader.step = 0.5;
+  const ch = getChannel();
+  fader.value = ch ? ch.volume.value : 0;
+  fader.addEventListener("input", () => {
+    const c = getChannel();
+    if (c) c.volume.value = +fader.value;
+    db.textContent = fader.value > 0 ? `+${fader.value}` : fader.value;
+  });
+  wrap.appendChild(fader);
+
+  const db = document.createElement("span");
+  db.className = "mx-inline-db";
+  const v = ch ? ch.volume.value : 0;
+  db.textContent = v > 0 ? `+${v}` : v;
+  wrap.appendChild(db);
+
+  const mute = document.createElement("button");
+  mute.className = "mx-inline-mute";
+  mute.textContent = "M";
+  mute.addEventListener("click", () => {
+    const c = getChannel();
+    if (!c) return;
+    c.mute = !c.mute;
+    mute.classList.toggle("active", c.mute);
+  });
+  wrap.appendChild(mute);
+
+  return wrap;
+}
 
 function mixerBuildUI() {
-  const container = document.getElementById("mixer-strips");
-  container.innerHTML = "";
+  // Master fader in transport
+  const masterEl = document.getElementById("mx-master-strip");
+  if (masterEl) {
+    masterEl.innerHTML = "";
+    masterEl.appendChild(mixerBuildFader(() => masterChannel, "MST"));
+  }
 
-  MIXER_STRIPS.forEach((strip) => {
-    const row = document.createElement("div");
-    row.className = "mx-row";
-    if (strip.id === "master") row.classList.add("mx-master");
+  // Pad synth fader in keyboard section
+  const padEl = document.getElementById("mx-pad-strip");
+  if (padEl) {
+    padEl.innerHTML = "";
+    padEl.appendChild(mixerBuildFader(() => padChannel, "PAD"));
+  }
 
-    // Label
-    const label = document.createElement("span");
-    label.className = "mx-label";
-    label.textContent = strip.label;
-    row.appendChild(label);
+  // Click fader in keyboard section
+  const clickEl = document.getElementById("mx-click-strip");
+  if (clickEl) {
+    clickEl.innerHTML = "";
+    clickEl.appendChild(mixerBuildFader(() => clickChannel, "CLK"));
+  }
+}
 
-    // Mute
-    const mute = document.createElement("button");
-    mute.className = "mx-mute";
-    mute.textContent = "M";
-    mute.addEventListener("click", () => {
-      if (!strip.ch) return;
-      strip.ch.mute = !strip.ch.mute;
-      mute.classList.toggle("active", strip.ch.mute);
-    });
-    row.appendChild(mute);
-
-    // Solo
-    const solo = document.createElement("button");
-    solo.className = "mx-solo";
-    solo.textContent = "S";
-    solo.addEventListener("click", () => {
-      if (!strip.ch) return;
-      strip.ch.solo = !strip.ch.solo;
-      solo.classList.toggle("active", strip.ch.solo);
-    });
-    row.appendChild(solo);
-
-    // Volume fader
-    const fader = document.createElement("input");
-    fader.type = "range";
-    fader.className = "mx-fader";
-    fader.min = -40;
-    fader.max = 6;
-    fader.step = 0.5;
-    fader.value = strip.ch ? strip.ch.volume.value : 0;
-    fader.addEventListener("input", () => {
-      if (strip.ch) strip.ch.volume.value = +fader.value;
-      db.textContent = fader.value > 0 ? `+${fader.value}` : fader.value;
-    });
-    row.appendChild(fader);
-
-    // dB
-    const db = document.createElement("span");
-    db.className = "mx-db";
-    const v = strip.ch ? strip.ch.volume.value : 0;
-    db.textContent = v > 0 ? `+${v}` : v;
-    row.appendChild(db);
-
-    // Pan
-    const pan = document.createElement("input");
-    pan.type = "range";
-    pan.className = "mx-pan";
-    pan.min = -1;
-    pan.max = 1;
-    pan.step = 0.05;
-    pan.value = strip.ch ? strip.ch.pan.value : 0;
-    pan.addEventListener("input", () => {
-      if (strip.ch) strip.ch.pan.value = +pan.value;
-    });
-    row.appendChild(pan);
-
-    container.appendChild(row);
-  });
+// Drum faders are built per-row inside dmRenderGrid via this helper
+function mixerBuildDrumFader(sampleKey) {
+  return mixerBuildFader(() => dmChannelMap[sampleKey], "VOL");
 }
 
 mixerBuildUI();

@@ -90,6 +90,7 @@
         <button id="play-btn">▶ PLAY</button>
         <button id="stop-btn" disabled>■ STOP</button>
         <button id="click-btn">♩ CLICK</button>
+        <span id="mx-master-strip"></span>
         <div class="bpm-group">
           <span class="label-dim">BPM</span>
           <input type="range" id="bpm" min="60" max="200" value="120" />
@@ -170,6 +171,8 @@
             <input type="range" id="vkb-vel" min="1" max="127" value="80" />
             <strong id="vkb-vel-val">80</strong>
           </label>
+          <span id="mx-pad-strip"></span>
+          <span id="mx-click-strip"></span>
         </div>
         <div id="synth-controls">
           <div id="synth-top-row">
@@ -384,11 +387,6 @@
           </label>
         </div>
         <div id="dm-grid"></div>
-      </div>
-
-      <div id="mixer-section" class="hud-panel clip-bl">
-        <div class="section-title">// MIXER //</div>
-        <div id="mixer-strips"></div>
       </div>
 
       <div id="midi-section" class="hud-panel clip-tr">
