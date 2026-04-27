@@ -86,7 +86,7 @@ let dmChainPos = 0; // current position in chain
 
 let dmEnabled = false;
 let dmLastIdx = -1;
-const dmPlayerMap = {};  // keyed by sample path (e.g. "909/kick-1.wav")
+const dmBufferMap = {};  // keyed by sample path → Tone.ToneAudioBuffer
 const dmChannelMap = {}; // keyed by instrument sample name — Tone.Channel per drum
 let dmLoaded = false;
 
@@ -102,11 +102,11 @@ let dmMidiChannel = 9;
 // Velocity for MIDI output (1-127)
 let dmVelocity = 100;
 
-// ── Load ALL samples from all kits via individual Tone.Player ──
+// ── Load ALL samples as audio buffers ───────────────────────
 function dmLoadSamples() {
   DM_ALL_SAMPLES.forEach((samplePath) => {
-    if (!dmPlayerMap[samplePath]) {
-      dmPlayerMap[samplePath] = new Tone.Player(`samples/${samplePath}`);
+    if (!dmBufferMap[samplePath]) {
+      dmBufferMap[samplePath] = new Tone.ToneAudioBuffer(`samples/${samplePath}`);
     }
   });
   Tone.loaded().then(() => { dmLoaded = true; });
@@ -114,35 +114,26 @@ function dmLoadSamples() {
 
 // Called after masterChannel exists (from initSynths → initMixerChannels)
 function dmConnectChannels() {
-  DM_INSTRUMENTS.forEach((inst, i) => {
+  DM_INSTRUMENTS.forEach((inst) => {
     if (!dmChannelMap[inst.sample]) {
       dmChannelMap[inst.sample] = new Tone.Channel({ volume: 0 }).connect(masterChannel);
-    }
-    // Connect currently assigned sample to this instrument's channel
-    const file = dmInstrumentFile[i];
-    if (dmPlayerMap[file]) {
-      dmPlayerMap[file].disconnect();
-      dmPlayerMap[file].connect(dmChannelMap[inst.sample]);
     }
   });
 }
 
+// ── One-shot sample trigger ─────────────────────────────────
+function dmTrigger(rowIdx, time) {
+  const buf = dmBufferMap[dmInstrumentFile[rowIdx]];
+  const inst = DM_INSTRUMENTS[rowIdx];
+  const ch = dmChannelMap[inst.sample];
+  if (!buf || !buf.loaded || !ch) return;
+  const src = new Tone.ToneBufferSource(buf).connect(ch);
+  src.start(time);
+}
+
 // ── Swap sample for a drum row ──────────────────────────────
 function dmSwapSample(rowIdx, filename) {
-  const inst = DM_INSTRUMENTS[rowIdx];
-  // Disconnect old player from this row's channel
-  const oldFile = dmInstrumentFile[rowIdx];
-  if (dmPlayerMap[oldFile]) {
-    try { dmPlayerMap[oldFile].disconnect(); } catch (_) {}
-  }
-  // Update assignment
   dmInstrumentFile[rowIdx] = filename;
-  // Connect new player to this row's channel
-  const channel = dmChannelMap[inst.sample];
-  if (dmPlayerMap[filename] && channel) {
-    dmPlayerMap[filename].disconnect();
-    dmPlayerMap[filename].connect(channel);
-  }
 }
 
 // ── Pattern bank helpers ────────────────────────────────────
@@ -232,11 +223,7 @@ function dmSchedulerTick() {
 
     for (let i = 0; i < DM_INSTRUMENTS.length; i++) {
       if (dmPattern[i][step]) {
-        const player = dmPlayerMap[dmInstrumentFile[i]];
-        if (player && player.loaded) {
-          try { player.stop(audioT); } catch (_) {}
-          player.start(audioT + 0.001);
-        }
+        dmTrigger(i, audioT);
 
         // Send MIDI Note On/Off to hardware output + log
         const midiNote = dmInstrumentNote[i];
@@ -491,11 +478,7 @@ function dmHandleMidiNote(note, vel) {
   if (!dmLoaded) return;
   for (let i = 0; i < DM_INSTRUMENTS.length; i++) {
     if (dmInstrumentNote[i] === note && vel > 0) {
-      const player = dmPlayerMap[dmInstrumentFile[i]];
-      if (player && player.loaded) {
-        try { player.stop(); } catch (_) {}
-        player.start(Tone.now() + DM_LOOKAHEAD / 1000 + 0.001);
-      }
+      dmTrigger(i, Tone.now() + DM_LOOKAHEAD / 1000);
       return;
     }
   }
