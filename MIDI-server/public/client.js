@@ -416,7 +416,8 @@ ws.onmessage = ({ data }) => {
       break;
 
     case "play":
-      if (!state.playing) startSequencer(msg.epoch);
+      // Always re-sync to server epoch unless it's our own echo
+      if (epochMs !== msg.epoch) startSequencer(msg.epoch);
       break;
 
     case "stop":
