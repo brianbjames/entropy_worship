@@ -219,8 +219,8 @@ function stopLFO() {
 }
 
 // ── Epoch-based scheduler ────────────────────────────────────
-const LOOKAHEAD_MS = 100;
-const SCHEDULER_MS = 20;
+const LOOKAHEAD_MS = 50;
+const SCHEDULER_MS = 10;
 
 let epochMs = null;
 let schedulerTimer = null;
@@ -805,13 +805,14 @@ function handleMidiData(bytes, remote) {
   switch (msgType) {
     case 0x90:
       if (d2 > 0) {
-        // Only play local notes through the browser synth — remote notes are
-        // for MIDI log and hardware output (via THRU) only
+        // Schedule synth at the same offset as the internal sequencers
+        // so hardware MIDI input and sequenced notes stay aligned
         if (padSynth && !remote) {
+          const syncT = Tone.now() + LOOKAHEAD_MS / 1000;
           padSynth.triggerAttackRelease(
             Tone.Frequency(d1, "midi").toFrequency(),
             "8n",
-            Tone.now(),
+            syncT,
             d2 / 127,
           );
         }

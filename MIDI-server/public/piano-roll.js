@@ -35,8 +35,8 @@ const PR_NOTE_MIN = 0; // C-1
 const PR_NOTE_MAX = 127; // G9
 const PR_KEYS_W = 56; // px: left key panel width
 const PR_RULER_H = 24; // px: top ruler height
-const PR_LOOKAHEAD = 100; // ms: matches client.js LOOKAHEAD_MS
-const PR_TICK_MS = 20; // ms: matches client.js SCHEDULER_MS
+const PR_LOOKAHEAD = 50; // ms: matches client.js LOOKAHEAD_MS
+const PR_TICK_MS = 10; // ms: matches client.js SCHEDULER_MS
 const WHITE_SEMIS_PR = new Set([0, 2, 4, 5, 7, 9, 11]);
 const NOTE_NAMES_PR = [
   "C",

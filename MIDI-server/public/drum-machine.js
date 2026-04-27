@@ -5,8 +5,8 @@
    piano-roll.js.
    ──────────────────────────────────────────────────────────── */
 
-const DM_TICK_MS = 20;
-const DM_LOOKAHEAD = 100;
+const DM_TICK_MS = 10;
+const DM_LOOKAHEAD = 50;
 
 // ── Kit registry ───────────────────────────────────────────
 // Each kit is a folder under samples/. To add a new kit:
@@ -484,7 +484,7 @@ function dmHandleMidiNote(note, vel) {
   for (let i = 0; i < DM_INSTRUMENTS.length; i++) {
     if (dmInstrumentNote[i] === note && vel > 0) {
       const player = dmPlayerMap[dmInstrumentFile[i]];
-      if (player && player.loaded) player.start(Tone.now());
+      if (player && player.loaded) player.start(Tone.now() + DM_LOOKAHEAD / 1000);
       return;
     }
   }
