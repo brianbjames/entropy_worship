@@ -416,12 +416,11 @@ ws.onmessage = ({ data }) => {
       break;
 
     case "play":
-      // Skip if already playing at this epoch (hardware sync already started locally)
-      if (!state.playing || epochMs !== msg.epoch) startSequencer(msg.epoch);
+      if (!state.playing) startSequencer(msg.epoch);
       break;
 
     case "stop":
-      if (state.playing) stopSequencer();
+      stopSequencer();
       break;
 
     case "bpm":
