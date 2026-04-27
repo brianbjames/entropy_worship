@@ -680,7 +680,7 @@ function prSchedulerTick() {
 
         const delayMs = Math.max(0, (audioT - Tone.context.currentTime) * 1000);
         const offMs = delayMs + n.beatDur * beatMs;
-        const ch = n.ch & 0xf;
+        const ch = +document.getElementById("pr-ch").value & 0xf;
         const note = n.note,
           vel = n.vel;
         setTimeout(() => {
