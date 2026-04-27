@@ -233,7 +233,10 @@ function dmSchedulerTick() {
     for (let i = 0; i < DM_INSTRUMENTS.length; i++) {
       if (dmPattern[i][step]) {
         const player = dmPlayerMap[dmInstrumentFile[i]];
-        if (player && player.loaded) player.start(audioT);
+        if (player && player.loaded) {
+          player.stop(audioT);
+          player.start(audioT);
+        }
 
         // Send MIDI Note On/Off to hardware output + log
         const midiNote = dmInstrumentNote[i];
@@ -484,7 +487,10 @@ function dmHandleMidiNote(note, vel) {
   for (let i = 0; i < DM_INSTRUMENTS.length; i++) {
     if (dmInstrumentNote[i] === note && vel > 0) {
       const player = dmPlayerMap[dmInstrumentFile[i]];
-      if (player && player.loaded) player.start(Tone.now() + DM_LOOKAHEAD / 1000);
+      if (player && player.loaded) {
+        player.stop();
+        player.start(Tone.now() + DM_LOOKAHEAD / 1000);
+      }
       return;
     }
   }

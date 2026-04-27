@@ -684,11 +684,12 @@ function prSchedulerTick() {
         const note = n.note,
           vel = n.vel;
         setTimeout(() => {
+          logMidiRow("Note On", ch + 1, midiNoteName(note), `v:${vel}`, false);
           sendToOutput([0x90 | ch, note, vel]);
-          setTimeout(
-            () => sendToOutput([0x80 | ch, note, 0]),
-            n.beatDur * beatMs,
-          );
+          setTimeout(() => {
+            logMidiRow("Note Off", ch + 1, midiNoteName(note), "", false);
+            sendToOutput([0x80 | ch, note, 0]);
+          }, n.beatDur * beatMs);
         }, delayMs);
       }
     }
