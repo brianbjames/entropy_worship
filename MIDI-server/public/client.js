@@ -480,6 +480,7 @@ function initUI() {
       ws.send(JSON.stringify({ type: "play" }));
   });
   document.getElementById("stop-btn").addEventListener("click", () => {
+    stopSequencer();
     if (ws.readyState === WebSocket.OPEN)
       ws.send(JSON.stringify({ type: "stop" }));
   });
