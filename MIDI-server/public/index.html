@@ -466,7 +466,12 @@
             <table class="help-table">
               <tr>
                 <td class="hk">▶ PLAY / ■ STOP</td>
-                <td>Start and stop synchronized playback across all peers</td>
+                <td>
+                  Start and stop synchronized playback across all peers.
+                  Also responds to hardware MIDI Start (0xFA) and Stop
+                  (0xFC) — transport syncs automatically to external
+                  sequencers
+                </td>
               </tr>
               <tr>
                 <td class="hk">♩ CLICK</td>
@@ -475,10 +480,16 @@
                 </td>
               </tr>
               <tr>
+                <td class="hk">MST / CLK</td>
+                <td>
+                  Master volume and click volume faders with mute buttons
+                </td>
+              </tr>
+              <tr>
                 <td class="hk">BPM</td>
                 <td>
                   Drag the slider to change tempo (60–200) — broadcasts to all
-                  peers
+                  peers. Syncs automatically from incoming hardware MIDI clock
                 </td>
               </tr>
             </table>
@@ -576,8 +587,15 @@
                 <td>Pattern length in bars (1–32)</td>
               </tr>
               <tr>
-                <td class="hk">CH / VEL</td>
-                <td>Channel and velocity for new notes</td>
+                <td class="hk">CH</td>
+                <td>
+                  MIDI output channel for all notes — changes take effect
+                  immediately during playback
+                </td>
+              </tr>
+              <tr>
+                <td class="hk">VEL</td>
+                <td>Velocity for new notes (1–127)</td>
               </tr>
               <tr>
                 <td class="hk">↓ DROP .MID</td>
@@ -628,7 +646,7 @@
           </div>
 
           <div class="help-section">
-            <div class="section-title">// EW909 DRUM MACHINE</div>
+            <div class="section-title">// DRUM MACHINE</div>
             <table class="help-table">
               <tr>
                 <td class="hk">ENABLE</td>
@@ -638,13 +656,62 @@
                 <td class="hk">GRID</td>
                 <td>
                   Click cells to toggle steps on/off — rows are drum sounds
-                  (kick, snare, hi-hats, toms, clap, cymbal, rim, ride), columns
-                  are steps
+                  (kick, snare, hi-hats, toms, clap, cymbal, rim, ride),
+                  columns are steps
                 </td>
+              </tr>
+              <tr>
+                <td class="hk">SAMPLE</td>
+                <td>
+                  Per-row dropdown to select a sample from the 909 or 808 kit
+                  — any sample can be assigned to any row
+                </td>
+              </tr>
+              <tr>
+                <td class="hk">NOTE</td>
+                <td>
+                  Per-row MIDI note number (0–127) — used for MIDI output and
+                  input triggering. Defaults to GM drum map (kick=36,
+                  snare=38, etc.)
+                </td>
+              </tr>
+              <tr>
+                <td class="hk">VOL</td>
+                <td>Per-row volume fader with mute button</td>
               </tr>
               <tr>
                 <td class="hk">STEPS</td>
                 <td>Number of steps per pattern (1–64, default 16)</td>
+              </tr>
+              <tr>
+                <td class="hk">CH</td>
+                <td>
+                  MIDI channel for drum output and input triggering (default
+                  ch 10)
+                </td>
+              </tr>
+              <tr>
+                <td class="hk">VEL</td>
+                <td>Velocity for MIDI note output (1–127)</td>
+              </tr>
+              <tr>
+                <td class="hk">↓ DROP .MID</td>
+                <td>
+                  Drag a drum .mid file onto the zone to import — maps notes
+                  to rows by MIDI note number, auto-detects step count
+                </td>
+              </tr>
+              <tr>
+                <td class="hk">↓ EXPORT .MID</td>
+                <td>Download the current drum pattern as a Standard MIDI file</td>
+              </tr>
+              <tr>
+                <td class="hk">MIDI INPUT</td>
+                <td>
+                  Incoming MIDI notes on the drum channel trigger the matching
+                  drum voice by note number — play drums from a MIDI
+                  controller or external sequencer
+                </td>
               </tr>
               <tr>
                 <td class="hk">CLEAR</td>
@@ -685,21 +752,29 @@
                 </td>
               </tr>
               <tr>
-                <td class="hk">CH / VEL</td>
-                <td>MIDI channel and velocity for keyboard output</td>
+                <td class="hk">PAD</td>
+                <td>Pad synth volume fader with mute button</td>
+              </tr>
+              <tr>
+                <td class="hk">CH</td>
+                <td>MIDI channel for keyboard output</td>
+              </tr>
+              <tr>
+                <td class="hk">VEL</td>
+                <td>Velocity for keyboard output (1–127)</td>
               </tr>
             </table>
           </div>
 
           <div class="help-section">
-            <div class="section-title">// MIXER</div>
+            <div class="section-title">// VOLUME</div>
             <table class="help-table">
               <tr>
                 <td class="hk">FADERS</td>
                 <td>
-                  Per-channel volume strips for master, pad synth, click, and
-                  each drum sound (kick, snare, toms, clap, hi-hats, cymbal,
-                  rim, ride)
+                  Inline volume faders with mute buttons — MST (master) and
+                  CLK (click) in transport, PAD (synth) in keyboard section,
+                  VOL per drum voice in each grid row
                 </td>
               </tr>
             </table>
@@ -742,9 +817,10 @@
               <tr>
                 <td class="hk">CLK SYNC</td>
                 <td>
-                  Slave the room BPM and transport to an incoming hardware clock
-                  — use this when a hardware sequencer or DAW is the master.
-                  Pair with CLK ↑ to also distribute its clock pulses to peers
+                  Slave the room BPM to an incoming hardware clock. Auto-enabled
+                  when a hardware Start message is received — the room locks to
+                  the external sequencer's tempo. Pair with CLK ↑ to also
+                  distribute clock pulses to peers
                 </td>
               </tr>
               <tr>
