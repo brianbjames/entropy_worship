@@ -788,6 +788,7 @@
 
       <!-- Scope display panel -->
       <div class="hud-panel">
+        <span class="section-title" id="display-title">// WAVEFORM + SPECTRUM</span>
         <div id="scope-screen-wrap">
           <canvas id="scopeCanvas"></canvas>
           <div class="corner tl"></div>
@@ -1504,11 +1505,15 @@
         if (!running) return;
         try {
           setStatus("SWITCHING");
-          const constraints = {
-            audio: deviceId ? { deviceId: { exact: deviceId } } : true,
+          const audioOpts = {
+            autoGainControl: false,
+            noiseSuppression: false,
+            echoCancellation: false,
           };
+          if (deviceId) audioOpts.deviceId = { exact: deviceId };
+          if (audioCtx.state === "suspended") await audioCtx.resume();
           const newStream =
-            await navigator.mediaDevices.getUserMedia(constraints);
+            await navigator.mediaDevices.getUserMedia({ audio: audioOpts });
           if (micSource) {
             micSource.disconnect();
             micSource = null;
@@ -1530,13 +1535,17 @@
       async function startScope() {
         try {
           const deviceId = document.getElementById("deviceSelect").value;
-          const constraints = {
-            audio: deviceId ? { deviceId: { exact: deviceId } } : true,
+          const audioOpts = {
+            autoGainControl: false,
+            noiseSuppression: false,
+            echoCancellation: false,
           };
-          const stream = await navigator.mediaDevices.getUserMedia(constraints);
+          if (deviceId) audioOpts.deviceId = { exact: deviceId };
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: audioOpts });
 
           currentStream = stream;
           audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          if (audioCtx.state === "suspended") await audioCtx.resume();
           analyser = audioCtx.createAnalyser();
           analyser.fftSize = ANALYSER_SIZE;
           analyser.smoothingTimeConstant =
