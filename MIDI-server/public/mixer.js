@@ -62,7 +62,7 @@ function mixerBuildUI() {
     padEl.appendChild(mixerBuildFader(() => padChannel, "PAD"));
   }
 
-  // Click fader in keyboard section
+  // Click fader in transport
   const clickEl = document.getElementById("mx-click-strip");
   if (clickEl) {
     clickEl.innerHTML = "";
@@ -76,3 +76,6 @@ function mixerBuildDrumFader(sampleKey) {
 }
 
 mixerBuildUI();
+
+// Re-render drum grid now that mixerBuildDrumFader is available
+if (typeof dmRenderGrid === "function") dmRenderGrid();
