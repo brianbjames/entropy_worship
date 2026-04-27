@@ -853,11 +853,9 @@ function handleMidiData(bytes, remote) {
   // Record channel-voice events (skip system messages)
   if (msgType < 0xf0) recordEvent(bytes);
 
-  // Route remote MIDI to physical output:
-  // • THRU on  → forward everything
-  // • THRU off → still forward 0xF8 clock (CLK relay should be transparent)
+  // Route remote MIDI to physical output — always forward to selected output
   if (remote) {
-    if (thruEnabled || bytes[0] === 0xf8) sendToOutput(bytes);
+    sendToOutput(bytes);
   }
 }
 
