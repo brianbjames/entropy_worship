@@ -1,0 +1,234 @@
+<!-- /-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\ -->
+<!-- |                                                                         | -->
+<!-- \ @@@@@@@@  @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@@@@@   @@@ @@@      / -->
+<!-- - @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@ @@@      - -->
+<!-- / @@!       @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!  @@@  @@! !@@      \ -->
+<!-- | !@!       !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!  @!@  !@! @!!      | -->
+<!-- \ @!!!:!    @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!@@!@!    !@!@!       / -->
+<!-- - !!!!!:    !@!  !!!    !!!    !!@!@!    !@!  !!!  !!@!!!      @!!!       - -->
+<!-- / !!:       !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:         !!:        \ -->
+<!-- | :!:       :!:  !:!    :!:    :!:  !:!  :!:  !:!  :!:         :!:        | -->
+<!-- \  :: ::::   ::   ::     ::    ::   :::  ::::: ::   ::          ::        / -->
+<!-- - : :: ::   ::    :      :      :   : :   : :  :    :           :         - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \ @@@  @@@  @@@   @@@@@@   @@@@@@@    @@@@@@   @@@  @@@  @@@  @@@@@@@     / -->
+<!-- - @@@  @@@  @@@  @@@@@@@@  @@@@@@@@  @@@@@@@   @@@  @@@  @@@  @@@@@@@@    - -->
+<!-- / @@!  @@!  @@!  @@!  @@@  @@!  @@@  !@@       @@!  @@@  @@!  @@!  @@@    \ -->
+<!-- | !@!  !@!  !@!  !@!  @!@  !@!  @!@  !@!       !@!  @!@  !@!  !@!  @!@    | -->
+<!-- \ @!!  !!@  @!@  @!@  !@!  @!@!!@!   !!@@!!    @!@!@!@!  !!@  @!@@!@!     / -->
+<!-- - !@!  !!!  !@!  !@!  !!!  !!@!@!     !!@!!!   !!!@!!!!  !!!  !!@!!!      - -->
+<!-- / !!:  !!:  !!:  !!:  !!!  !!: :!!        !:!  !!:  !!!  !!:  !!:         \ -->
+<!-- | :!:  :!:  :!:  :!:  !:!  :!:  !:!      !:!   :!:  !:!  :!:  :!:         | -->
+<!-- \  :::: :: :::   ::::: ::  ::   :::  :::: ::   ::   :::   ::   ::         / -->
+<!-- -   :: :  : :     : :  :    :   : :  :: : :     :   : :  :     :          - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EW // OBJECTS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=VT323&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css"
+    />
+    <link rel="stylesheet" href="lib/ewuilib.css" />
+    <style>
+      .object-card {
+        display: block;
+        text-decoration: none;
+        color: var(--text);
+        transition: border-color 0.14s, box-shadow 0.14s;
+      }
+      .object-card:hover {
+        border-color: var(--accent);
+        box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.25);
+      }
+      .object-card .obj-type {
+        font-size: 0.62rem;
+        letter-spacing: 0.22em;
+        color: var(--dim);
+        text-transform: uppercase;
+        margin-bottom: 6px;
+      }
+      .object-card .obj-name {
+        font-size: 1.4rem;
+        letter-spacing: 0.18em;
+        color: var(--accent);
+        margin-bottom: 8px;
+      }
+      .object-card .obj-desc {
+        font-size: 0.82rem;
+        color: var(--text);
+        opacity: 0.75;
+        margin-bottom: 10px;
+      }
+      .object-card .obj-ports {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+      }
+      .concept-panel {
+        line-height: 1.6;
+      }
+      .concept-panel p {
+        margin-bottom: 10px;
+      }
+      .concept-panel code {
+        color: var(--mint);
+        font-family: var(--font);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ── Grid overlay ── -->
+    <div id="grid-bg"></div>
+    <!-- ── Scanline overlay ── -->
+    <div id="scanlines"></div>
+
+    <!-- ── App ─────────────────────────────────────────────────── -->
+    <div id="app">
+      <header>
+        <h1 class="hud-title">EW // OBJECTS</h1>
+        <div id="meta">
+          <span>build 1.0.28.04.26</span>
+          <a href="../index.html">HOME</a>
+          <a href="../EWUILIB/index.html">UILIB</a>
+          <a href="../MIDI-server/public/index.html">MIDI SERVER</a>
+        </div>
+      </header>
+
+      <!-- Concept -->
+      <div class="hud-panel clip-tr concept-panel">
+        <div class="section-title">// DISTRIBUTED MODULAR AUDIO //</div>
+        <p>
+          Each object is a standalone audio module connected via WebSocket rooms.
+          <strong style="color:var(--accent)">Room URLs are patch cables.</strong>
+          Paste one module's room name into another module's input to connect them.
+        </p>
+        <p>
+          Modules can live in different browser tabs, machines, or be shared
+          between users in real-time.
+        </p>
+        <div class="stats-row" style="margin-top:10px">
+          <div class="stat-block">
+            <div class="stat-label">PROTOCOL</div>
+            <div class="stat-val" style="font-size:1rem">WebSocket</div>
+          </div>
+          <div class="stat-block">
+            <div class="stat-label">CLOCK SYNC</div>
+            <div class="stat-val" style="font-size:1rem">NTP</div>
+          </div>
+          <div class="stat-block">
+            <div class="stat-label">AUDIO</div>
+            <div class="stat-val" style="font-size:1rem">Tone.js</div>
+          </div>
+          <div class="stat-block">
+            <div class="stat-label">UI</div>
+            <div class="stat-val" style="font-size:1rem">EWUILIB</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="page-section-label">// Available Objects</div>
+
+      <!-- Object grid -->
+      <div class="grid-2">
+        <a href="objects/oscillator.html" class="hud-panel object-card">
+          <div class="obj-type">SIGNAL SOURCE</div>
+          <div class="obj-name">OSCILLATOR</div>
+          <div class="obj-desc">
+            Tone.js oscillator with frequency, detune, gain, and waveform
+            controls. Outputs all parameters to a room for other modules to
+            subscribe to.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: freq</span>
+            <span class="tag mint">IN: detune</span>
+            <span class="tag mint">IN: gain</span>
+            <span class="tag mint">IN: waveform</span>
+            <span class="tag accent">OUT: freq</span>
+            <span class="tag accent">OUT: detune</span>
+            <span class="tag accent">OUT: gain</span>
+            <span class="tag accent">OUT: waveform</span>
+          </div>
+        </a>
+
+        <div class="hud-panel" style="opacity:0.4; pointer-events:none">
+          <div class="obj-type">COMING SOON</div>
+          <div class="obj-name" style="color:var(--dim)">LFO</div>
+          <div class="obj-desc">
+            Low-frequency oscillator for modulating other modules' parameters.
+            Outputs a periodic control signal.
+          </div>
+          <div class="obj-ports">
+            <span class="tag">IN: rate</span>
+            <span class="tag">IN: depth</span>
+            <span class="tag">OUT: signal</span>
+          </div>
+        </div>
+
+        <div class="hud-panel" style="opacity:0.4; pointer-events:none">
+          <div class="obj-type">COMING SOON</div>
+          <div class="obj-name" style="color:var(--dim)">FILTER</div>
+          <div class="obj-desc">
+            Audio filter with cutoff, resonance, and type controls. Accepts
+            modulation signals on all parameters.
+          </div>
+          <div class="obj-ports">
+            <span class="tag">IN: cutoff</span>
+            <span class="tag">IN: resonance</span>
+            <span class="tag">OUT: cutoff</span>
+          </div>
+        </div>
+
+        <div class="hud-panel" style="opacity:0.4; pointer-events:none">
+          <div class="obj-type">COMING SOON</div>
+          <div class="obj-name" style="color:var(--dim)">SCOPE</div>
+          <div class="obj-desc">
+            Oscilloscope and spectrum analyzer. Input-only module for
+            visualizing signals from other objects.
+          </div>
+          <div class="obj-ports">
+            <span class="tag">IN: signal</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- How to connect -->
+      <div class="hud-panel clip-br concept-panel">
+        <div class="section-title rose">// HOW TO CONNECT //</div>
+        <p>
+          1. Open an object (e.g. Oscillator) in a browser tab.
+          The page auto-generates a room name and displays it in the
+          <code>OUTPUT ROOM</code> panel.
+        </p>
+        <p>
+          2. Open another object in a second tab.
+          In the <code>INPUT CONNECTIONS</code> panel, paste the first
+          object's room name into the desired input port.
+        </p>
+        <p>
+          3. Click <code>LINK</code>. The second object now receives
+          real-time parameter updates from the first.
+        </p>
+        <p>
+          4. Changes to the source object's controls are instantly reflected
+          in all connected subscribers.
+        </p>
+      </div>
+
+      <div style="text-align:center; padding:20px 0; font-size:0.72rem; letter-spacing:0.22em; color:var(--dim)">
+        <a href="../index.html" style="color:var(--dim); text-decoration:none">◂ ENTROPY WORSHIP</a>
+      </div>
+    </div>
+  </body>
+</html>
