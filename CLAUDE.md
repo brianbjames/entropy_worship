@@ -22,12 +22,14 @@ Most apps are **vanilla HTML/CSS/JS with CDN dependencies** (no bundler, no fram
 | Euclid | `euclid/` | Single HTML file | Static |
 | WTFDIPISF | `WTFDIPISF/` | Leaflet.js, DataSF Socrata API | Static |
 | RA Backend | `ra-backend/` | Express.js, Playwright, Eventbrite API | `cd ra-backend && npm install && npm start` |
+| EW Objects | `EW-objects/` | Node.js + WebSocket (ws), Tone.js, EWUILIB CSS | `cd EW-objects && npm install && npm start` (port 3001) |
 | Standalone tools | Root `EW*.html` files | Various (Tone.js, Web MIDI, Three.js) | Static |
 
 ### Shared resources
 
 - `scripts/` — Utility modules: MIDI helpers, scale/chord definitions (`midiCalc.js`), oscillators, game engine
 - `styles/` — CSS framework (cyberpunk.css, scientific UI styles)
+- `EW-objects/lib/` — EW Object system shared modules: `ewuilib.css` (extracted EWUILIB design system), `ew-object-base.js` (WebSocket/room/signal core), `ew-object-ui.js` (shared UI builders)
 - `fonts/` — Custom typefaces (VT323, Chargen)
 - `models/` — 3D assets (.glb, .obj) — 190+ files
 - `textures/`, `samples/`, `images/` — Media assets
@@ -38,6 +40,9 @@ Most apps are **vanilla HTML/CSS/JS with CDN dependencies** (no bundler, no fram
 The MIDI server uses **room-based WebSocket collaboration** with **epoch-based clock synchronization** (NTP-style). Clients join rooms via URL query (`?room=name`). Room state (playing, bpm, epoch, notes) lives on the server and broadcasts to all peers. The epoch sync calculates beat position as `(Date.now() - epoch) / (60000 / bpm / 4)`.
 
 Key WebSocket message types: `ping/pong`, `latency`, `play`, `stop`, `bpm`, `midi`, `clockRelay`, `setPrivate`, `peers`, `rooms`, `state`.
+
+### EW Object System (distributed modular audio)
+Each audio module is a standalone HTML page that connects via WebSocket rooms. **Room URLs act as patch cables** — paste one module's room name into another module's input to connect them. Has its own Node.js WebSocket server (`EW-objects/server.js`, port 3001) independent from the MIDI Server. Modules use `EWObject` (from `EW-objects/lib/ew-object-base.js`) which manages output room broadcasting, input room subscriptions, NTP clock sync, and signal throttling (~30Hz). Key message types: `ping/pong`, `latency`, `signal`, `objectInfo`, `objectList`, `peers`, `rooms`, `state`. Objects use the extracted EWUILIB CSS (`EW-objects/lib/ewuilib.css`) and Tone.js for audio.
 
 ### SCOPE audio visualization
 Uses Web Audio `AnalyserNode` to capture real-time audio, renders to Canvas 2D (waveform/spectrum), and drives a Three.js point-cloud grid (72x36) that reacts to audio data via custom GLSL shaders.
@@ -50,6 +55,9 @@ Infers street cleaning schedules from historical citation data: groups citations
 ```bash
 # MIDI Server (the main Node.js app)
 cd MIDI-server && npm install && npm start    # http://localhost:3000
+
+# EW Objects (modular audio signal server + static pages)
+cd EW-objects && npm install && npm start     # http://localhost:3001
 
 # RA Backend
 cd ra-backend && npm install && npm start     # http://localhost:3000

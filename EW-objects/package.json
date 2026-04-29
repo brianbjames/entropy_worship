@@ -1,0 +1,12 @@
+{
+  "name": "ew-objects",
+  "version": "1.0.0",
+  "description": "EW distributed modular audio — WebSocket signal server",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}

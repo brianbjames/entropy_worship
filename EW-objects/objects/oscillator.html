@@ -1,0 +1,542 @@
+<!-- /-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\ -->
+<!-- |                                                                         | -->
+<!-- \ @@@@@@@@  @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@@@@@   @@@ @@@      / -->
+<!-- - @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@ @@@      - -->
+<!-- / @@!       @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!  @@@  @@! !@@      \ -->
+<!-- | !@!       !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!  @!@  !@! @!!      | -->
+<!-- \ @!!!:!    @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!@@!@!    !@!@!       / -->
+<!-- - !!!!!:    !@!  !!!    !!!    !!@!@!    !@!  !!!  !!@!!!      @!!!       - -->
+<!-- / !!:       !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:         !!:        \ -->
+<!-- | :!:       :!:  !:!    :!:    :!:  !:!  :!:  !:!  :!:         :!:        | -->
+<!-- \  :: ::::   ::   ::     ::    ::   :::  ::::: ::   ::          ::        / -->
+<!-- - : :: ::   ::    :      :      :   : :   : :  :    :           :         - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \ @@@  @@@  @@@   @@@@@@   @@@@@@@    @@@@@@   @@@  @@@  @@@  @@@@@@@     / -->
+<!-- - @@@  @@@  @@@  @@@@@@@@  @@@@@@@@  @@@@@@@   @@@  @@@  @@@  @@@@@@@@    - -->
+<!-- / @@!  @@!  @@!  @@!  @@@  @@!  @@@  !@@       @@!  @@@  @@!  @@!  @@@    \ -->
+<!-- | !@!  !@!  !@!  !@!  @!@  !@!  @!@  !@!       !@!  @!@  !@!  !@!  @!@    | -->
+<!-- \ @!!  !!@  @!@  @!@  !@!  @!@!!@!   !!@@!!    @!@!@!@!  !!@  @!@@!@!     / -->
+<!-- - !@!  !!!  !@!  !@!  !!!  !!@!@!     !!@!!!   !!!@!!!!  !!!  !!@!!!      - -->
+<!-- / !!:  !!:  !!:  !!:  !!!  !!: :!!        !:!  !!:  !!!  !!:  !!:         \ -->
+<!-- | :!:  :!:  :!:  :!:  !:!  :!:  !:!      !:!   :!:  !:!  :!:  :!:         | -->
+<!-- \  :::: :: :::   ::::: ::  ::   :::  :::: ::   ::   :::   ::   ::         / -->
+<!-- -   :: :  : :     : :  :    :   : :  :: : :     :   : :  :     :          - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EW // OSCILLATOR</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=VT323&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css"
+    />
+    <link rel="stylesheet" href="../lib/ewuilib.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+    <style>
+      /* ── Oscillator-specific styles ─────────────────────────── */
+      #osc-scope {
+        display: block;
+        width: 100%;
+        height: 120px;
+        background: #0e0400;
+      }
+
+      .param-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+      .param-row .control-label {
+        min-width: 80px;
+        margin-bottom: 0;
+        flex-shrink: 0;
+      }
+      .param-row input[type="range"] {
+        flex: 1;
+      }
+      .param-row .range-val {
+        min-width: 72px;
+        text-align: right;
+      }
+
+      .power-row {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 14px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--border);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ── Grid overlay ── -->
+    <div id="grid-bg"></div>
+    <!-- ── Scanline overlay ── -->
+    <div id="scanlines"></div>
+
+    <!-- ── App ─────────────────────────────────────────────────── -->
+    <div id="app"></div>
+
+    <script type="module">
+      import { EWObject } from "../lib/ew-object-base.js";
+      import {
+        buildHeaderBar,
+        buildOutputPanel,
+        buildInputPanel,
+        buildUnlockOverlay,
+        updateOutputStats,
+        wireRange,
+      } from "../lib/ew-object-ui.js";
+
+      // ── EWObject instance ──────────────────────────────────────
+
+      const ewObj = new EWObject({
+        name: "OSC-1",
+        objectType: "oscillator",
+        roomPrefix: "osc",
+        inputs: [
+          {
+            port: "frequency",
+            type: "number",
+            unit: "hz",
+            min: 20,
+            max: 20000,
+            default: 440,
+          },
+          {
+            port: "detune",
+            type: "number",
+            unit: "cents",
+            min: -1200,
+            max: 1200,
+            default: 0,
+          },
+          {
+            port: "gain",
+            type: "number",
+            unit: "",
+            min: 0,
+            max: 1,
+            default: 0.5,
+          },
+          {
+            port: "waveform",
+            type: "enum",
+            values: ["sine", "sawtooth", "triangle", "square"],
+            default: "sine",
+          },
+        ],
+        outputs: [
+          { port: "frequency", type: "number", unit: "hz" },
+          { port: "detune", type: "number", unit: "cents" },
+          { port: "waveform", type: "string" },
+          { port: "gain", type: "number" },
+        ],
+      });
+
+      // ── Tone.js audio ──────────────────────────────────────────
+
+      let osc = null;
+      let gainNode = null;
+      let analyser = null;
+      let oscRunning = false;
+
+      function initAudio() {
+        gainNode = new Tone.Gain(0.5).toDestination();
+        osc = new Tone.Oscillator({
+          frequency: 440,
+          type: "sine",
+        }).connect(gainNode);
+
+        // Analyser for waveform display
+        analyser = new Tone.Analyser("waveform", 256);
+        osc.connect(analyser);
+      }
+
+      function startOsc() {
+        if (!osc || oscRunning) return;
+        osc.start();
+        oscRunning = true;
+        updatePowerUI();
+      }
+
+      function stopOsc() {
+        if (!osc || !oscRunning) return;
+        osc.stop();
+        oscRunning = false;
+        // Re-create oscillator (Tone.js oscillators can't restart)
+        const freq = osc.frequency.value;
+        const type = osc.type;
+        osc.disconnect();
+        osc.dispose();
+        osc = new Tone.Oscillator({ frequency: freq, type: type });
+        osc.connect(gainNode);
+        osc.connect(analyser);
+        updatePowerUI();
+      }
+
+      // ── Logarithmic frequency mapping ──────────────────────────
+
+      const FREQ_MIN = 20;
+      const FREQ_MAX = 20000;
+      const LOG_MIN = Math.log(FREQ_MIN);
+      const LOG_MAX = Math.log(FREQ_MAX);
+
+      function sliderToFreq(val) {
+        // val: 0-1000 (slider range)
+        const t = val / 1000;
+        return Math.exp(LOG_MIN + t * (LOG_MAX - LOG_MIN));
+      }
+
+      function freqToSlider(freq) {
+        const t = (Math.log(freq) - LOG_MIN) / (LOG_MAX - LOG_MIN);
+        return Math.round(t * 1000);
+      }
+
+      function formatFreq(val) {
+        const freq = sliderToFreq(val);
+        return freq >= 1000
+          ? (freq / 1000).toFixed(2) + " kHz"
+          : freq.toFixed(1) + " Hz";
+      }
+
+      // ── Build UI ───────────────────────────────────────────────
+
+      const app = document.getElementById("app");
+
+      // Header
+      buildHeaderBar(ewObj, "OSCILLATOR", app);
+
+      // Controls panel
+      const controlsPanel = document.createElement("div");
+      controlsPanel.className = "hud-panel clip-tr";
+      controlsPanel.innerHTML = `
+        <div class="section-title">// OSCILLATOR CONTROLS //</div>
+
+        <div class="power-row">
+          <div class="toggle-wrap" id="power-toggle">
+            <div class="toggle-track" id="power-track">
+              <div class="toggle-thumb"></div>
+            </div>
+            <span class="toggle-label">POWER</span>
+          </div>
+          <span class="type-dim" id="power-status">OFF</span>
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">WAVEFORM</div>
+          <select id="osc-waveform">
+            <option value="sine">SINE</option>
+            <option value="sawtooth">SAWTOOTH</option>
+            <option value="triangle">TRIANGLE</option>
+            <option value="square">SQUARE</option>
+          </select>
+        </div>
+
+        <div class="param-row">
+          <div class="control-label">FREQ</div>
+          <input type="range" id="osc-freq" min="0" max="1000" value="${freqToSlider(440)}" />
+          <span class="range-val" id="osc-freq-val">440.0 Hz</span>
+        </div>
+
+        <div class="param-row">
+          <div class="control-label">DETUNE</div>
+          <input type="range" id="osc-detune" min="-1200" max="1200" value="0" />
+          <span class="range-val" id="osc-detune-val">0 ct</span>
+        </div>
+
+        <div class="param-row">
+          <div class="control-label">GAIN</div>
+          <input type="range" id="osc-gain" min="0" max="100" value="50" />
+          <span class="range-val" id="osc-gain-val">0.50</span>
+        </div>
+      `;
+      app.appendChild(controlsPanel);
+
+      // Waveform display
+      const scopePanel = document.createElement("div");
+      scopePanel.className = "hud-panel";
+      scopePanel.innerHTML = `
+        <div class="section-title">// WAVEFORM //</div>
+        <div class="screen-wrap">
+          <div class="screen-inner" style="padding:0; min-height:auto">
+            <canvas id="osc-scope"></canvas>
+            <div class="screen-scan"></div>
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
+          </div>
+        </div>
+      `;
+      app.appendChild(scopePanel);
+
+      // Output panel
+      buildOutputPanel(ewObj, app);
+
+      // Input panel
+      buildInputPanel(ewObj, app);
+
+      // Footer
+      const footer = document.createElement("div");
+      footer.style.cssText =
+        "text-align:center; padding:20px 0; font-size:0.72rem; letter-spacing:0.22em; color:var(--dim)";
+      footer.innerHTML =
+        '<a href="../index.html" style="color:var(--dim); text-decoration:none">◂ EW OBJECTS</a>';
+      app.appendChild(footer);
+
+      // ── Wire controls ──────────────────────────────────────────
+
+      // Power toggle
+      function updatePowerUI() {
+        const track = document.getElementById("power-track");
+        const status = document.getElementById("power-status");
+        if (oscRunning) {
+          track.classList.add("on");
+          status.textContent = "ON";
+          status.style.color = "var(--mint)";
+        } else {
+          track.classList.remove("on");
+          status.textContent = "OFF";
+          status.style.color = "var(--dim)";
+        }
+      }
+
+      document.getElementById("power-toggle").addEventListener("click", () => {
+        if (oscRunning) {
+          stopOsc();
+        } else {
+          startOsc();
+        }
+      });
+
+      // Waveform select
+      document
+        .getElementById("osc-waveform")
+        .addEventListener("change", (e) => {
+          const type = e.target.value;
+          if (osc) osc.type = type;
+          ewObj.setOutput("waveform", type, { immediate: true });
+          refreshStats();
+        });
+
+      // Frequency slider (logarithmic)
+      const freqSlider = document.getElementById("osc-freq");
+      const freqVal = document.getElementById("osc-freq-val");
+
+      freqSlider.addEventListener("input", () => {
+        const freq = sliderToFreq(+freqSlider.value);
+        freqVal.textContent = formatFreq(+freqSlider.value);
+
+        // Update slider fill
+        const pct = (+freqSlider.value / 1000) * 100;
+        freqSlider.style.setProperty("--val", pct + "%");
+
+        if (osc) osc.frequency.rampTo(freq, 0.01);
+        ewObj.setOutput("frequency", Math.round(freq * 10) / 10, {
+          unit: "hz",
+        });
+        refreshStats();
+      });
+      // Initialize slider fill
+      (() => {
+        const pct = (+freqSlider.value / 1000) * 100;
+        freqSlider.style.setProperty("--val", pct + "%");
+      })();
+
+      // Detune slider
+      wireRange("osc-detune", "osc-detune-val", (v) => v + " ct");
+      document.getElementById("osc-detune").addEventListener("input", (e) => {
+        const cents = +e.target.value;
+        if (osc) osc.detune.rampTo(cents, 0.01);
+        ewObj.setOutput("detune", cents, { unit: "cents" });
+        refreshStats();
+      });
+
+      // Gain slider
+      wireRange("osc-gain", "osc-gain-val", (v) => (v / 100).toFixed(2));
+      document.getElementById("osc-gain").addEventListener("input", (e) => {
+        const gain = +e.target.value / 100;
+        if (gainNode) gainNode.gain.rampTo(gain, 0.01);
+        ewObj.setOutput("gain", Math.round(gain * 100) / 100);
+        refreshStats();
+      });
+
+      // ── Input signal handling ──────────────────────────────────
+
+      ewObj.onInput("frequency", (value) => {
+        if (typeof value !== "number" || value < 20 || value > 20000) return;
+        if (osc) osc.frequency.rampTo(value, 0.01);
+        // Update slider to match
+        freqSlider.value = freqToSlider(value);
+        freqVal.textContent =
+          value >= 1000
+            ? (value / 1000).toFixed(2) + " kHz"
+            : value.toFixed(1) + " Hz";
+        const pct = (freqSlider.value / 1000) * 100;
+        freqSlider.style.setProperty("--val", pct + "%");
+        // Re-broadcast for downstream subscribers
+        ewObj.setOutput("frequency", value, { unit: "hz" });
+        refreshStats();
+      });
+
+      ewObj.onInput("detune", (value) => {
+        if (typeof value !== "number") return;
+        const clamped = Math.max(-1200, Math.min(1200, value));
+        if (osc) osc.detune.rampTo(clamped, 0.01);
+        document.getElementById("osc-detune").value = clamped;
+        document.getElementById("osc-detune-val").textContent = clamped + " ct";
+        ewObj.setOutput("detune", clamped, { unit: "cents" });
+        refreshStats();
+      });
+
+      ewObj.onInput("gain", (value) => {
+        if (typeof value !== "number") return;
+        const clamped = Math.max(0, Math.min(1, value));
+        if (gainNode) gainNode.gain.rampTo(clamped, 0.01);
+        document.getElementById("osc-gain").value = Math.round(clamped * 100);
+        document.getElementById("osc-gain-val").textContent =
+          clamped.toFixed(2);
+        ewObj.setOutput("gain", clamped);
+        refreshStats();
+      });
+
+      ewObj.onInput("waveform", (value) => {
+        const valid = ["sine", "sawtooth", "triangle", "square"];
+        if (!valid.includes(value)) return;
+        if (osc) osc.type = value;
+        document.getElementById("osc-waveform").value = value;
+        ewObj.setOutput("waveform", value);
+        refreshStats();
+      });
+
+      // ── Output stats ───────────────────────────────────────────
+
+      function refreshStats() {
+        updateOutputStats(ewObj, [
+          {
+            port: "frequency",
+            label: "FREQ",
+            unit: " Hz",
+            formatter: (v) => (v ? v.toFixed(1) : "—"),
+          },
+          { port: "waveform", label: "WAVE", formatter: (v) => v || "—" },
+          {
+            port: "gain",
+            label: "GAIN",
+            formatter: (v) => (v !== undefined ? v.toFixed(2) : "—"),
+          },
+          {
+            port: "detune",
+            label: "DETUNE",
+            unit: " ct",
+            formatter: (v) => (v !== undefined ? v : "—"),
+          },
+        ]);
+      }
+
+      // ── Waveform scope ─────────────────────────────────────────
+
+      const scopeCanvas = document.getElementById("osc-scope");
+      const scopeCtx = scopeCanvas.getContext("2d");
+
+      function resizeScope() {
+        const rect = scopeCanvas.parentElement.getBoundingClientRect();
+        scopeCanvas.width = rect.width;
+        scopeCanvas.height = 120;
+      }
+
+      function drawScope() {
+        requestAnimationFrame(drawScope);
+
+        const w = scopeCanvas.width;
+        const h = scopeCanvas.height;
+        scopeCtx.fillStyle = "#0e0400";
+        scopeCtx.fillRect(0, 0, w, h);
+
+        // Grid lines
+        scopeCtx.strokeStyle = "rgba(160, 72, 0, 0.12)";
+        scopeCtx.lineWidth = 1;
+        for (let y = 0; y < h; y += 20) {
+          scopeCtx.beginPath();
+          scopeCtx.moveTo(0, y);
+          scopeCtx.lineTo(w, y);
+          scopeCtx.stroke();
+        }
+        for (let x = 0; x < w; x += 20) {
+          scopeCtx.beginPath();
+          scopeCtx.moveTo(x, 0);
+          scopeCtx.lineTo(x, h);
+          scopeCtx.stroke();
+        }
+
+        // Center line
+        scopeCtx.strokeStyle = "rgba(160, 72, 0, 0.3)";
+        scopeCtx.beginPath();
+        scopeCtx.moveTo(0, h / 2);
+        scopeCtx.lineTo(w, h / 2);
+        scopeCtx.stroke();
+
+        if (!analyser || !oscRunning) return;
+
+        const data = analyser.getValue();
+        scopeCtx.strokeStyle = getComputedStyle(
+          document.documentElement
+        ).getPropertyValue("--accent");
+        scopeCtx.lineWidth = 2;
+        scopeCtx.shadowColor = "rgba(255, 170, 0, 0.6)";
+        scopeCtx.shadowBlur = 8;
+        scopeCtx.beginPath();
+
+        for (let i = 0; i < data.length; i++) {
+          const x = (i / data.length) * w;
+          const y = ((1 - data[i]) / 2) * h;
+          if (i === 0) {
+            scopeCtx.moveTo(x, y);
+          } else {
+            scopeCtx.lineTo(x, y);
+          }
+        }
+        scopeCtx.stroke();
+        scopeCtx.shadowBlur = 0;
+      }
+
+      // ── Unlock & Initialize ────────────────────────────────────
+
+      buildUnlockOverlay("OSCILLATOR", async () => {
+        await Tone.start();
+        initAudio();
+
+        // Get room from URL or auto-generate
+        const urlRoom = new URLSearchParams(location.search).get("room");
+        ewObj.connectOutput(urlRoom || undefined);
+
+        // Set initial output values
+        ewObj.setOutput("frequency", 440, { unit: "hz", immediate: true });
+        ewObj.setOutput("detune", 0, { unit: "cents", immediate: true });
+        ewObj.setOutput("gain", 0.5, { immediate: true });
+        ewObj.setOutput("waveform", "sine", { immediate: true });
+
+        refreshStats();
+        resizeScope();
+        drawScope();
+      });
+
+      window.addEventListener("resize", resizeScope);
+    </script>
+  </body>
+</html>
