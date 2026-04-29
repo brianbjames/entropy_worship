@@ -1,0 +1,718 @@
+<!-- /-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\ -->
+<!-- |                                                                         | -->
+<!-- \ @@@@@@@@  @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@@@@@   @@@ @@@      / -->
+<!-- - @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@ @@@      - -->
+<!-- / @@!       @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!  @@@  @@! !@@      \ -->
+<!-- | !@!       !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!  @!@  !@! @!!      | -->
+<!-- \ @!!!:!    @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!@@!@!    !@!@!       / -->
+<!-- - !!!!!:    !@!  !!!    !!!    !!@!@!    !@!  !!!  !!@!!!      @!!!       - -->
+<!-- / !!:       !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:         !!:        \ -->
+<!-- | :!:       :!:  !:!    :!:    :!:  !:!  :!:  !:!  :!:         :!:        | -->
+<!-- \  :: ::::   ::   ::     ::    ::   :::  ::::: ::   ::          ::        / -->
+<!-- - : :: ::   ::    :      :      :   : :   : :  :    :           :         - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \ @@@  @@@  @@@   @@@@@@   @@@@@@@    @@@@@@   @@@  @@@  @@@  @@@@@@@     / -->
+<!-- - @@@  @@@  @@@  @@@@@@@@  @@@@@@@@  @@@@@@@   @@@  @@@  @@@  @@@@@@@@    - -->
+<!-- / @@!  @@!  @@!  @@!  @@@  @@!  @@@  !@@       @@!  @@@  @@!  @@!  @@@    \ -->
+<!-- | !@!  !@!  !@!  !@!  @!@  !@!  @!@  !@!       !@!  @!@  !@!  !@!  @!@    | -->
+<!-- \ @!!  !!@  @!@  @!@  !@!  @!@!!@!   !!@@!!    @!@!@!@!  !!@  @!@@!@!     / -->
+<!-- - !@!  !!!  !@!  !@!  !!!  !!@!@!     !!@!!!   !!!@!!!!  !!!  !!@!!!      - -->
+<!-- / !!:  !!:  !!:  !!:  !!!  !!: :!!        !:!  !!:  !!!  !!:  !!:         \ -->
+<!-- | :!:  :!:  :!:  :!:  !:!  :!:  !:!      !:!   :!:  !:!  :!:  :!:         | -->
+<!-- \  :::: :: :::   ::::: ::  ::   :::  :::: ::   ::   :::   ::   ::         / -->
+<!-- -   :: :  : :     : :  :    :   : :  :: : :     :   : :  :     :          - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MIXER</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css" />
+    <link rel="stylesheet" href="../lib/ewuilib.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <style>
+      #power-toggle .toggle-track.on .toggle-thumb { left: 22px; }
+      #meta .toggle-wrap { align-self: center; }
+      #meta .toggle-track { margin: 0; }
+      .param-row {
+        display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+      }
+      .param-row .control-label {
+        min-width: 80px; margin-bottom: 0; flex-shrink: 0;
+      }
+      .param-row input[type="range"] { flex: 1; }
+      .param-row .range-val { min-width: 52px; text-align: right; }
+      .channel-strip {
+        border: 1px solid var(--border);
+        padding: 10px 12px;
+        margin-bottom: 8px;
+        transition: border-color 0.14s;
+      }
+      .channel-strip:hover { border-color: rgba(var(--accent-rgb), 0.5); }
+      .channel-header {
+        display: flex; align-items: center; justify-content: space-between;
+        margin-bottom: 8px; gap: 8px;
+      }
+      .channel-name {
+        font-size: 0.72rem; letter-spacing: 0.18em; color: var(--accent);
+        text-transform: uppercase;
+      }
+      .channel-status {
+        display: flex; align-items: center; gap: 6px;
+      }
+      .room-entry {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 6px 10px; border: 1px solid var(--border); margin-bottom: 6px;
+        text-decoration: none; color: var(--text); font-size: 0.82rem;
+        letter-spacing: 0.1em; transition: border-color 0.14s, background 0.14s; cursor: pointer;
+      }
+      .room-entry:hover { border-color: var(--accent); background: rgba(var(--accent-rgb), 0.06); }
+      .room-entry-name { color: var(--accent); }
+      .room-entry-info { font-size: 0.68rem; color: var(--dim); letter-spacing: 0.08em; }
+      .mod-row { opacity: 0.3; pointer-events: none; transition: opacity 0.2s; }
+      .mod-row.active { opacity: 1; pointer-events: auto; }
+      .add-channel-row {
+        display: flex; gap: 8px; align-items: center; margin-bottom: 14px;
+      }
+      .add-channel-row input[type="text"] { flex: 1; }
+    </style>
+  </head>
+  <body>
+    <div id="grid-bg"></div>
+    <div id="scanlines"></div>
+    <div id="app"></div>
+
+    <script type="module">
+      import { EWObject, sanitizeRoom } from "../lib/ew-object-base.js";
+      import {
+        buildHeaderBar,
+        updateOutputStats,
+        wireRange,
+      } from "../lib/ew-object-ui.js";
+
+      // ── EWObject instance ──────────────────────────────────────
+
+      const ewObj = new EWObject({
+        name: "MIX-1",
+        objectType: "mixer",
+        roomPrefix: "mix",
+        inputs: [
+          { port: "master", type: "number", unit: "", min: 0, max: 1, default: 1 },
+        ],
+        outputs: [
+          { port: "master", type: "number" },
+          { port: "channels", type: "number" },
+          { port: "playing", type: "boolean" },
+          { port: "outputMode", type: "string" },
+          { port: "modChain", type: "object" },
+        ],
+      });
+
+      // ── Audio state ────────────────────────────────────────────
+
+      let masterGain = null;
+      let analyser = null;
+      let mixerRunning = false;
+      let audioReady = false;
+      let outputMode = "audio";
+      let baseMaster = 1;
+
+      // Channels: each has { id, room, osc, gain, fader, muted, sub }
+      const channels = [];
+      let nextChId = 1;
+
+      // Master gain modulation
+      let masterModChain = null;
+      let masterModUpstreamChain = null;
+      let masterModWanted = false;
+      let masterModRemoteFreq = 2;
+      let masterModRemoteType = "sine";
+      let masterModDepth = 0.5;
+
+      let masterTremolo = null;
+
+      async function ensureAudio() {
+        if (audioReady) return;
+        masterGain = new Tone.Gain(1);
+        analyser = new Tone.Analyser("waveform", 256);
+        masterGain.connect(analyser);
+        applyOutputRouting();
+        audioReady = true;
+      }
+
+      function applyOutputRouting() {
+        if (!masterGain) return;
+        // Rebuild output chain: masterGain → [tremolo?] → destination
+        try { masterGain.disconnect(); } catch (_) {}
+        if (masterTremolo) { try { masterTremolo.disconnect(); } catch (_) {} }
+
+        if (analyser) masterGain.connect(analyser);
+
+        if (outputMode === "audio" || outputMode === "both") {
+          if (masterTremolo) {
+            masterGain.connect(masterTremolo);
+            masterTremolo.toDestination();
+          } else {
+            masterGain.toDestination();
+          }
+        } else {
+          // control mode — no destination, but keep tremolo in chain for analyser
+          if (masterTremolo) {
+            masterGain.connect(masterTremolo);
+          }
+        }
+      }
+
+      function connectMasterMod() {
+        if (masterTremolo) return;
+        masterTremolo = new Tone.Tremolo({
+          frequency: masterModRemoteFreq,
+          type: masterModRemoteType,
+          depth: Math.min(1, masterModDepth),
+          spread: 0,
+        }).start();
+        masterModWanted = true;
+        applyOutputRouting();
+      }
+
+      function disconnectMasterMod() {
+        if (masterTremolo) {
+          try { masterGain.disconnect(masterTremolo); } catch (_) {}
+          masterTremolo.stop();
+          masterTremolo.disconnect();
+          masterTremolo.dispose();
+          masterTremolo = null;
+        }
+        masterModWanted = false;
+        applyOutputRouting();
+      }
+
+      function updateMasterModParams() {
+        if (!masterTremolo) return;
+        masterTremolo.frequency.value = masterModRemoteFreq;
+        try { masterTremolo.type = masterModRemoteType; } catch (_) {}
+        masterTremolo.depth.value = Math.min(1, masterModDepth);
+      }
+
+      // ── Channel management ─────────────────────────────────────
+
+      function addChannel(roomName) {
+        const clean = sanitizeRoom(roomName);
+        if (!clean) return;
+        if (channels.find(c => c.room === clean)) return;
+
+        const id = nextChId++;
+        const ch = { id, room: clean, osc: null, chGain: null, fader: 0.8, muted: false, sub: null };
+        channels.push(ch);
+
+        // Subscribe to the source room immediately
+        const mapping = { "*": `ch-${id}` };
+        ewObj.subscribe(clean, mapping);
+        ch.sub = clean;
+
+        // Register input handler for this channel
+        ewObj.onInput(`ch-${id}`, (value, meta) => {
+          if (!ch.osc) return;
+          if (meta && meta.port === "frequency" && typeof value === "number") {
+            ch.osc.frequency.value = value;
+          } else if (meta && meta.port === "waveform" && typeof value === "string") {
+            try { ch.osc.type = value; } catch (_) {}
+          } else if (meta && meta.port === "detune" && typeof value === "number") {
+            ch.osc.detune.value = value;
+          }
+        });
+
+        // Create audio nodes if audio is ready
+        if (audioReady) {
+          createChannelAudio(ch);
+        }
+
+        renderChannels();
+        ewObj.setOutput("channels", channels.length, { immediate: true });
+      }
+
+      function createChannelAudio(ch) {
+        if (ch.osc) return; // already created
+        ch.chGain = new Tone.Gain(ch.muted ? 0 : ch.fader);
+        ch.chGain.connect(masterGain);
+        ch.osc = new Tone.Oscillator({ frequency: 440, type: "sine" });
+        ch.osc.connect(ch.chGain);
+        if (mixerRunning) ch.osc.start();
+        console.log("[MIX] createChannelAudio:", ch.id, "fader:", ch.fader, "muted:", ch.muted, "running:", mixerRunning, "masterGain:", masterGain?.gain.value, "dest:", outputMode);
+      }
+
+      function removeChannel(id) {
+        const idx = channels.findIndex(c => c.id === id);
+        if (idx < 0) return;
+        const ch = channels[idx];
+        if (ch.osc) { try { ch.osc.stop(); } catch (_) {} ch.osc.disconnect(); ch.osc.dispose(); }
+        if (ch.chGain) { ch.chGain.disconnect(); ch.chGain.dispose(); }
+        if (ch.sub) ewObj.unsubscribe(ch.sub);
+        channels.splice(idx, 1);
+        renderChannels();
+        ewObj.setOutput("channels", channels.length, { immediate: true });
+      }
+
+      function setChannelFader(id, value) {
+        const ch = channels.find(c => c.id === id);
+        if (!ch) return;
+        ch.fader = value;
+        if (ch.chGain && !ch.muted) ch.chGain.gain.rampTo(value, 0.01);
+      }
+
+      function toggleChannelMute(id) {
+        const ch = channels.find(c => c.id === id);
+        if (!ch) return;
+        ch.muted = !ch.muted;
+        if (ch.chGain) ch.chGain.gain.rampTo(ch.muted ? 0 : ch.fader, 0.01);
+        renderChannels();
+      }
+
+      // ── Start/Stop ─────────────────────────────────────────────
+
+      async function startMixer() {
+        if (mixerRunning) return;
+        await Tone.start();
+        console.log("[MIX] Tone started from click, context:", Tone.context.state);
+        await ensureAudio();
+        // Create audio nodes for channels added before audio was ready
+        for (const ch of channels) {
+          createChannelAudio(ch);
+        }
+        // Start all channel oscillators
+        for (const ch of channels) {
+          if (ch.osc) {
+            try {
+              ch.osc.start();
+              console.log("[MIX] osc started for ch", ch.id, "freq:", ch.osc.frequency.value, "state:", ch.osc.state);
+            } catch (err) {
+              console.log("[MIX] osc start failed for ch", ch.id, err.message, "— recreating");
+              const freq = ch.osc.frequency.value;
+              const type = ch.osc.type;
+              const detune = ch.osc.detune.value;
+              ch.osc.disconnect();
+              ch.osc.dispose();
+              ch.osc = new Tone.Oscillator({ frequency: freq, type: type, detune: detune });
+              ch.osc.connect(ch.chGain);
+              ch.osc.start();
+              console.log("[MIX] recreated and started ch", ch.id);
+            }
+          }
+        }
+        mixerRunning = true;
+        // Connect master mod if it was linked before power-on
+        if (masterModWanted && !masterTremolo) connectMasterMod();
+        updatePowerUI();
+        console.log("[MIX] started, channels:", channels.length, "oscs started:", channels.filter(c => c.osc).length);
+        ewObj.setOutput("playing", true, { immediate: true });
+      }
+
+      function stopMixer() {
+        if (!mixerRunning) return;
+        for (const ch of channels) {
+          if (ch.osc) {
+            const freq = ch.osc.frequency.value;
+            const type = ch.osc.type;
+            const detune = ch.osc.detune.value;
+            ch.osc.stop();
+            ch.osc.disconnect();
+            ch.osc.dispose();
+            ch.osc = new Tone.Oscillator({ frequency: freq, type: type, detune: detune });
+            ch.osc.connect(ch.chGain);
+          }
+        }
+        mixerRunning = false;
+        updatePowerUI();
+        ewObj.setOutput("playing", false, { immediate: true });
+      }
+
+      // ── Build UI ───────────────────────────────────────────────
+
+      const app = document.getElementById("app");
+
+      buildHeaderBar(ewObj, "MIXER", app);
+
+      document.getElementById("ew-header-controls").innerHTML = `
+        <select id="ew-theme" style="width:auto; padding:3px 24px 3px 8px">
+          <option value="theme-ethos">ETHOS</option>
+          <option value="">AMBER</option>
+          <option value="theme-phosphor">PHOSPHOR</option>
+          <option value="theme-cobalt">COBALT</option>
+          <option value="theme-plasma">PLASMA</option>
+          <option value="theme-danger">DANGER</option>
+          <option value="theme-matrix">MATRIX</option>
+          <option value="theme-solar">SOLAR</option>
+          <option value="theme-arctic">ARCTIC</option>
+        </select>
+        <select id="mix-output-mode" style="width:auto; padding:3px 24px 3px 8px">
+          <option value="audio">AUDIO</option>
+          <option value="control">CONTROL</option>
+          <option value="both">BOTH</option>
+        </select>
+        <div class="toggle-wrap" id="power-toggle" style="margin-bottom:0; cursor:pointer">
+          <div class="toggle-track" id="power-track">
+            <div class="toggle-thumb"></div>
+          </div>
+        </div>
+      `;
+
+      // Master controls
+      const masterPanel = document.createElement("div");
+      masterPanel.className = "hud-panel clip-tr";
+      masterPanel.innerHTML = `
+        <div class="param-row">
+          <div class="control-label">MASTER</div>
+          <input type="range" id="mix-master" min="0" max="100" value="100" />
+          <span class="range-val" id="mix-master-val">1.00</span>
+        </div>
+        <div style="border-top:1px solid var(--border); padding-top:14px; margin-top:4px">
+          <div class="param-row mod-row" id="mod-master-row">
+            <div class="control-label">MST MOD</div>
+            <input type="range" id="mix-master-mod-depth" min="0" max="100" value="50" />
+            <span class="range-val" id="mix-master-mod-depth-val">0.50</span>
+          </div>
+        </div>
+      `;
+      app.appendChild(masterPanel);
+
+      // Add channel input
+      const addPanel = document.createElement("div");
+      addPanel.className = "hud-panel";
+      addPanel.innerHTML = `
+        <div class="add-channel-row">
+          <input type="text" id="add-channel-input" placeholder="PASTE ROOM NAME OR URL..." />
+          <button class="btn btn-sm btn-mint" id="add-channel-btn">+ ADD</button>
+        </div>
+        <div id="channels-list"></div>
+      `;
+      app.appendChild(addPanel);
+
+      // Master modulation input
+      const modInputPanel = document.createElement("div");
+      modInputPanel.className = "hud-panel";
+      modInputPanel.innerHTML = `
+        <div class="control-label" style="margin-bottom:8px">MASTER GAIN MOD</div>
+        <div style="display:flex; gap:8px; align-items:center">
+          <input type="text" id="master-mod-input" placeholder="PASTE ROOM NAME..." style="flex:1">
+          <button class="btn btn-sm btn-mint" id="master-mod-connect">LINK</button>
+          <button class="btn btn-sm btn-rose" id="master-mod-disconnect" style="display:none">UNLINK</button>
+          <span class="status-dot offline" id="master-mod-dot"></span>
+        </div>
+      `;
+      app.appendChild(modInputPanel);
+
+      // Scope
+      const scopePanel = document.createElement("div");
+      scopePanel.className = "hud-panel";
+      scopePanel.innerHTML = `
+        <div class="screen-wrap">
+          <div class="screen-inner" style="padding:0; min-height:auto">
+            <canvas id="mix-scope" style="display:block; width:100%; height:120px; background:#080808"></canvas>
+            <div class="screen-scan"></div>
+            <div class="corner tl"></div><div class="corner tr"></div>
+            <div class="corner bl"></div><div class="corner br"></div>
+          </div>
+        </div>
+      `;
+      app.appendChild(scopePanel);
+
+      // Rooms panel
+      const roomsPanel = document.createElement("div");
+      roomsPanel.className = "hud-panel";
+      roomsPanel.innerHTML = `
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px">
+          <span class="control-label" style="margin:0; flex-shrink:0">ROOM</span>
+          <input type="text" id="room-input" placeholder="ROOM-ID" maxlength="32" spellcheck="false" autocomplete="off" style="flex:1">
+          <button class="btn btn-sm" id="room-join-btn">JOIN</button>
+          <button class="btn btn-sm" id="privacy-btn">PUBLIC</button>
+        </div>
+        <hr class="hud-divider" style="margin:10px 0">
+        <div class="section-title">// AVAILABLE MIXERS //</div>
+        <div id="rooms-list"><span class="type-dim">NO OTHER MIXERS AVAILABLE</span></div>
+      `;
+      app.appendChild(roomsPanel);
+
+      // Footer
+      const footer = document.createElement("div");
+      footer.style.cssText = "text-align:center; padding:20px 0; font-size:0.72rem; letter-spacing:0.22em; color:var(--dim)";
+      footer.innerHTML = '<a href="../../index.html" style="color:var(--dim); text-decoration:none">ENTROPY WORSHIP</a>';
+      app.appendChild(footer);
+
+      // ── Render channels ────────────────────────────────────────
+
+      function renderChannels() {
+        const el = document.getElementById("channels-list");
+        el.innerHTML = "";
+        for (const ch of channels) {
+          const strip = document.createElement("div");
+          strip.className = "channel-strip";
+          strip.innerHTML = `
+            <div class="channel-header">
+              <span class="channel-name">CH ${ch.id}: ${ch.room}</span>
+              <div class="channel-status">
+                <button class="btn btn-sm ${ch.muted ? "btn-rose" : ""}" data-mute="${ch.id}">${ch.muted ? "MUTED" : "MUTE"}</button>
+                <button class="btn btn-sm btn-rose" data-remove="${ch.id}">X</button>
+              </div>
+            </div>
+            <div class="param-row" style="margin-bottom:0">
+              <div class="control-label" style="min-width:50px">VOL</div>
+              <input type="range" min="0" max="100" value="${Math.round(ch.fader * 100)}" data-fader="${ch.id}" />
+              <span class="range-val">${ch.fader.toFixed(2)}</span>
+            </div>
+          `;
+          el.appendChild(strip);
+
+          // Wire fader
+          strip.querySelector(`[data-fader="${ch.id}"]`).addEventListener("input", (e) => {
+            const val = +e.target.value / 100;
+            setChannelFader(ch.id, val);
+            strip.querySelector(".range-val").textContent = val.toFixed(2);
+            const pct = +e.target.value;
+            e.target.style.setProperty("--val", pct + "%");
+          });
+          // Init fill
+          const faderEl = strip.querySelector(`[data-fader="${ch.id}"]`);
+          faderEl.style.setProperty("--val", Math.round(ch.fader * 100) + "%");
+
+          // Wire mute
+          strip.querySelector(`[data-mute="${ch.id}"]`).addEventListener("click", () => toggleChannelMute(ch.id));
+
+          // Wire remove
+          strip.querySelector(`[data-remove="${ch.id}"]`).addEventListener("click", () => removeChannel(ch.id));
+        }
+      }
+
+      // ── Wire controls ──────────────────────────────────────────
+
+      function updatePowerUI() {
+        document.getElementById("power-track").classList.toggle("on", mixerRunning);
+      }
+
+      document.getElementById("power-toggle").addEventListener("click", () => {
+        if (mixerRunning) stopMixer(); else startMixer();
+      });
+
+      document.getElementById("ew-theme").addEventListener("change", (e) => {
+        document.documentElement.className = e.target.value;
+      });
+      document.documentElement.className = "theme-ethos";
+
+      document.getElementById("mix-output-mode").addEventListener("change", (e) => {
+        outputMode = e.target.value;
+        applyOutputRouting();
+        ewObj.setOutput("outputMode", outputMode, { immediate: true });
+      });
+
+      // Master fader
+      wireRange("mix-master", "mix-master-val", (v) => (v / 100).toFixed(2));
+      document.getElementById("mix-master").addEventListener("input", (e) => {
+        baseMaster = +e.target.value / 100;
+        if (masterGain) masterGain.gain.rampTo(baseMaster, 0.01);
+        ewObj.setOutput("master", baseMaster);
+      });
+
+      // Master mod depth
+      wireRange("mix-master-mod-depth", "mix-master-mod-depth-val", (v) => (v / 100).toFixed(2));
+      document.getElementById("mix-master-mod-depth").addEventListener("input", (e) => {
+        masterModDepth = +e.target.value / 100;
+        updateMasterModParams();
+      });
+
+      // Add channel
+      document.getElementById("add-channel-btn").addEventListener("click", () => {
+        const input = document.getElementById("add-channel-input");
+        const room = input.value.trim();
+        if (room) {
+          addChannel(room);
+          input.value = "";
+        }
+      });
+      document.getElementById("add-channel-input").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") document.getElementById("add-channel-btn").click();
+      });
+
+      // Master gain mod link/unlink
+      document.getElementById("master-mod-connect").addEventListener("click", () => {
+        const room = document.getElementById("master-mod-input").value.trim();
+        if (!room) return;
+        // Use explicit mapping — only sync frequency and waveform to control
+        // the modulator's rate and shape. Don't use wildcard to avoid conflicts
+        // with channel subscriptions to the same room.
+        const mapping = { frequency: "master", waveform: "master", modChain: "master" };
+        const ok = ewObj.subscribe(room, mapping);
+        if (ok) {
+          masterModWanted = true;
+          if (audioReady) connectMasterMod();
+          document.getElementById("mod-master-row").classList.add("active");
+          document.getElementById("master-mod-dot").className = "status-dot live";
+          document.getElementById("master-mod-connect").style.display = "none";
+          document.getElementById("master-mod-disconnect").style.display = "";
+          document.getElementById("master-mod-input").disabled = true;
+        }
+      });
+
+      document.getElementById("master-mod-disconnect").addEventListener("click", () => {
+        const room = document.getElementById("master-mod-input").value.trim();
+        ewObj.unsubscribe(room, "master");
+        disconnectMasterMod();
+        document.getElementById("mod-master-row").classList.remove("active");
+        document.getElementById("master-mod-dot").className = "status-dot offline";
+        document.getElementById("master-mod-disconnect").style.display = "none";
+        document.getElementById("master-mod-connect").style.display = "";
+        document.getElementById("master-mod-input").disabled = false;
+      });
+
+      document.getElementById("master-mod-input").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") document.getElementById("master-mod-connect").click();
+      });
+
+      // ── Master mod input handler ───────────────────────────────
+
+      ewObj.onInput("master", (value, meta) => {
+        if (meta && meta.unit === "bipolar") return;
+
+        if (masterModWanted) {
+          if (meta && meta.port === "frequency" && typeof value === "number") {
+            masterModRemoteFreq = value;
+            updateMasterModParams();
+          } else if (meta && meta.port === "waveform" && typeof value === "string") {
+            masterModRemoteType = value;
+            updateMasterModParams();
+          }
+          return;
+        }
+
+        // Direct master set (room sync)
+        if (typeof value === "number") {
+          const clamped = Math.max(0, Math.min(1, value));
+          baseMaster = clamped;
+          if (masterGain) masterGain.gain.rampTo(clamped, 0.01);
+          document.getElementById("mix-master").value = Math.round(clamped * 100);
+          document.getElementById("mix-master-val").textContent = clamped.toFixed(2);
+          document.getElementById("mix-master").style.setProperty("--val", Math.round(clamped * 100) + "%");
+        }
+      });
+
+      // Room state sync
+      ewObj.onInput("playing", async (value) => {
+        if (typeof value !== "boolean") return;
+        if (value && !mixerRunning) await startMixer();
+        else if (!value && mixerRunning) stopMixer();
+      });
+
+      ewObj.onInput("outputMode", (value) => {
+        if (typeof value !== "string") return;
+        if (["audio", "control", "both"].includes(value)) {
+          outputMode = value;
+          document.getElementById("mix-output-mode").value = value;
+          applyOutputRouting();
+        }
+      });
+
+      // ── Scope ──────────────────────────────────────────────────
+
+      const scopeCanvas = document.getElementById("mix-scope");
+      const scopeCtx = scopeCanvas.getContext("2d");
+
+      function resizeScope() {
+        const rect = scopeCanvas.parentElement.getBoundingClientRect();
+        scopeCanvas.width = rect.width;
+        scopeCanvas.height = 120;
+      }
+
+      function drawScope() {
+        requestAnimationFrame(drawScope);
+        const w = scopeCanvas.width, h = scopeCanvas.height;
+        scopeCtx.fillStyle = "#080808";
+        scopeCtx.fillRect(0, 0, w, h);
+        scopeCtx.strokeStyle = "rgba(128,128,128,0.08)";
+        scopeCtx.lineWidth = 1;
+        for (let y = 0; y < h; y += 20) { scopeCtx.beginPath(); scopeCtx.moveTo(0, y); scopeCtx.lineTo(w, y); scopeCtx.stroke(); }
+        for (let x = 0; x < w; x += 20) { scopeCtx.beginPath(); scopeCtx.moveTo(x, 0); scopeCtx.lineTo(x, h); scopeCtx.stroke(); }
+        scopeCtx.strokeStyle = "rgba(128,128,128,0.2)";
+        scopeCtx.beginPath(); scopeCtx.moveTo(0, h/2); scopeCtx.lineTo(w, h/2); scopeCtx.stroke();
+
+        if (!analyser || !mixerRunning) return;
+        const data = analyser.getValue();
+        scopeCtx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--accent");
+        scopeCtx.lineWidth = 2;
+        scopeCtx.shadowColor = "rgba(210,210,210,0.4)";
+        scopeCtx.shadowBlur = 6;
+        scopeCtx.beginPath();
+        for (let i = 0; i < data.length; i++) {
+          const x = (i / data.length) * w;
+          const y = ((1 - data[i]) / 2) * h;
+          if (i === 0) scopeCtx.moveTo(x, y); else scopeCtx.lineTo(x, y);
+        }
+        scopeCtx.stroke();
+        scopeCtx.shadowBlur = 0;
+      }
+
+      // ── Room UI ────────────────────────────────────────────────
+
+      ewObj.on("connected", () => {
+        document.getElementById("room-input").value = ewObj.getOutputRoom();
+      });
+      document.getElementById("room-join-btn").addEventListener("click", () => {
+        const name = document.getElementById("room-input").value.trim().replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 32) || "default";
+        location.search = `?room=${encodeURIComponent(name)}`;
+      });
+      document.getElementById("room-input").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") document.getElementById("room-join-btn").click();
+      });
+
+      let roomPrivate = false;
+      function updatePrivacyBtn() {
+        const btn = document.getElementById("privacy-btn");
+        btn.textContent = roomPrivate ? "PRIVATE" : "PUBLIC";
+        btn.classList.toggle("active", roomPrivate);
+      }
+      document.getElementById("privacy-btn").addEventListener("click", () => {
+        roomPrivate = !roomPrivate; ewObj.setPrivate(roomPrivate); updatePrivacyBtn();
+      });
+      ewObj.on("stateSync", (msg) => {
+        roomPrivate = msg.private || false; updatePrivacyBtn();
+        document.getElementById("room-input").value = msg.room || ewObj.getOutputRoom();
+      });
+      ewObj.on("roomPrivate", (msg) => { roomPrivate = msg.private; updatePrivacyBtn(); });
+
+      ewObj.on("rooms", (msg) => {
+        const el = document.getElementById("rooms-list");
+        if (!el) return;
+        const currentRoom = ewObj.getOutputRoom();
+        const others = (msg.rooms || []).filter((r) => r.name !== currentRoom);
+        if (!others.length) { el.innerHTML = '<span class="type-dim">NO OTHER MIXERS AVAILABLE</span>'; return; }
+        el.innerHTML = "";
+        for (const r of others) {
+          const a = document.createElement("a");
+          a.className = "room-entry";
+          a.href = `?room=${encodeURIComponent(r.name)}`;
+          const objs = r.objects && r.objects.length ? r.objects.join(", ").toUpperCase() : "";
+          a.innerHTML = `<span class="room-entry-name">${r.name}</span><span class="room-entry-info">${r.clients} PLR${objs ? " · " + objs : ""}</span>`;
+          el.appendChild(a);
+        }
+      });
+
+      // ── Initialize ─────────────────────────────────────────────
+
+      (() => {
+        const urlRoom = new URLSearchParams(location.search).get("room");
+        ewObj.connectOutput(urlRoom || undefined);
+        ewObj._outputValues["master"] = 1;
+        ewObj._outputValues["channels"] = 0;
+        ewObj._outputValues["playing"] = false;
+        ewObj._outputValues["outputMode"] = "audio";
+        resizeScope();
+        drawScope();
+      })();
+
+      window.addEventListener("resize", resizeScope);
+    </script>
+  </body>
+</html>
