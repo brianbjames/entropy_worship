@@ -1,0 +1,733 @@
+<!-- /-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\ -->
+<!-- |                                                                         | -->
+<!-- \ @@@@@@@@  @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@@@@@   @@@ @@@      / -->
+<!-- - @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@ @@@      - -->
+<!-- / @@!       @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!  @@@  @@! !@@      \ -->
+<!-- | !@!       !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!  @!@  !@! @!!      | -->
+<!-- \ @!!!:!    @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!@@!@!    !@!@!       / -->
+<!-- - !!!!!:    !@!  !!!    !!!    !!@!@!    !@!  !!!  !!@!!!      @!!!       - -->
+<!-- / !!:       !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:         !!:        \ -->
+<!-- | :!:       :!:  !:!    :!:    :!:  !:!  :!:  !:!  :!:         :!:        | -->
+<!-- \  :: ::::   ::   ::     ::    ::   :::  ::::: ::   ::          ::        / -->
+<!-- - : :: ::   ::    :      :      :   : :   : :  :    :           :         - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \ @@@  @@@  @@@   @@@@@@   @@@@@@@    @@@@@@   @@@  @@@  @@@  @@@@@@@     / -->
+<!-- - @@@  @@@  @@@  @@@@@@@@  @@@@@@@@  @@@@@@@   @@@  @@@  @@@  @@@@@@@@    - -->
+<!-- / @@!  @@!  @@!  @@!  @@@  @@!  @@@  !@@       @@!  @@@  @@!  @@!  @@@    \ -->
+<!-- | !@!  !@!  !@!  !@!  @!@  !@!  @!@  !@!       !@!  @!@  !@!  !@!  @!@    | -->
+<!-- \ @!!  !!@  @!@  @!@  !@!  @!@!!@!   !!@@!!    @!@!@!@!  !!@  @!@@!@!     / -->
+<!-- - !@!  !!!  !@!  !@!  !!!  !!@!@!     !!@!!!   !!!@!!!!  !!!  !!@!!!      - -->
+<!-- / !!:  !!:  !!:  !!:  !!!  !!: :!!        !:!  !!:  !!!  !!:  !!:         \ -->
+<!-- | :!:  :!:  :!:  :!:  !:!  :!:  !:!      !:!   :!:  !:!  :!:  :!:         | -->
+<!-- \  :::: :: :::   ::::: ::  ::   :::  :::: ::   ::   :::   ::   ::         / -->
+<!-- -   :: :  : :     : :  :    :   : :  :: : :     :   : :  :     :          - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FUNC GEN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css" />
+    <link rel="stylesheet" href="../lib/ewuilib.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <style>
+      #fg-scope {
+        display: block; width: 100%; height: 120px; background: #080808;
+      }
+      #fg-preview {
+        display: block; width: 100%; height: 100px; background: #080808;
+      }
+      .param-row {
+        display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+      }
+      .param-row .control-label { min-width: 80px; margin-bottom: 0; flex-shrink: 0; }
+      .param-row input[type="range"] { flex: 1; }
+      .param-row .range-val { min-width: 72px; text-align: right; }
+      .room-entry {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 6px 10px; border: 1px solid var(--border); margin-bottom: 6px;
+        text-decoration: none; color: var(--text); font-size: 0.82rem;
+        letter-spacing: 0.1em; transition: border-color 0.14s, background 0.14s; cursor: pointer;
+      }
+      .room-entry:hover { border-color: var(--accent); background: rgba(var(--accent-rgb), 0.06); }
+      .room-entry-name { color: var(--accent); }
+      .room-entry-info { font-size: 0.68rem; color: var(--dim); letter-spacing: 0.08em; }
+      #trigger-btn {
+        display: block; width: 100%; padding: 18px 0; font-size: 1.6rem;
+        letter-spacing: 0.3em; font-family: 'VT323', monospace;
+        background: rgba(var(--accent-rgb), 0.08); border: 2px solid var(--accent);
+        color: var(--accent); cursor: pointer;
+        transition: background 0.1s, box-shadow 0.1s;
+      }
+      #trigger-btn:hover {
+        background: rgba(var(--accent-rgb), 0.18);
+      }
+      #trigger-btn:active, #trigger-btn.firing {
+        background: var(--accent); color: #000;
+        box-shadow: 0 0 20px var(--accent);
+      }
+      .status-line {
+        font-size: 0.82rem; text-align: center; padding: 6px 0;
+        letter-spacing: 0.15em; color: var(--dim);
+      }
+      .status-line .active-text { color: var(--accent); }
+    </style>
+  </head>
+  <body>
+    <div id="grid-bg"></div>
+    <div id="scanlines"></div>
+    <div id="app"></div>
+
+    <script type="module">
+      import { EWObject } from "../lib/ew-object-base.js";
+      import {
+        buildHeaderBar,
+        buildInputPanel,
+        wireRange,
+      } from "../lib/ew-object-ui.js";
+
+      // ── EWObject instance ──────────────────────────────────────
+
+      const ewObj = new EWObject({
+        name: "FN-1",
+        objectType: "funcgen",
+        roomPrefix: "fn",
+        inputs: [
+          { port: "trigger", type: "number", unit: "bipolar", min: -1, max: 1, default: 0 },
+          { port: "duration", type: "number", unit: "s", min: 0.01, max: 30, default: 1 },
+          { port: "level", type: "number", unit: "", min: 0, max: 1, default: 1 },
+        ],
+        outputs: [
+          { port: "signal", type: "number", unit: "bipolar" },
+          { port: "phase", type: "number" },
+          { port: "active", type: "number", unit: "bipolar" },
+        ],
+      });
+
+      // ── Function generator state ───────────────────────────────
+
+      let shape = "RAMP UP";
+      let duration = 1;           // seconds
+      let level = 1;              // 0..1 amplitude
+      let curve = 1;              // exponential curvature
+      let attackPct = 20;         // % of duration for ATTACK-DECAY shape
+      let endMode = "HOLD";       // HOLD, RETURN, LOOP
+
+      let isActive = false;
+      let triggerTime = 0;        // performance.now() when triggered
+      let currentPhase = 0;       // 0..1
+      let currentSignal = 0;
+      let holdValue = 0;          // value to hold at end
+      let walkValue = 0;          // for RANDOM WALK shape
+
+      // Trigger edge detection
+      let prevTriggerValue = 0;
+
+      // ── Shape computation ──────────────────────────────────────
+
+      function computeShape(phase) {
+        let raw;
+        switch (shape) {
+          case "RAMP UP":
+            raw = phase;
+            break;
+          case "RAMP DOWN":
+            raw = 1 - phase;
+            break;
+          case "TRIANGLE":
+            raw = phase < 0.5 ? phase * 2 : 2 - phase * 2;
+            break;
+          case "EXP RISE":
+            raw = (Math.pow(phase, curve) );
+            break;
+          case "EXP FALL":
+            raw = (1 - Math.pow(phase, curve));
+            break;
+          case "S-CURVE": {
+            // Attempt sigmoid using curve parameter
+            // At curve=1 this is a simple smoothstep, at higher values more aggressive
+            const t = phase;
+            if (curve === 1) {
+              raw = t * t * (3 - 2 * t); // smoothstep
+            } else {
+              // Adjustable sigmoid: remap through power curve
+              const centered = t * 2 - 1; // -1..+1
+              const sign = centered >= 0 ? 1 : -1;
+              raw = 0.5 + sign * 0.5 * Math.pow(Math.abs(centered), 1 / curve);
+            }
+            break;
+          }
+          case "ATTACK-DECAY": {
+            const attackEnd = attackPct / 100;
+            if (phase < attackEnd) {
+              // Attack phase
+              const ap = phase / attackEnd;
+              raw = Math.pow(ap, 1 / curve);
+            } else {
+              // Decay phase
+              const dp = (phase - attackEnd) / (1 - attackEnd);
+              raw = 1 - Math.pow(dp, curve);
+            }
+            break;
+          }
+          case "RANDOM WALK":
+            // Not computed from phase — uses accumulated walk
+            raw = null;
+            break;
+          default:
+            raw = phase;
+        }
+        return raw;
+      }
+
+      // Compute a preview-safe version (no walk state mutation)
+      function computeShapePreview(phase) {
+        if (shape === "RANDOM WALK") {
+          // For preview, show a smooth noise-like curve
+          // Use deterministic sine sum as approximation
+          return 0.5 + 0.3 * Math.sin(phase * 7.3) + 0.2 * Math.sin(phase * 13.1);
+        }
+        return computeShape(phase);
+      }
+
+      function fire() {
+        isActive = true;
+        triggerTime = performance.now();
+        currentPhase = 0;
+        walkValue = 0;
+        ewObj.setOutput("active", 1, { unit: "bipolar", immediate: true });
+        // Flash button
+        const btn = document.getElementById("trigger-btn");
+        if (btn) {
+          btn.classList.add("firing");
+          setTimeout(() => btn.classList.remove("firing"), 120);
+        }
+      }
+
+      function finish() {
+        isActive = false;
+        if (endMode === "RETURN") {
+          currentSignal = 0;
+          ewObj.setOutput("signal", 0, { unit: "bipolar", immediate: true });
+        } else if (endMode === "HOLD") {
+          // Keep current value
+        } else if (endMode === "LOOP") {
+          fire(); // Restart
+          return;
+        }
+        ewObj.setOutput("active", -1, { unit: "bipolar", immediate: true });
+        ewObj.setOutput("phase", endMode === "RETURN" ? 0 : 1, { immediate: true });
+      }
+
+      // ── Web Worker (100Hz tick) ────────────────────────────────
+
+      let signalWorker = null;
+
+      function startWorker() {
+        if (signalWorker) return;
+        const blob = new Blob([`
+          let id = setInterval(() => postMessage("tick"), 10);
+          onmessage = () => { clearInterval(id); close(); };
+        `], { type: "application/javascript" });
+        signalWorker = new Worker(URL.createObjectURL(blob));
+        signalWorker.onmessage = () => {
+          if (!isActive) return;
+
+          const elapsed = (performance.now() - triggerTime) / 1000;
+          currentPhase = Math.min(1, elapsed / duration);
+
+          let rawValue;
+          if (shape === "RANDOM WALK") {
+            walkValue += (Math.random() * 2 - 1) * 0.05;
+            walkValue = Math.max(0, Math.min(1, walkValue));
+            rawValue = walkValue;
+          } else {
+            rawValue = computeShape(currentPhase);
+          }
+
+          // Scale to bipolar: map 0..1 raw to -1..+1, then scale by level
+          currentSignal = Math.round(((rawValue * 2 - 1) * level) * 1000) / 1000;
+          holdValue = currentSignal;
+
+          ewObj.setOutput("signal", currentSignal, { unit: "bipolar" });
+          ewObj.setOutput("phase", Math.round(currentPhase * 1000) / 1000);
+          pushScopeValue(currentSignal);
+
+          if (currentPhase >= 1) {
+            finish();
+          }
+        };
+      }
+
+      // ── Scope ──────────────────────────────────────────────────
+
+      const SCOPE_SAMPLES = 200;
+      let scopeHistory = new Float32Array(SCOPE_SAMPLES);
+      let scopeWriteIdx = 0;
+
+      function pushScopeValue(val) {
+        scopeHistory[scopeWriteIdx] = val;
+        scopeWriteIdx = (scopeWriteIdx + 1) % SCOPE_SAMPLES;
+      }
+
+      // ── Build UI ───────────────────────────────────────────────
+
+      const app = document.getElementById("app");
+
+      buildHeaderBar(ewObj, "FUNC GEN", app);
+
+      document.getElementById("ew-header-controls").innerHTML = `
+        <select id="ew-theme" style="width:auto; padding:3px 24px 3px 8px">
+          <option value="theme-ethos">ETHOS</option>
+          <option value="">AMBER</option>
+          <option value="theme-phosphor">PHOSPHOR</option>
+          <option value="theme-cobalt">COBALT</option>
+          <option value="theme-plasma">PLASMA</option>
+          <option value="theme-danger">DANGER</option>
+          <option value="theme-matrix">MATRIX</option>
+          <option value="theme-solar">SOLAR</option>
+          <option value="theme-arctic">ARCTIC</option>
+        </select>
+      `;
+
+      // Trigger button + status
+      const triggerPanel = document.createElement("div");
+      triggerPanel.className = "hud-panel clip-tr";
+      triggerPanel.innerHTML = `
+        <button id="trigger-btn">TRIGGER</button>
+        <div class="status-line" id="fg-status">IDLE</div>
+      `;
+      app.appendChild(triggerPanel);
+
+      // Shape preview canvas
+      const previewPanel = document.createElement("div");
+      previewPanel.className = "hud-panel";
+      previewPanel.innerHTML = `
+        <div class="screen-wrap">
+          <div class="screen-inner" style="padding:0; min-height:auto">
+            <canvas id="fg-preview"></canvas>
+            <div class="screen-scan"></div>
+            <div class="corner tl"></div><div class="corner tr"></div>
+            <div class="corner bl"></div><div class="corner br"></div>
+          </div>
+        </div>
+      `;
+      app.appendChild(previewPanel);
+
+      // Controls
+      const controlsPanel = document.createElement("div");
+      controlsPanel.className = "hud-panel";
+      controlsPanel.innerHTML = `
+        <div class="control-group" style="margin-bottom:14px">
+          <div class="control-label">SHAPE</div>
+          <select id="fg-shape">
+            <option value="RAMP UP">RAMP UP</option>
+            <option value="RAMP DOWN">RAMP DOWN</option>
+            <option value="TRIANGLE">TRIANGLE</option>
+            <option value="EXP RISE">EXPONENTIAL RISE</option>
+            <option value="EXP FALL">EXPONENTIAL FALL</option>
+            <option value="S-CURVE">S-CURVE</option>
+            <option value="ATTACK-DECAY">ATTACK-DECAY</option>
+            <option value="RANDOM WALK">RANDOM WALK</option>
+          </select>
+        </div>
+
+        <div class="param-row">
+          <div class="control-label">DURATION</div>
+          <input type="range" id="fg-duration" min="1" max="1000" value="500" />
+          <span class="range-val" id="fg-duration-val">1.00 s</span>
+        </div>
+
+        <div class="param-row">
+          <div class="control-label">LEVEL</div>
+          <input type="range" id="fg-level" min="0" max="100" value="100" />
+          <span class="range-val" id="fg-level-val">1.00</span>
+        </div>
+
+        <div class="param-row" id="curve-row">
+          <div class="control-label">CURVE</div>
+          <input type="range" id="fg-curve" min="1" max="1000" value="500" />
+          <span class="range-val" id="fg-curve-val">1.00</span>
+        </div>
+
+        <div class="param-row" id="attack-row" style="display:none">
+          <div class="control-label">ATTACK %</div>
+          <input type="range" id="fg-attack" min="1" max="99" value="20" />
+          <span class="range-val" id="fg-attack-val">20%</span>
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">END MODE</div>
+          <select id="fg-endmode">
+            <option value="HOLD">HOLD</option>
+            <option value="RETURN">RETURN</option>
+            <option value="LOOP">LOOP</option>
+          </select>
+        </div>
+      `;
+      app.appendChild(controlsPanel);
+
+      // Theme
+      document.getElementById("ew-theme").addEventListener("change", (e) => {
+        document.documentElement.className = e.target.value;
+      });
+      document.documentElement.className = "theme-ethos";
+
+      // Scope
+      const scopePanel = document.createElement("div");
+      scopePanel.className = "hud-panel";
+      scopePanel.innerHTML = `
+        <div class="screen-wrap">
+          <div class="screen-inner" style="padding:0; min-height:auto">
+            <canvas id="fg-scope"></canvas>
+            <div class="screen-scan"></div>
+            <div class="corner tl"></div><div class="corner tr"></div>
+            <div class="corner bl"></div><div class="corner br"></div>
+          </div>
+        </div>
+      `;
+      app.appendChild(scopePanel);
+
+      // Input panel
+      buildInputPanel(ewObj, app);
+
+      // Rooms
+      const roomsPanel = document.createElement("div");
+      roomsPanel.className = "hud-panel";
+      roomsPanel.innerHTML = `
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px">
+          <span class="control-label" style="margin:0; flex-shrink:0">ROOM</span>
+          <input type="text" id="room-input" placeholder="ROOM-ID" maxlength="32" spellcheck="false" autocomplete="off" style="flex:1">
+          <button class="btn btn-sm" id="room-join-btn">JOIN</button>
+          <button class="btn btn-sm" id="privacy-btn">PUBLIC</button>
+        </div>
+        <hr class="hud-divider" style="margin:10px 0">
+        <div class="section-title">// AVAILABLE FUNC GENS //</div>
+        <div id="rooms-list"><span class="type-dim">NO OTHER FUNC GENS AVAILABLE</span></div>
+      `;
+      app.appendChild(roomsPanel);
+
+      // Footer
+      const footer = document.createElement("div");
+      footer.style.cssText = "text-align:center; padding:20px 0; font-size:0.72rem; letter-spacing:0.22em; color:var(--dim)";
+      footer.innerHTML = '<a href="../../index.html" style="color:var(--dim); text-decoration:none">ENTROPY WORSHIP</a>';
+      app.appendChild(footer);
+
+      // ── Wire controls ──────────────────────────────────────────
+
+      function updateVisibleControls() {
+        document.getElementById("curve-row").style.display =
+          ["EXP RISE", "EXP FALL", "S-CURVE", "ATTACK-DECAY"].includes(shape) ? "flex" : "none";
+        document.getElementById("attack-row").style.display =
+          shape === "ATTACK-DECAY" ? "flex" : "none";
+      }
+
+      function updateStatus() {
+        const el = document.getElementById("fg-status");
+        if (!el) return;
+        if (isActive) {
+          const pct = Math.round(currentPhase * 100);
+          el.innerHTML = `<span class="active-text">RUNNING ${pct}%</span> // ${shape} // ${endMode}`;
+        } else {
+          el.textContent = `IDLE // ${shape} // ${endMode}`;
+        }
+      }
+
+      // Trigger button
+      document.getElementById("trigger-btn").addEventListener("click", () => {
+        fire();
+      });
+
+      // Shape
+      document.getElementById("fg-shape").addEventListener("change", (e) => {
+        shape = e.target.value;
+        updateVisibleControls();
+        drawPreview();
+      });
+
+      // Duration — logarithmic 0.01 to 30s from slider 1-1000
+      const DUR_MIN = Math.log(0.01);
+      const DUR_MAX = Math.log(30);
+
+      function sliderToDuration(val) {
+        return Math.exp(DUR_MIN + (val / 1000) * (DUR_MAX - DUR_MIN));
+      }
+      function durationToSlider(d) {
+        return Math.round(((Math.log(d) - DUR_MIN) / (DUR_MAX - DUR_MIN)) * 1000);
+      }
+
+      const durSlider = document.getElementById("fg-duration");
+      const durValEl = document.getElementById("fg-duration-val");
+
+      durSlider.addEventListener("input", () => {
+        duration = sliderToDuration(+durSlider.value);
+        durValEl.textContent = duration >= 10 ? duration.toFixed(1) + " s" : duration.toFixed(2) + " s";
+        const pct = (+durSlider.value / 1000) * 100;
+        durSlider.style.setProperty("--val", pct + "%");
+      });
+      (() => {
+        const pct = (+durSlider.value / 1000) * 100;
+        durSlider.style.setProperty("--val", pct + "%");
+      })();
+
+      // Level
+      wireRange("fg-level", "fg-level-val", (v) => (v / 100).toFixed(2));
+      document.getElementById("fg-level").addEventListener("input", (e) => {
+        level = +e.target.value / 100;
+        drawPreview();
+      });
+
+      // Curve — logarithmic 0.1 to 10 from slider 1-1000
+      const CURVE_MIN = Math.log(0.1);
+      const CURVE_MAX = Math.log(10);
+
+      function sliderToCurve(val) {
+        return Math.exp(CURVE_MIN + (val / 1000) * (CURVE_MAX - CURVE_MIN));
+      }
+
+      const curveSlider = document.getElementById("fg-curve");
+      const curveValEl = document.getElementById("fg-curve-val");
+
+      curveSlider.addEventListener("input", () => {
+        curve = sliderToCurve(+curveSlider.value);
+        curveValEl.textContent = curve.toFixed(2);
+        const pct = (+curveSlider.value / 1000) * 100;
+        curveSlider.style.setProperty("--val", pct + "%");
+        drawPreview();
+      });
+      (() => {
+        const pct = (+curveSlider.value / 1000) * 100;
+        curveSlider.style.setProperty("--val", pct + "%");
+      })();
+
+      // Attack %
+      wireRange("fg-attack", "fg-attack-val", (v) => v + "%");
+      document.getElementById("fg-attack").addEventListener("input", (e) => {
+        attackPct = +e.target.value;
+        drawPreview();
+      });
+
+      // End mode
+      document.getElementById("fg-endmode").addEventListener("change", (e) => {
+        endMode = e.target.value;
+      });
+
+      // ── Input handlers ─────────────────────────────────────────
+
+      ewObj.onInput("trigger", (value, meta) => {
+        if (typeof value !== "number") return;
+        // Positive edge detection
+        if (prevTriggerValue <= 0 && value > 0) {
+          fire();
+        }
+        prevTriggerValue = value;
+      });
+
+      ewObj.onInput("duration", (value, meta) => {
+        if (typeof value !== "number") return;
+        if (value >= 0.01 && value <= 30) {
+          duration = value;
+          durSlider.value = durationToSlider(value);
+          durValEl.textContent = duration >= 10 ? duration.toFixed(1) + " s" : duration.toFixed(2) + " s";
+          durSlider.style.setProperty("--val", (+durSlider.value / 1000) * 100 + "%");
+        }
+      });
+
+      ewObj.onInput("level", (value, meta) => {
+        if (typeof value !== "number") return;
+        const clamped = Math.max(0, Math.min(1, value));
+        level = clamped;
+        document.getElementById("fg-level").value = Math.round(clamped * 100);
+        document.getElementById("fg-level-val").textContent = clamped.toFixed(2);
+        drawPreview();
+      });
+
+      // ── Preview canvas ─────────────────────────────────────────
+
+      const previewCanvas = document.getElementById("fg-preview");
+      const previewCtx = previewCanvas.getContext("2d");
+
+      function resizePreview() {
+        const rect = previewCanvas.parentElement.getBoundingClientRect();
+        previewCanvas.width = rect.width;
+        previewCanvas.height = 100;
+      }
+
+      function drawPreview() {
+        const w = previewCanvas.width, h = previewCanvas.height;
+        previewCtx.fillStyle = "#080808";
+        previewCtx.fillRect(0, 0, w, h);
+
+        // Grid
+        previewCtx.strokeStyle = "rgba(128,128,128,0.08)";
+        previewCtx.lineWidth = 1;
+        for (let y = 0; y < h; y += 20) { previewCtx.beginPath(); previewCtx.moveTo(0, y); previewCtx.lineTo(w, y); previewCtx.stroke(); }
+        for (let x = 0; x < w; x += 20) { previewCtx.beginPath(); previewCtx.moveTo(x, 0); previewCtx.lineTo(x, h); previewCtx.stroke(); }
+        // Center (zero) line
+        previewCtx.strokeStyle = "rgba(128,128,128,0.2)";
+        previewCtx.beginPath(); previewCtx.moveTo(0, h / 2); previewCtx.lineTo(w, h / 2); previewCtx.stroke();
+
+        // Draw shape curve
+        const accent = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim();
+        previewCtx.strokeStyle = accent;
+        previewCtx.lineWidth = 2;
+        previewCtx.shadowColor = "rgba(210,210,210,0.4)";
+        previewCtx.shadowBlur = 6;
+        previewCtx.beginPath();
+
+        const steps = 200;
+        for (let i = 0; i <= steps; i++) {
+          const phase = i / steps;
+          const rawValue = computeShapePreview(phase);
+          // Map to bipolar scaled by level
+          const bipolar = (rawValue * 2 - 1) * level;
+          const x = (i / steps) * w;
+          const y = ((1 - bipolar) / 2) * h;
+          if (i === 0) previewCtx.moveTo(x, y); else previewCtx.lineTo(x, y);
+        }
+        previewCtx.stroke();
+        previewCtx.shadowBlur = 0;
+
+        // Draw playhead if active
+        if (isActive) {
+          const px = currentPhase * w;
+          previewCtx.strokeStyle = "rgba(255,255,255,0.6)";
+          previewCtx.lineWidth = 1;
+          previewCtx.setLineDash([4, 4]);
+          previewCtx.beginPath();
+          previewCtx.moveTo(px, 0);
+          previewCtx.lineTo(px, h);
+          previewCtx.stroke();
+          previewCtx.setLineDash([]);
+
+          // Playhead dot
+          const rawAtPhase = computeShapePreview(currentPhase);
+          const bipolarAtPhase = (rawAtPhase * 2 - 1) * level;
+          const dotY = ((1 - bipolarAtPhase) / 2) * h;
+          previewCtx.fillStyle = accent;
+          previewCtx.beginPath();
+          previewCtx.arc(px, dotY, 5, 0, Math.PI * 2);
+          previewCtx.fill();
+          previewCtx.fillStyle = "#fff";
+          previewCtx.beginPath();
+          previewCtx.arc(px, dotY, 2, 0, Math.PI * 2);
+          previewCtx.fill();
+        }
+      }
+
+      // ── Scope drawing ──────────────────────────────────────────
+
+      const scopeCanvas = document.getElementById("fg-scope");
+      const scopeCtx = scopeCanvas.getContext("2d");
+
+      function resizeScope() {
+        const rect = scopeCanvas.parentElement.getBoundingClientRect();
+        scopeCanvas.width = rect.width;
+        scopeCanvas.height = 120;
+      }
+
+      function drawAll() {
+        requestAnimationFrame(drawAll);
+        updateStatus();
+        drawPreview();
+        drawScopeCanvas();
+      }
+
+      function drawScopeCanvas() {
+        const w = scopeCanvas.width, h = scopeCanvas.height;
+        scopeCtx.fillStyle = "#080808";
+        scopeCtx.fillRect(0, 0, w, h);
+
+        // Grid
+        scopeCtx.strokeStyle = "rgba(128,128,128,0.08)";
+        scopeCtx.lineWidth = 1;
+        for (let y = 0; y < h; y += 20) { scopeCtx.beginPath(); scopeCtx.moveTo(0, y); scopeCtx.lineTo(w, y); scopeCtx.stroke(); }
+        for (let x = 0; x < w; x += 20) { scopeCtx.beginPath(); scopeCtx.moveTo(x, 0); scopeCtx.lineTo(x, h); scopeCtx.stroke(); }
+        scopeCtx.strokeStyle = "rgba(128,128,128,0.2)";
+        scopeCtx.beginPath(); scopeCtx.moveTo(0, h / 2); scopeCtx.lineTo(w, h / 2); scopeCtx.stroke();
+
+        // Draw history
+        scopeCtx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--accent");
+        scopeCtx.lineWidth = 2;
+        scopeCtx.shadowColor = "rgba(210,210,210,0.4)";
+        scopeCtx.shadowBlur = 6;
+        scopeCtx.beginPath();
+        for (let i = 0; i < SCOPE_SAMPLES; i++) {
+          const idx = (scopeWriteIdx + i) % SCOPE_SAMPLES;
+          const x = (i / SCOPE_SAMPLES) * w;
+          const y = ((1 - scopeHistory[idx]) / 2) * h;
+          if (i === 0) scopeCtx.moveTo(x, y); else scopeCtx.lineTo(x, y);
+        }
+        scopeCtx.stroke();
+        scopeCtx.shadowBlur = 0;
+      }
+
+      // ── Room UI ────────────────────────────────────────────────
+
+      ewObj.on("connected", () => {
+        document.getElementById("room-input").value = ewObj.getOutputRoom();
+      });
+      document.getElementById("room-join-btn").addEventListener("click", () => {
+        const name = document.getElementById("room-input").value.trim().replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 32) || "default";
+        location.search = `?room=${encodeURIComponent(name)}`;
+      });
+      document.getElementById("room-input").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") document.getElementById("room-join-btn").click();
+      });
+
+      let roomPrivate = false;
+      function updatePrivacyBtn() {
+        const btn = document.getElementById("privacy-btn");
+        btn.textContent = roomPrivate ? "PRIVATE" : "PUBLIC";
+        btn.classList.toggle("active", roomPrivate);
+      }
+      document.getElementById("privacy-btn").addEventListener("click", () => {
+        roomPrivate = !roomPrivate; ewObj.setPrivate(roomPrivate); updatePrivacyBtn();
+      });
+      ewObj.on("stateSync", (msg) => {
+        roomPrivate = msg.private || false; updatePrivacyBtn();
+        document.getElementById("room-input").value = msg.room || ewObj.getOutputRoom();
+      });
+      ewObj.on("roomPrivate", (msg) => { roomPrivate = msg.private; updatePrivacyBtn(); });
+      ewObj.on("rooms", (msg) => {
+        const el = document.getElementById("rooms-list");
+        if (!el) return;
+        const currentRoom = ewObj.getOutputRoom();
+        const others = (msg.rooms || []).filter((r) => r.name !== currentRoom);
+        if (!others.length) { el.innerHTML = '<span class="type-dim">NO OTHER FUNC GENS AVAILABLE</span>'; return; }
+        el.innerHTML = "";
+        for (const r of others) {
+          const a = document.createElement("a");
+          a.className = "room-entry";
+          a.href = `?room=${encodeURIComponent(r.name)}`;
+          const objs = r.objects && r.objects.length ? r.objects.join(", ").toUpperCase() : "";
+          a.innerHTML = `<span class="room-entry-name">${r.name}</span><span class="room-entry-info">${r.clients} PLR${objs ? " · " + objs : ""}</span>`;
+          el.appendChild(a);
+        }
+      });
+
+      // ── Initialize ─────────────────────────────────────────────
+
+      (() => {
+        const urlRoom = new URLSearchParams(location.search).get("room");
+        ewObj.connectOutput(urlRoom || undefined);
+        ewObj._outputValues["signal"] = 0;
+        ewObj._outputValues["phase"] = 0;
+        ewObj._outputValues["active"] = -1;
+        startWorker();
+        resizePreview();
+        resizeScope();
+        drawAll();
+        updateVisibleControls();
+      })();
+
+      window.addEventListener("resize", () => { resizePreview(); resizeScope(); });
+    </script>
+  </body>
+</html>

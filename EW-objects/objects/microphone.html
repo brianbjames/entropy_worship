@@ -1,0 +1,987 @@
+<!-- /-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\ -->
+<!-- |                                                                         | -->
+<!-- \ @@@@@@@@  @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@@@@@   @@@ @@@      / -->
+<!-- - @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@ @@@      - -->
+<!-- / @@!       @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!  @@@  @@! !@@      \ -->
+<!-- | !@!       !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!  @!@  !@! @!!      | -->
+<!-- \ @!!!:!    @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!@@!@!    !@!@!       / -->
+<!-- - !!!!!:    !@!  !!!    !!!    !!@!@!    !@!  !!!  !!@!!!      @!!!       - -->
+<!-- / !!:       !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:         !!:        \ -->
+<!-- | :!:       :!:  !:!    :!:    :!:  !:!  :!:  !:!  :!:         :!:        | -->
+<!-- \  :: ::::   ::   ::     ::    ::   :::  ::::: ::   ::          ::        / -->
+<!-- - : :: ::   ::    :      :      :   : :   : :  :    :           :         - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \ @@@  @@@  @@@   @@@@@@   @@@@@@@    @@@@@@   @@@  @@@  @@@  @@@@@@@     / -->
+<!-- - @@@  @@@  @@@  @@@@@@@@  @@@@@@@@  @@@@@@@   @@@  @@@  @@@  @@@@@@@@    - -->
+<!-- / @@!  @@!  @@!  @@!  @@@  @@!  @@@  !@@       @@!  @@@  @@!  @@!  @@@    \ -->
+<!-- | !@!  !@!  !@!  !@!  @!@  !@!  @!@  !@!       !@!  @!@  !@!  !@!  @!@    | -->
+<!-- \ @!!  !!@  @!@  @!@  !@!  @!@!!@!   !!@@!!    @!@!@!@!  !!@  @!@@!@!     / -->
+<!-- - !@!  !!!  !@!  !@!  !!!  !!@!@!     !!@!!!   !!!@!!!!  !!!  !!@!!!      - -->
+<!-- / !!:  !!:  !!:  !!:  !!!  !!: :!!        !:!  !!:  !!!  !!:  !!:         \ -->
+<!-- | :!:  :!:  :!:  :!:  !:!  :!:  !:!      !:!   :!:  !:!  :!:  :!:         | -->
+<!-- \  :::: :: :::   ::::: ::  ::   :::  :::: ::   ::   :::   ::   ::         / -->
+<!-- -   :: :  : :     : :  :    :   : :  :: : :     :   : :  :     :          - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MICROPHONE</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=VT323&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css"
+    />
+    <link rel="stylesheet" href="../lib/ewuilib.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+    <style>
+      /* -- Microphone-specific styles ----------------------------- */
+      #mic-scope {
+        display: block;
+        width: 100%;
+        height: 120px;
+        background: #0e0400;
+      }
+
+      .param-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+      .param-row .control-label {
+        min-width: 80px;
+        margin-bottom: 0;
+        flex-shrink: 0;
+      }
+      #power-toggle .toggle-track.on .toggle-thumb {
+        left: 22px;
+      }
+      #meta .toggle-wrap {
+        align-self: center;
+      }
+      #meta .toggle-track {
+        margin: 0;
+      }
+      .param-row input[type="range"] {
+        flex: 1;
+      }
+      .param-row .range-val {
+        min-width: 72px;
+        text-align: right;
+      }
+      .room-entry {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 10px;
+        border: 1px solid var(--border);
+        margin-bottom: 6px;
+        text-decoration: none;
+        color: var(--text);
+        font-size: 0.82rem;
+        letter-spacing: 0.1em;
+        transition: border-color 0.14s, background 0.14s;
+        cursor: pointer;
+      }
+      .room-entry:hover {
+        border-color: var(--accent);
+        background: rgba(var(--accent-rgb), 0.06);
+      }
+      .room-entry-name {
+        color: var(--accent);
+      }
+      .room-entry-info {
+        font-size: 0.68rem;
+        color: var(--dim);
+        letter-spacing: 0.08em;
+      }
+
+      /* -- Enable mic overlay ------------------------------------ */
+      .mic-enable-overlay {
+        text-align: center;
+        padding: 32px 16px;
+      }
+      .mic-enable-overlay .btn {
+        font-size: 1.1rem;
+        padding: 10px 32px;
+        letter-spacing: 0.15em;
+      }
+      .mic-enable-overlay .type-dim {
+        margin-top: 10px;
+        display: block;
+      }
+
+      /* -- Level meter ------------------------------------------- */
+      .level-bar-track {
+        position: relative;
+        width: 100%;
+        height: 14px;
+        background: #111;
+        border: 1px solid var(--border);
+        margin: 8px 0 4px;
+        overflow: hidden;
+      }
+      .level-bar-fill {
+        height: 100%;
+        width: 0%;
+        background: var(--accent);
+        opacity: 0.8;
+        transition: width 0.06s linear;
+      }
+      .level-bar-peak {
+        position: absolute;
+        top: 0;
+        width: 2px;
+        height: 100%;
+        background: var(--text);
+        opacity: 0.9;
+        left: 0%;
+        transition: left 0.06s linear;
+      }
+      .level-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.58rem;
+        color: var(--dim);
+        letter-spacing: 0.1em;
+        padding: 0 2px;
+      }
+      .level-readout {
+        font-size: 1.6rem;
+        color: var(--accent);
+        letter-spacing: 0.08em;
+        text-shadow: 0 0 8px rgba(var(--accent-rgb), 0.4);
+      }
+      .level-unit {
+        font-size: 0.8rem;
+        color: var(--dim);
+        margin-left: 4px;
+        letter-spacing: 0.12em;
+      }
+
+      /* -- Monitor toggle ---------------------------------------- */
+      .monitor-toggle {
+        display: flex;
+        gap: 0;
+        border: 1px solid var(--border);
+      }
+      .monitor-toggle button {
+        flex: 1;
+        padding: 5px 14px;
+        background: transparent;
+        color: var(--dim);
+        border: none;
+        font-family: 'VT323', monospace;
+        font-size: 0.85rem;
+        letter-spacing: 0.12em;
+        cursor: pointer;
+        transition: background 0.14s, color 0.14s;
+      }
+      .monitor-toggle button.active {
+        background: var(--accent);
+        color: #000;
+      }
+
+      /* -- Device selector --------------------------------------- */
+      .device-row {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+      }
+      .device-row select {
+        flex: 1;
+      }
+      .device-row .btn {
+        flex-shrink: 0;
+      }
+
+      /* -- Gate indicator ---------------------------------------- */
+      .gate-indicator {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--dim);
+        margin-left: 8px;
+        transition: background 0.1s;
+      }
+      .gate-indicator.open {
+        background: var(--accent);
+        box-shadow: 0 0 6px rgba(var(--accent-rgb), 0.6);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="grid-bg"></div>
+    <div id="scanlines"></div>
+    <div id="app"></div>
+
+    <script type="module">
+      import { EWObject } from "../lib/ew-object-base.js";
+      import {
+        buildHeaderBar,
+        buildInputPanel,
+        updateOutputStats,
+        wireRange,
+      } from "../lib/ew-object-ui.js";
+
+      // -- EWObject instance ------------------------------------
+
+      const ewObj = new EWObject({
+        name: "MIC-1",
+        objectType: "microphone",
+        roomPrefix: "mic",
+        inputs: [
+          {
+            port: "gain",
+            type: "number",
+            unit: "",
+            min: 0,
+            max: 1,
+            default: 0.8,
+          },
+          {
+            port: "gate",
+            type: "number",
+            unit: "bipolar",
+            min: -1,
+            max: 1,
+            default: 0,
+          },
+        ],
+        outputs: [
+          { port: "signal", type: "number", unit: "bipolar" },
+          { port: "gain", type: "number" },
+          { port: "playing", type: "boolean" },
+          { port: "outputMode", type: "string" },
+          { port: "level", type: "number", unit: "dB" },
+        ],
+      });
+
+      // -- State -----------------------------------------------
+
+      let audioReady = false;
+      let micRunning = false;
+      let outputMode = "control";  // "audio" | "control" | "both"
+      let monitorOn = false;
+      let inputGainVal = 1.0;
+      let outputGainVal = 0.8;
+      let gateThreshold = -60;     // dB
+      let gateOpen = true;
+      let externalGate = 0;        // bipolar gate input from room
+
+      // Audio nodes
+      let mic = null;               // Tone.UserMedia
+      let inputGainNode = null;     // Tone.Gain — pre-amp
+      let outputGainNode = null;    // Tone.Gain — main output level
+      let monitorGainNode = null;   // Tone.Gain — to speakers (0 or 1)
+      let analyser = null;          // Tone.Analyser — waveform scope
+      let rawAnalyser = null;       // native AnalyserNode — for RMS level
+
+      // Peak tracking
+      let peakDb = -100;
+      let peakDecayTimer = null;
+
+      // Workers
+      let signalWorker = null;
+      let currentDeviceId = null;
+
+      // -- Audio init -------------------------------------------
+
+      async function ensureAudio() {
+        if (audioReady) return;
+        await Tone.start();
+
+        inputGainNode = new Tone.Gain(inputGainVal);
+        outputGainNode = new Tone.Gain(outputGainVal);
+        monitorGainNode = new Tone.Gain(0); // monitor OFF by default
+
+        // Signal flow: inputGain -> outputGain -> analyser
+        inputGainNode.connect(outputGainNode);
+        analyser = new Tone.Analyser("waveform", 256);
+        outputGainNode.connect(analyser);
+
+        // Monitor path: inputGain -> monitorGain -> Destination
+        inputGainNode.connect(monitorGainNode);
+        monitorGainNode.toDestination();
+
+        // Raw analyser for RMS dB metering
+        const ctx = Tone.context.rawContext;
+        rawAnalyser = ctx.createAnalyser();
+        rawAnalyser.smoothingTimeConstant = 0.8;
+        rawAnalyser.fftSize = 2048;
+
+        // Connect outputGainNode to rawAnalyser
+        const rawOut = outputGainNode.output || outputGainNode._gainNode || outputGainNode;
+        try {
+          rawOut.connect(rawAnalyser);
+        } catch (_) {
+          // Fallback: use Tone's native node
+          Tone.connect(outputGainNode, Tone.context.createGain()).connect(rawAnalyser);
+        }
+
+        audioReady = true;
+      }
+
+      async function openMic(deviceId) {
+        await ensureAudio();
+
+        // Close existing mic if open
+        if (mic) {
+          try { mic.close(); } catch (_) {}
+          mic.disconnect();
+          mic.dispose();
+          mic = null;
+        }
+
+        mic = new Tone.UserMedia();
+        try {
+          if (deviceId) {
+            await mic.open(deviceId);
+          } else {
+            await mic.open();
+          }
+          currentDeviceId = deviceId || null;
+          mic.connect(inputGainNode);
+          micRunning = true;
+          startSignalOutput();
+          updatePowerUI();
+          updateEnableUI(true);
+          ewObj.setOutput("playing", true, { immediate: true });
+        } catch (err) {
+          console.error("[MICROPHONE] Mic access denied:", err);
+          updateEnableUI(false, err.message || "ACCESS DENIED");
+        }
+      }
+
+      function closeMic() {
+        if (mic) {
+          try { mic.close(); } catch (_) {}
+          mic.disconnect();
+          mic.dispose();
+          mic = null;
+        }
+        micRunning = false;
+        stopSignalOutput();
+        updatePowerUI();
+        ewObj.setOutput("playing", false, { immediate: true });
+      }
+
+      function applyOutputRouting() {
+        // For microphone, "audio" output to speakers is controlled by monitor toggle.
+        // The outputGainNode does NOT connect to destination — that's the monitorGain path.
+        // AUDIO mode: monitor path active (user hears mic through speakers)
+        // CONTROL mode: only signal broadcast, no audio to speakers
+        // BOTH mode: monitor path + signal broadcast
+        // Monitor toggle overrides: if monitor OFF, never send to speakers regardless of mode.
+        if (!monitorGainNode) return;
+        if (monitorOn && (outputMode === "audio" || outputMode === "both")) {
+          monitorGainNode.gain.rampTo(1, 0.01);
+        } else {
+          monitorGainNode.gain.rampTo(0, 0.01);
+        }
+      }
+
+      // -- Device enumeration -----------------------------------
+
+      async function enumerateDevices() {
+        try {
+          const devices = await navigator.mediaDevices.enumerateDevices();
+          return devices.filter(d => d.kind === "audioinput");
+        } catch (err) {
+          console.error("[MICROPHONE] Cannot enumerate devices:", err);
+          return [];
+        }
+      }
+
+      async function populateDeviceList() {
+        const select = document.getElementById("mic-device");
+        if (!select) return;
+        const devices = await enumerateDevices();
+        select.innerHTML = "";
+        if (devices.length === 0) {
+          const opt = document.createElement("option");
+          opt.value = "";
+          opt.textContent = "NO DEVICES FOUND";
+          select.appendChild(opt);
+          return;
+        }
+        for (const d of devices) {
+          const opt = document.createElement("option");
+          opt.value = d.deviceId;
+          opt.textContent = (d.label || `INPUT ${select.options.length + 1}`).toUpperCase();
+          if (d.deviceId === currentDeviceId) opt.selected = true;
+          select.appendChild(opt);
+        }
+      }
+
+      // -- Signal output loop -----------------------------------
+
+      function startSignalOutput() {
+        if (signalWorker) return;
+        const blob = new Blob([`
+          let id = setInterval(() => postMessage("tick"), 10);
+          onmessage = () => { clearInterval(id); close(); };
+        `], { type: "application/javascript" });
+        signalWorker = new Worker(URL.createObjectURL(blob));
+        signalWorker.onmessage = () => {
+          if (!micRunning || !rawAnalyser) return;
+
+          // Compute RMS dB level
+          const dataArray = new Uint8Array(rawAnalyser.frequencyBinCount);
+          rawAnalyser.getByteFrequencyData(dataArray);
+          const sum = dataArray.reduce((a, b) => a + b, 0);
+          const average = sum / dataArray.length;
+          const dB = average > 0 ? Math.round(20 * Math.log10(average / 255) + 60) : 0;
+          const normalized = Math.max(0, Math.min(1, dB / 60));
+
+          // Noise gate logic
+          const dbForGate = average > 0 ? 20 * Math.log10(average / 255) : -100;
+          const shouldOpen = dbForGate >= (gateThreshold + 60) / 1; // gate threshold is -100..0, map to comparable range
+          // Simpler: gateThreshold is in dB (-100 to 0), dB is 0-60 scale. Convert.
+          // The raw dB relative to full scale: 20*log10(average/255) is roughly -inf to 0.
+          // gateThreshold is -100 to 0 dB. Compare directly.
+          const rawDbFS = average > 0 ? 20 * Math.log10(average / 255) : -100;
+          const gateFromExternal = externalGate > 0; // positive = force open, negative = force mute
+          const externalMute = externalGate < -0.1;
+
+          if (externalMute) {
+            gateOpen = false;
+          } else if (gateFromExternal) {
+            gateOpen = true;
+          } else {
+            gateOpen = rawDbFS >= gateThreshold;
+          }
+
+          // Apply gate: mute output gain when gate closed
+          if (outputGainNode) {
+            const targetGain = gateOpen ? outputGainVal : 0;
+            outputGainNode.gain.rampTo(targetGain, 0.005);
+          }
+
+          // Update gate indicator
+          const gateEl = document.getElementById("gate-indicator");
+          if (gateEl) {
+            gateEl.classList.toggle("open", gateOpen);
+          }
+
+          // Update level display
+          updateLevelDisplay(dB, normalized);
+
+          // Track peak
+          if (dB > peakDb) {
+            peakDb = dB;
+            clearTimeout(peakDecayTimer);
+            peakDecayTimer = setTimeout(decayPeak, 1500);
+          }
+
+          // Broadcast signal (bipolar: map 0..1 to -1..+1)
+          const bipolarSignal = Math.round((normalized * 2 - 1) * 1000) / 1000;
+          ewObj.setOutput("signal", bipolarSignal, { unit: "bipolar" });
+          ewObj.setOutput("level", dB);
+          ewObj.setOutput("gain", outputGainVal);
+        };
+      }
+
+      function stopSignalOutput() {
+        if (signalWorker) {
+          signalWorker.postMessage("stop");
+          signalWorker = null;
+        }
+        ewObj.setOutput("signal", 0, { unit: "bipolar", immediate: true });
+        ewObj.setOutput("level", 0, { immediate: true });
+      }
+
+      function decayPeak() {
+        peakDb = Math.max(0, peakDb - 2);
+        if (peakDb > 0) {
+          peakDecayTimer = setTimeout(decayPeak, 80);
+        }
+        const peakEl = document.getElementById("level-peak");
+        if (peakEl) {
+          peakEl.style.left = Math.max(0, Math.min(100, (peakDb / 60) * 100)) + "%";
+        }
+      }
+
+      function updateLevelDisplay(dB, normalized) {
+        const readout = document.getElementById("level-readout");
+        const fill = document.getElementById("level-fill");
+        const peakEl = document.getElementById("level-peak");
+        if (readout) readout.textContent = dB;
+        if (fill) fill.style.width = (normalized * 100) + "%";
+        if (peakEl) peakEl.style.left = Math.max(0, Math.min(100, (peakDb / 60) * 100)) + "%";
+      }
+
+      // -- UI helpers ------------------------------------------
+
+      function updatePowerUI() {
+        const track = document.getElementById("power-track");
+        if (micRunning) {
+          track.classList.add("on");
+        } else {
+          track.classList.remove("on");
+        }
+      }
+
+      function updateEnableUI(granted, errorMsg) {
+        const overlay = document.getElementById("mic-enable-overlay");
+        const controls = document.getElementById("mic-controls");
+        if (granted) {
+          if (overlay) overlay.style.display = "none";
+          if (controls) controls.style.display = "";
+          populateDeviceList();
+        } else {
+          if (overlay) {
+            overlay.style.display = "";
+            const errEl = overlay.querySelector(".mic-error");
+            if (errEl && errorMsg) {
+              errEl.textContent = errorMsg;
+              errEl.style.display = "";
+            }
+          }
+          if (controls) controls.style.display = "none";
+        }
+      }
+
+      function refreshStats() {
+        updateOutputStats(ewObj, [
+          {
+            port: "signal",
+            label: "SIGNAL",
+            formatter: (v) => (v !== undefined ? v.toFixed(3) : "0.000"),
+          },
+          {
+            port: "level",
+            label: "LEVEL",
+            unit: " dB",
+            formatter: (v) => (v !== undefined ? v : "0"),
+          },
+          {
+            port: "gain",
+            label: "GAIN",
+            formatter: (v) => (v !== undefined ? v.toFixed(2) : "--"),
+          },
+        ]);
+      }
+
+      // -- Build UI --------------------------------------------
+
+      const app = document.getElementById("app");
+
+      // Header
+      buildHeaderBar(ewObj, "MICROPHONE", app);
+
+      // Header controls: theme, output mode, power toggle
+      document.getElementById("ew-header-controls").innerHTML = `
+        <select id="ew-theme" style="width:auto; padding:3px 24px 3px 8px">
+          <option value="theme-ethos">ETHOS</option>
+          <option value="">AMBER</option>
+          <option value="theme-phosphor">PHOSPHOR</option>
+          <option value="theme-cobalt">COBALT</option>
+          <option value="theme-plasma">PLASMA</option>
+          <option value="theme-danger">DANGER</option>
+          <option value="theme-matrix">MATRIX</option>
+          <option value="theme-solar">SOLAR</option>
+          <option value="theme-arctic">ARCTIC</option>
+        </select>
+        <select id="mic-output-mode" style="width:auto; padding:3px 24px 3px 8px">
+          <option value="control">CONTROL</option>
+          <option value="audio">AUDIO</option>
+          <option value="both">BOTH</option>
+        </select>
+        <div class="toggle-wrap" id="power-toggle" style="margin-bottom:0; cursor:pointer">
+          <div class="toggle-track" id="power-track">
+            <div class="toggle-thumb"></div>
+          </div>
+        </div>
+      `;
+
+      // Enable microphone overlay (shown before permission is granted)
+      const enablePanel = document.createElement("div");
+      enablePanel.className = "hud-panel";
+      enablePanel.id = "mic-enable-overlay";
+      enablePanel.innerHTML = `
+        <div class="mic-enable-overlay">
+          <button class="btn" id="mic-enable-btn">ENABLE MICROPHONE</button>
+          <span class="type-dim">click to request microphone access</span>
+          <span class="type-dim mic-error" style="display:none; color:var(--rose); margin-top:6px"></span>
+        </div>
+      `;
+      app.appendChild(enablePanel);
+
+      // Controls panel (hidden until mic is enabled)
+      const controlsPanel = document.createElement("div");
+      controlsPanel.className = "hud-panel clip-tr";
+      controlsPanel.id = "mic-controls";
+      controlsPanel.style.display = "none";
+      controlsPanel.innerHTML = `
+        <div class="control-group">
+          <div class="control-label">INPUT DEVICE</div>
+          <div class="device-row">
+            <select id="mic-device"></select>
+            <button class="btn btn-sm" id="mic-refresh-devices">REFRESH</button>
+          </div>
+        </div>
+
+        <div class="param-row">
+          <div class="control-label">IN GAIN</div>
+          <input type="range" id="mic-input-gain" min="0" max="200" value="100" />
+          <span class="range-val" id="mic-input-gain-val">1.00</span>
+        </div>
+
+        <div class="param-row">
+          <div class="control-label">OUT GAIN</div>
+          <input type="range" id="mic-output-gain" min="0" max="100" value="80" />
+          <span class="range-val" id="mic-output-gain-val">0.80</span>
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">MONITOR</div>
+          <div class="monitor-toggle">
+            <button id="monitor-off" class="active">OFF</button>
+            <button id="monitor-on">ON</button>
+          </div>
+        </div>
+
+        <div class="param-row">
+          <div class="control-label">GATE<span class="gate-indicator" id="gate-indicator"></span></div>
+          <input type="range" id="mic-gate" min="-100" max="0" value="-60" />
+          <span class="range-val" id="mic-gate-val">-60 dB</span>
+        </div>
+      `;
+      app.appendChild(controlsPanel);
+
+      // Level meter + scope panel
+      const meterPanel = document.createElement("div");
+      meterPanel.className = "hud-panel";
+      meterPanel.innerHTML = `
+        <div style="display:flex; align-items:baseline; gap:8px; margin-bottom:4px">
+          <span class="level-readout" id="level-readout">0</span><span class="level-unit">dB</span>
+        </div>
+        <div class="level-bar-track">
+          <div class="level-bar-fill" id="level-fill"></div>
+          <div class="level-bar-peak" id="level-peak"></div>
+        </div>
+        <div class="level-labels">
+          <span>0</span>
+          <span>10</span>
+          <span>20</span>
+          <span>30</span>
+          <span>40</span>
+          <span>50</span>
+          <span>60</span>
+        </div>
+        <div class="screen-wrap" style="margin-top:10px">
+          <div class="screen-inner" style="padding:0; min-height:auto">
+            <canvas id="mic-scope"></canvas>
+            <div class="screen-scan"></div>
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
+          </div>
+        </div>
+      `;
+      app.appendChild(meterPanel);
+
+      // Input panel (for gain and gate room inputs)
+      buildInputPanel(ewObj, app);
+
+      // Rooms panel
+      const roomsPanel = document.createElement("div");
+      roomsPanel.className = "hud-panel";
+      roomsPanel.innerHTML = `
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px">
+          <span class="control-label" style="margin:0; flex-shrink:0">ROOM</span>
+          <input type="text" id="room-input" placeholder="ROOM-ID" maxlength="32" spellcheck="false" autocomplete="off" style="flex:1">
+          <button class="btn btn-sm" id="room-join-btn">JOIN</button>
+          <button class="btn btn-sm" id="privacy-btn">PUBLIC</button>
+        </div>
+        <hr class="hud-divider" style="margin:10px 0">
+        <div class="section-title">// AVAILABLE MICROPHONES //</div>
+        <div id="rooms-list">
+          <span class="type-dim">NO OTHER MICROPHONES AVAILABLE</span>
+        </div>
+      `;
+      app.appendChild(roomsPanel);
+
+      // Footer
+      const footer = document.createElement("div");
+      footer.style.cssText =
+        "text-align:center; padding:20px 0; font-size:0.72rem; letter-spacing:0.22em; color:var(--dim)";
+      footer.innerHTML =
+        '<a href="../../index.html" style="color:var(--dim); text-decoration:none">ENTROPY WORSHIP</a>';
+      app.appendChild(footer);
+
+      // -- Wire controls ----------------------------------------
+
+      // Theme selector
+      document.getElementById("ew-theme").addEventListener("change", (e) => {
+        document.documentElement.className = e.target.value;
+      });
+      document.documentElement.className = "theme-ethos";
+
+      // Enable microphone button
+      document.getElementById("mic-enable-btn").addEventListener("click", async () => {
+        await openMic();
+      });
+
+      // Power toggle
+      document.getElementById("power-toggle").addEventListener("click", () => {
+        if (micRunning) {
+          closeMic();
+        } else {
+          openMic(currentDeviceId);
+        }
+      });
+
+      // Output mode select
+      document.getElementById("mic-output-mode").addEventListener("change", (e) => {
+        outputMode = e.target.value;
+        applyOutputRouting();
+        ewObj.setOutput("outputMode", outputMode, { immediate: true });
+      });
+
+      // Device selector
+      document.getElementById("mic-device").addEventListener("change", async (e) => {
+        const deviceId = e.target.value;
+        if (micRunning) {
+          await openMic(deviceId);
+        }
+      });
+
+      document.getElementById("mic-refresh-devices").addEventListener("click", () => {
+        populateDeviceList();
+      });
+
+      // Input gain slider (0-200 maps to 0-2)
+      wireRange("mic-input-gain", "mic-input-gain-val", (v) => (v / 100).toFixed(2));
+      document.getElementById("mic-input-gain").addEventListener("input", (e) => {
+        inputGainVal = +e.target.value / 100;
+        if (inputGainNode) inputGainNode.gain.rampTo(inputGainVal, 0.01);
+      });
+
+      // Output gain slider (0-100 maps to 0-1)
+      wireRange("mic-output-gain", "mic-output-gain-val", (v) => (v / 100).toFixed(2));
+      document.getElementById("mic-output-gain").addEventListener("input", (e) => {
+        outputGainVal = +e.target.value / 100;
+        if (outputGainNode && gateOpen) outputGainNode.gain.rampTo(outputGainVal, 0.01);
+        ewObj.setOutput("gain", Math.round(outputGainVal * 100) / 100);
+        refreshStats();
+      });
+
+      // Monitor toggle
+      document.getElementById("monitor-off").addEventListener("click", () => {
+        monitorOn = false;
+        document.getElementById("monitor-off").classList.add("active");
+        document.getElementById("monitor-on").classList.remove("active");
+        applyOutputRouting();
+      });
+      document.getElementById("monitor-on").addEventListener("click", () => {
+        monitorOn = true;
+        document.getElementById("monitor-on").classList.add("active");
+        document.getElementById("monitor-off").classList.remove("active");
+        applyOutputRouting();
+      });
+
+      // Gate threshold slider (-100 to 0 dB)
+      wireRange("mic-gate", "mic-gate-val", (v) => v + " dB");
+      document.getElementById("mic-gate").addEventListener("input", (e) => {
+        gateThreshold = +e.target.value;
+      });
+
+      // -- Input signal handling --------------------------------
+
+      ewObj.onInput("gain", (value, meta) => {
+        if (meta && meta.unit === "bipolar" && typeof value === "number") {
+          // Bipolar modulation: scale around current gain
+          const modulated = outputGainVal + value * 0.5;
+          const clamped = Math.max(0, Math.min(1, modulated));
+          if (outputGainNode && gateOpen) outputGainNode.gain.rampTo(clamped, 0.012);
+          return;
+        }
+        if (typeof value === "number") {
+          const clamped = Math.max(0, Math.min(1, value));
+          outputGainVal = clamped;
+          if (outputGainNode && gateOpen) outputGainNode.gain.rampTo(clamped, 0.01);
+          document.getElementById("mic-output-gain").value = Math.round(clamped * 100);
+          document.getElementById("mic-output-gain-val").textContent = clamped.toFixed(2);
+          ewObj.setOutput("gain", clamped);
+          refreshStats();
+        }
+      });
+
+      ewObj.onInput("gate", (value, meta) => {
+        if (typeof value === "number") {
+          externalGate = Math.max(-1, Math.min(1, value));
+        }
+      });
+
+      // -- Room UI ---------------------------------------------
+
+      ewObj.on("connected", () => {
+        document.getElementById("room-input").value = ewObj.getOutputRoom();
+      });
+
+      document.getElementById("room-join-btn").addEventListener("click", () => {
+        const name = document.getElementById("room-input").value
+          .trim()
+          .replace(/[^a-zA-Z0-9_-]/g, "")
+          .slice(0, 32) || "default";
+        location.search = `?room=${encodeURIComponent(name)}`;
+      });
+
+      document.getElementById("room-input").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") document.getElementById("room-join-btn").click();
+      });
+
+      // Privacy toggle
+      let roomPrivate = false;
+
+      function updatePrivacyBtn() {
+        const btn = document.getElementById("privacy-btn");
+        btn.textContent = roomPrivate ? "PRIVATE" : "PUBLIC";
+        btn.classList.toggle("active", roomPrivate);
+      }
+
+      document.getElementById("privacy-btn").addEventListener("click", () => {
+        roomPrivate = !roomPrivate;
+        ewObj.setPrivate(roomPrivate);
+        updatePrivacyBtn();
+      });
+
+      ewObj.on("stateSync", (msg) => {
+        roomPrivate = msg.private || false;
+        updatePrivacyBtn();
+        document.getElementById("room-input").value = msg.room || ewObj.getOutputRoom();
+      });
+
+      ewObj.on("roomPrivate", (msg) => {
+        roomPrivate = msg.private;
+        updatePrivacyBtn();
+      });
+
+      // Render available rooms
+      ewObj.on("rooms", (msg) => {
+        const el = document.getElementById("rooms-list");
+        if (!el) return;
+        const currentRoom = ewObj.getOutputRoom();
+        const others = (msg.rooms || []).filter((r) => r.name !== currentRoom);
+        if (!others.length) {
+          el.innerHTML = '<span class="type-dim">NO OTHER MICROPHONES AVAILABLE</span>';
+          return;
+        }
+        el.innerHTML = "";
+        for (const r of others) {
+          const a = document.createElement("a");
+          a.className = "room-entry";
+          a.href = `?room=${encodeURIComponent(r.name)}`;
+          const objs = r.objects && r.objects.length
+            ? r.objects.join(", ").toUpperCase()
+            : "";
+          a.innerHTML =
+            `<span class="room-entry-name">${r.name}</span>` +
+            `<span class="room-entry-info">${r.clients} PLR${objs ? " · " + objs : ""}</span>`;
+          el.appendChild(a);
+        }
+      });
+
+      // -- Waveform scope --------------------------------------
+
+      const scopeCanvas = document.getElementById("mic-scope");
+      const scopeCtx = scopeCanvas.getContext("2d");
+
+      function resizeScope() {
+        const rect = scopeCanvas.parentElement.getBoundingClientRect();
+        scopeCanvas.width = rect.width;
+        scopeCanvas.height = 120;
+      }
+
+      function drawScope() {
+        requestAnimationFrame(drawScope);
+
+        const w = scopeCanvas.width;
+        const h = scopeCanvas.height;
+        scopeCtx.fillStyle = "#0e0400";
+        scopeCtx.fillRect(0, 0, w, h);
+
+        // Grid lines
+        scopeCtx.strokeStyle = "rgba(160, 72, 0, 0.12)";
+        scopeCtx.lineWidth = 1;
+        for (let y = 0; y < h; y += 20) {
+          scopeCtx.beginPath();
+          scopeCtx.moveTo(0, y);
+          scopeCtx.lineTo(w, y);
+          scopeCtx.stroke();
+        }
+        for (let x = 0; x < w; x += 20) {
+          scopeCtx.beginPath();
+          scopeCtx.moveTo(x, 0);
+          scopeCtx.lineTo(x, h);
+          scopeCtx.stroke();
+        }
+
+        // Center line
+        scopeCtx.strokeStyle = "rgba(160, 72, 0, 0.3)";
+        scopeCtx.beginPath();
+        scopeCtx.moveTo(0, h / 2);
+        scopeCtx.lineTo(w, h / 2);
+        scopeCtx.stroke();
+
+        if (!analyser || !micRunning) return;
+
+        const data = analyser.getValue();
+        scopeCtx.strokeStyle = getComputedStyle(
+          document.documentElement
+        ).getPropertyValue("--accent");
+        scopeCtx.lineWidth = 2;
+        scopeCtx.shadowColor = "rgba(255, 170, 0, 0.6)";
+        scopeCtx.shadowBlur = 8;
+        scopeCtx.beginPath();
+
+        for (let i = 0; i < data.length; i++) {
+          const x = (i / data.length) * w;
+          const y = ((1 - data[i]) / 2) * h;
+          if (i === 0) {
+            scopeCtx.moveTo(x, y);
+          } else {
+            scopeCtx.lineTo(x, y);
+          }
+        }
+        scopeCtx.stroke();
+        scopeCtx.shadowBlur = 0;
+      }
+
+      // -- Initialize ------------------------------------------
+
+      (() => {
+        const urlRoom = new URLSearchParams(location.search).get("room");
+        ewObj.connectOutput(urlRoom || undefined);
+
+        // Set initial output values
+        ewObj._outputValues["signal"] = 0;
+        ewObj._outputValues["gain"] = outputGainVal;
+        ewObj._outputValues["playing"] = false;
+        ewObj._outputValues["outputMode"] = outputMode;
+        ewObj._outputValues["level"] = 0;
+
+        refreshStats();
+        resizeScope();
+        drawScope();
+      })();
+
+      window.addEventListener("resize", resizeScope);
+    </script>
+  </body>
+</html>

@@ -147,7 +147,7 @@
           </div>
           <div class="stat-block">
             <div class="stat-label">OBJECTS</div>
-            <div class="stat-val" style="font-size: 1rem">33</div>
+            <div class="stat-val" style="font-size: 1rem">41</div>
           </div>
           <div class="stat-block">
             <div class="stat-label">UI</div>
@@ -159,6 +159,22 @@
       <div class="page-section-label">// Signal Sources</div>
 
       <div class="grid-2">
+        <a href="objects/microphone.html" class="hud-panel object-card">
+          <div class="obj-type">SIGNAL SOURCE</div>
+          <div class="obj-name">MICROPHONE</div>
+          <div class="obj-desc">
+            Live microphone input as an audio source. Device selector, input
+            gain, monitor toggle, and noise gate. Broadcasts audio to other
+            modules via room output.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: gain</span>
+            <span class="tag mint">IN: gate</span>
+            <span class="tag accent">OUT: signal</span>
+            <span class="tag accent">OUT: level</span>
+          </div>
+        </a>
+
         <a href="objects/noise.html" class="hud-panel object-card">
           <div class="obj-type">SIGNAL SOURCE</div>
           <div class="obj-name">NOISE</div>
@@ -214,6 +230,24 @@
           </div>
         </a>
 
+        <a href="objects/granular.html" class="hud-panel object-card">
+          <div class="obj-type">INSTRUMENT</div>
+          <div class="obj-name">GRANULAR</div>
+          <div class="obj-desc">
+            Granular synthesis engine. Plays audio as a cloud of tiny grains
+            with controllable size, overlap, position, spread, and pitch.
+            Built-in sample library and drag-and-drop.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: trigger</span>
+            <span class="tag mint">IN: grainSize</span>
+            <span class="tag mint">IN: position</span>
+            <span class="tag mint">IN: pitch</span>
+            <span class="tag accent">OUT: signal</span>
+            <span class="tag accent">OUT: playing</span>
+          </div>
+        </a>
+
         <a href="objects/looper.html" class="hud-panel object-card">
           <div class="obj-type">INSTRUMENT</div>
           <div class="obj-name">LOOPER</div>
@@ -245,6 +279,25 @@
             <span class="tag mint">IN: speed</span>
             <span class="tag accent">OUT: signal</span>
             <span class="tag accent">OUT: playing</span>
+          </div>
+        </a>
+
+        <a href="objects/synth.html" class="hud-panel object-card">
+          <div class="obj-type">INSTRUMENT</div>
+          <div class="obj-name">SYNTH</div>
+          <div class="obj-desc">
+            Complete synthesizer voice with oscillator, multimode filter,
+            filter envelope, and amplitude ADSR. Responds to trigger and
+            frequency inputs from clocks, sequencers, and arpeggiators.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: trigger</span>
+            <span class="tag mint">IN: frequency</span>
+            <span class="tag mint">IN: cutoff</span>
+            <span class="tag mint">IN: gain</span>
+            <span class="tag accent">OUT: frequency</span>
+            <span class="tag accent">OUT: waveform</span>
+            <span class="tag accent">OUT: cutoff</span>
           </div>
         </a>
       </div>
@@ -486,6 +539,24 @@
           </div>
         </a>
 
+        <a href="objects/funcgen.html" class="hud-panel object-card">
+          <div class="obj-type">MODULATION</div>
+          <div class="obj-name">FUNC GEN</div>
+          <div class="obj-desc">
+            Triggered function generator. Outputs configurable curves over time
+            — ramps, triangles, exponentials, S-curves, attack-decay shapes.
+            Hold, return, or loop end modes.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: trigger</span>
+            <span class="tag mint">IN: duration</span>
+            <span class="tag mint">IN: level</span>
+            <span class="tag accent">OUT: signal</span>
+            <span class="tag accent">OUT: phase</span>
+            <span class="tag accent">OUT: active</span>
+          </div>
+        </a>
+
         <a href="objects/lfo.html" class="hud-panel object-card">
           <div class="obj-type">MODULATION</div>
           <div class="obj-name">LFO</div>
@@ -640,6 +711,35 @@
           </div>
         </a>
 
+        <a href="objects/gate.html" class="hud-panel object-card">
+          <div class="obj-type">UTILITY</div>
+          <div class="obj-name">GATE</div>
+          <div class="obj-desc">
+            Signal gate / switch. Passes or blocks a signal based on a control
+            input. Pass and block modes with threshold and slew controls.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: signal</span>
+            <span class="tag mint">IN: control</span>
+            <span class="tag accent">OUT: signal</span>
+            <span class="tag accent">OUT: state</span>
+          </div>
+        </a>
+
+        <a href="objects/logic.html" class="hud-panel object-card">
+          <div class="obj-type">UTILITY</div>
+          <div class="obj-name">LOGIC</div>
+          <div class="obj-desc">
+            Boolean logic gate for combining trigger/gate signals. AND, OR,
+            XOR, NAND, NOR, NOT operations with configurable thresholds.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: A</span>
+            <span class="tag mint">IN: B</span>
+            <span class="tag accent">OUT: signal</span>
+          </div>
+        </a>
+
         <a href="objects/math.html" class="hud-panel object-card">
           <div class="obj-type">UTILITY</div>
           <div class="obj-name">MATH</div>
@@ -668,6 +768,22 @@
           </div>
         </a>
 
+        <a href="objects/probability.html" class="hud-panel object-card">
+          <div class="obj-type">UTILITY</div>
+          <div class="obj-name">PROBABILITY</div>
+          <div class="obj-desc">
+            Probabilistic trigger filter. Passes incoming triggers with
+            configurable probability. Trigger and gate modes with pass rate
+            statistics.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: trigger</span>
+            <span class="tag mint">IN: probability</span>
+            <span class="tag accent">OUT: signal</span>
+            <span class="tag accent">OUT: passCount</span>
+          </div>
+        </a>
+
         <a href="objects/quantizer.html" class="hud-panel object-card">
           <div class="obj-type">UTILITY</div>
           <div class="obj-name">QUANTIZER</div>
@@ -680,6 +796,23 @@
             <span class="tag mint">IN: root</span>
             <span class="tag mint">IN: scale</span>
             <span class="tag accent">OUT: frequency</span>
+            <span class="tag accent">OUT: signal</span>
+          </div>
+        </a>
+
+        <a href="objects/rng.html" class="hud-panel object-card">
+          <div class="obj-type">UTILITY</div>
+          <div class="obj-name">RNG</div>
+          <div class="obj-desc">
+            Random number generator with multiple distributions: uniform,
+            gaussian, bipolar, binary, and brownian walk. Trigger or free-running
+            modes with histogram visualization.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: trigger</span>
+            <span class="tag mint">IN: rate</span>
+            <span class="tag mint">IN: min</span>
+            <span class="tag mint">IN: max</span>
             <span class="tag accent">OUT: signal</span>
           </div>
         </a>

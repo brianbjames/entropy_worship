@@ -1,0 +1,983 @@
+<!-- /-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\ -->
+<!-- |                                                                         | -->
+<!-- \ @@@@@@@@  @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@@@@@   @@@ @@@      / -->
+<!-- - @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@ @@@      - -->
+<!-- / @@!       @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!  @@@  @@! !@@      \ -->
+<!-- | !@!       !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!  @!@  !@! @!!      | -->
+<!-- \ @!!!:!    @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!@@!@!    !@!@!       / -->
+<!-- - !!!!!:    !@!  !!!    !!!    !!@!@!    !@!  !!!  !!@!!!      @!!!       - -->
+<!-- / !!:       !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:         !!:        \ -->
+<!-- | :!:       :!:  !:!    :!:    :!:  !:!  :!:  !:!  :!:         :!:        | -->
+<!-- \  :: ::::   ::   ::     ::    ::   :::  ::::: ::   ::          ::        / -->
+<!-- - : :: ::   ::    :      :      :   : :   : :  :    :           :         - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \ @@@  @@@  @@@   @@@@@@   @@@@@@@    @@@@@@   @@@  @@@  @@@  @@@@@@@     / -->
+<!-- - @@@  @@@  @@@  @@@@@@@@  @@@@@@@@  @@@@@@@   @@@  @@@  @@@  @@@@@@@@    - -->
+<!-- / @@!  @@!  @@!  @@!  @@@  @@!  @@@  !@@       @@!  @@@  @@!  @@!  @@@    \ -->
+<!-- | !@!  !@!  !@!  !@!  @!@  !@!  @!@  !@!       !@!  @!@  !@!  !@!  @!@    | -->
+<!-- \ @!!  !!@  @!@  @!@  !@!  @!@!!@!   !!@@!!    @!@!@!@!  !!@  @!@@!@!     / -->
+<!-- - !@!  !!!  !@!  !@!  !!!  !!@!@!     !!@!!!   !!!@!!!!  !!!  !!@!!!      - -->
+<!-- / !!:  !!:  !!:  !!:  !!!  !!: :!!        !:!  !!:  !!!  !!:  !!:         \ -->
+<!-- | :!:  :!:  :!:  :!:  !:!  :!:  !:!      !:!   :!:  !:!  :!:  :!:         | -->
+<!-- \  :::: :: :::   ::::: ::  ::   :::  :::: ::   ::   :::   ::   ::         / -->
+<!-- -   :: :  : :     : :  :    :   : :  :: : :     :   : :  :     :          - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GRANULAR</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css" />
+    <link rel="stylesheet" href="../lib/ewuilib.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <style>
+      #granular-scope {
+        display: block; width: 100%; height: 120px; background: #080808;
+      }
+      .param-row {
+        display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+      }
+      .param-row .control-label { min-width: 80px; margin-bottom: 0; flex-shrink: 0; }
+      .param-row input[type="range"] { flex: 1; }
+      .param-row .range-val { min-width: 72px; text-align: right; }
+      #power-toggle .toggle-track.on .toggle-thumb { left: 22px; }
+      #meta .toggle-wrap { align-self: center; }
+      #meta .toggle-track { margin: 0; }
+      .room-entry {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 6px 10px; border: 1px solid var(--border); margin-bottom: 6px;
+        text-decoration: none; color: var(--text); font-size: 0.82rem;
+        letter-spacing: 0.1em; transition: border-color 0.14s, background 0.14s; cursor: pointer;
+      }
+      .room-entry:hover { border-color: var(--accent); background: rgba(var(--accent-rgb), 0.06); }
+      .room-entry-name { color: var(--accent); }
+      .room-entry-info { font-size: 0.68rem; color: var(--dim); letter-spacing: 0.08em; }
+      #trigger-btn {
+        width: 100%; padding: 18px 0; font-size: 1.1rem; letter-spacing: 0.2em;
+        cursor: pointer; border: 2px solid var(--accent); background: rgba(var(--accent-rgb), 0.08);
+        color: var(--accent); transition: background 0.08s, box-shadow 0.08s;
+      }
+      #trigger-btn:active, #trigger-btn.flash {
+        background: rgba(var(--accent-rgb), 0.35);
+        box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.4);
+      }
+      #drop-zone {
+        border: 2px dashed var(--border); padding: 18px; text-align: center;
+        color: var(--dim); font-size: 0.78rem; letter-spacing: 0.12em;
+        transition: border-color 0.14s, background 0.14s; cursor: pointer;
+        margin-top: 10px;
+      }
+      #drop-zone.drag-over {
+        border-color: var(--accent); background: rgba(var(--accent-rgb), 0.08);
+        color: var(--accent);
+      }
+      #drop-zone .drop-filename {
+        color: var(--accent); font-size: 0.72rem; margin-top: 6px;
+        word-break: break-all;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="grid-bg"></div>
+    <div id="scanlines"></div>
+    <div id="app"></div>
+
+    <script type="module">
+      import { EWObject } from "../lib/ew-object-base.js";
+      import {
+        buildHeaderBar,
+        buildInputPanel,
+        updateOutputStats,
+        wireRange,
+      } from "../lib/ew-object-ui.js";
+
+      // ── Sample library ─────────────────────────────────────────
+
+      const SAMPLES = {
+        "Drums": {
+          path: "../../samples/",
+          files: [
+            "kick.wav", "kick-short.wav", "snare.wav",
+            "clap.wav", "clap-2.wav", "cymbal.wav",
+            "hihat-close.wav", "hihat-closed.wav",
+            "hihat-open.wav", "hihat-open-2.wav",
+            "ride.wav", "rim.wav",
+            "tom-h.wav", "tom-l.wav", "sticks.mp3"
+          ]
+        },
+        "808": {
+          path: "../../MIDI-server/public/samples/808/",
+          files: [
+            "kick-1.wav", "kick-2.wav", "kick-3.wav", "kick-4.wav", "kick-5.wav",
+            "kick-6.wav", "kick-7.wav", "kick-8.wav", "kick-9.wav", "kick-10.wav",
+            "snare-1.wav", "snare-2.wav", "snare-3.wav", "snare-4.wav", "snare-5.wav",
+            "snare-6.wav", "snare-7.wav", "snare-8.wav", "snare-9.wav", "snare-10.wav",
+            "clap-1.wav", "clap-2.wav", "clap-4.wav", "clap-5.wav", "clap-6.wav",
+            "clap-7.wav", "clap-8.wav", "clap-9.wav", "clap-10.wav",
+            "hihat-close-1.wav", "hihat-close-2.wav", "hihat-close-3.wav",
+            "hihat-close-4.wav", "hihat-close-5.wav", "hihat-close-6.wav",
+            "hihat-close-7.wav", "hihat-close-8.wav", "hihat-close-9.wav", "hihat-close-10.wav",
+            "hihat-open-1.wav", "hihat-open-2.wav", "hihat-open-3.wav", "hihat-open-4.wav",
+            "hihat-open-5.wav", "hihat-open-6.wav", "hihat-open-7.wav", "hihat-open-8.wav",
+            "clave-1.wav", "clave-2.wav", "clave-3.wav", "clave-4.wav",
+            "tom-high-1.wav", "tom-high-2.wav",
+            "tom-low-1.wav", "tom-low-2.wav", "tom-low-3.wav", "tom-low-4.wav"
+          ]
+        },
+        "909": {
+          path: "../../MIDI-server/public/samples/909/",
+          files: [
+            "kick-1.wav", "kick-2.wav",
+            "snare-1.wav", "clap-1.wav", "cymbal-1.wav",
+            "hihat-close-1.wav", "hihat-open-1.wav",
+            "ride-1.wav", "rim-1.wav",
+            "tom-high-1.wav", "tom-low-1.wav"
+          ]
+        },
+        "Ambient": {
+          path: "../../samples/",
+          files: [
+            "alienbleep.mp3", "button.mp3",
+            "cascade-collapse.mp3", "cebilaus.mp3",
+            "mechaglitch.mp3", "LiveAtUGSFMovementPre.mp3"
+          ]
+        }
+      };
+
+      // ── EWObject instance ──────────────────────────────────────
+
+      const ewObj = new EWObject({
+        name: "GRN-1",
+        objectType: "granular",
+        roomPrefix: "grn",
+        inputs: [
+          { port: "trigger", type: "number", unit: "bipolar", min: -1, max: 1, default: 0 },
+          { port: "grainSize", type: "number", unit: "seconds", min: 0.01, max: 1, default: 0.1 },
+          { port: "overlap", type: "number", unit: "", min: 0.01, max: 2, default: 0.5 },
+          { port: "position", type: "number", unit: "%", min: 0, max: 100, default: 0 },
+          { port: "pitch", type: "number", unit: "semitones", min: -24, max: 24, default: 0 },
+          { port: "speed", type: "number", unit: "", min: 0.1, max: 4, default: 1 },
+          { port: "gain", type: "number", unit: "", min: 0, max: 1, default: 0.7 },
+        ],
+        outputs: [
+          { port: "signal", type: "number" },
+          { port: "grainSize", type: "number", unit: "seconds" },
+          { port: "overlap", type: "number" },
+          { port: "position", type: "number", unit: "%" },
+          { port: "pitch", type: "number", unit: "semitones" },
+          { port: "speed", type: "number" },
+          { port: "gain", type: "number" },
+          { port: "playing", type: "boolean" },
+          { port: "outputMode", type: "string" },
+        ],
+      });
+
+      // ── Granular state ─────────────────────────────────────────
+
+      let player = null;
+      let gainNode = null;
+      let analyser = null;
+      let audioReady = false;
+      let isPlaying = false;
+      let granularRunning = false;
+      let outputMode = "audio";
+
+      let baseGrainSize = 0.1;   // 0.01..1 seconds
+      let baseOverlap = 0.5;     // 0.01..2
+      let basePosition = 0;      // 0..100 %
+      let baseSpread = 5;        // 0..50 %
+      let basePitch = 0;         // -24..+24 semitones
+      let baseSpeed = 1.0;       // 0.1..4
+      let baseGain = 0.7;        // 0..1
+      let reverseEnabled = false;
+      let loopEnabled = true;
+
+      let prevTriggerValue = 0;
+      let currentSampleUrl = null;
+      let customFileName = null;
+      let spreadInterval = null;
+
+      // ── Audio ──────────────────────────────────────────────────
+
+      async function ensureAudio() {
+        if (audioReady) return;
+        await Tone.start();
+        gainNode = new Tone.Gain(baseGain);
+        analyser = new Tone.Analyser("waveform", 256);
+        gainNode.connect(analyser);
+        applyOutputRouting();
+        audioReady = true;
+      }
+
+      function applyOutputRouting() {
+        if (!gainNode) return;
+        gainNode.disconnect();
+        gainNode.connect(analyser);
+        if (outputMode === "audio" || outputMode === "both") {
+          gainNode.toDestination();
+        }
+      }
+
+      async function loadSample(url) {
+        await ensureAudio();
+        if (player) {
+          try { player.stop(); } catch (_) {}
+          player.disconnect();
+          player.dispose();
+          player = null;
+        }
+        isPlaying = false;
+        stopSpreadInterval();
+
+        player = new Tone.GrainPlayer({
+          url: url,
+          loop: loopEnabled,
+          grainSize: baseGrainSize,
+          overlap: baseOverlap,
+          playbackRate: baseSpeed,
+          detune: basePitch * 100,
+          reverse: reverseEnabled,
+          onload: () => {
+            applyPositionWindow();
+            updateSampleInfo();
+          },
+          onerror: (err) => {
+            console.error("[GRANULAR] Failed to load sample:", err);
+          }
+        });
+        player.connect(gainNode);
+        currentSampleUrl = url;
+      }
+
+      function applyPositionWindow() {
+        if (!player || !player.buffer || !player.buffer.duration) return;
+        const dur = player.buffer.duration;
+        const posSec = (basePosition / 100) * dur;
+        const spreadSec = (baseSpread / 100) * dur;
+        const lo = Math.max(0, posSec - spreadSec / 2);
+        const hi = Math.min(dur, posSec + spreadSec / 2 + baseGrainSize);
+        player.loopStart = lo;
+        player.loopEnd = Math.max(hi, lo + 0.01);
+      }
+
+      function startSpreadInterval() {
+        stopSpreadInterval();
+        if (baseSpread <= 0) return;
+        const intervalMs = Math.max(20, baseGrainSize * 1000 * 0.5);
+        spreadInterval = setInterval(() => {
+          if (!player || !player.buffer || !player.buffer.duration || !isPlaying) return;
+          const dur = player.buffer.duration;
+          const posSec = (basePosition / 100) * dur;
+          const spreadSec = (baseSpread / 100) * dur;
+          const offset = (Math.random() - 0.5) * spreadSec;
+          const lo = Math.max(0, posSec + offset);
+          const hi = Math.min(dur, lo + baseGrainSize);
+          player.loopStart = lo;
+          player.loopEnd = Math.max(hi, lo + 0.01);
+        }, intervalMs);
+      }
+
+      function stopSpreadInterval() {
+        if (spreadInterval) {
+          clearInterval(spreadInterval);
+          spreadInterval = null;
+        }
+      }
+
+      function triggerPlayback() {
+        if (!player || !player.loaded) return;
+        ensureAudio().then(() => {
+          applyPositionWindow();
+          if (isPlaying) {
+            player.restart();
+          } else {
+            player.start();
+            isPlaying = true;
+          }
+          granularRunning = true;
+          updatePowerUI();
+          if (baseSpread > 0) startSpreadInterval();
+
+          // Broadcast trigger pulse
+          ewObj.setOutput("signal", 1, { immediate: true });
+          ewObj.setOutput("playing", true, { immediate: true });
+          setTimeout(() => {
+            ewObj.setOutput("signal", -1, { immediate: true });
+          }, 10);
+
+          // Flash trigger button
+          const btn = document.getElementById("trigger-btn");
+          btn.classList.add("flash");
+          setTimeout(() => btn.classList.remove("flash"), 120);
+        });
+      }
+
+      function stopPlayback() {
+        if (!player) return;
+        try { player.stop(); } catch (_) {}
+        isPlaying = false;
+        granularRunning = false;
+        stopSpreadInterval();
+        updatePowerUI();
+        ewObj.setOutput("playing", false, { immediate: true });
+        ewObj.setOutput("signal", -1, { immediate: true });
+      }
+
+      // ── Build UI ───────────────────────────────────────────────
+
+      const app = document.getElementById("app");
+
+      buildHeaderBar(ewObj, "GRANULAR", app);
+
+      document.getElementById("ew-header-controls").innerHTML = `
+        <select id="ew-theme" style="width:auto; padding:3px 24px 3px 8px">
+          <option value="theme-ethos">ETHOS</option>
+          <option value="">AMBER</option>
+          <option value="theme-phosphor">PHOSPHOR</option>
+          <option value="theme-cobalt">COBALT</option>
+          <option value="theme-plasma">PLASMA</option>
+          <option value="theme-danger">DANGER</option>
+          <option value="theme-matrix">MATRIX</option>
+          <option value="theme-solar">SOLAR</option>
+          <option value="theme-arctic">ARCTIC</option>
+        </select>
+        <select id="grn-output-mode" style="width:auto; padding:3px 24px 3px 8px">
+          <option value="audio">AUDIO</option>
+          <option value="control">CONTROL</option>
+          <option value="both">BOTH</option>
+        </select>
+        <div class="toggle-wrap" id="power-toggle" style="margin-bottom:0; cursor:pointer">
+          <div class="toggle-track" id="power-track">
+            <div class="toggle-thumb"></div>
+          </div>
+        </div>
+      `;
+
+      // Sample selector panel
+      const samplePanel = document.createElement("div");
+      samplePanel.className = "hud-panel clip-tr";
+
+      let selectHTML = '<div class="control-group"><div class="control-label">SAMPLE</div><select id="grn-select">';
+      for (const [category, data] of Object.entries(SAMPLES)) {
+        selectHTML += `<optgroup label="${category}">`;
+        for (const file of data.files) {
+          const label = file.replace(/\.(wav|mp3)$/i, "").toUpperCase();
+          selectHTML += `<option value="${data.path}${file}">${label}</option>`;
+        }
+        selectHTML += '</optgroup>';
+      }
+      selectHTML += '</select></div>';
+
+      samplePanel.innerHTML = `
+        ${selectHTML}
+        <div id="sample-info" style="font-size:0.68rem; color:var(--dim); letter-spacing:0.1em; margin-top:4px; min-height:1.2em"></div>
+        <div id="drop-zone">
+          DROP AUDIO FILE HERE
+          <div class="drop-filename" id="drop-filename"></div>
+        </div>
+        <button id="trigger-btn" style="margin-top:14px">TRIGGER</button>
+      `;
+      app.appendChild(samplePanel);
+
+      // Grain controls panel
+      const controlsPanel = document.createElement("div");
+      controlsPanel.className = "hud-panel clip-tr";
+      controlsPanel.innerHTML = `
+        <div class="param-row">
+          <div class="control-label">GRAIN SZ</div>
+          <input type="range" id="grn-grain-size" min="1" max="100" value="10" />
+          <span class="range-val" id="grn-grain-size-val">0.10 s</span>
+        </div>
+        <div class="param-row">
+          <div class="control-label">OVERLAP</div>
+          <input type="range" id="grn-overlap" min="1" max="200" value="50" />
+          <span class="range-val" id="grn-overlap-val">0.50</span>
+        </div>
+        <div class="param-row">
+          <div class="control-label">POSITION</div>
+          <input type="range" id="grn-position" min="0" max="100" value="0" />
+          <span class="range-val" id="grn-position-val">0%</span>
+        </div>
+        <div class="param-row">
+          <div class="control-label">SPREAD</div>
+          <input type="range" id="grn-spread" min="0" max="50" value="5" />
+          <span class="range-val" id="grn-spread-val">5%</span>
+        </div>
+        <div class="param-row">
+          <div class="control-label">PITCH</div>
+          <input type="range" id="grn-pitch" min="-24" max="24" value="0" />
+          <span class="range-val" id="grn-pitch-val">0 st</span>
+        </div>
+        <div class="param-row">
+          <div class="control-label">SPEED</div>
+          <input type="range" id="grn-speed" min="10" max="400" value="100" />
+          <span class="range-val" id="grn-speed-val">1.00x</span>
+        </div>
+        <div class="param-row">
+          <div class="control-label">GAIN</div>
+          <input type="range" id="grn-gain" min="0" max="100" value="70" />
+          <span class="range-val" id="grn-gain-val">0.70</span>
+        </div>
+        <div style="border-top:1px solid var(--border); padding-top:14px; margin-top:4px">
+          <div style="display:flex; align-items:center; gap:18px; flex-wrap:wrap">
+            <div style="display:flex; align-items:center; gap:12px">
+              <div class="control-label" style="min-width:auto; margin-bottom:0">REVERSE</div>
+              <div class="toggle-wrap" id="reverse-toggle" style="margin-bottom:0; cursor:pointer">
+                <div class="toggle-track" id="reverse-track">
+                  <div class="toggle-thumb"></div>
+                </div>
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:12px">
+              <div class="control-label" style="min-width:auto; margin-bottom:0">LOOP</div>
+              <div class="toggle-wrap" id="loop-toggle" style="margin-bottom:0; cursor:pointer">
+                <div class="toggle-track on" id="loop-track">
+                  <div class="toggle-thumb"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      app.appendChild(controlsPanel);
+
+      // Theme
+      document.getElementById("ew-theme").addEventListener("change", (e) => {
+        document.documentElement.className = e.target.value;
+      });
+      document.documentElement.className = "theme-ethos";
+
+      // Scope
+      const scopePanel = document.createElement("div");
+      scopePanel.className = "hud-panel";
+      scopePanel.innerHTML = `
+        <div class="screen-wrap">
+          <div class="screen-inner" style="padding:0; min-height:auto">
+            <canvas id="granular-scope"></canvas>
+            <div class="screen-scan"></div>
+            <div class="corner tl"></div><div class="corner tr"></div>
+            <div class="corner bl"></div><div class="corner br"></div>
+          </div>
+        </div>
+      `;
+      app.appendChild(scopePanel);
+
+      // Input panel
+      buildInputPanel(ewObj, app);
+
+      // Rooms panel
+      const roomsPanel = document.createElement("div");
+      roomsPanel.className = "hud-panel";
+      roomsPanel.innerHTML = `
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px">
+          <span class="control-label" style="margin:0; flex-shrink:0">ROOM</span>
+          <input type="text" id="room-input" placeholder="ROOM-ID" maxlength="32" spellcheck="false" autocomplete="off" style="flex:1">
+          <button class="btn btn-sm" id="room-join-btn">JOIN</button>
+          <button class="btn btn-sm" id="privacy-btn">PUBLIC</button>
+        </div>
+        <hr class="hud-divider" style="margin:10px 0">
+        <div class="section-title">// AVAILABLE GRANULARS //</div>
+        <div id="rooms-list"><span class="type-dim">NO OTHER GRANULARS AVAILABLE</span></div>
+      `;
+      app.appendChild(roomsPanel);
+
+      // Footer
+      const footer = document.createElement("div");
+      footer.style.cssText = "text-align:center; padding:20px 0; font-size:0.72rem; letter-spacing:0.22em; color:var(--dim)";
+      footer.innerHTML = '<a href="../../index.html" style="color:var(--dim); text-decoration:none">ENTROPY WORSHIP</a>';
+      app.appendChild(footer);
+
+      // ── Wire controls ──────────────────────────────────────────
+
+      function updatePowerUI() {
+        document.getElementById("power-track").classList.toggle("on", granularRunning);
+      }
+
+      function updateSampleInfo() {
+        const el = document.getElementById("sample-info");
+        if (!player || !player.buffer || !player.buffer.duration) {
+          el.textContent = "";
+          return;
+        }
+        const dur = player.buffer.duration;
+        el.textContent = `DURATION: ${dur.toFixed(2)}s`;
+      }
+
+      // Power toggle
+      document.getElementById("power-toggle").addEventListener("click", () => {
+        if (granularRunning) stopPlayback(); else triggerPlayback();
+      });
+
+      // Trigger button
+      document.getElementById("trigger-btn").addEventListener("click", () => {
+        triggerPlayback();
+      });
+
+      // Sample select
+      document.getElementById("grn-select").addEventListener("change", (e) => {
+        customFileName = null;
+        document.getElementById("drop-filename").textContent = "";
+        loadSample(e.target.value);
+      });
+
+      // Output mode
+      document.getElementById("grn-output-mode").addEventListener("change", (e) => {
+        outputMode = e.target.value;
+        applyOutputRouting();
+        ewObj.setOutput("outputMode", outputMode, { immediate: true });
+      });
+
+      // Grain size slider (1..100 maps to 0.01..1.00)
+      wireRange("grn-grain-size", "grn-grain-size-val", (v) => (v / 100).toFixed(2) + " s");
+      document.getElementById("grn-grain-size").addEventListener("input", (e) => {
+        baseGrainSize = +e.target.value / 100;
+        if (player) player.grainSize = baseGrainSize;
+        applyPositionWindow();
+        if (isPlaying && baseSpread > 0) startSpreadInterval();
+        ewObj.setOutput("grainSize", Math.round(baseGrainSize * 100) / 100);
+        refreshStats();
+      });
+
+      // Overlap slider (1..200 maps to 0.01..2.00)
+      wireRange("grn-overlap", "grn-overlap-val", (v) => (v / 100).toFixed(2));
+      document.getElementById("grn-overlap").addEventListener("input", (e) => {
+        baseOverlap = +e.target.value / 100;
+        if (player) player.overlap = baseOverlap;
+        ewObj.setOutput("overlap", Math.round(baseOverlap * 100) / 100);
+        refreshStats();
+      });
+
+      // Position slider (0..100%)
+      wireRange("grn-position", "grn-position-val", (v) => v + "%");
+      document.getElementById("grn-position").addEventListener("input", (e) => {
+        basePosition = +e.target.value;
+        applyPositionWindow();
+        ewObj.setOutput("position", basePosition);
+        refreshStats();
+      });
+
+      // Spread slider (0..50%)
+      wireRange("grn-spread", "grn-spread-val", (v) => v + "%");
+      document.getElementById("grn-spread").addEventListener("input", (e) => {
+        baseSpread = +e.target.value;
+        applyPositionWindow();
+        if (isPlaying && baseSpread > 0) startSpreadInterval();
+        else if (baseSpread <= 0) stopSpreadInterval();
+        refreshStats();
+      });
+
+      // Pitch slider
+      wireRange("grn-pitch", "grn-pitch-val", (v) => v + " st");
+      document.getElementById("grn-pitch").addEventListener("input", (e) => {
+        basePitch = +e.target.value;
+        if (player) player.detune = basePitch * 100;
+        ewObj.setOutput("pitch", basePitch);
+        refreshStats();
+      });
+
+      // Speed slider (10..400 maps to 0.1..4.0)
+      wireRange("grn-speed", "grn-speed-val", (v) => (v / 100).toFixed(2) + "x");
+      document.getElementById("grn-speed").addEventListener("input", (e) => {
+        baseSpeed = +e.target.value / 100;
+        if (player) player.playbackRate = baseSpeed;
+        ewObj.setOutput("speed", Math.round(baseSpeed * 100) / 100);
+        refreshStats();
+      });
+
+      // Gain slider
+      wireRange("grn-gain", "grn-gain-val", (v) => (v / 100).toFixed(2));
+      document.getElementById("grn-gain").addEventListener("input", (e) => {
+        baseGain = +e.target.value / 100;
+        if (gainNode) gainNode.gain.rampTo(baseGain, 0.01);
+        ewObj.setOutput("gain", Math.round(baseGain * 100) / 100);
+        refreshStats();
+      });
+
+      // Reverse toggle
+      document.getElementById("reverse-toggle").addEventListener("click", () => {
+        reverseEnabled = !reverseEnabled;
+        document.getElementById("reverse-track").classList.toggle("on", reverseEnabled);
+        if (player) player.reverse = reverseEnabled;
+      });
+
+      // Loop toggle (default on)
+      document.getElementById("loop-toggle").addEventListener("click", () => {
+        loopEnabled = !loopEnabled;
+        document.getElementById("loop-track").classList.toggle("on", loopEnabled);
+        if (player) player.loop = loopEnabled;
+      });
+
+      // ── Drag and drop ──────────────────────────────────────────
+
+      const dropZone = document.getElementById("drop-zone");
+
+      dropZone.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        dropZone.classList.add("drag-over");
+      });
+
+      dropZone.addEventListener("dragleave", () => {
+        dropZone.classList.remove("drag-over");
+      });
+
+      dropZone.addEventListener("drop", (e) => {
+        e.preventDefault();
+        dropZone.classList.remove("drag-over");
+        const file = e.dataTransfer.files[0];
+        if (!file) return;
+        if (!file.type.startsWith("audio/")) {
+          console.warn("[GRANULAR] Not an audio file:", file.type);
+          return;
+        }
+        loadDroppedFile(file);
+      });
+
+      // Also allow click to open file picker
+      dropZone.addEventListener("click", () => {
+        const input = document.createElement("input");
+        input.type = "file";
+        input.accept = "audio/*";
+        input.addEventListener("change", () => {
+          if (input.files[0]) loadDroppedFile(input.files[0]);
+        });
+        input.click();
+      });
+
+      function loadDroppedFile(file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          const blob = new Blob([reader.result], { type: file.type });
+          const url = URL.createObjectURL(blob);
+          customFileName = file.name;
+          document.getElementById("drop-filename").textContent = file.name;
+          // Deselect library dropdown
+          document.getElementById("grn-select").selectedIndex = -1;
+          loadSample(url);
+        };
+        reader.readAsArrayBuffer(file);
+      }
+
+      // ── Input signal handling ──────────────────────────────────
+
+      ewObj.onInput("trigger", (value, meta) => {
+        if (typeof value !== "number") return;
+        const isPositiveEdge = value > 0 && prevTriggerValue <= 0;
+        prevTriggerValue = value;
+        if (isPositiveEdge) {
+          triggerPlayback();
+        }
+      });
+
+      ewObj.onInput("grainSize", (value, meta) => {
+        if (meta && meta.unit === "bipolar" && typeof value === "number") {
+          // Bipolar: scale around base value within range 0.01..1
+          const modulated = baseGrainSize + value * 0.5;
+          const clamped = Math.max(0.01, Math.min(1, modulated));
+          if (player) player.grainSize = clamped;
+          return;
+        }
+        if (typeof value === "number") {
+          const clamped = Math.max(0.01, Math.min(1, value));
+          baseGrainSize = clamped;
+          if (player) player.grainSize = clamped;
+          document.getElementById("grn-grain-size").value = Math.round(clamped * 100);
+          document.getElementById("grn-grain-size-val").textContent = clamped.toFixed(2) + " s";
+          const pct = ((clamped * 100 - 1) / (100 - 1)) * 100;
+          document.getElementById("grn-grain-size").style.setProperty("--val", pct + "%");
+          applyPositionWindow();
+          ewObj.setOutput("grainSize", Math.round(clamped * 100) / 100);
+          refreshStats();
+        }
+      });
+
+      ewObj.onInput("overlap", (value, meta) => {
+        if (meta && meta.unit === "bipolar" && typeof value === "number") {
+          const modulated = baseOverlap + value * 1.0;
+          const clamped = Math.max(0.01, Math.min(2, modulated));
+          if (player) player.overlap = clamped;
+          return;
+        }
+        if (typeof value === "number") {
+          const clamped = Math.max(0.01, Math.min(2, value));
+          baseOverlap = clamped;
+          if (player) player.overlap = clamped;
+          document.getElementById("grn-overlap").value = Math.round(clamped * 100);
+          document.getElementById("grn-overlap-val").textContent = clamped.toFixed(2);
+          const pct = ((clamped * 100 - 1) / (200 - 1)) * 100;
+          document.getElementById("grn-overlap").style.setProperty("--val", pct + "%");
+          ewObj.setOutput("overlap", Math.round(clamped * 100) / 100);
+          refreshStats();
+        }
+      });
+
+      ewObj.onInput("position", (value, meta) => {
+        if (meta && meta.unit === "bipolar" && typeof value === "number") {
+          // Bipolar: scale to +/- 50% offset from base
+          const modulated = basePosition + value * 50;
+          const clamped = Math.max(0, Math.min(100, modulated));
+          // Temporarily apply without changing base
+          if (player && player.buffer && player.buffer.duration) {
+            const dur = player.buffer.duration;
+            const posSec = (clamped / 100) * dur;
+            const spreadSec = (baseSpread / 100) * dur;
+            const lo = Math.max(0, posSec - spreadSec / 2);
+            const hi = Math.min(dur, posSec + spreadSec / 2 + baseGrainSize);
+            player.loopStart = lo;
+            player.loopEnd = Math.max(hi, lo + 0.01);
+          }
+          return;
+        }
+        if (typeof value === "number") {
+          const clamped = Math.max(0, Math.min(100, value));
+          basePosition = clamped;
+          document.getElementById("grn-position").value = Math.round(clamped);
+          document.getElementById("grn-position-val").textContent = Math.round(clamped) + "%";
+          const pct = clamped;
+          document.getElementById("grn-position").style.setProperty("--val", pct + "%");
+          applyPositionWindow();
+          ewObj.setOutput("position", Math.round(clamped));
+          refreshStats();
+        }
+      });
+
+      ewObj.onInput("pitch", (value, meta) => {
+        if (meta && meta.unit === "bipolar" && typeof value === "number") {
+          const modulated = basePitch * 100 + value * 2400;
+          if (player) player.detune = modulated;
+          return;
+        }
+        if (typeof value === "number") {
+          const clamped = Math.max(-24, Math.min(24, Math.round(value)));
+          basePitch = clamped;
+          if (player) player.detune = clamped * 100;
+          document.getElementById("grn-pitch").value = clamped;
+          document.getElementById("grn-pitch-val").textContent = clamped + " st";
+          const pct = ((clamped - (-24)) / (24 - (-24))) * 100;
+          document.getElementById("grn-pitch").style.setProperty("--val", pct + "%");
+          ewObj.setOutput("pitch", clamped);
+          refreshStats();
+        }
+      });
+
+      ewObj.onInput("speed", (value, meta) => {
+        if (meta && meta.unit === "bipolar" && typeof value === "number") {
+          const modulated = baseSpeed + value * 2;
+          const clamped = Math.max(0.1, Math.min(4, modulated));
+          if (player) player.playbackRate = clamped;
+          return;
+        }
+        if (typeof value === "number") {
+          const clamped = Math.max(0.1, Math.min(4, value));
+          baseSpeed = clamped;
+          if (player) player.playbackRate = clamped;
+          document.getElementById("grn-speed").value = Math.round(clamped * 100);
+          document.getElementById("grn-speed-val").textContent = clamped.toFixed(2) + "x";
+          const pct = ((clamped * 100 - 10) / (400 - 10)) * 100;
+          document.getElementById("grn-speed").style.setProperty("--val", pct + "%");
+          ewObj.setOutput("speed", Math.round(clamped * 100) / 100);
+          refreshStats();
+        }
+      });
+
+      ewObj.onInput("gain", (value, meta) => {
+        if (meta && meta.unit === "bipolar" && typeof value === "number") {
+          const modulated = baseGain + value * 0.5;
+          const clamped = Math.max(0, Math.min(1, modulated));
+          if (gainNode) gainNode.gain.rampTo(clamped, 0.012);
+          return;
+        }
+        if (typeof value === "number") {
+          const clamped = Math.max(0, Math.min(1, value));
+          baseGain = clamped;
+          if (gainNode) gainNode.gain.rampTo(clamped, 0.01);
+          document.getElementById("grn-gain").value = Math.round(clamped * 100);
+          document.getElementById("grn-gain-val").textContent = clamped.toFixed(2);
+          const pct = clamped * 100;
+          document.getElementById("grn-gain").style.setProperty("--val", pct + "%");
+          ewObj.setOutput("gain", clamped);
+          refreshStats();
+        }
+      });
+
+      ewObj.onInput("playing", async (value) => {
+        if (typeof value !== "boolean") return;
+        if (value && !isPlaying) triggerPlayback();
+        else if (!value && isPlaying) stopPlayback();
+      });
+
+      ewObj.onInput("outputMode", (value) => {
+        if (typeof value !== "string") return;
+        if (["audio", "control", "both"].includes(value)) {
+          outputMode = value;
+          document.getElementById("grn-output-mode").value = value;
+          applyOutputRouting();
+        }
+      });
+
+      // ── Output stats ───────────────────────────────────────────
+
+      function refreshStats() {
+        updateOutputStats(ewObj, [
+          { port: "signal", label: "TRIG", formatter: (v) => v !== undefined ? (v > 0 ? "ON" : "OFF") : "OFF" },
+          { port: "grainSize", label: "GRAIN", unit: " s", formatter: (v) => v !== undefined ? v.toFixed(2) : "0.10" },
+          { port: "position", label: "POS", unit: "%", formatter: (v) => v !== undefined ? String(v) : "0" },
+          { port: "pitch", label: "PITCH", unit: " st", formatter: (v) => v !== undefined ? String(v) : "0" },
+          { port: "gain", label: "GAIN", formatter: (v) => v !== undefined ? v.toFixed(2) : "0.70" },
+        ]);
+      }
+
+      // ── Scope ──────────────────────────────────────────────────
+
+      const scopeCanvas = document.getElementById("granular-scope");
+      const scopeCtx = scopeCanvas.getContext("2d");
+
+      function resizeScope() {
+        const rect = scopeCanvas.parentElement.getBoundingClientRect();
+        scopeCanvas.width = rect.width;
+        scopeCanvas.height = 120;
+      }
+
+      function drawScope() {
+        requestAnimationFrame(drawScope);
+        const w = scopeCanvas.width, h = scopeCanvas.height;
+        scopeCtx.fillStyle = "#080808";
+        scopeCtx.fillRect(0, 0, w, h);
+
+        // Grid
+        scopeCtx.strokeStyle = "rgba(128,128,128,0.08)";
+        scopeCtx.lineWidth = 1;
+        for (let y = 0; y < h; y += 20) { scopeCtx.beginPath(); scopeCtx.moveTo(0, y); scopeCtx.lineTo(w, y); scopeCtx.stroke(); }
+        for (let x = 0; x < w; x += 20) { scopeCtx.beginPath(); scopeCtx.moveTo(x, 0); scopeCtx.lineTo(x, h); scopeCtx.stroke(); }
+        scopeCtx.strokeStyle = "rgba(128,128,128,0.2)";
+        scopeCtx.beginPath(); scopeCtx.moveTo(0, h / 2); scopeCtx.lineTo(w, h / 2); scopeCtx.stroke();
+
+        if (!analyser || !isPlaying) return;
+
+        const data = analyser.getValue();
+        scopeCtx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--accent");
+        scopeCtx.lineWidth = 2;
+        scopeCtx.shadowColor = "rgba(210,210,210,0.4)";
+        scopeCtx.shadowBlur = 6;
+        scopeCtx.beginPath();
+        for (let i = 0; i < data.length; i++) {
+          const x = (i / data.length) * w;
+          const y = ((1 - data[i]) / 2) * h;
+          if (i === 0) scopeCtx.moveTo(x, y); else scopeCtx.lineTo(x, y);
+        }
+        scopeCtx.stroke();
+        scopeCtx.shadowBlur = 0;
+      }
+
+      // ── Room UI ────────────────────────────────────────────────
+
+      ewObj.on("connected", () => {
+        document.getElementById("room-input").value = ewObj.getOutputRoom();
+      });
+      document.getElementById("room-join-btn").addEventListener("click", () => {
+        const name = document.getElementById("room-input").value.trim().replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 32) || "default";
+        location.search = `?room=${encodeURIComponent(name)}`;
+      });
+      document.getElementById("room-input").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") document.getElementById("room-join-btn").click();
+      });
+
+      let roomPrivate = false;
+      function updatePrivacyBtn() {
+        const btn = document.getElementById("privacy-btn");
+        btn.textContent = roomPrivate ? "PRIVATE" : "PUBLIC";
+        btn.classList.toggle("active", roomPrivate);
+      }
+      document.getElementById("privacy-btn").addEventListener("click", () => {
+        roomPrivate = !roomPrivate; ewObj.setPrivate(roomPrivate); updatePrivacyBtn();
+      });
+      ewObj.on("stateSync", (msg) => {
+        roomPrivate = msg.private || false; updatePrivacyBtn();
+        document.getElementById("room-input").value = msg.room || ewObj.getOutputRoom();
+      });
+      ewObj.on("roomPrivate", (msg) => { roomPrivate = msg.private; updatePrivacyBtn(); });
+      ewObj.on("rooms", (msg) => {
+        const el = document.getElementById("rooms-list");
+        if (!el) return;
+        const currentRoom = ewObj.getOutputRoom();
+        const others = (msg.rooms || []).filter((r) => r.name !== currentRoom);
+        if (!others.length) { el.innerHTML = '<span class="type-dim">NO OTHER GRANULARS AVAILABLE</span>'; return; }
+        el.innerHTML = "";
+        for (const r of others) {
+          const a = document.createElement("a");
+          a.className = "room-entry";
+          a.href = `?room=${encodeURIComponent(r.name)}`;
+          const objs = r.objects && r.objects.length ? r.objects.join(", ").toUpperCase() : "";
+          a.innerHTML = `<span class="room-entry-name">${r.name}</span><span class="room-entry-info">${r.clients} PLR${objs ? " · " + objs : ""}</span>`;
+          el.appendChild(a);
+        }
+      });
+
+      // ── Signal output worker ───────────────────────────────────
+
+      let signalWorker = null;
+
+      function startSignalOutput() {
+        if (signalWorker) return;
+        const blob = new Blob([`
+          let id = setInterval(() => postMessage("tick"), 10);
+          onmessage = () => { clearInterval(id); close(); };
+        `], { type: "application/javascript" });
+        signalWorker = new Worker(URL.createObjectURL(blob));
+        signalWorker.onmessage = () => {
+          // Broadcast current values at ~100Hz
+          ewObj.setOutput("grainSize", Math.round(baseGrainSize * 100) / 100);
+          ewObj.setOutput("overlap", Math.round(baseOverlap * 100) / 100);
+          ewObj.setOutput("position", Math.round(basePosition));
+          ewObj.setOutput("pitch", basePitch);
+          ewObj.setOutput("speed", Math.round(baseSpeed * 100) / 100);
+          ewObj.setOutput("gain", Math.round(baseGain * 100) / 100);
+        };
+      }
+
+      function stopSignalOutput() {
+        if (signalWorker) {
+          signalWorker.postMessage("stop");
+          signalWorker = null;
+        }
+      }
+
+      // ── Initialize ─────────────────────────────────────────────
+
+      (() => {
+        const urlRoom = new URLSearchParams(location.search).get("room");
+        ewObj.connectOutput(urlRoom || undefined);
+
+        ewObj._outputValues["signal"] = -1;
+        ewObj._outputValues["playing"] = false;
+        ewObj._outputValues["grainSize"] = 0.1;
+        ewObj._outputValues["overlap"] = 0.5;
+        ewObj._outputValues["position"] = 0;
+        ewObj._outputValues["pitch"] = 0;
+        ewObj._outputValues["speed"] = 1;
+        ewObj._outputValues["gain"] = 0.7;
+        ewObj._outputValues["outputMode"] = "audio";
+
+        refreshStats();
+        resizeScope();
+        drawScope();
+
+        // Load default sample (first in library)
+        const defaultUrl = document.getElementById("grn-select").value;
+        if (defaultUrl) {
+          ensureAudio().then(() => loadSample(defaultUrl));
+        }
+
+        // Start signal output worker
+        startSignalOutput();
+      })();
+
+      window.addEventListener("resize", resizeScope);
+    </script>
+  </body>
+</html>
