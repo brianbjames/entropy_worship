@@ -26,11 +26,11 @@
 <!-- |                                                                         | -->
 <!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
 <!doctype html>
-<html lang="en">
+<html lang="en" class="theme-ethos">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>EW/OBJECTS — PATCH DASHBOARD</title>
+    <title>EW/OBJECTS — DISTRIBUTED OBJECTS</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
       href="https://fonts.googleapis.com/css2?family=VT323&display=swap"
@@ -56,7 +56,17 @@
         left: 0;
         right: 0;
         bottom: 0;
+        z-index: 1;
+      }
+      #kk-bg {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
         z-index: 0;
+        pointer-events: none;
       }
       #app {
         pointer-events: none;
@@ -69,106 +79,34 @@
         align-items: center;
         gap: 14px;
       }
-      .back-link {
-        color: var(--dim);
-        text-decoration: none;
-        font-size: 1.2rem;
-        letter-spacing: 0.15em;
-      }
-      .back-link:hover {
-        color: var(--accent);
-      }
       .dash-stats {
         margin-top: 10px;
-      }
-      #room-panel {
-        position: fixed;
-        top: 100px;
-        right: 20px;
-        width: 320px;
-        max-height: calc(100vh - 140px);
-        overflow-y: auto;
-        z-index: 2;
-        pointer-events: auto;
-      }
-      .room-entry {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 6px 10px;
-        border-bottom: 1px solid rgba(var(--accent-rgb), 0.12);
-        cursor: pointer;
-        text-decoration: none;
-        color: var(--text);
-        transition: background 0.12s;
-      }
-      .room-entry:hover {
-        background: rgba(var(--accent-rgb), 0.08);
-      }
-      .room-entry-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        flex-shrink: 0;
-      }
-      .room-entry-name {
-        font-size: 0.85rem;
-        letter-spacing: 0.12em;
-        color: var(--accent);
-        flex: 1;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-      .room-entry-type {
-        font-size: 0.68rem;
-        letter-spacing: 0.18em;
-        color: var(--dim);
-        text-transform: uppercase;
-      }
-      .room-entry-clients {
-        font-size: 0.72rem;
-        color: var(--dim);
-      }
-      #empty-msg {
-        text-align: center;
-        padding: 20px;
-        font-size: 0.82rem;
-        letter-spacing: 0.18em;
-        color: var(--dim);
-      }
-      .legend {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        padding: 8px 10px;
-        border-bottom: 1px solid rgba(var(--accent-rgb), 0.12);
-      }
-      .legend-item {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        font-size: 0.62rem;
-        letter-spacing: 0.14em;
-        color: var(--dim);
-        text-transform: uppercase;
-      }
-      .legend-dot {
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
       }
     </style>
   </head>
   <body>
+    <!-- ── Kaluza-Klein background ── -->
+    <canvas id="kk-bg"></canvas>
     <canvas id="patch-canvas"></canvas>
     <div id="grid-bg"></div>
     <div id="scanlines"></div>
 
     <div id="app">
       <header>
-        <a href="/EW-objects/" class="back-link">&larr; OBJECTS</a>
-        <h1 class="hud-title" style="font-size: 1.4rem">PATCH DASHBOARD</h1>
+        <h1 class="hud-title">
+          <a
+            href="/EW-objects/"
+            style="
+              color: var(--dim);
+              text-decoration: none;
+              transition: color 0.14s;
+            "
+            onmouseover="this.style.color = 'var(--accent)'"
+            onmouseout="this.style.color = 'var(--dim)'"
+            >&laquo;</a
+          >
+          DISTRIBUTED OBJECTS
+        </h1>
         <span class="status-dot offline" id="status-dot"></span>
       </header>
 
@@ -190,41 +128,6 @@
             <div class="stat-label">SUBGRAPHS</div>
             <div class="stat-val" id="stat-subgraphs">0</div>
           </div>
-        </div>
-      </div>
-
-      <div id="room-panel" class="hud-panel clip-br">
-        <div class="section-title" style="padding: 8px 10px">
-          // ACTIVE ROOMS //
-        </div>
-        <div class="legend">
-          <div class="legend-item">
-            <span class="legend-dot" style="background: #ffaa00"></span> SRC
-          </div>
-          <div class="legend-item">
-            <span class="legend-dot" style="background: #ff4477"></span> INST
-          </div>
-          <div class="legend-item">
-            <span class="legend-dot" style="background: #00ffbb"></span> FX
-          </div>
-          <div class="legend-item">
-            <span class="legend-dot" style="background: #dd66ff"></span> MOD
-          </div>
-          <div class="legend-item">
-            <span class="legend-dot" style="background: #ff66dd"></span> SEQ
-          </div>
-          <div class="legend-item">
-            <span class="legend-dot" style="background: #66ffdd"></span> RTE
-          </div>
-          <div class="legend-item">
-            <span class="legend-dot" style="background: #aaaaaa"></span> UTL
-          </div>
-          <div class="legend-item">
-            <span class="legend-dot" style="background: #ffdd00"></span> VIS
-          </div>
-        </div>
-        <div id="room-list">
-          <div id="empty-msg">NO ACTIVE ROOMS</div>
         </div>
       </div>
     </div>
@@ -336,7 +239,12 @@
         camera.updateProjectionMatrix();
       }
 
-      // ── Pan / Zoom ───────────────────────────────────────────
+      // ── Raycasting ───────────────────────────────────────────
+      const raycaster = new THREE.Raycaster();
+      const mouse = new THREE.Vector2();
+      let hoveredSprite = null;
+
+      // ── Pan / Zoom / Node Drag ───────────────────────────────
       let zoom = 1;
       let panX = 0,
         panY = 0;
@@ -345,6 +253,8 @@
         dragStartY = 0,
         panStartX = 0,
         panStartY = 0;
+      let draggedNode = null; // sprite being dragged
+      let dragNodeName = null; // room name of dragged node
 
       function updateCamera() {
         const a = innerWidth / innerHeight;
@@ -357,34 +267,72 @@
         camera.updateProjectionMatrix();
       }
 
-      canvas.addEventListener("wheel", (e) => {
-        e.preventDefault();
-        zoom *= e.deltaY > 0 ? 1.08 : 0.92;
-        zoom = Math.max(0.2, Math.min(5, zoom));
-        updateCamera();
-      }, { passive: false });
+      canvas.addEventListener(
+        "wheel",
+        (e) => {
+          e.preventDefault();
+          zoom *= e.deltaY > 0 ? 1.08 : 0.92;
+          zoom = Math.max(0.2, Math.min(5, zoom));
+          updateCamera();
+        },
+        { passive: false },
+      );
+
+      function screenToWorld(cx, cy) {
+        const a = innerWidth / innerHeight;
+        const wx = panX + ((cx / innerWidth) * 2 - 1) * frustum * a * zoom;
+        const wy = panY - ((cy / innerHeight) * 2 - 1) * frustum * zoom;
+        return { x: wx, y: wy };
+      }
 
       canvas.addEventListener("mousedown", (e) => {
         if (e.button !== 0) return;
-        dragging = true;
         dragStartX = e.clientX;
         dragStartY = e.clientY;
-        panStartX = panX;
-        panStartY = panY;
-        canvas.style.cursor = "grabbing";
+
+        // Check if clicking on a node (for dragging)
+        mouse.x = (e.clientX / innerWidth) * 2 - 1;
+        mouse.y = -(e.clientY / innerHeight) * 2 + 1;
+        raycaster.setFromCamera(mouse, camera);
+        const hits = raycaster.intersectObjects(nodeGroup.children);
+        if (hits.length > 0 && layout.settled) {
+          draggedNode = hits[0].object;
+          dragNodeName = draggedNode.userData.roomName;
+          canvas.style.cursor = "grabbing";
+        } else {
+          dragging = true;
+          panStartX = panX;
+          panStartY = panY;
+          canvas.style.cursor = "grabbing";
+        }
       });
 
       window.addEventListener("mousemove", (e) => {
-        if (!dragging) return;
-        const dx = e.clientX - dragStartX;
-        const dy = e.clientY - dragStartY;
-        const scale = (frustum * 2 * zoom) / innerHeight;
-        panX = panStartX - dx * scale;
-        panY = panStartY + dy * scale;
-        updateCamera();
+        if (draggedNode && dragNodeName) {
+          const world = screenToWorld(e.clientX, e.clientY);
+          const pos = layout.getPos(dragNodeName);
+          if (pos) {
+            pos.x = world.x;
+            pos.y = world.y;
+            pos.vx = 0;
+            pos.vy = 0;
+          }
+        } else if (dragging) {
+          const dx = e.clientX - dragStartX;
+          const dy = e.clientY - dragStartY;
+          const scale = (frustum * 2 * zoom) / innerHeight;
+          panX = panStartX - dx * scale;
+          panY = panStartY + dy * scale;
+          updateCamera();
+        }
       });
 
       window.addEventListener("mouseup", () => {
+        if (draggedNode) {
+          draggedNode = null;
+          dragNodeName = null;
+          canvas.style.cursor = "";
+        }
         if (dragging) {
           dragging = false;
           canvas.style.cursor = "";
@@ -393,11 +341,6 @@
 
       resize();
       addEventListener("resize", resize);
-
-      // ── Raycasting ───────────────────────────────────────────
-      const raycaster = new THREE.Raycaster();
-      const mouse = new THREE.Vector2();
-      let hoveredSprite = null;
 
       canvas.addEventListener("click", (e) => {
         // Ignore if we were dragging
@@ -427,7 +370,10 @@
         raycaster.setFromCamera(mouse, camera);
         const hits = raycaster.intersectObjects(nodeGroup.children);
 
-        if (hoveredSprite && (!hits.length || hits[0].object !== hoveredSprite)) {
+        if (
+          hoveredSprite &&
+          (!hits.length || hits[0].object !== hoveredSprite)
+        ) {
           hoveredSprite.scale.copy(hoveredSprite.userData._baseScale);
           hoveredSprite.material.opacity = 1;
           hoveredSprite = null;
@@ -444,174 +390,291 @@
         }
       });
 
-      // ── Node Texture Generation ──────────────────────────────
-      const NODE_W = 256;
-      const NODE_H = 96;
+      // ── Node Texture Generation (auto-sized) ─────────────────
+      const _measureCanvas = document.createElement("canvas");
+      const _measureCtx = _measureCanvas.getContext("2d");
 
       function makeNodeTexture(roomName, objectType, clients) {
+        const color = getCategoryColor(objectType);
+        const typeLabel = (objectType || "UNKNOWN").toUpperCase();
+        const cat = (CATEGORY_MAP[objectType] || "UNKNOWN").toUpperCase();
+        const plrLabel = `${clients} PLR`;
+
+        // Measure text to determine canvas width
+        _measureCtx.font = '28px "VT323", monospace';
+        const nameWidth = _measureCtx.measureText(roomName).width;
+        _measureCtx.font = '18px "VT323", monospace';
+        const typeWidth = _measureCtx.measureText(typeLabel).width;
+        const bottomWidth =
+          _measureCtx.measureText(cat).width +
+          _measureCtx.measureText(plrLabel).width +
+          40;
+
+        const textMax = Math.max(nameWidth, typeWidth, bottomWidth);
+        const pad = 32;
+        const w = Math.ceil(textMax + pad * 2);
+        const h = 90;
+
         const c = document.createElement("canvas");
-        c.width = NODE_W;
-        c.height = NODE_H;
+        c.width = w;
+        c.height = h;
         const ctx = c.getContext("2d");
 
-        const color = getCategoryColor(objectType);
-
-        // Background
-        ctx.fillStyle = "rgba(14, 6, 0, 0.85)";
-        ctx.fillRect(0, 0, NODE_W, NODE_H);
+        // ETHOS-style background
+        ctx.fillStyle = "rgba(18, 18, 18, 0.88)";
+        ctx.fillRect(0, 0, w, h);
 
         // Border
         ctx.strokeStyle = color;
-        ctx.lineWidth = 2;
-        ctx.strokeRect(1, 1, NODE_W - 2, NODE_H - 2);
+        ctx.lineWidth = 1.5;
+        ctx.strokeRect(1, 1, w - 2, h - 2);
 
         // Corner accents
         ctx.fillStyle = color;
-        ctx.fillRect(0, 0, 8, 2);
-        ctx.fillRect(0, 0, 2, 8);
-        ctx.fillRect(NODE_W - 8, 0, 8, 2);
-        ctx.fillRect(NODE_W - 2, 0, 2, 8);
-        ctx.fillRect(0, NODE_H - 2, 8, 2);
-        ctx.fillRect(0, NODE_H - 8, 2, 8);
-        ctx.fillRect(NODE_W - 8, NODE_H - 2, 8, 2);
-        ctx.fillRect(NODE_W - 2, NODE_H - 8, 2, 8);
+        const cn = 8;
+        ctx.fillRect(0, 0, cn, 1.5);
+        ctx.fillRect(0, 0, 1.5, cn);
+        ctx.fillRect(w - cn, 0, cn, 1.5);
+        ctx.fillRect(w - 1.5, 0, 1.5, cn);
+        ctx.fillRect(0, h - 1.5, cn, 1.5);
+        ctx.fillRect(0, h - cn, 1.5, cn);
+        ctx.fillRect(w - cn, h - 1.5, cn, 1.5);
+        ctx.fillRect(w - 1.5, h - cn, 1.5, cn);
 
         // Object type label
-        ctx.font = '14px "VT323", monospace';
-        ctx.fillStyle = "rgba(255,255,255,0.4)";
+        ctx.font = '18px "VT323", monospace';
+        ctx.fillStyle = "rgba(210, 210, 210, 0.35)";
         ctx.textAlign = "left";
-        ctx.fillText(
-          (objectType || "UNKNOWN").toUpperCase(),
-          12,
-          24,
-        );
+        ctx.fillText(typeLabel, pad / 2, 22);
 
         // Room name
-        ctx.font = '22px "VT323", monospace';
+        ctx.font = '28px "VT323", monospace';
         ctx.fillStyle = color;
-        ctx.fillText(roomName, 12, 52);
-
-        // Client count
-        ctx.font = '14px "VT323", monospace';
-        ctx.fillStyle = "rgba(255,255,255,0.3)";
-        ctx.textAlign = "right";
-        ctx.fillText(`${clients} PLR`, NODE_W - 12, 80);
+        ctx.fillText(roomName, pad / 2, 52);
 
         // Category tag
-        const cat = (CATEGORY_MAP[objectType] || "UNKNOWN").toUpperCase();
-        ctx.textAlign = "left";
+        ctx.font = '18px "VT323", monospace';
         ctx.fillStyle = color;
-        ctx.globalAlpha = 0.5;
-        ctx.fillText(cat, 12, 80);
+        ctx.globalAlpha = 0.45;
+        ctx.fillText(cat, pad / 2, 78);
         ctx.globalAlpha = 1;
+
+        // Client count
+        ctx.fillStyle = "rgba(210, 210, 210, 0.3)";
+        ctx.textAlign = "right";
+        ctx.fillText(plrLabel, w - pad / 2, 78);
 
         const tex = new THREE.CanvasTexture(c);
         tex.minFilter = THREE.LinearFilter;
+        tex._nodeW = w;
+        tex._nodeH = h;
         return tex;
       }
 
-      // ── Force-Directed Layout ────────────────────────────────
+      // ── Force-Directed Layout (damped spring model) ─────────
       class ForceLayout {
         constructor() {
           this.nodes = new Map(); // name → { x, y, vx, vy }
           this.edges = []; // [{ from, to }]
-          this.k = 30;
-          this.temperature = 50;
-          this.cooling = 0.995;
-          this.minTemp = 0.5;
+          this.settled = false;
+          this._prevKey = ""; // fingerprint for change detection
         }
 
         setGraph(nodeNames, edges) {
+          // Build a fingerprint to detect actual changes
+          const key =
+            nodeNames.slice().sort().join(",") +
+            "|" +
+            edges
+              .map((e) => e.from + ">" + e.to)
+              .sort()
+              .join(",");
+          const changed = key !== this._prevKey;
+          this._prevKey = key;
+
           // Keep existing positions, add new nodes
           for (const name of nodeNames) {
             if (!this.nodes.has(name)) {
               const angle = Math.random() * Math.PI * 2;
-              const r = 20 + Math.random() * 40;
+              const r = 5 + Math.random() * 15;
               this.nodes.set(name, {
                 x: Math.cos(angle) * r,
                 y: Math.sin(angle) * r,
                 vx: 0,
                 vy: 0,
               });
+              this.settled = false;
             }
           }
           // Remove nodes no longer present
           for (const name of this.nodes.keys()) {
             if (!nodeNames.includes(name)) {
               this.nodes.delete(name);
+              this.settled = false;
             }
           }
-          this.edges = edges;
-          // Reheat
-          this.temperature = Math.max(this.temperature, 10);
+          if (changed) {
+            this.edges = edges;
+            this.settled = false;
+          }
         }
 
         step() {
+          if (this.settled) return;
+
           const nodes = [...this.nodes.entries()];
           const n = nodes.length;
-          if (n === 0) return;
-
-          const k = this.k;
-          const k2 = k * k;
-
-          // Reset velocities
-          for (const [, nd] of nodes) {
-            nd.vx = 0;
-            nd.vy = 0;
+          if (n === 0) {
+            this.settled = true;
+            return;
           }
 
-          // Repulsion (all pairs)
+          const REST_LEN = 12; // ideal distance between connected nodes (tight stacking)
+          const REPULSE = 800; // repulsion strength
+          const SPRING = 0.06; // spring stiffness
+          const GRAVITY = 0.06; // pull toward center
+          const FRICTION = 0.7; // velocity damping per step (lower = more damping)
+          const CENTER_Y = -30; // gravity center for connected nodes
+          const ORPHAN_X = 50; // orphans pushed to the right side
+
+          // Identify orphan nodes (no edges at all)
+          const connected = new Set();
+          for (const edge of this.edges) {
+            connected.add(edge.from);
+            connected.add(edge.to);
+          }
+
+          // Accumulate forces into velocity
+          // Repulsion (all pairs) — capped at a max distance
           for (let i = 0; i < n; i++) {
             for (let j = i + 1; j < n; j++) {
-              let dx = nodes[i][1].x - nodes[j][1].x;
-              let dy = nodes[i][1].y - nodes[j][1].y;
-              let dist = Math.sqrt(dx * dx + dy * dy) || 0.1;
-              const force = k2 / dist;
-              const fx = (dx / dist) * force;
-              const fy = (dy / dist) * force;
-              nodes[i][1].vx += fx;
-              nodes[i][1].vy += fy;
-              nodes[j][1].vx -= fx;
-              nodes[j][1].vy -= fy;
+              const a = nodes[i][1],
+                b = nodes[j][1];
+              const dx = a.x - b.x;
+              const dy = a.y - b.y;
+              const distSq = dx * dx + dy * dy;
+              const dist = Math.sqrt(distSq) || 0.1;
+              if (dist > 200) continue;
+              const f = REPULSE / distSq;
+              const fx = (dx / dist) * f;
+              const fy = (dy / dist) * f;
+              a.vx += fx;
+              a.vy += fy;
+              b.vx -= fx;
+              b.vy -= fy;
             }
           }
 
-          // Attraction (edges)
+          // Attraction (edges) — Hooke's law spring + vertical hierarchy
+          // edge.from = parent (source), edge.to = child (subscriber)
+          const HIERARCHY = 3.0; // vertical separation force
+          const ALIGN_X = 0.08; // horizontal alignment to reduce crossings
           for (const edge of this.edges) {
-            const a = this.nodes.get(edge.from);
-            const b = this.nodes.get(edge.to);
+            const a = this.nodes.get(edge.from); // parent
+            const b = this.nodes.get(edge.to); // child
             if (!a || !b) continue;
-            let dx = b.x - a.x;
-            let dy = b.y - a.y;
-            let dist = Math.sqrt(dx * dx + dy * dy) || 0.1;
-            const force = (dist * dist) / k;
-            const fx = (dx / dist) * force;
-            const fy = (dy / dist) * force;
+            const dx = b.x - a.x;
+            const dy = b.y - a.y;
+            const dist = Math.sqrt(dx * dx + dy * dy) || 0.1;
+            const displacement = dist - REST_LEN;
+            const f = SPRING * displacement;
+            const fx = (dx / dist) * f;
+            const fy = (dy / dist) * f;
             a.vx += fx;
             a.vy += fy;
             b.vx -= fx;
             b.vy -= fy;
+            // Hierarchy: push parent (a) up, child (b) down
+            a.vy -= HIERARCHY;
+            b.vy += HIERARCHY;
+            // Horizontal alignment: pull connected nodes toward same X
+            a.vx += dx * ALIGN_X;
+            b.vx -= dx * ALIGN_X;
           }
 
-          // Center gravity
+          // Sibling alignment: nodes sharing a parent align on same Y
+          const SIBLING_ALIGN = 0.04;
+          const childrenOf = new Map(); // parentName → [childNode]
+          for (const edge of this.edges) {
+            if (!childrenOf.has(edge.from)) childrenOf.set(edge.from, []);
+            const child = this.nodes.get(edge.to);
+            if (child) childrenOf.get(edge.from).push(child);
+          }
+          for (const siblings of childrenOf.values()) {
+            if (siblings.length < 2) continue;
+            let avgY = 0;
+            for (const s of siblings) avgY += s.y;
+            avgY /= siblings.length;
+            for (const s of siblings) {
+              s.vy += (avgY - s.y) * SIBLING_ALIGN;
+            }
+          }
+
+          // Edge-node repulsion: push nodes away from edges they're not part of
+          const EDGE_REPULSE = 0.8;
+          for (const edge of this.edges) {
+            const ea = this.nodes.get(edge.from);
+            const eb = this.nodes.get(edge.to);
+            if (!ea || !eb) continue;
+            for (const [name, nd] of nodes) {
+              if (name === edge.from || name === edge.to) continue;
+              // Distance from point nd to line segment ea→eb
+              const ex = eb.x - ea.x;
+              const ey = eb.y - ea.y;
+              const lenSq = ex * ex + ey * ey;
+              if (lenSq < 0.01) continue;
+              let t = ((nd.x - ea.x) * ex + (nd.y - ea.y) * ey) / lenSq;
+              t = Math.max(0, Math.min(1, t));
+              const px = ea.x + t * ex;
+              const py = ea.y + t * ey;
+              const dx = nd.x - px;
+              const dy = nd.y - py;
+              const dist = Math.sqrt(dx * dx + dy * dy) || 0.1;
+              if (dist < 10) {
+                const push = EDGE_REPULSE * (10 - dist) / dist;
+                nd.vx += dx * push;
+                nd.vy += dy * push;
+              }
+            }
+          }
+
+          // Center gravity — connected nodes toward center, orphans to the side
+          for (const [name, nd] of nodes) {
+            if (connected.has(name)) {
+              nd.vx -= nd.x * GRAVITY;
+              nd.vy -= (nd.y - CENTER_Y) * GRAVITY;
+            } else {
+              // Orphans: pull toward a column on the right
+              nd.vx -= (nd.x - ORPHAN_X) * GRAVITY * 1.5;
+              nd.vy -= (nd.y - CENTER_Y) * GRAVITY;
+            }
+          }
+
+          // Apply velocity with friction, track max movement
+          const CEILING_Y = 35; // hard ceiling — nodes can't go above this (HUD zone)
+          let maxMove = 0;
           for (const [, nd] of nodes) {
-            nd.vx -= nd.x * 0.01;
-            nd.vy -= nd.y * 0.01;
+            nd.vx *= FRICTION;
+            nd.vy *= FRICTION;
+            nd.x += nd.vx;
+            nd.y += nd.vy;
+            // Clamp to keep nodes below HUD
+            if (nd.y > CEILING_Y) {
+              nd.y = CEILING_Y;
+              nd.vy = 0;
+            }
+            const move = Math.abs(nd.vx) + Math.abs(nd.vy);
+            if (move > maxMove) maxMove = move;
           }
 
-          // Apply with temperature clamping
-          const t = this.temperature;
-          for (const [, nd] of nodes) {
-            const len = Math.sqrt(nd.vx * nd.vx + nd.vy * nd.vy) || 0.1;
-            const capped = Math.min(len, t);
-            nd.x += (nd.vx / len) * capped;
-            nd.y += (nd.vy / len) * capped;
+          // Settle when all nodes are barely moving
+          if (maxMove < 0.05) {
+            this.settled = true;
+            for (const [, nd] of nodes) {
+              nd.vx = 0;
+              nd.vy = 0;
+            }
           }
-
-          this.temperature = Math.max(
-            this.temperature * this.cooling,
-            this.minTemp,
-          );
         }
 
         getPos(name) {
@@ -659,7 +722,10 @@
       function reconcile(topology) {
         if (!topology) return;
         currentTopology = topology;
-        const rooms = topology.rooms || [];
+        // Filter out the dashboard's own room
+        const rooms = (topology.rooms || []).filter(
+          (r) => r.name !== "_dashboard",
+        );
 
         // Build graph data
         const nodeNames = rooms.map((r) => r.name);
@@ -722,24 +788,22 @@
               sprite.userData._clients = info.clients;
             }
           } else {
-            const tex = makeNodeTexture(
-              name,
-              info.objectType,
-              info.clients,
-            );
+            const tex = makeNodeTexture(name, info.objectType, info.clients);
             const mat = new THREE.SpriteMaterial({
               map: tex,
               transparent: true,
               depthWrite: false,
             });
             const sprite = new THREE.Sprite(mat);
-            sprite.scale.set(25, 9.4, 1);
+            const sw = (tex._nodeW / tex._nodeH) * 10;
+            const sh = 10;
+            sprite.scale.set(sw, sh, 1);
             sprite.userData = {
               roomName: name,
               objectType: info.objectType,
               _objectType: info.objectType,
               _clients: info.clients,
-              _baseScale: new THREE.Vector3(25, 9.4, 1),
+              _baseScale: new THREE.Vector3(sw, sh, 1),
             };
             nodeGroup.add(sprite);
             nodeMeshes.set(name, sprite);
@@ -756,9 +820,7 @@
 
         for (const edge of edges) {
           const fromInfo = roomInfo.get(edge.from);
-          const color = getCategoryColor(
-            fromInfo ? fromInfo.objectType : null,
-          );
+          const color = getCategoryColor(fromInfo ? fromInfo.objectType : null);
           const geo = new THREE.BufferGeometry();
           geo.setAttribute(
             "position",
@@ -767,9 +829,10 @@
           const mat = new THREE.LineBasicMaterial({
             color: new THREE.Color(color),
             transparent: true,
-            opacity: 0.45,
+            opacity: 0.9,
             blending: THREE.AdditiveBlending,
             depthWrite: false,
+            linewidth: 2,
           });
           const line = new THREE.Line(geo, mat);
           edgeGroup.add(line);
@@ -852,33 +915,10 @@
           0,
         );
         document.getElementById("stat-connections").textContent = edges.length;
-        document.getElementById("stat-subgraphs").textContent =
-          countSubgraphs(nodeNames, edges);
-
-        // Update room list
-        updateRoomList(rooms);
-      }
-
-      function updateRoomList(rooms) {
-        const list = document.getElementById("room-list");
-        if (rooms.length === 0) {
-          list.innerHTML = '<div id="empty-msg">NO ACTIVE ROOMS</div>';
-          return;
-        }
-
-        let html = "";
-        for (const room of rooms) {
-          const obj = room.objects[0];
-          const type = obj ? obj.objectType : "unknown";
-          const color = getCategoryColor(type);
-          html += `<a class="room-entry" href="/EW-objects/objects/${type}.html?room=${room.name}" target="_blank">
-            <span class="room-entry-dot" style="background:${color}"></span>
-            <span class="room-entry-name">${room.name}</span>
-            <span class="room-entry-type">${type}</span>
-            <span class="room-entry-clients">${room.clients} PLR</span>
-          </a>`;
-        }
-        list.innerHTML = html;
+        document.getElementById("stat-subgraphs").textContent = countSubgraphs(
+          nodeNames,
+          edges,
+        );
       }
 
       // ── Empty state sprite ───────────────────────────────────
@@ -934,10 +974,6 @@
             clearInterval(topoPollTimer);
             topoPollTimer = null;
           }
-        },
-        onRooms: (msg) => {
-          // Instant sidebar update from broadcast
-          if (msg.rooms) updateRoomList(msg.rooms);
         },
         onTopology: (msg) => {
           reconcile(msg);
@@ -1011,6 +1047,286 @@
       }
 
       animate();
+    </script>
+
+    <!-- ── Kaluza-Klein String Theory Background ── -->
+    <script type="module">
+      import * as THREE from "three";
+
+      const canvas = document.getElementById("kk-bg");
+      const renderer = new THREE.WebGLRenderer({
+        canvas,
+        antialias: true,
+        alpha: true,
+      });
+      renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+      renderer.setClearColor(0x000000, 0);
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(
+        60,
+        innerWidth / innerHeight,
+        0.1,
+        1000,
+      );
+      camera.position.set(0, 0, 22);
+
+      function resize() {
+        renderer.setSize(innerWidth, innerHeight);
+        camera.aspect = innerWidth / innerHeight;
+        camera.updateProjectionMatrix();
+      }
+      resize();
+      addEventListener("resize", resize);
+
+      const bright = new THREE.Color(0xdd66ff);
+      const mid = new THREE.Color(0xff66dd);
+      const dim = new THREE.Color(0x66ffdd);
+
+      // ── Kaluza-Klein compactified dimension strings ──
+      const KK_STRINGS = 14;
+      const kkGroup = new THREE.Group();
+      scene.add(kkGroup);
+
+      const stringMeshes = [];
+      const stringData = [];
+
+      for (let s = 0; s < KK_STRINGS; s++) {
+        const data = {
+          majorR: 25 + Math.random() * 40,
+          minorR: 0.04 + Math.random() * 0.1,
+          tilt: (Math.random() - 0.5) * Math.PI,
+          tiltY: (Math.random() - 0.5) * Math.PI * 0.6,
+          speed: (0.15 + Math.random() * 0.4) * (Math.random() < 0.5 ? 1 : -1),
+          vibFreq: 2 + Math.floor(Math.random() * 6),
+          vibAmp: 0.5 + Math.random() * 2.5,
+          phase: Math.random() * Math.PI * 2,
+          colorMix: Math.random(),
+        };
+        stringData.push(data);
+
+        const pts = [];
+        const segments = 256;
+        for (let i = 0; i <= segments; i++)
+          pts.push(new THREE.Vector3(0, 0, 0));
+        const curve = new THREE.CatmullRomCurve3(pts, true);
+        const tubeGeo = new THREE.TubeGeometry(
+          curve,
+          segments,
+          data.minorR,
+          5,
+          true,
+        );
+
+        const col =
+          data.colorMix < 0.33 ? bright : data.colorMix < 0.66 ? mid : dim;
+
+        const mat = new THREE.MeshBasicMaterial({
+          color: col,
+          transparent: true,
+          opacity: 0.15 + Math.random() * 0.12,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+          wireframe: true,
+        });
+
+        const mesh = new THREE.Mesh(tubeGeo, mat);
+        mesh.rotation.x = data.tilt;
+        mesh.rotation.y = data.tiltY;
+        kkGroup.add(mesh);
+        stringMeshes.push({ mesh, curve, data, segments });
+      }
+
+      // ── Calabi-Yau manifolds ──
+      const manifolds = [];
+      [
+        {
+          p: 2,
+          q: 3,
+          radius: 22,
+          tube: 7,
+          opacity: 0.1,
+          color: bright,
+          speed: 0.003,
+        },
+        {
+          p: 3,
+          q: 5,
+          radius: 16,
+          tube: 5,
+          opacity: 0.08,
+          color: mid,
+          speed: -0.004,
+        },
+        {
+          p: 2,
+          q: 5,
+          radius: 28,
+          tube: 3.5,
+          opacity: 0.06,
+          color: dim,
+          speed: 0.002,
+        },
+        {
+          p: 3,
+          q: 7,
+          radius: 13,
+          tube: 4,
+          opacity: 0.07,
+          color: bright,
+          speed: -0.005,
+        },
+      ].forEach((cfg) => {
+        const geo = new THREE.TorusKnotGeometry(
+          cfg.radius,
+          cfg.tube,
+          128,
+          12,
+          cfg.p,
+          cfg.q,
+        );
+        const mat = new THREE.MeshBasicMaterial({
+          color: cfg.color,
+          wireframe: true,
+          transparent: true,
+          opacity: cfg.opacity,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        });
+        const mesh = new THREE.Mesh(geo, mat);
+        scene.add(mesh);
+        manifolds.push({ mesh, speed: cfg.speed, cfg });
+      });
+
+      // ── Quantum fluctuation particles ──
+      const NPARTS = 1200;
+      const pPos = new Float32Array(NPARTS * 3);
+      const pCol = new Float32Array(NPARTS * 3);
+      const pPhase = new Float32Array(NPARTS);
+      const pRadius = new Float32Array(NPARTS);
+      const pSpeed = new Float32Array(NPARTS);
+      const pAxis = new Float32Array(NPARTS);
+
+      for (let i = 0; i < NPARTS; i++) {
+        pPhase[i] = Math.random() * Math.PI * 2;
+        pRadius[i] = 10 + Math.random() * 60;
+        pSpeed[i] =
+          (0.2 + Math.random() * 0.8) * (Math.random() < 0.5 ? 1 : -1);
+        pAxis[i] = Math.floor(Math.random() * 3);
+        const c = [bright, mid, dim][Math.floor(Math.random() * 3)];
+        const intensity = 0.5 + Math.random() * 0.5;
+        pCol[i * 3] = c.r * intensity;
+        pCol[i * 3 + 1] = c.g * intensity;
+        pCol[i * 3 + 2] = c.b * intensity;
+      }
+
+      const dotCanvas = document.createElement("canvas");
+      dotCanvas.width = 32;
+      dotCanvas.height = 32;
+      const dctx = dotCanvas.getContext("2d");
+      dctx.beginPath();
+      dctx.arc(16, 16, 14, 0, Math.PI * 2);
+      dctx.fillStyle = "#ffffff";
+      dctx.fill();
+      const dotTex = new THREE.CanvasTexture(dotCanvas);
+
+      const pGeo = new THREE.BufferGeometry();
+      pGeo.setAttribute("position", new THREE.BufferAttribute(pPos, 3));
+      pGeo.setAttribute("color", new THREE.BufferAttribute(pCol, 3));
+      const pMat = new THREE.PointsMaterial({
+        size: 0.5,
+        map: dotTex,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.3,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
+      });
+      scene.add(new THREE.Points(pGeo, pMat));
+
+      // ── Animation ──
+      let t = 0;
+
+      function kkAnimate() {
+        requestAnimationFrame(kkAnimate);
+        t += 0.008;
+
+        stringMeshes.forEach(({ mesh, curve, data, segments }) => {
+          const pts = curve.points;
+          for (let i = 0; i <= segments; i++) {
+            const u = i / segments;
+            const angle = u * Math.PI * 2;
+            let x = Math.cos(angle + t * data.speed) * data.majorR;
+            let y = Math.sin(angle + t * data.speed) * data.majorR;
+            let z = 0;
+            const vib =
+              Math.sin(angle * data.vibFreq + t * 3 + data.phase) * data.vibAmp;
+            const vib2 =
+              Math.cos(
+                angle * (data.vibFreq + 1) + t * 2.3 + data.phase * 0.7,
+              ) *
+              data.vibAmp *
+              0.5;
+            x += vib * Math.cos(angle);
+            y += vib * Math.sin(angle);
+            z += vib2;
+            const kkMod = 1 + 0.15 * Math.sin(angle * 3 + t * 1.5 + data.phase);
+            x *= kkMod;
+            y *= kkMod;
+            pts[i].set(x, y, z);
+          }
+          curve.updateArcLengths();
+          const newGeo = new THREE.TubeGeometry(
+            curve,
+            segments,
+            data.minorR,
+            5,
+            true,
+          );
+          mesh.geometry.dispose();
+          mesh.geometry = newGeo;
+        });
+
+        manifolds.forEach(({ mesh, speed, cfg }) => {
+          mesh.rotation.x += speed;
+          mesh.rotation.y += speed * 0.7;
+          mesh.rotation.z += speed * 0.3;
+          mesh.material.opacity =
+            cfg.opacity + Math.sin(t * 2 + cfg.radius) * 0.03;
+        });
+
+        kkGroup.rotation.x = Math.sin(t * 0.08) * 0.3;
+        kkGroup.rotation.y += 0.001;
+        kkGroup.rotation.z = Math.cos(t * 0.06) * 0.15;
+
+        for (let i = 0; i < NPARTS; i++) {
+          const angle = pPhase[i] + t * pSpeed[i];
+          const r = pRadius[i] + Math.sin(t * 1.5 + pPhase[i] * 3) * 2;
+          const wobble = Math.sin(angle * 5 + t * 2) * 1.5;
+          const ax = pAxis[i];
+          if (ax === 0) {
+            pPos[i * 3] = Math.cos(angle) * r;
+            pPos[i * 3 + 1] = Math.sin(angle) * r + wobble;
+            pPos[i * 3 + 2] = wobble * 0.5;
+          } else if (ax === 1) {
+            pPos[i * 3] = Math.cos(angle) * r;
+            pPos[i * 3 + 1] = wobble * 0.5;
+            pPos[i * 3 + 2] = Math.sin(angle) * r + wobble;
+          } else {
+            pPos[i * 3] = wobble * 0.5;
+            pPos[i * 3 + 1] = Math.cos(angle) * r;
+            pPos[i * 3 + 2] = Math.sin(angle) * r + wobble;
+          }
+        }
+        pGeo.attributes.position.needsUpdate = true;
+
+        camera.position.x = Math.sin(t * 0.1) * 12;
+        camera.position.y = Math.cos(t * 0.07) * 8;
+        camera.lookAt(0, 0, 0);
+
+        renderer.render(scene, camera);
+      }
+      kkAnimate();
     </script>
   </body>
 </html>
