@@ -26,639 +26,1270 @@
 <!-- |                                                                         | -->
 <!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
 <!DOCTYPE html>
-<html>
+<html lang="en" class="theme-phosphor">
   <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ENTROPY WORSHIP</title>
     <!-- General Meta Tags for SEO -->
-    <meta name="description" content="WARNING: Experimental Project">
-    <meta name="keywords" content="Dark, Techno, Electronic, Industrial, Ambient, Noise, Avant-Garde, Experimental, Doom, Music, God, Deity, Worship, Death, Philosophy, Religion, Spiritual, Gospel, Electronic Music, Experimental Music">
+    <meta name="description" content="WARNING: Experimental Project" />
+    <meta name="keywords" content="Dark, Techno, Electronic, Industrial, Ambient, Noise, Avant-Garde, Experimental, Doom, Music, God, Deity, Worship, Death, Philosophy, Religion, Spiritual, Gospel, Electronic Music, Experimental Music" />
     <!-- Schema.org markup for Google -->
-    <meta itemprop="name" content="Entropy Worship">
-    <meta itemprop="description" content="WARNING: Experimental Project">
+    <meta itemprop="name" content="Entropy Worship" />
+    <meta itemprop="description" content="WARNING: Experimental Project" />
     <!-- Twitter Card Data -->
-    <meta name="twitter:url" content="https://www.entropyworship.com">
-    <meta name="twitter:site" content="@EntropyWorship">
-    <meta name="twitter:title" content="Entropy Worship">
-    <meta name="twitter:description" content="WARNING: Experimental Project">
-    <meta name="twitter:creator" content="@EntropyWorship">
-    <meta name="twitter:image" content="https://www.entropyworship.com/images/EW_Second_Law_Cover_W_Aerotek_Logo.png">
+    <meta name="twitter:url" content="https://www.entropyworship.com" />
+    <meta name="twitter:site" content="@EntropyWorship" />
+    <meta name="twitter:title" content="Entropy Worship" />
+    <meta name="twitter:description" content="WARNING: Experimental Project" />
+    <meta name="twitter:creator" content="@EntropyWorship" />
+    <meta name="twitter:image" content="https://www.entropyworship.com/images/EW_Second_Law_Cover_W_Aerotek_Logo.png" />
     <!-- Open Graph Data for Facebook, LinkedIn, and others -->
     <meta property="og:title" content="Entropy Worship" />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://www.entropyworship.com" />
     <meta property="og:description" content="WARNING: Experimental Project" />
     <meta property="og:site_name" content="Entropy Worship" />
-    <meta property="og:image" content="https://www.entropyworship.com/images/EW_Second_Law_Cover_W_Aerotek_Logo.png">
-    <meta property="og:image:alt" content="WARNING: Experimental Project">
-    <meta property="article:tag" content="Entropy Worship. WARNING: Experimental Project">
+    <meta property="og:image" content="https://www.entropyworship.com/images/EW_Second_Law_Cover_W_Aerotek_Logo.png" />
+    <meta property="og:image:alt" content="WARNING: Experimental Project" />
+    <meta property="article:tag" content="Entropy Worship. WARNING: Experimental Project" />
 
-    <!-- Babylon.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.6.2/dat.gui.min.js"></script>
-    <script src="https://assets.babylonjs.com/generated/Assets.js"></script>
-    <script src="https://cdn.babylonjs.com/recast.js"></script>
-    <script src="https://cdn.babylonjs.com/ammo.js"></script>
-    <script src="https://cdn.babylonjs.com/havok/HavokPhysics_umd.js"></script>
-    <script src="https://cdn.babylonjs.com/cannon.js"></script>
-    <script src="https://cdn.babylonjs.com/Oimo.js"></script>
-    <script src="https://cdn.babylonjs.com/earcut.min.js"></script>
-    <script src="https://cdn.babylonjs.com/babylon.js"></script>
-    <script src="https://cdn.babylonjs.com/materialsLibrary/babylonjs.materials.min.js"></script>
-    <script src="https://cdn.babylonjs.com/proceduralTexturesLibrary/babylonjs.proceduralTextures.min.js"></script>
-    <script src="https://cdn.babylonjs.com/postProcessesLibrary/babylonjs.postProcess.min.js"></script>
-    <script src="https://cdn.babylonjs.com/loaders/babylonjs.loaders.js"></script>
-    <script src="https://cdn.babylonjs.com/serializers/babylonjs.serializers.min.js"></script>
-    <script src="https://cdn.babylonjs.com/gui/babylon.gui.min.js"></script>
-    <script src="https://cdn.babylonjs.com/addons/babylonjs.addons.min.js"></script>
-    <script src="https://cdn.babylonjs.com/inspector/babylon.inspector.bundle.js"></script>
-    <!-- Bootstrap CSS -->
-    <link
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <!-- SciUI CSS -->
-    <link href="styles/styles.css" type="text/css" rel="stylesheet" />
-    <!-- Cyberpunk CSS -->
-    <link href="styles/cyberpunk.css" rel="stylesheet" type="text/css" />
-    <!-- Override CSS -->
-    <link href="styles/style_overrides.css" rel="stylesheet" />
-    <!-- ShareThis CSS -->
-<!--     <script type="text/javascript" src="https://platform-api.sharethis.com/js/sharethis.js#property=677b01f910699f0019238311&product=image-share-buttons&source=platform" async="async"></script>
- -->    
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@v0.171.0/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@v0.171.0/examples/jsm/"
+        }
+      }
+    </script>
     <style>
-      html, body {
+      /* ── Reset ──────────────────────────────────────────────────── */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
         margin: 0;
         padding: 0;
-        width: 100%;
-        height: 100%;
-        overflow: auto;
       }
-    
-      #renderCanvas {
-        position: fixed; /* Keep canvas fixed as a background */
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        z-index: 0; /* Keep it behind other content */
-        pointer-events: auto; /* Prevent interference with scrolling */
+
+      /* ── Design tokens ──────────────────────────────────────────── */
+      :root {
+        --accent-rgb:  255, 170, 0;
+        --rose-rgb:    255, 68,  119;
+        --mint-rgb:    0,   255, 187;
+        --border-rgb:  160, 72,  0;
+        --dim-rgb:     122, 68,  0;
+        --accent: #ffaa00;
+        --rose:   #ff4477;
+        --mint:   #00ffbb;
+        --text:   #fff4cc;
+        --dim:    #7a4400;
+        --html-bg:   #0e0600;
+        --surface:   rgba(18, 8, 0, 0.68);
+        --surface-hi:rgba(28, 14, 0, 0.82);
+        --border:    rgba(var(--border-rgb), 0.42);
+        --border-hi: rgba(var(--accent-rgb), 0.78);
+        --panel-glow: drop-shadow(0 0 6px rgba(var(--accent-rgb), 0.18))
+          drop-shadow(0 0 28px rgba(var(--border-rgb), 0.12));
+        --font: "VT323", "Courier New", monospace;
       }
-    
-      .content {
+
+      /* ── Keyframes ──────────────────────────────────────────────── */
+      @keyframes title-glow {
+        0%, 100% {
+          text-shadow: 0 0 8px rgba(var(--accent-rgb), 0.8), 0 0 28px rgba(var(--accent-rgb), 0.3);
+        }
+        50% {
+          text-shadow: 0 0 18px rgba(var(--accent-rgb), 1), 0 0 52px rgba(var(--accent-rgb), 0.65), 0 0 88px rgba(var(--border-rgb), 0.28);
+        }
+      }
+      @keyframes blink { 50% { opacity: 0; } }
+      @keyframes border-flicker {
+        0%, 95%, 100% { border-color: rgba(var(--border-rgb), 0.42); }
+        96% { border-color: rgba(var(--accent-rgb), 0.92); }
+        97% { border-color: rgba(var(--border-rgb), 0.22); }
+        98.5% { border-color: rgba(var(--accent-rgb), 0.68); }
+      }
+      @keyframes active-pulse {
+        0%, 100% { box-shadow: 0 0 6px rgba(var(--accent-rgb), 0.4); }
+        50% { box-shadow: 0 0 18px rgba(var(--accent-rgb), 0.85), 0 0 36px rgba(var(--accent-rgb), 0.32); }
+      }
+      @keyframes rose-pulse {
+        0%, 100% { box-shadow: 0 0 6px rgba(var(--rose-rgb), 0.4); }
+        50% { box-shadow: 0 0 18px rgba(var(--rose-rgb), 0.85), 0 0 36px rgba(var(--rose-rgb), 0.28); }
+      }
+      @keyframes scan-sweep {
+        0% { top: -4px; opacity: 0.6; }
+        90% { opacity: 0.6; }
+        100% { top: 100%; opacity: 0; }
+      }
+      @keyframes fade-in-up {
+        from { opacity: 0; transform: translateY(12px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* ── Background layers ──────────────────────────────────────── */
+      html { background: var(--html-bg); }
+      body { background: transparent; }
+
+      #galaxy-bg {
+        display: block;
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        z-index: 0;
+        pointer-events: none;
+      }
+      #grid-bg {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        z-index: 0;
+        pointer-events: none;
+        background-image:
+          linear-gradient(rgba(var(--border-rgb), 0.04) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(var(--border-rgb), 0.04) 1px, transparent 1px);
+        background-size: 44px 44px;
+      }
+      #scanlines {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        z-index: 9999;
+        pointer-events: none;
+        background: repeating-linear-gradient(
+          0deg, transparent, transparent 3px, rgba(0, 0, 0, 0.06) 3px, rgba(0, 0, 0, 0.06) 4px
+        );
+      }
+
+      /* ── Base ───────────────────────────────────────────────────── */
+      body {
+        color: var(--text);
+        font-family: var(--font);
+        min-height: 100vh;
+        font-size: 20px;
+        line-height: 1.45;
         position: relative;
-        z-index: 1; /* Ensure content is above the canvas */
-        color: white;
-        overflow-y: auto; /* Allow scrolling of the content */
-        background: transparent; /* Keep background clear to see canvas */
       }
-    
-      .container {
-        padding: 20px;
+
+      /* ── Scrollbar ──────────────────────────────────────────────── */
+      ::-webkit-scrollbar { width: 4px; background: #000; }
+      ::-webkit-scrollbar-thumb { background: rgba(var(--border-rgb), 0.55); }
+      ::-webkit-scrollbar-thumb:hover { background: rgba(var(--accent-rgb), 0.55); }
+
+      /* ── App shell ──────────────────────────────────────────────── */
+      #app {
+        max-width: 1040px;
         margin: 0 auto;
-        max-width: 1200px;
+        padding: 20px 16px 60px;
+        position: relative;
+        z-index: 1;
       }
-      .content a, .content button, .content input {
-  pointer-events: auto; /* Allow interaction for links, buttons, and inputs */
-}
-      .button {
-        font-size: 11px;
-        padding: 0.3em 0.7em;
+
+      /* ── Header ─────────────────────────────────────────────────── */
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        margin-bottom: 14px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border);
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .hud-title {
+        font-family: var(--font);
+        font-size: 2.1rem;
+        letter-spacing: 0.48em;
+        color: var(--accent);
+        animation: title-glow 3.2s ease-in-out infinite;
+        line-height: 1;
+        text-transform: uppercase;
+        text-decoration: none;
+      }
+      a.hud-title { text-decoration: none; }
+      a.hud-title:hover { text-decoration: none; }
+      #meta {
+        display: flex;
+        gap: 18px;
+        color: var(--dim);
+        font-size: 0.95rem;
+        align-items: baseline;
+        letter-spacing: 0.06em;
+        flex-wrap: wrap;
+      }
+      #meta a {
+        color: var(--dim);
+        text-decoration: none;
+        transition: color 0.15s, text-shadow 0.15s;
+      }
+      #meta a:hover {
+        color: var(--accent);
+        text-shadow: 0 0 8px rgba(var(--accent-rgb), 0.6);
+      }
+
+      /* ── HUD panel ──────────────────────────────────────────────── */
+      .hud-panel {
+        position: relative;
+        background: var(--surface);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        border: 1px solid var(--border);
+        filter: var(--panel-glow);
+        padding: 16px 18px;
+        margin-bottom: 14px;
+        animation: border-flicker 16s linear infinite;
+      }
+      .hud-panel.clip-tr {
+        clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%);
+      }
+      .hud-panel.clip-br {
+        clip-path: polygon(0 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%);
+      }
+      .hud-panel.clip-both {
+        clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 16px 100%, 0 calc(100% - 16px));
+      }
+
+      /* ── Section title ──────────────────────────────────────────── */
+      .section-title {
+        font-size: 0.72rem;
+        color: rgba(var(--accent-rgb), 0.85);
+        text-shadow: 0 0 8px rgba(var(--accent-rgb), 0.5), 0 0 20px rgba(var(--border-rgb), 0.25);
+        letter-spacing: 0.28em;
+        margin-bottom: 14px;
+        text-transform: uppercase;
+      }
+      .section-title.rose {
+        color: rgba(var(--rose-rgb), 0.85);
+        text-shadow: 0 0 8px rgba(var(--rose-rgb), 0.5), 0 0 20px rgba(var(--rose-rgb), 0.18);
+      }
+      .section-title.mint {
+        color: rgba(var(--mint-rgb), 0.85);
+        text-shadow: 0 0 8px rgba(var(--mint-rgb), 0.5), 0 0 20px rgba(var(--mint-rgb), 0.18);
+      }
+
+      /* ── Page section label ─────────────────────────────────────── */
+      .page-section { margin-bottom: 8px; }
+      .page-section-label {
+        font-size: 0.65rem;
+        letter-spacing: 0.35em;
+        color: var(--dim);
+        text-transform: uppercase;
+        margin-bottom: 10px;
+        border-left: 2px solid var(--accent);
+        padding-left: 8px;
+      }
+
+      /* ── Grid layouts ───────────────────────────────────────────── */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+        margin-bottom: 14px;
+      }
+      .grid-4 {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        margin-bottom: 14px;
+      }
+      @media (max-width: 700px) {
+        .grid-2 { grid-template-columns: 1fr; }
+        .grid-4 { grid-template-columns: 1fr 1fr; }
+      }
+      @media (max-width: 420px) {
+        .grid-4 { grid-template-columns: 1fr; }
+      }
+
+      /* ── Buttons ────────────────────────────────────────────────── */
+      .btn {
+        font-family: var(--font);
+        font-size: 0.82rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--text);
+        padding: 5px 16px;
+        cursor: pointer;
+        transition: border-color 0.14s, color 0.14s, background 0.14s, box-shadow 0.14s;
+        outline: none;
+        text-decoration: none;
+        display: inline-block;
+        clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+      }
+      .btn:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+        box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.35);
+        text-decoration: none;
+      }
+      .btn.active {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: rgba(var(--accent-rgb), 0.1);
+        animation: active-pulse 2s ease-in-out infinite;
+      }
+      .btn-rose {
+        border-color: rgba(var(--rose-rgb), 0.5);
+        color: var(--rose);
+      }
+      .btn-rose:hover {
+        border-color: var(--rose);
+        color: var(--rose);
+        box-shadow: 0 0 10px rgba(var(--rose-rgb), 0.38);
+      }
+      .btn-mint {
+        border-color: rgba(var(--mint-rgb), 0.5);
+        color: var(--mint);
+      }
+      .btn-mint:hover {
+        border-color: var(--mint);
+        color: var(--mint);
+        box-shadow: 0 0 10px rgba(var(--mint-rgb), 0.38);
+      }
+      .btn-sm {
+        font-size: 0.68rem;
+        padding: 3px 10px;
+        letter-spacing: 0.16em;
+      }
+
+      /* ── Table ──────────────────────────────────────────────────── */
+      .hud-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.82rem;
+        letter-spacing: 0.08em;
+      }
+      .hud-table th {
+        font-size: 0.62rem;
+        letter-spacing: 0.24em;
+        color: var(--dim);
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--border);
+        padding: 6px 10px 8px;
+        text-align: left;
+      }
+      .hud-table td {
+        padding: 7px 10px;
+        border-bottom: 1px solid rgba(var(--border-rgb), 0.18);
+        color: var(--text);
+        vertical-align: middle;
+      }
+      .hud-table tr:hover td {
+        background: rgba(var(--accent-rgb), 0.04);
+      }
+      .td-accent { color: var(--accent); letter-spacing: 0.12em; }
+      .td-dim { color: var(--dim); font-size: 0.72rem; }
+
+      /* ── Tags ───────────────────────────────────────────────────── */
+      .tag {
+        font-size: 0.62rem;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        padding: 2px 9px;
+        border: 1px solid var(--border);
+        color: var(--dim);
+        display: inline-block;
+      }
+      .tag.accent {
+        border-color: rgba(255, 170, 0, 0.5);
+        color: var(--accent);
+        background: rgba(255, 170, 0, 0.07);
+      }
+      .tag.mint {
+        border-color: rgba(0, 255, 187, 0.38);
+        color: var(--mint);
+        background: rgba(0, 255, 187, 0.05);
+      }
+
+      /* ── Divider ────────────────────────────────────────────────── */
+      .hud-divider {
+        border: none;
+        border-top: 1px solid var(--border);
+        margin: 14px 0;
+        position: relative;
+      }
+      .hud-divider::before {
+        content: "\25C8";
+        position: absolute;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        background: var(--html-bg);
+        padding: 0 8px;
+        font-size: 0.7rem;
+        color: var(--dim);
+        letter-spacing: 0.1em;
+      }
+
+      /* ── Type helpers ───────────────────────────────────────────── */
+      .type-dim {
+        font-size: 0.9rem;
+        color: var(--dim);
+        letter-spacing: 0.06em;
+      }
+      .type-blink {
+        color: var(--rose);
+        animation: blink 1.1s step-end infinite;
+      }
+
+      /* ── Release card ───────────────────────────────────────────── */
+      .release-card {
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.18s;
+      }
+      .release-card:hover {
+        transform: scale(1.03);
+      }
+      .release-card img {
+        width: 100%;
+        display: block;
+        aspect-ratio: 1;
+        object-fit: cover;
+      }
+      .release-card .release-overlay {
+        position: absolute;
+        bottom: 0; left: 0; right: 0;
+        padding: 8px;
+        background: linear-gradient(transparent, rgba(0,0,0,0.85));
+        opacity: 0;
+        transition: opacity 0.2s;
+      }
+      .release-card:hover .release-overlay {
+        opacity: 1;
+      }
+      .release-overlay span {
+        font-size: 0.65rem;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--accent);
+      }
+
+      /* ── Tool item ──────────────────────────────────────────────── */
+      .tool-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 10px;
+        animation: fade-in-up 0.6s ease both;
+      }
+      .tool-item .tool-desc {
+        font-size: 0.78rem;
+        color: var(--dim);
+        letter-spacing: 0.06em;
+      }
+
+      /* ── Links row ──────────────────────────────────────────────── */
+      .links-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 12px;
+      }
+
+      /* ── SoundCloud embed ───────────────────────────────────────── */
+      .embed-wrap iframe {
+        width: 100%;
+        border: none;
+        opacity: 0.85;
+      }
+
+      /* ── Modal ──────────────────────────────────────────────────── */
+      .ew-modal-overlay {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0, 0, 0, 0.88);
+        z-index: 10000;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+      .ew-modal-overlay.active {
+        display: flex;
+      }
+      .ew-modal {
+        background: var(--surface-hi);
+        border: 1px solid var(--border-hi);
+        max-width: 380px;
+        width: 100%;
+        padding: 0;
+        position: relative;
+        clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+      }
+      .ew-modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 18px;
+        border-bottom: 1px solid var(--border);
+      }
+      .ew-modal-header h3 {
+        font-family: var(--font);
+        font-size: 1.1rem;
+        letter-spacing: 0.22em;
+        color: var(--accent);
+        text-transform: uppercase;
+      }
+      .ew-modal-close {
+        font-family: var(--font);
+        font-size: 1.4rem;
+        color: var(--dim);
+        cursor: pointer;
+        background: none;
+        border: none;
+        padding: 0 4px;
+        line-height: 1;
+        transition: color 0.14s;
+      }
+      .ew-modal-close:hover {
+        color: var(--rose);
+      }
+      .ew-modal-body {
+        padding: 18px;
+        text-align: center;
+      }
+      .ew-modal-body img {
+        max-width: 240px;
+        width: 100%;
+        aspect-ratio: 1;
+        object-fit: cover;
+        margin-bottom: 14px;
+        border: 1px solid var(--border);
+      }
+      .ew-modal-body .links-row {
+        justify-content: center;
+      }
+
+      /* ── Theme switcher ─────────────────────────────────────────── */
+      #theme-bar {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 12px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        margin-bottom: 14px;
+        flex-wrap: wrap;
+      }
+      #theme-bar-label {
+        font-size: 0.62rem;
+        letter-spacing: 0.26em;
+        color: var(--dim);
+        text-transform: uppercase;
+        flex-shrink: 0;
+      }
+      .theme-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 3px;
+        cursor: pointer;
+        border: none;
+        background: none;
+        padding: 4px 6px;
+        clip-path: none;
+        animation: none;
+        box-shadow: none;
+        transition: opacity 0.14s;
+        opacity: 0.55;
+        font-family: var(--font);
+      }
+      .theme-btn:hover { opacity: 0.9; }
+      .theme-btn.current { opacity: 1; }
+      .theme-btn .theme-dot {
+        width: 22px;
+        height: 22px;
+        clip-path: polygon(0 6px,6px 0,calc(100% - 6px) 0,100% 6px,100% calc(100% - 6px),calc(100% - 6px) 100%,6px 100%,0 calc(100% - 6px));
+        transition: box-shadow 0.14s;
+      }
+      .theme-btn.current .theme-dot { box-shadow: 0 0 10px currentColor; }
+      .theme-btn .theme-name {
+        font-size: 0.52rem;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--dim);
+        transition: color 0.14s;
+      }
+      .theme-btn.current .theme-name,
+      .theme-btn:hover .theme-name { color: var(--text); }
+
+      /* ── Theme overrides ────────────────────────────────────────── */
+
+      html.theme-phosphor {
+        --accent-rgb:0,255,65; --rose-rgb:57,255,20; --mint-rgb:200,255,100;
+        --border-rgb:0,100,30; --dim-rgb:0,72,22;
+        --html-bg:#000d02; --surface:rgba(0,12,4,0.72); --surface-hi:rgba(0,20,6,0.86);
+        --border:rgba(0,100,30,0.42); --border-hi:rgba(0,255,65,0.78);
+        --text:#ccffdd; --dim:#006020; --accent:#00ff41; --rose:#39ff14; --mint:#c8ff64;
+        --panel-glow:drop-shadow(0 0 6px rgba(0,255,65,0.18)) drop-shadow(0 0 28px rgba(0,100,30,0.12));
+      }
+      html.theme-cobalt {
+        --accent-rgb:0,140,255; --rose-rgb:0,210,255; --mint-rgb:255,136,68;
+        --border-rgb:0,60,140; --dim-rgb:0,44,100;
+        --html-bg:#00040e; --surface:rgba(0,4,18,0.72); --surface-hi:rgba(0,6,28,0.86);
+        --border:rgba(0,60,140,0.42); --border-hi:rgba(0,140,255,0.78);
+        --text:#d0eeff; --dim:#003880; --accent:#008cff; --rose:#00d2ff; --mint:#ff8844;
+        --panel-glow:drop-shadow(0 0 6px rgba(0,140,255,0.18)) drop-shadow(0 0 28px rgba(0,60,140,0.12));
+      }
+      html.theme-plasma {
+        --accent-rgb:200,68,255; --rose-rgb:255,68,200; --mint-rgb:68,255,200;
+        --border-rgb:100,0,160; --dim-rgb:68,0,100;
+        --html-bg:#080012; --surface:rgba(10,0,22,0.72); --surface-hi:rgba(16,0,32,0.86);
+        --border:rgba(100,0,160,0.42); --border-hi:rgba(200,68,255,0.78);
+        --text:#f4ccff; --dim:#620090; --accent:#c844ff; --rose:#ff44c8; --mint:#44ffc8;
+        --panel-glow:drop-shadow(0 0 6px rgba(200,68,255,0.18)) drop-shadow(0 0 28px rgba(100,0,160,0.12));
+      }
+      html.theme-danger {
+        --accent-rgb:255,44,55; --rose-rgb:255,165,0; --mint-rgb:255,240,0;
+        --border-rgb:140,0,20; --dim-rgb:100,0,15;
+        --html-bg:#0e0000; --surface:rgba(18,0,0,0.72); --surface-hi:rgba(28,0,0,0.86);
+        --border:rgba(140,0,20,0.42); --border-hi:rgba(255,44,55,0.78);
+        --text:#ffe4e4; --dim:#880010; --accent:#ff2c37; --rose:#ffa500; --mint:#fff000;
+        --panel-glow:drop-shadow(0 0 6px rgba(255,44,55,0.18)) drop-shadow(0 0 28px rgba(140,0,20,0.12));
+      }
+      html.theme-matrix {
+        --accent-rgb:0,255,136; --rose-rgb:0,200,80; --mint-rgb:180,255,68;
+        --border-rgb:0,100,50; --dim-rgb:0,68,34;
+        --html-bg:#000e04; --surface:rgba(0,12,6,0.72); --surface-hi:rgba(0,20,8,0.86);
+        --border:rgba(0,100,50,0.42); --border-hi:rgba(0,255,136,0.78);
+        --text:#ccffe8; --dim:#006030; --accent:#00ff88; --rose:#00c850; --mint:#b4ff44;
+        --panel-glow:drop-shadow(0 0 6px rgba(0,255,136,0.18)) drop-shadow(0 0 28px rgba(0,100,50,0.12));
+      }
+      html.theme-solar {
+        --accent-rgb:255,100,0; --rose-rgb:255,220,0; --mint-rgb:0,220,200;
+        --border-rgb:140,50,0; --dim-rgb:100,38,0;
+        --html-bg:#0e0300; --surface:rgba(18,6,0,0.72); --surface-hi:rgba(28,10,0,0.86);
+        --border:rgba(140,50,0,0.42); --border-hi:rgba(255,100,0,0.78);
+        --text:#fff0cc; --dim:#8c3000; --accent:#ff6400; --rose:#ffdc00; --mint:#00dcc8;
+        --panel-glow:drop-shadow(0 0 6px rgba(255,100,0,0.18)) drop-shadow(0 0 28px rgba(140,50,0,0.12));
+      }
+      html.theme-arctic {
+        --accent-rgb:136,238,255; --rose-rgb:68,136,255; --mint-rgb:255,68,200;
+        --border-rgb:30,100,140; --dim-rgb:20,68,100;
+        --html-bg:#00050e; --surface:rgba(0,6,18,0.72); --surface-hi:rgba(0,8,26,0.86);
+        --border:rgba(30,100,140,0.42); --border-hi:rgba(136,238,255,0.78);
+        --text:#e8f8ff; --dim:#1e6488; --accent:#88eeff; --rose:#4488ff; --mint:#ff44c8;
+        --panel-glow:drop-shadow(0 0 6px rgba(136,238,255,0.18)) drop-shadow(0 0 28px rgba(30,100,140,0.12));
       }
     </style>
-    
   </head>
   <body>
-    <canvas id="renderCanvas"></canvas>
-<div class="container"><!--Main Container-->
-  <!-- <div id="start-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); color: white; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 10000;">
-    <div class="card-header">
-      <div style="display: flex; align-items: center; justify-content: space-between;">
-        <a href="https://www.entropyworship.com" style="text-decoration: none;">
-            <h1 class="heading display-6 cyber-glitch-2" style="font-size: 1.5rem; margin: 0;">
-                ENTROPY WORSHIP
-            </h1>
-        </a>
-      </div>
-      <h2 class="panel error shown" style="font-size: 1.5rem;">deityengine 1.4</h2>
-      <span style="font-family:VT323-Regular; font-size: 40px;" class="cyber-glitch-0 panel error shown">
-        >>An experimental first-person labyrinth</span>
-      <span style="font-family:VT323-Regular; font-size: 30px;" class="cyber-glitch-1 panel error shown" id="controlsui">
-        >>PC CONTROLS:<br>
-        >[WASD keys] move: W forward, A left, D right, S backward<br>
-        >[mouse] camera view<br>
-        >[space] jump<br>
-      </span>
+    <!-- ── Three.js background ── -->
+    <canvas id="galaxy-bg"></canvas>
+    <!-- ── Grid overlay ── -->
+    <div id="grid-bg"></div>
+    <!-- ── Scanline overlay ── -->
+    <div id="scanlines"></div>
 
-      <span class="panel error shown" id="loader" style="display: block;">
-        <span class="loader"></span>
-      </span>
-      <span class="panel error shown" id="start-button-panel" style="display: none;">
-        <button id="start-button" class="button alert rounded" style="cursor: pointer;">
-            Start
-        </button>
-      </span>
+    <!-- ── App ─────────────────────────────────────────────────────── -->
+    <div id="app">
+      <header>
+        <a href="index.html" class="hud-title">ENTROPY WORSHIP</a>
+        <div id="meta">
+          <span>build 4.2.28.04.26</span>
+        </div>
+      </header>
+
+
+      <!-- ── RELEASES ──────────────────────────────────────────────── -->
+      <section class="page-section">
+        <div class="page-section-label">// Releases</div>
+        <div class="hud-panel clip-tr">
+          <div class="grid-4">
+            <div class="release-card" data-modal="modal-second-law">
+              <img src="images/EW_Second_Law_Cover_W_Aerotek_Logo.png" alt="Second Law Cover" />
+              <div class="release-overlay"><span>Second Law</span></div>
+            </div>
+            <div class="release-card" data-modal="modal-facticity">
+              <img src="images/EntropyWorshipFacticity-CoverForDigitalSmaller.jpg" alt="Facticity Devotion Discipline Cover" />
+              <div class="release-overlay"><span>Facticity Devotion Discipline</span></div>
+            </div>
+            <div class="release-card" data-modal="modal-dirty-consecration">
+              <img src="images/EntropyWorshipDirtyConsecrationCover.jpg" alt="Dirty Consecration Cover" />
+              <div class="release-overlay"><span>Dirty Consecration</span></div>
+            </div>
+            <div class="release-card" data-modal="modal-thames">
+              <img src="images/EntropyWorshipThamesCover.jpg" alt="Thames and Variations Cover" />
+              <div class="release-overlay"><span>Thames and Variations</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      <!-- ── TOOLS & PROJECTS ──────────────────────────────────────── -->
+      <section class="page-section">
+        <div class="page-section-label">// Tools & Projects</div>
+        <div class="hud-panel clip-br">
+          <div class="tool-item" style="animation-delay:0.05s">
+            <a href="MIDI-server" target="_blank" class="btn btn-rose">MIDI SERVER</a>
+            <span class="tool-desc">Collaborative network MIDI relay server with basic channel routing</span>
+          </div>
+          <div class="tool-item" style="animation-delay:0.1s">
+            <a href="scope" target="_blank" class="btn btn-rose">SCOPE</a>
+            <span class="tool-desc">Real-time audio oscilloscope and spectrum analyzer</span>
+          </div>
+          <div class="tool-item" style="animation-delay:0.15s">
+            <a href="EW909.html" target="_blank" class="btn btn-rose">909 CLONE</a>
+            <span class="tool-desc">Roland 909 drum machine emulator</span>
+          </div>
+          <div class="tool-item" style="animation-delay:0.2s">
+            <a href="EWMIDICALC.html" target="_blank" class="btn btn-rose">MIDI CALC</a>
+            <span class="tool-desc">MIDI note, diatonic chord, mode, and frequency calculator</span>
+          </div>
+          <div class="tool-item" style="animation-delay:0.25s">
+            <a href="EWDBLEVL.html" target="_blank" class="btn btn-rose">DB LEVEL</a>
+            <span class="tool-desc">Decibel level reference tool</span>
+          </div>
+          <div class="tool-item" style="animation-delay:0.3s">
+            <a href="EWBPM.html" target="_blank" class="btn btn-rose">BPM CALC</a>
+            <span class="tool-desc">Tempo calculator</span>
+          </div>
+          <hr class="hud-divider" />
+          <div class="tool-item" style="animation-delay:0.35s">
+            <a href="projects/detroit-trip/" target="_blank" class="btn btn-rose">Detroit Trip</a>
+            <span class="tool-desc">Oregon Trail re-write for ravers</span>
+          </div>
+          <div class="tool-item" style="animation-delay:0.4s">
+            <a href="EWDEITYENGINE.html" class="btn btn-rose">Deity Engine</a>
+            <span class="tool-desc">Experimental first-person labyrinth</span>
+          </div>
+          <div class="tool-item" style="animation-delay:0.45s">
+            <a href="https://github.com/brianbjames/Entropy-Worship-MaxMSP-Collection" class="btn btn-rose" target="_blank">Max Repo</a>
+            <span class="tool-desc">Cycling '74 Max/MSP archive</span>
+          </div>
+          <div class="tool-item" style="animation-delay:0.5s">
+            <a href="WTFDIPISF" class="btn btn-rose" target="_blank">WTFDIPISF</a>
+            <span class="tool-desc">SF Parking Inference Calculator based on DataSF API data</span>
+          </div>
+          <div class="tool-item" style="animation-delay:0.55s">
+            <a href="the-answer" class="btn btn-rose" target="_blank">THE ANSWER</a>
+            <span class="tool-desc">3D interactive space with Wolfram|Alpha + NASA API</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── SCHEDULE ──────────────────────────────────────────────── -->
+      <section class="page-section">
+        <div class="page-section-label">// Schedule</div>
+        <div class="hud-panel clip-tr">
+          <table class="hud-table">
+            <thead>
+              <tr>
+                <th>DATE</th>
+                <th>EVENT</th>
+                <th>VENUE</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="td-dim">032926</td>
+                <td><a href="https://ra.co/events/2397397" target="_blank" class="btn btn-rose btn-sm">Future Perfect</a></td>
+                <td>Noc Noc, 557 Haight St. SF</td>
+              </tr>
+              <tr>
+                <td class="td-dim">112625</td>
+                <td><a href="https://ra.co/events/2219745" target="_blank" class="btn btn-rose btn-sm">Proximity</a></td>
+                <td>Underground SF, 424 Haight St. SF</td>
+              </tr>
+              <tr>
+                <td class="td-dim">071925</td>
+                <td><a href="https://ra.co/events/2193182" target="_blank" class="btn btn-rose btn-sm">Freq Didactic</a></td>
+                <td>Yerba Buena Estudios, 1566 Carroll Ave. SF</td>
+              </tr>
+              <tr>
+                <td class="td-dim">081724</td>
+                <td><a href="https://www.ra.co/events/1964938" target="_blank" class="btn btn-rose btn-sm">DOMAIN</a></td>
+                <td>F8, 1192 Folsom, SF</td>
+              </tr>
+              <tr>
+                <td class="td-dim">052724</td>
+                <td><a href="http://www.haggardsolutions.com" target="_blank" class="btn btn-rose btn-sm">Broom & Board 4.0</a></td>
+                <td>Undisclosed Location</td>
+              </tr>
+              <tr>
+                <td class="td-dim">032224</td>
+                <td><a href="https://www.facebook.com/events/2441349452715891" target="_blank" class="btn btn-rose btn-sm">PreMovement</a></td>
+                <td>Underground SF, 424 Haight St. SF</td>
+              </tr>
+              <tr>
+                <td class="td-dim">011124</td>
+                <td><a href="https://www.facebook.com/events/1033807594362929" target="_blank" class="btn btn-rose btn-sm">Proximity</a></td>
+                <td>Underground SF, 424 Haight St. SF</td>
+              </tr>
+              <tr>
+                <td class="td-dim">102523</td>
+                <td><a href="https://www.facebook.com/events/702368038168013/" target="_blank" class="btn btn-rose btn-sm">Future Fatigue</a></td>
+                <td>Spire, 285 Athens Ave, Oakland</td>
+              </tr>
+              <tr>
+                <td class="td-dim">090923</td>
+                <td class="td-accent">909</td>
+                <td>Edinburgh Castle, 950 Geary, SF</td>
+              </tr>
+              <tr>
+                <td class="td-dim">021123</td>
+                <td class="td-accent">Subliminal Content</td>
+                <td>Undisclosed Bunker, SF</td>
+              </tr>
+              <tr>
+                <td class="td-dim">010320</td>
+                <td><a href="https://www.facebook.com/events/454130828849367/" target="_blank" class="btn btn-rose btn-sm">Mirror Room Edits</a></td>
+                <td>F8, 1192 Folsom, SF</td>
+              </tr>
+              <tr>
+                <td class="td-dim">120619</td>
+                <td><a href="https://www.facebook.com/events/433231917301460/" target="_blank" class="btn btn-rose btn-sm">Asterisk 018</a></td>
+                <td>F8, 1192 Folsom, SF</td>
+              </tr>
+              <tr>
+                <td class="td-dim">092719</td>
+                <td><a href="http://www.haggardsolutions.com" target="_blank" class="btn btn-rose btn-sm">Broom & Board 2.0</a></td>
+                <td>Undisclosed Location</td>
+              </tr>
+              <tr>
+                <td class="td-dim">033019</td>
+                <td><a href="https://www.facebook.com/events/286743858685698/" target="_blank" class="btn btn-rose btn-sm">Direct To Earth</a></td>
+                <td>Club 6, SF</td>
+              </tr>
+              <tr>
+                <td class="td-dim">022519</td>
+                <td><a href="https://www.facebook.com/events/307939623248208/" target="_blank" class="btn btn-rose btn-sm">Visions of a New World</a></td>
+                <td>Underground SF, 424 Haight, SF</td>
+              </tr>
+              <tr>
+                <td class="td-dim">020919</td>
+                <td><a href="http://kzsu.stanford.edu/dayofnoise/2019/" target="_blank" class="btn btn-rose btn-sm">Day of Noise</a></td>
+                <td>KZSU Stanford, 90.1 FM, 12am PST</td>
+              </tr>
+              <tr>
+                <td class="td-dim">051218</td>
+                <td><a href="https://www.facebook.com/events/375195919629612/" target="_blank" class="btn btn-rose btn-sm">In Too Deep</a></td>
+                <td>Studio Grand, 3234 Grand, Oakland</td>
+              </tr>
+              <tr>
+                <td class="td-dim">050218</td>
+                <td><a href="https://www.facebook.com/events/183711188930280/" target="_blank" class="btn btn-rose btn-sm">IDP 019</a></td>
+                <td>Hyde Street Studios, 245 Hyde, SF</td>
+              </tr>
+              <tr>
+                <td class="td-dim">040518</td>
+                <td><a href="https://www.facebook.com/events/1724155357642488/" target="_blank" class="btn btn-rose btn-sm">Asterisk 007</a></td>
+                <td>F8, 1192 Folsom, SF</td>
+              </tr>
+              <tr>
+                <td class="td-dim">021018</td>
+                <td><a href="http://kzsu.stanford.edu/dayofnoise/2018/" target="_blank" class="btn btn-rose btn-sm">Day of Noise</a></td>
+                <td>KZSU Stanford, 90.1 FM, midnight PST</td>
+              </tr>
+              <tr>
+                <td class="td-dim">122217</td>
+                <td><a href="https://www.facebook.com/events/384903235301201/" target="_blank" class="btn btn-rose btn-sm">Surface Tension</a></td>
+                <td>F8, 1192 Folsom, SF</td>
+              </tr>
+              <tr>
+                <td class="td-dim">122017</td>
+                <td><a href="http://kzsu.stanford.edu/~wnl/" target="_blank" class="btn btn-rose btn-sm">Wednesday Night Live</a></td>
+                <td>KZSU Stanford, 90.1 FM, 9pm PST</td>
+              </tr>
+              <tr>
+                <td class="td-dim">070817</td>
+                <td><a href="https://www.facebook.com/events/136732650216294/" target="_blank" class="btn btn-rose btn-sm">IDP 015</a></td>
+                <td>Hyde Street Studios, 245 Hyde, SF</td>
+              </tr>
+              <tr>
+                <td class="td-dim">013117</td>
+                <td><a href="http://kzsu.stanford.edu/dayofnoise/2017/" target="_blank" class="btn btn-rose btn-sm">Day of Noise</a></td>
+                <td>KZSU Stanford, 90.1 FM, 12am PST</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- ── LINKS ─────────────────────────────────────────────────── -->
+      <section class="page-section">
+        <div class="page-section-label">// Connect</div>
+        <div class="hud-panel">
+          <div class="links-row">
+            <a href="https://soundcloud.com/entropy-worship" target="_blank" class="btn btn-rose">Soundcloud</a>
+            <a href="https://ra.co/dj/entropyworship" target="_blank" class="btn btn-rose">Resident Advisor</a>
+            <a href="https://www.facebook.com/entropyworship/" target="_blank" class="btn btn-rose">Facebook</a>
+            <a href="https://twitter.com/EntropyWorship" target="_blank" class="btn btn-rose">Twitter</a>
+            <a href="https://www.instagram.com/entropyworship/" target="_blank" class="btn btn-rose">Instagram</a>
+            <a href="mailto:brian@entropyworship.com" target="_blank" class="btn btn-rose">Booking</a>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── FOOTER ────────────────────────────────────────────────── -->
+      <div class="hud-panel" style="text-align:center; padding:12px;">
+        <span class="type-dim" style="letter-spacing:0.3em;">&copy; 2026 ENTROPY WORSHIP</span>
+      </div>
+
+    </div><!-- #app -->
+
+    <!-- ── Release Modals ──────────────────────────────────────────── -->
+    <div class="ew-modal-overlay" id="modal-second-law">
+      <div class="ew-modal">
+        <div class="ew-modal-header">
+          <h3>Second Law</h3>
+          <button class="ew-modal-close" onclick="closeModal(this)">&times;</button>
+        </div>
+        <div class="ew-modal-body">
+          <img src="images/EW_Second_Law_Cover_W_Aerotek_Logo.png" alt="Second Law Cover" />
+          <div class="links-row">
+            <a href="https://www.beatport.com/release/second-law/4812389" target="_blank" class="btn btn-rose btn-sm">Beatport</a>
+            <a href="https://music.apple.com/us/album/second-law/1778509857" target="_blank" class="btn btn-rose btn-sm">Apple</a>
+            <a href="https://open.spotify.com/album/7D9HZJbX3SXttmz2jSxI23?si=_CfuUAtnRuuS_wK_xWorTQ" target="_blank" class="btn btn-rose btn-sm">Spotify</a>
+            <a href="https://aerotekrecordings.bandcamp.com/album/entropy-worship-second-law-aero108" target="_blank" class="btn btn-rose btn-sm">Bandcamp</a>
+          </div>
+        </div>
+      </div>
     </div>
 
-  </div> -->
-  <div class="card text-bg-danger mb-3" style="background-color: #2e2e2e39"><!--Header card-->
-      <div class="card-header">
-        <div style="display: flex; align-items: center; justify-content: space-between;">
-          <a href="index.html" style="text-decoration: none;">
-              <h1 class="heading display-6 cyber-glitch-2" style="font-size: 1.5rem; margin: 0;" id="mainlogo">
-                  ENTROPY WORSHIP
-              </h1>
-          </a>
-          <!-- <a class="button alert round" id="closebutton" style="padding: 5px 10px; text-align: center;">
-          </a> -->
+    <div class="ew-modal-overlay" id="modal-facticity">
+      <div class="ew-modal">
+        <div class="ew-modal-header">
+          <h3>Facticity Devotion Discipline</h3>
+          <button class="ew-modal-close" onclick="closeModal(this)">&times;</button>
         </div>
-          <h2 class="panel error shown" style="font-size: 1.5rem;" id="mainpanel">build 4.1.16.04.26</h2>
-            <!-- <div id="preferences">
-              <input id="volume-slider" class="slider" type="range" min="0" max="1" step="0.01" value="0.25">
-            </div> -->
-            <div class="container" id="mediacontainer">
-              <!-- <div class="row cyber-glitch-1 panel shown" id="controls" style="font-family:VT323-Regular; font-size: 30px;">
-                <div class="row" style="display: flex; justify-content: left; align-items: left; gap: 10px;">
-                  <div class="info">
-                    <div class="label error">Time</div>
-                    <div class="value warning" id="timer">0</div>
-                  </div>
-                  <div class="info">
-                    <div class="label error">Lives</div>
-                    <div class="value success" id="health">100</div>
-                  </div>
-                  <div class="info">
-                    <div class="label error">Deaths</div>
-                    <div class="value error" id="falls">0</div>
-                  </div>
-                  <div class="info">
-                    <div class="label error">Complexity</div>
-                    <div class="value" id="world">1</div>
-                  </div>
-                </div>
-                <div class="row" style="display: flex; justify-content: left; align-items: left; gap: 10px;">
-                  <div class="info">
-                    <div class="value error" id="coord">Coordinates</div>
-                  </div>
-                  <div class="info">
-                    <div class="value error" id="x">0.0</div>
-                  </div>
-                  <div class="info">
-                    <div class="value error" id="y">0.0</div>
-                  </div>
-                  <div class="info">
-                    <div class="value error" id="z">0.0</div>
-                  </div>
-                </div>
-              </div> -->
+        <div class="ew-modal-body">
+          <img src="images/EntropyWorshipFacticity-CoverForDigitalSmaller.jpg" alt="Facticity Devotion Discipline Cover" />
+          <div class="links-row">
+            <a href="https://www.missionsynths.com/products/entropy-worship-facticity-devotion-discipline-1" target="_blank" class="btn btn-rose btn-sm">Vinyl</a>
+            <a href="https://music.apple.com/us/album/facticity-devotion-discipline-ep/1378491884" target="_blank" class="btn btn-rose btn-sm">Apple</a>
+            <a href="https://open.spotify.com/album/4UqiFfR222eSeoPctBP5bF?si=_cyAkVnSQOCrkf4Ia-muFA" target="_blank" class="btn btn-rose btn-sm">Spotify</a>
+            <a href="https://entropyworship.bandcamp.com/album/facticity-devotion-discipline" target="_blank" class="btn btn-rose btn-sm">Bandcamp</a>
+          </div>
+        </div>
+      </div>
+    </div>
 
-              
-                    <!-- <div class="card transparent-bg">
-                        <div class="card-body">
-                        <span class="cyber-glitch-1 panel error shown">
-                            <span class="cyber-glitch-1" style="font-family:Chargen; font-size: 30px;">>>deityengine console<br></span>
-                        </span>
-                        <span style="font-family:VT323-Regular; font-size: 20px;" class="cyber-glitch-4 panel error shown">
-                            <span class="cyber-glitch-3 warning shown">>WARNING 7021: Subversive Media Proceed With Caution</span><br>
-                            >ERROR 1021: Invalid input at line ${lineNumber} tends to increase in isolated systems<br>
-                            >ERROR 2214: Connection timeout after ${timeout}ms in increase irreversible processes<br>
-                            >ERROR 1493: Division by zero in function scales with system size<br>
-                            <span class="cyber-glitch-4 success shown">>SUCCESS 0001: Deity Mounted</span><br>
-                            >ERROR 3910: Could not connect to host '${hostname}' on port ${port} changes discontinuously<br>
-                            >ERROR 3927: Null reference exception in class ${className} increases over time<br>
-                            >ERROR 4032: User ID ${userId} not found measures uncertainty<br>
-                            >ERROR 6012: Config setting '${arisesInReverenceAndAwe}' is missing<br>
-                            >ERROR 3205: Module ${thrivesInCommunityAndSolitude} threw an exception<br>
-                            >ERROR 9005: scales with depth of devotion<br>
-                            <span class="cyber-glitch-2 warning shown">>WARNING 2109: You Are Fucked ${host} Reboot Necassary</span><br>
-                            >ERROR 8120: Unable to allocate bridge to the finite and infinite<br>
-                            >ERROR 8801: Module transforms over time<br>
-                            >ERROR 4036: Invalid 'reflects the heart's focus' assumption<br>
-                            <span class="cyber-glitch-4 success shown">>SUCCESS 0002: System Online</span><br>
-                            <span class="cyber-glitch-4 info shown">>>Running simulation</span><br>
-                            <span class="cyber-glitch-4 info shown">>>Escape the labyrinth without falling to death</span><br>
-                            <span class="cyber-glitch-4 info shown">>></span><br>
-                          </span>
-                        </span>
-                        </div>
-                    </div> -->
-              
-                <div class="card text-bg-danger mb-3" style="background-color: #2e2e2e16"><!--Release panel-->
-                    <!-- <div class="card-header">
-                    <h3 class="cyber-h">Releases</h3>
-                    <span style="font-family:VT323-Regular; font-size: 40px;" class="cyber-glitch-1 panel error shown">
-                        releases<br></span>
-                    </div> -->
-                    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4" data-masonry='{"percentPosition": true }'><!--Masonry panel-->
-                        <div class="col">
-                            <div class="card transparent-bg">
-                            <div class="card-body p-1">
-                                <img class="release-trigger img-fluid cyber-glitch-0" style="width: 100%; aspect-ratio: 1; object-fit: cover; cursor: pointer;" src="images/EW_Second_Law_Cover_W_Aerotek_Logo.png" alt="Second Law Cover" data-toggle="modal" data-target="#modal-second-law">
-                            </div>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="card transparent-bg">
-                            <div class="card-body p-1">
-                                <img class="release-trigger img-fluid" style="width: 100%; aspect-ratio: 1; object-fit: cover; cursor: pointer;" src="images/EntropyWorshipFacticity-CoverForDigitalSmaller.jpg" alt="Facticity Devotion Discipline Cover" data-toggle="modal" data-target="#modal-facticity">
-                            </div>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="card transparent-bg">
-                            <div class="card-body p-1">
-                                <img class="release-trigger img-fluid" style="width: 100%; aspect-ratio: 1; object-fit: cover; cursor: pointer;" src="images/EntropyWorshipDirtyConsecrationCover.jpg" alt="Dirty Consecration Cover" data-toggle="modal" data-target="#modal-dirty-consecration">
-                            </div>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="card transparent-bg">
-                            <div class="card-body p-1">
-                                <img class="release-trigger img-fluid" style="width: 100%; aspect-ratio: 1; object-fit: cover; cursor: pointer;" src="images/EntropyWorshipThamesCover.jpg" alt="Thames and Variations Cover" data-toggle="modal" data-target="#modal-thames">
-                            </div>
-                            </div>
-                        </div>
-                    </div><!--Masonry panel close-->
+    <div class="ew-modal-overlay" id="modal-dirty-consecration">
+      <div class="ew-modal">
+        <div class="ew-modal-header">
+          <h3>Dirty Consecration</h3>
+          <button class="ew-modal-close" onclick="closeModal(this)">&times;</button>
+        </div>
+        <div class="ew-modal-body">
+          <img src="images/EntropyWorshipDirtyConsecrationCover.jpg" alt="Dirty Consecration Cover" />
+          <div class="links-row">
+            <a href="https://music.apple.com/us/album/dirty-consecration-single/1113364047" target="_blank" class="btn btn-rose btn-sm">Apple</a>
+            <a href="https://open.spotify.com/album/2aGUBW2oieV24apYcK4hZE?si=a9FB1TUNTEC2TEGSP81YrA" target="_blank" class="btn btn-rose btn-sm">Spotify</a>
+            <a href="https://entropyworship.bandcamp.com/album/dirty-consecration" target="_blank" class="btn btn-rose btn-sm">Bandcamp</a>
+          </div>
+        </div>
+      </div>
+    </div>
 
-                    <!-- Release Modals -->
-                    <div class="modal fade" id="modal-second-law" tabindex="-1" role="dialog" aria-labelledby="modal-second-law-label" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered" role="document">
-                            <div class="modal-content" style="background-color: #1a1a1a; border: 1px solid #660c0c; color: white;">
-                                <div class="modal-header" style="border-bottom: 1px solid #660c0c;">
-                                    <h5 class="modal-title cyber-glitch-1" id="modal-second-law-label">Second Law</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;"><span aria-hidden="true">&times;</span></button>
-                                </div>
-                                <div class="modal-body text-center">
-                                    <img class="img-fluid mb-3" style="max-width: 260px; aspect-ratio: 1; object-fit: cover;" src="images/EW_Second_Law_Cover_W_Aerotek_Logo.png" alt="Second Law Cover">
-                                    <div>
-                                        <a href="https://www.beatport.com/release/second-law/4812389" target="_blank" class="button error round">Beatport</a>
-                                        <a href="https://music.apple.com/us/album/second-law/1778509857" target="_blank" class="button error round">Apple</a>
-                                        <a href="https://open.spotify.com/album/7D9HZJbX3SXttmz2jSxI23?si=_CfuUAtnRuuS_wK_xWorTQ" target="_blank" class="button error round">Spotify</a>
-                                        <a href="https://aerotekrecordings.bandcamp.com/album/entropy-worship-second-law-aero108" target="_blank" class="button error round">Bandcamp</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    <div class="ew-modal-overlay" id="modal-thames">
+      <div class="ew-modal">
+        <div class="ew-modal-header">
+          <h3>Thames and Variations</h3>
+          <button class="ew-modal-close" onclick="closeModal(this)">&times;</button>
+        </div>
+        <div class="ew-modal-body">
+          <img src="images/EntropyWorshipThamesCover.jpg" alt="Thames and Variations Cover" />
+          <div class="links-row">
+            <a href="https://music.apple.com/us/album/thames-and-variations-single/1110835303" target="_blank" class="btn btn-rose btn-sm">Apple</a>
+            <a href="https://open.spotify.com/album/2orrfUEKesHEM3VD8DtzZr?si=jQ5HROs8SJefxnn0olwyrg" target="_blank" class="btn btn-rose btn-sm">Spotify</a>
+            <a href="https://entropyworship.bandcamp.com/album/thames-and-variations" target="_blank" class="btn btn-rose btn-sm">Bandcamp</a>
+          </div>
+        </div>
+      </div>
+    </div>
 
-                    <div class="modal fade" id="modal-facticity" tabindex="-1" role="dialog" aria-labelledby="modal-facticity-label" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered" role="document">
-                            <div class="modal-content" style="background-color: #1a1a1a; border: 1px solid #660c0c; color: white;">
-                                <div class="modal-header" style="border-bottom: 1px solid #660c0c;">
-                                    <h5 class="modal-title cyber-glitch-1" id="modal-facticity-label">Facticity Devotion Discipline</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;"><span aria-hidden="true">&times;</span></button>
-                                </div>
-                                <div class="modal-body text-center">
-                                    <img class="img-fluid mb-3" style="max-width: 260px; aspect-ratio: 1; object-fit: cover;" src="images/EntropyWorshipFacticity-CoverForDigitalSmaller.jpg" alt="Facticity Devotion Discipline Cover">
-                                    <div>
-                                        <a href="https://www.missionsynths.com/products/entropy-worship-facticity-devotion-discipline-1" target="_blank" class="button error round">Vinyl</a>
-                                        <a href="https://music.apple.com/us/album/facticity-devotion-discipline-ep/1378491884" target="_blank" class="button error round">Apple</a>
-                                        <a href="https://open.spotify.com/album/4UqiFfR222eSeoPctBP5bF?si=_cyAkVnSQOCrkf4Ia-muFA" target="_blank" class="button error round">Spotify</a>
-                                        <a href="https://entropyworship.bandcamp.com/album/facticity-devotion-discipline" target="_blank" class="button error round">Bandcamp</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+    <!-- ── Three.js ambient background ─────────────────────────────── -->
+    <script type="module">
+      import * as THREE from "three";
 
-                    <div class="modal fade" id="modal-dirty-consecration" tabindex="-1" role="dialog" aria-labelledby="modal-dirty-consecration-label" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered" role="document">
-                            <div class="modal-content" style="background-color: #1a1a1a; border: 1px solid #660c0c; color: white;">
-                                <div class="modal-header" style="border-bottom: 1px solid #660c0c;">
-                                    <h5 class="modal-title cyber-glitch-1" id="modal-dirty-consecration-label">Dirty Consecration</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;"><span aria-hidden="true">&times;</span></button>
-                                </div>
-                                <div class="modal-body text-center">
-                                    <img class="img-fluid mb-3" style="max-width: 260px; aspect-ratio: 1; object-fit: cover;" src="images/EntropyWorshipDirtyConsecrationCover.jpg" alt="Dirty Consecration Cover">
-                                    <div>
-                                        <a href="https://music.apple.com/us/album/dirty-consecration-single/1113364047" target="_blank" class="button error round">Apple</a>
-                                        <a href="https://open.spotify.com/album/2aGUBW2oieV24apYcK4hZE?si=a9FB1TUNTEC2TEGSP81YrA" target="_blank" class="button error round">Spotify</a>
-                                        <a href="https://entropyworship.bandcamp.com/album/dirty-consecration" target="_blank" class="button error round">Bandcamp</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+      const canvas = document.getElementById("galaxy-bg");
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+      renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+      renderer.setClearColor(0x000000, 0);
 
-                    <div class="modal fade" id="modal-thames" tabindex="-1" role="dialog" aria-labelledby="modal-thames-label" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered" role="document">
-                            <div class="modal-content" style="background-color: #1a1a1a; border: 1px solid #660c0c; color: white;">
-                                <div class="modal-header" style="border-bottom: 1px solid #660c0c;">
-                                    <h5 class="modal-title cyber-glitch-1" id="modal-thames-label">Thames and Variations</h5>
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: white;"><span aria-hidden="true">&times;</span></button>
-                                </div>
-                                <div class="modal-body text-center">
-                                    <img class="img-fluid mb-3" style="max-width: 260px; aspect-ratio: 1; object-fit: cover;" src="images/EntropyWorshipThamesCover.jpg" alt="Thames and Variations Cover">
-                                    <div>
-                                        <a href="https://music.apple.com/us/album/thames-and-variations-single/1110835303" target="_blank" class="button error round">Apple</a>
-                                        <a href="https://open.spotify.com/album/2orrfUEKesHEM3VD8DtzZr?si=jQ5HROs8SJefxnn0olwyrg" target="_blank" class="button error round">Spotify</a>
-                                        <a href="https://entropyworship.bandcamp.com/album/thames-and-variations" target="_blank" class="button error round">Bandcamp</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                <div class="card text-bg-danger mb-3" style="background-color: #2e2e2e16">
-                <div class="card-body">
-                    <!-- <iframe src="https://embed.beatport.com/?id=4812389&type=release" 
-                    width="100%" 
-                    height="300px" 
-                    frameborder="0" 
-                    scrolling="yes" 
-                    style="opacity: 0.6;"></iframe>           -->
-                    <iframe width="100%" height="150" scrolling="no" frameborder="no" allow="autoplay" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/soundcloud%253Atracks%253A2302207463&color=%23000000&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false&visual=true"></iframe><div style="font-size: 10px; color: #cccccc;line-break: anywhere;word-break: normal;overflow: hidden;white-space: nowrap;text-overflow: ellipsis; font-family: Interstate,Lucida Grande,Lucida Sans Unicode,Lucida Sans,Garuda,Verdana,Tahoma,sans-serif;font-weight: 100;"><a href="https://soundcloud.com/entropy-worship" title="Entropy Worship" target="_blank" style="color: #cccccc; text-decoration: none;">Entropy Worship</a> · <a href="https://soundcloud.com/entropy-worship/entropy-worship-future-perfect" title="Entropy Worship - Future Perfect @ Noc Noc" target="_blank" style="color: #cccccc; text-decoration: none;">Entropy Worship - Future Perfect @ Noc Noc</a></div>
-                </div>
-                </div>
-                </div><!--Release panel close-->
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(65, innerWidth / innerHeight, 0.1, 2000);
+      camera.position.set(0, 0, 70);
 
-              <div class="card text-bg-danger mb-3" style="background-color: #2e2e2e16">
-                    <div class="card-body">
-                      <div style="margin-bottom: 8px;">
-                        <a href="MIDI-server" target="_blank" class="button error round">MIDI SERVER</a>
-                        <span style="font-family:VT323-Regular; font-size: 16px; color: rgba(255,255,255,0.6); margin-left: 8px;">A collaborative network MIDI relay server with basic channel routing. Broadcast real-time MIDI messages and clock sync over the internet to multiple peers in public or private rooms.</span>
-                      </div>
-                      <div style="margin-bottom: 8px;">
-                        <a href="scope" target="_blank" class="button error round">SCOPE</a>
-                        <span style="font-family:VT323-Regular; font-size: 16px; color: rgba(255,255,255,0.6); margin-left: 8px;">Real-time audio oscilloscope and spectrum analyzer with trigger, zoom, and phosphor display</span>
-                      </div>  
-                      <div style="margin-bottom: 8px;">
-                        <a href="EW909.html" target="_blank" class="button error round">909 CLONE</a>
-                        <span style="font-family:VT323-Regular; font-size: 16px; color: rgba(255,255,255,0.6); margin-left: 8px;">Roland 909 drum machine emulator</span>
-                      </div>
-                      <div style="margin-bottom: 8px;">
-                        <a href="EWMIDICALC.html" target="_blank" class="button error round">MIDI CALC</a>
-                        <span style="font-family:VT323-Regular; font-size: 16px; color: rgba(255,255,255,0.6); margin-left: 8px;">MIDI note, diatonic chord, mode, and frequency calculator</span>
-                      </div>
-                      <div style="margin-bottom: 8px;">
-                        <a href="EWDBLEVL.html" target="_blank" class="button error round">DB LEVEL</a>
-                        <span style="font-family:VT323-Regular; font-size: 16px; color: rgba(255,255,255,0.6); margin-left: 8px;">Decibel level reference tool</span>
-                      </div>
-                      <div style="margin-bottom: 8px;">
-                        <a href="EWBPM.html" target="_blank" class="button error round">BPM CALC</a>
-                        <span style="font-family:VT323-Regular; font-size: 16px; color: rgba(255,255,255,0.6); margin-left: 8px;">Tempo calculator</span>
-                      </div>
-                      <div style="margin-bottom: 8px;">
-                        <a href="projects/detroit-trip/" target="_blank" class="button error round">Detroit Trip</a>
-                        <span style="font-family:VT323-Regular; font-size: 16px; color: rgba(255,255,255,0.6); margin-left: 8px;">Oregon Trail re-write for ravers</span>
-                      </div>
-                      <div style="margin-bottom: 8px;">
-                        <a href="EWDEITYENGINE.html" class="button error round">Deity Engine</a>
-                        <span style="font-family:VT323-Regular; font-size: 16px; color: rgba(255,255,255,0.6); margin-left: 8px;">Experimental first-person labyrinth</span>
-                      </div>
-                      <div style="margin-bottom: 8px;">
-                        <a href="https://github.com/brianbjames/Entropy-Worship-MaxMSP-Collection" class="button error round" target="_blank">Max Repo</a>
-                        <span style="font-family:VT323-Regular; font-size: 16px; color: rgba(255,255,255,0.6); margin-left: 8px;">Cycling '74 Max/MSP archive</span>
-                      </div>
-                      <div style="margin-bottom: 8px;">
-                        <a href="WTFDIPISF" class="button error round" target="_blank">WTFDIPISF</a>
-                        <span style="font-family:VT323-Regular; font-size: 16px; color: rgba(255,255,255,0.6); margin-left: 8px;">HUD gaming-style SF Parking Inference Calculator based on data from the DataSF API</span>
-                      </div>
-                      <div style="margin-bottom: 8px;">
-                        <a href="the-answer" class="button error round" target="_blank">THE ANSWER</a>
-                        <span style="font-family:VT323-Regular; font-size: 16px; color: rgba(255,255,255,0.6); margin-left: 8px;">3D interactive space with Wolfram|Alpha responses fed by random data from the NASA API</span>
-                      </div>
-                    </div>
-              </div>
+      function resize() {
+        renderer.setSize(innerWidth, innerHeight);
+        camera.aspect = innerWidth / innerHeight;
+        camera.updateProjectionMatrix();
+      }
+      resize();
+      addEventListener("resize", resize);
 
-                <div class="card text-bg-danger mb-3" style="background-color: #2e2e2e16"><!--Performance Schedule panel-->
-                    <!-- <div class="card-header">
-                    <h3 class="cyber-h">Schedule</h3>
-                    <span style="font-family:VT323-Regular; font-size: 40px;" class="cyber-glitch-1 panel error shown">
-                        bookings<br></span>
-                    </div> -->
-                    <div class="card-body">
-                        <table class="table table-borderless" style="color: white;">
-                            <tbody>
-                            <tr>
-                                <th scope="row">032926</th>
-                                <td><a href="https://ra.co/events/2397397" target="_blank" class="button error round">Future Perfect</a></td>
-                                <td>Noc Noc, 557 Haight St. SF</td>
-                            </tr>                              
-                            <tr>
-                                <th scope="row">112625</th>
-                                <td><a href="https://ra.co/events/2219745" target="_blank" class="button error round">Proximity</a></td>
-                                <td>Underground SF, 424 Haight St. SF</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">071925</th>
-                                <td><a href="https://ra.co/events/2193182" target="_blank" class="button error round">Freq Didactic</a></td>
-                                <td>Yerba Buena Estudios, 1566 Carroll Ave. SF</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">081724</th>
-                                <td><a href="https://www.ra.co/events/1964938" target="_blank" class="button error round">DOMAIN</a></td>
-                                <td>F8, 1192 Folsom, SF</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">052724</th>
-                                <td><a href="http://www.haggardsolutions.com" target="_blank" class="button error round">Broom & Board 4.0</a></td>
-                                <td>Undislosed Location</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">032224</th>
-                                <td><a href="https://www.facebook.com/events/2441349452715891" target="_blank" class="button error round">PreMovement</a></td>
-                                <td>Underground SF, 424 Haight St. SF</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">011124</th>
-                                <td><a href="https://www.facebook.com/events/1033807594362929" target="_blank" class="button error round">Proximity</a></td>
-                                <td>Underground SF, 424 Haight St. SF</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">102523</th>
-                                <td><a href="https://www.facebook.com/events/702368038168013/" target="_blank" class="button error round">Future Fatigue</a></td>
-                                <td>Spire, 285 Athens Ave, Oakland</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">090923</th>
-                                <td>909</td>
-                                <td>Edinburgh Castle, 950 Geary, SF</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">021123</th>
-                                <td>Subliminal Content</td>
-                                <td>Undislosed Bunker, SF</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">010320</th>
-                                <td><a href="https://www.facebook.com/events/454130828849367/" target="_blank" class="button error round">Mirror Room Edits</a></td>
-                                <td>F8, 1192 Folsom, SF</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">120619</th>
-                                <td><a href="https://www.facebook.com/events/433231917301460/" target="_blank" class="button error round">Asterisk 018</a></td>
-                                <td>F8, 1192 Folsom, SF</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">092719</th>
-                                <td><a href="http://www.haggardsolutions.com" target="_blank" class="button error round">Broom & Board 2.0</a></td>
-                                <td>Undislosed Location</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">033019</th>
-                                <td><a href="https://www.facebook.com/events/286743858685698/" target="_blank" class="button error round">Direct To Earth</a></td>
-                                <td>Club 6, SF</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">022519</th>
-                                <td><a href="https://www.facebook.com/events/307939623248208/" target="_blank" class="button error round">Visions of a New World</a></td>
-                                <td>Underground SF, 424 Haight, SF</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">020919</th>
-                                <td><a href="http://kzsu.stanford.edu/dayofnoise/2019/" target="_blank" class="button error round">Day of Noise</a></td>
-                                <td>KZSU Stanford, 90.1 FM, 12am PST</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">051218</th>
-                                <td><a href="https://www.facebook.com/events/375195919629612/" target="_blank" class="button error round">In Too Deep</a></td>
-                                <td>Studio Grand, 3234 Grand, Oakland</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">050218</th>
-                                <td><a href="https://www.facebook.com/events/183711188930280/" target="_blank" class="button error round">IDP 019</a></td>
-                                <td>Hyde Street Studios, 245 Hyde, SF</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">040518</th>
-                                <td><a href="https://www.facebook.com/events/1724155357642488/" target="_blank" class="button error round">Asterisk 007</a></td>
-                                <td>F8, 1192 Folsom, SF</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">021018</th>
-                                <td><a href="http://kzsu.stanford.edu/dayofnoise/2018/" target="_blank" class="button error round">Day of Noise</a></td>
-                                <td>KZSU Stanford, 90.1 FM, midnight PST</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">122217</th>
-                                <td><a href="https://www.facebook.com/events/384903235301201/" target="_blank" class="button error round">Surface Tension</a></td>
-                                <td>F8, 1192 Folsom, SF</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">122017</th>
-                                <td><a href="http://kzsu.stanford.edu/~wnl/" target="_blank" class="button error round">Wednesday Night Live</a></td>
-                                <td>KZSU Stanford, 90.1 FM, 9pm PST</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">070817</th>
-                                <td><a href="https://www.facebook.com/events/136732650216294/" target="_blank" class="button error round">IDP 015</a></td>
-                                <td>Hyde Street Studios, 245 Hyde, SF</td>
-                            </tr>
-                            <tr>
-                                <th scope="row">013117</th>
-                                <td><a href="http://kzsu.stanford.edu/dayofnoise/2017/" target="_blank" class="button error round">Day of Noise</a></td>
-                                <td>KZSU Stanford, 90.1 FM, 12am PST</td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div><!--Perf panel close-->  
-              
-            
-                <div class="card text-bg-danger mb-3" style="background-color: #2e2e2e16">
-                <!-- <div class="card-header">
-                    <h3 class="cyber-h">Links</h3>
-                    <span style="font-family:VT323-Regular; font-size: 40px;" class="cyber-glitch-1 panel error shown">
-                    social contact<br></span>
-                </div> -->
-                    <div class="card-body">
-                        <a href="https://soundcloud.com/entropy-worship" target="_blank" class="button error round">Soundcloud</a>
-                        <a href="https://ra.co/dj/entropyworship" target="_blank" class="button error round">Resident Advisor</a>
-                        <a href="https://www.facebook.com/entropyworship/" target="_blank" class="button error round">Facebook</a>
-                        <a href="https://twitter.com/EntropyWorship" target="_blank" class="button error round">Twitter</a>
-                        <a href="https://www.instagram.com/entropyworship/" target="_blank" class="button error round">Instagram</a>
-                        <a href="mailto:brian@entropyworship.com" target="_blank" class="button error round">Booking</a>
-                    </div>
-                    <div class="card transparent-bg">
-                        <div class="card-body">
-                        <span style="font-family:VT323-Regular; font-size: 40px;" class="cyber-glitch-1 panel error shown">
-                            <span class="cyber-glitch-2" style="font-family:Chargen; font-size: 30px;">>>© 2025 ENTROPYWORSHIP<br></span>
-                            <!-- <span class="cyber-glitch-4">>reveres the inevitable decay of order<br></span>
-                            <span class="cyber-glitch-4">>celebrates chaos as a creative force<br></span>
-                            <span class="cyber-glitch-4">>seeks beauty in randomness and disorder<br></span>
-                            <span class="cyber-glitch-4">>finds meaning in impermanence<br></span>
-                            <span class="cyber-glitch-4">>embraces the flow of irreversible processes<br></span>
-                            <span class="cyber-glitch-4">>honors uncertainty as a guiding principle<br></span>
-                            <span class="cyber-glitch-4">>unites through the shared fate of dissolution<br></span> -->
-                        </span>
-                        </div>
-                    </div>
-                    </div>
-                    <br>
-                    <br>
-                    <br>
-                    <br>
-                </div>
-      <!--         <div class="card text-bg-danger mb-3" style="background-color: #2e2e2e16">
-                <div class="card-body">
-                    <div class="sharethis-inline-share-buttons"></div>
-                  </div>
-                </div> -->
-  </div><!--Header panel-->
-</div><!--Main Container-->   
-<!-- jQuery (v3.6.0) -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<!-- Popper.js (required for Bootstrap 4) -->
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-<!-- Bootstrap JavaScript (v4.5.2) -->
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+      // ── Wireframe material factory ──────────────────────────────────
+      const green = new THREE.Color(0x00ff41);
+      const greenDim = new THREE.Color(0x003d10);
+      function wireMat(opacity) {
+        return new THREE.MeshBasicMaterial({
+          color: green, wireframe: true, transparent: true,
+          opacity, blending: THREE.AdditiveBlending, depthWrite: false
+        });
+      }
 
-<script>
-  var canvas = document.getElementById("renderCanvas");
+      // ── Outer icosahedron (detail 2 = 320 faces) ────────────────────
+      const outerGeo = new THREE.IcosahedronGeometry(90, 2);
+      const outerOrig = outerGeo.attributes.position.array.slice();
+      const outer = new THREE.Mesh(outerGeo, wireMat(0.22));
+      scene.add(outer);
 
-  var engine = new BABYLON.Engine(canvas, true);
-  var createScene = function () {
-    var scene = new BABYLON.Scene(engine);
+      // Glow halo copy
+      const outerGlow = new THREE.Mesh(outerGeo, wireMat(0.07));
+      outerGlow.scale.setScalar(1.04);
+      scene.add(outerGlow);
 
-    // Set black background color
-    scene.clearColor = new BABYLON.Color3.Black();
+      // ── Middle icosahedron (detail 1) ───────────────────────────────
+      const midGeo = new THREE.IcosahedronGeometry(50, 1);
+      const midOrig = midGeo.attributes.position.array.slice();
+      const mid = new THREE.Mesh(midGeo, wireMat(0.35));
+      scene.add(mid);
 
-    // Create and position a camera
-    var camera = new BABYLON.ArcRotateCamera(
-      "camera1",
-      -Math.PI / 3,
-      (5 * Math.PI) / 20,
-      50,
-      new BABYLON.Vector3(0, 5, 0),
-      scene
-    );
-    camera.attachControl(canvas, true);
+      // ── Inner octahedron ────────────────────────────────────────────
+      const innerGeo = new THREE.OctahedronGeometry(26, 0);
+      const innerOrig = innerGeo.attributes.position.array.slice();
+      const inner = new THREE.Mesh(innerGeo, wireMat(0.55));
+      scene.add(inner);
 
-    // Create ground with height map
-    var ground = BABYLON.Mesh.CreateGroundFromHeightMap(
-      "ground",
-      "textures/heightMap.png",
-      100,
-      100,
-      100,
-      0,
-      10,
-      scene,
-      false
-    );
-    ground.material = new BABYLON.GridMaterial("groundMaterial", scene);
-    ground.material.lineColor = new BABYLON.Color3(1, 0, 0, 0.95);
+      // ── Core point light ────────────────────────────────────────────
+      const coreGeo = new THREE.IcosahedronGeometry(6, 0);
+      const coreMat = new THREE.MeshBasicMaterial({
+        color: green, transparent: true, opacity: 0.9,
+        blending: THREE.AdditiveBlending
+      });
+      const core = new THREE.Mesh(coreGeo, coreMat);
+      scene.add(core);
 
-    // Rotate camera
-    engine.runRenderLoop(function () {
-      camera.alpha += 0.003;
-    });
+      // ── Circle sprite texture ─────────────────────────────────────
+      const dotCanvas = document.createElement('canvas');
+      dotCanvas.width = 32; dotCanvas.height = 32;
+      const dctx = dotCanvas.getContext('2d');
+      dctx.beginPath();
+      dctx.arc(16, 16, 14, 0, Math.PI * 2);
+      dctx.fillStyle = '#ffffff';
+      dctx.fill();
+      const dotTex = new THREE.CanvasTexture(dotCanvas);
 
-    return scene;
-  };
+      // ── Orbital ring particles ──────────────────────────────────────
+      const NRING = 600;
+      const ringPos = new Float32Array(NRING * 3);
+      const ringCol = new Float32Array(NRING * 3);
+      const ringPhase = new Float32Array(NRING);
+      const ringRadius = new Float32Array(NRING);
+      const ringSpeed = new Float32Array(NRING);
+      const ringTilt = new Float32Array(NRING);
+      for (let i = 0; i < NRING; i++) {
+        ringPhase[i] = Math.random() * Math.PI * 2;
+        ringRadius[i] = 65 + Math.random() * 50;
+        ringSpeed[i] = (0.3 + Math.random() * 0.7) * (Math.random() < 0.5 ? 1 : -1);
+        ringTilt[i] = (Math.random() - 0.5) * 1.2;
+      }
+      const ringGeo = new THREE.BufferGeometry();
+      ringGeo.setAttribute("position", new THREE.BufferAttribute(ringPos, 3));
+      ringGeo.setAttribute("color", new THREE.BufferAttribute(ringCol, 3));
+      const ringMat = new THREE.PointsMaterial({
+        size: 1.5, map: dotTex, vertexColors: true, transparent: true, opacity: 0.7,
+        blending: THREE.AdditiveBlending, depthWrite: false
+      });
+      const ringMesh = new THREE.Points(ringGeo, ringMat);
+      scene.add(ringMesh);
 
-  var scene = createScene();
-  engine.runRenderLoop(function () {
-    scene.render();
-  });
+      // ── Dust field ──────────────────────────────────────────────────
+      const NDUST = 400;
+      const dustPos = new Float32Array(NDUST * 3);
+      const dustCol = new Float32Array(NDUST * 3);
+      for (let i = 0; i < NDUST; i++) {
+        dustPos[i*3]   = (Math.random()-0.5) * 500;
+        dustPos[i*3+1] = (Math.random()-0.5) * 350;
+        dustPos[i*3+2] = (Math.random()-0.5) * 350;
+        dustCol[i*3]   = 0; dustCol[i*3+1] = 0.15 + Math.random()*0.1; dustCol[i*3+2] = 0.05;
+      }
+      const dustGeo = new THREE.BufferGeometry();
+      dustGeo.setAttribute("position", new THREE.BufferAttribute(dustPos, 3));
+      dustGeo.setAttribute("color", new THREE.BufferAttribute(dustCol, 3));
+      const dustMat = new THREE.PointsMaterial({
+        size: 1.0, map: dotTex, vertexColors: true, transparent: true, opacity: 0.5,
+        blending: THREE.AdditiveBlending, depthWrite: false
+      });
+      scene.add(new THREE.Points(dustGeo, dustMat));
 
-  window.addEventListener("resize", function () {
-    engine.resize();
-  });
-</script>
+      // ── Glitch helpers ──────────────────────────────────────────────
+      function glitchVerts(geo, orig, chance, intensity, snapBack) {
+        const arr = geo.attributes.position.array;
+        for (let i = 0; i < arr.length; i += 3) {
+          if (Math.random() < chance) {
+            arr[i]   = orig[i]   + (Math.random()-0.5) * intensity;
+            arr[i+1] = orig[i+1] + (Math.random()-0.5) * intensity;
+            arr[i+2] = orig[i+2] + (Math.random()-0.5) * intensity;
+          } else {
+            arr[i]   += (orig[i]   - arr[i])   * snapBack;
+            arr[i+1] += (orig[i+1] - arr[i+1]) * snapBack;
+            arr[i+2] += (orig[i+2] - arr[i+2]) * snapBack;
+          }
+        }
+        geo.attributes.position.needsUpdate = true;
+      }
+
+      function shatterVerts(geo, orig, radius) {
+        const arr = geo.attributes.position.array;
+        for (let i = 0; i < arr.length; i += 3) {
+          arr[i]   = orig[i]   + (Math.random()-0.5) * radius;
+          arr[i+1] = orig[i+1] + (Math.random()-0.5) * radius;
+          arr[i+2] = orig[i+2] + (Math.random()-0.5) * radius;
+        }
+        geo.attributes.position.needsUpdate = true;
+      }
+
+      // ── Animation ───────────────────────────────────────────────────
+      let t = 0;
+      let shatterCooldown = 0;
+
+      function animate() {
+        requestAnimationFrame(animate);
+        t += 0.012;
+
+        // Rotations — each layer different axis/speed
+        outer.rotation.y += 0.0015;
+        outer.rotation.x += 0.0008;
+        outerGlow.rotation.y = outer.rotation.y;
+        outerGlow.rotation.x = outer.rotation.x;
+
+        mid.rotation.y -= 0.003;
+        mid.rotation.z += 0.002;
+
+        inner.rotation.x += 0.006;
+        inner.rotation.z -= 0.004;
+
+        core.rotation.y += 0.02;
+
+        // Vertex glitch — continuous jitter
+        glitchVerts(outerGeo, outerOrig, 0.015, 18, 0.12);
+        glitchVerts(midGeo,   midOrig,   0.025, 12, 0.15);
+        glitchVerts(innerGeo, innerOrig, 0.04,  8,  0.2);
+
+        // Periodic hard shatter — random trigger
+        shatterCooldown -= 0.012;
+        if (shatterCooldown <= 0 && Math.random() < 0.004) {
+          const target = Math.random();
+          if (target < 0.4) shatterVerts(outerGeo, outerOrig, 140);
+          else if (target < 0.7) shatterVerts(midGeo, midOrig, 90);
+          else shatterVerts(innerGeo, innerOrig, 60);
+          shatterCooldown = 1.5 + Math.random() * 2;
+        }
+
+        // Core pulse
+        const pulse = 1 + Math.sin(t * 4) * 0.4 + Math.sin(t * 7.3) * 0.15;
+        core.scale.setScalar(pulse);
+        coreMat.opacity = 0.5 + Math.sin(t * 5.5) * 0.35;
+
+        // Opacity flicker on wireframes
+        if (Math.random() < 0.03) {
+          outer.material.opacity = 0.08 + Math.random() * 0.2;
+          mid.material.opacity = 0.15 + Math.random() * 0.3;
+          inner.material.opacity = 0.3 + Math.random() * 0.4;
+        } else {
+          outer.material.opacity += (0.22 - outer.material.opacity) * 0.08;
+          mid.material.opacity += (0.35 - mid.material.opacity) * 0.08;
+          inner.material.opacity += (0.55 - inner.material.opacity) * 0.08;
+        }
+
+        // Orbital ring
+        for (let i = 0; i < NRING; i++) {
+          const angle = ringPhase[i] + t * ringSpeed[i];
+          const r = ringRadius[i] + Math.sin(t * 2 + ringPhase[i]) * 4;
+          const tilt = ringTilt[i];
+          ringPos[i*3]   = Math.cos(angle) * r;
+          ringPos[i*3+1] = Math.sin(angle) * r * Math.sin(tilt) + Math.cos(angle + t) * 3;
+          ringPos[i*3+2] = Math.sin(angle) * r * Math.cos(tilt);
+          const bright = 0.3 + Math.abs(Math.sin(angle * 3 + t)) * 0.7;
+          ringCol[i*3] = 0;
+          ringCol[i*3+1] = bright * 0.9;
+          ringCol[i*3+2] = bright * 0.2;
+        }
+        ringGeo.attributes.position.needsUpdate = true;
+        ringGeo.attributes.color.needsUpdate = true;
+
+        // Dust drift
+        const dArr = dustGeo.attributes.position.array;
+        for (let i = 0; i < NDUST; i++) {
+          dArr[i*3]   += Math.sin(t * 0.3 + i) * 0.04;
+          dArr[i*3+1] += Math.cos(t * 0.2 + i * 0.7) * 0.03;
+          // Occasional dust glitch
+          if (Math.random() < 0.002) {
+            dArr[i*3]   = (Math.random()-0.5) * 500;
+            dArr[i*3+1] = (Math.random()-0.5) * 350;
+            dArr[i*3+2] = (Math.random()-0.5) * 350;
+          }
+        }
+        dustGeo.attributes.position.needsUpdate = true;
+
+        // Camera micro-drift
+        camera.position.x = Math.sin(t * 0.15) * 3;
+        camera.position.y = Math.cos(t * 0.11) * 2;
+        camera.lookAt(0, 0, 0);
+
+        renderer.render(scene, camera);
+      }
+      animate();
+    </script>
+
+    <!-- ── Theme switcher + Modal JS ───────────────────────────────── -->
+    <script>
+      // Per-theme RGB tuples for Three.js
+      const THEME_COLORS = {
+        amber:    { accent:[1.00,0.667,0.00], dim:[0.28,0.10,0.00] },
+        phosphor: { accent:[0.00,1.000,0.25], dim:[0.00,0.22,0.06] },
+        cobalt:   { accent:[0.00,0.549,1.00], dim:[0.00,0.12,0.38] },
+        plasma:   { accent:[0.78,0.267,1.00], dim:[0.22,0.00,0.30] },
+        danger:   { accent:[1.00,0.172,0.22], dim:[0.32,0.00,0.04] },
+        matrix:   { accent:[0.00,1.000,0.53], dim:[0.00,0.24,0.10] },
+        solar:    { accent:[1.00,0.392,0.00], dim:[0.30,0.10,0.00] },
+        arctic:   { accent:[0.53,0.933,1.00], dim:[0.06,0.20,0.32] },
+      };
+
+      function setTheme(name, btn) {
+        const html = document.documentElement;
+        html.className = name === 'amber' ? '' : 'theme-' + name;
+        document.querySelectorAll('.theme-btn').forEach(function(b) { b.classList.remove('current'); });
+        (btn || document.querySelector('.theme-btn[data-theme="' + name + '"]'))
+          ?.classList.add('current');
+        var tc = THEME_COLORS[name] || THEME_COLORS.amber;
+        window._themeAccent = tc.accent;
+        window._themeDim    = tc.dim;
+      }
+
+      // Modal system
+      document.querySelectorAll('[data-modal]').forEach(function(el) {
+        el.addEventListener('click', function() {
+          var modal = document.getElementById(el.dataset.modal);
+          if (modal) modal.classList.add('active');
+        });
+      });
+
+      document.querySelectorAll('.ew-modal-overlay').forEach(function(overlay) {
+        overlay.addEventListener('click', function(e) {
+          if (e.target === overlay) overlay.classList.remove('active');
+        });
+      });
+
+      function closeModal(btn) {
+        btn.closest('.ew-modal-overlay').classList.remove('active');
+      }
+
+      // Close on Escape
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          document.querySelectorAll('.ew-modal-overlay.active').forEach(function(m) {
+            m.classList.remove('active');
+          });
+        }
+      });
+    </script>
   </body>
-  <!-- Bootstrap JS and dependencies -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </html>

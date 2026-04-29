@@ -26,7 +26,7 @@
 <!-- |                                                                         | -->
 <!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="theme-plasma">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -46,128 +46,774 @@
 <meta property="og:description" content="ENTROPY WORSHIP Calculator"/>
 <meta property="og:site_name" content="ENTROPY WORSHIP Calculator"/>
 <meta property="og:image:alt" content="WARNING: Experimental Project">
-<!-- Bootstrap CSS -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet" />
+<!-- Bootstrap CSS (hidden, needed for modal JS) -->
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-<script src="https://getbootstrap.com/assets/js/color-modes.js"></script>
-<!-- Augmented UI CSS -->
-<link rel="stylesheet" type="text/css" href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css">
-<!-- Sci UI CSS -->
-<link href="styles/styles.css" rel="stylesheet">
-<link href="styles/style_overrides.css" rel="stylesheet">
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@v0.171.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@v0.171.0/examples/jsm/"
+    }
+  }
+</script>
 <style>
+  /* ── Reset ──────────────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; }
+
+  /* ── Design tokens (plasma) ─────────────────────────────────── */
+  :root {
+    --accent-rgb:  200, 68,  255;
+    --rose-rgb:    255, 68,  200;
+    --mint-rgb:    68,  255, 200;
+    --border-rgb:  100, 0,   160;
+    --dim-rgb:     68,  0,   100;
+    --accent: #c844ff;
+    --rose:   #ff44c8;
+    --mint:   #44ffc8;
+    --text:   #f4ccff;
+    --dim:    #620090;
+    --html-bg:   #080012;
+    --surface:   rgba(10, 0, 22, 0.72);
+    --surface-hi:rgba(16, 0, 32, 0.86);
+    --border:    rgba(var(--border-rgb), 0.42);
+    --border-hi: rgba(var(--accent-rgb), 0.78);
+    --panel-glow: drop-shadow(0 0 6px rgba(var(--accent-rgb), 0.18))
+      drop-shadow(0 0 28px rgba(var(--border-rgb), 0.12));
+    --font: "VT323", "Courier New", monospace;
+  }
+
+  /* ── Keyframes ──────────────────────────────────────────────── */
+  @keyframes title-glow {
+    0%, 100% {
+      text-shadow: 0 0 8px rgba(var(--accent-rgb), 0.8), 0 0 28px rgba(var(--accent-rgb), 0.3);
+    }
+    50% {
+      text-shadow: 0 0 18px rgba(var(--accent-rgb), 1), 0 0 52px rgba(var(--accent-rgb), 0.65), 0 0 88px rgba(var(--border-rgb), 0.28);
+    }
+  }
+  @keyframes border-flicker {
+    0%, 95%, 100% { border-color: rgba(var(--border-rgb), 0.42); }
+    96% { border-color: rgba(var(--accent-rgb), 0.92); }
+    97% { border-color: rgba(var(--border-rgb), 0.22); }
+    98.5% { border-color: rgba(var(--accent-rgb), 0.68); }
+  }
+  @keyframes scan-sweep {
+    0% { top: -4px; opacity: 0.6; }
+    90% { opacity: 0.6; }
+    100% { top: 100%; opacity: 0; }
+  }
+
+  /* ── Background layers ──────────────────────────────────────── */
+  html { background: var(--html-bg); }
   body {
-    position: relative;
-    background-image: url('images/entropyworship._Create_a_hyper-realistic_high-definition_image__faa470a2-d0a9-4d75-8a30-6c68a0724767.png'); 
-    background-size: cover;
-    background-position: center;
-    color: white;
-    text-align: left;
+    background: transparent;
+    color: var(--text);
+    font-family: var(--font);
+    min-height: 100vh;
+    font-size: 20px;
+    line-height: 1.45;
     margin: 0;
     padding: 0;
-    font-family: 'Tomorrow', sans-serif; 
-    background-attachment: fixed; /* For desktop */
+  }
+  #kk-bg {
+    display: block;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  #grid-bg {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 0;
+    pointer-events: none;
+    background-image:
+      linear-gradient(rgba(var(--border-rgb), 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(var(--border-rgb), 0.05) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+  #scanlines {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 9999;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 3px, rgba(0, 0, 0, 0.06) 3px, rgba(0, 0, 0, 0.06) 4px
+    );
+  }
+
+  /* ── Scrollbar ──────────────────────────────────────────────── */
+  ::-webkit-scrollbar { width: 4px; background: #000; }
+  ::-webkit-scrollbar-thumb { background: rgba(var(--border-rgb), 0.55); }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(var(--accent-rgb), 0.55); }
+
+  /* ── App shell ──────────────────────────────────────────────── */
+  #app {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px 16px 60px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── Header ─────────────────────────────────────────────────── */
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .hud-title {
+    font-family: var(--font);
+    font-size: 2.1rem;
+    letter-spacing: 0.48em;
+    color: var(--accent);
+    animation: title-glow 3.2s ease-in-out infinite;
+    line-height: 1;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+  a.hud-title:hover { text-decoration: none; }
+  #meta {
+    display: flex;
+    gap: 18px;
+    color: var(--dim);
+    font-size: 0.95rem;
+    align-items: baseline;
+    letter-spacing: 0.06em;
+    flex-wrap: wrap;
+  }
+  #meta a {
+    color: var(--dim);
+    text-decoration: none;
+    transition: color 0.15s, text-shadow 0.15s;
+  }
+  #meta a:hover {
+    color: var(--accent);
+    text-shadow: 0 0 8px rgba(var(--accent-rgb), 0.6);
+  }
+
+  /* ── HUD panel ──────────────────────────────────────────────── */
+  .hud-panel {
+    position: relative;
+    background: var(--surface);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid var(--border);
+    filter: var(--panel-glow);
+    padding: 16px 18px;
+    margin-bottom: 14px;
+    animation: border-flicker 16s linear infinite;
+  }
+  .hud-panel.clip-tr {
+    clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 0 100%);
+  }
+  .hud-panel.clip-both {
+    clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% calc(100% - 16px), calc(100% - 16px) 100%, 16px 100%, 0 calc(100% - 16px));
+  }
+
+  /* ── Section labels ─────────────────────────────────────────── */
+  .page-section { margin-bottom: 8px; }
+  .page-section-label {
+    font-size: 0.65rem;
+    letter-spacing: 0.35em;
+    color: var(--dim);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    border-left: 2px solid var(--accent);
+    padding-left: 8px;
+  }
+  .section-title {
+    font-size: 0.72rem;
+    color: rgba(var(--accent-rgb), 0.85);
+    text-shadow: 0 0 8px rgba(var(--accent-rgb), 0.5), 0 0 20px rgba(var(--border-rgb), 0.25);
+    letter-spacing: 0.28em;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+  }
+
+  /* ── Controls row ───────────────────────────────────────────── */
+  .controls-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .control-label {
+    display: block;
+    font-size: 0.62rem;
+    letter-spacing: 0.22em;
+    color: var(--dim);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  /* ── Select ─────────────────────────────────────────────────── */
+  select,
+  #noteroot,
+  #mode {
+    font-family: var(--font) !important;
+    font-size: 0.9rem !important;
+    letter-spacing: 0.12em;
+    background: var(--surface) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border) !important;
+    padding: 6px 28px 6px 10px !important;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%23c844ff' opacity='0.5'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 10px center !important;
+    border-radius: 0 !important;
+    min-width: 120px;
+  }
+  select:hover, select:focus,
+  #noteroot:hover, #noteroot:focus,
+  #mode:hover, #mode:focus {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.25) !important;
+  }
+  select option {
+    background: #0e0022;
+    color: var(--text);
+  }
+
+  /* ── Range slider ───────────────────────────────────────────── */
+  input[type="range"],
+  #volumeSlider {
+    -webkit-appearance: none;
+    width: 160px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent) 0%, var(--accent) 50%, rgba(var(--border-rgb), 0.28) 50%, rgba(var(--border-rgb), 0.28) 100%);
+    outline: none;
+    cursor: pointer;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    background: var(--accent);
+    transform: rotate(45deg);
+    box-shadow: 0 0 6px rgba(var(--accent-rgb), 0.6);
+    cursor: pointer;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 14px;
+    height: 14px;
+    background: var(--accent);
+    border: none;
+    transform: rotate(45deg);
+    box-shadow: 0 0 6px rgba(var(--accent-rgb), 0.6);
+    cursor: pointer;
+  }
+
+  /* ── EWUILIB Button ─────────────────────────────────────────── */
+  .btn-ew {
+    font-family: var(--font);
+    font-size: 0.82rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    border: 1px solid rgba(var(--rose-rgb), 0.5);
+    background: var(--surface);
+    color: var(--rose);
+    padding: 5px 16px;
+    cursor: pointer;
+    transition: border-color 0.14s, color 0.14s, box-shadow 0.14s;
+    outline: none;
+    text-decoration: none;
+    display: inline-block;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  }
+  .btn-ew:hover {
+    border-color: var(--rose);
+    color: var(--rose);
+    box-shadow: 0 0 10px rgba(var(--rose-rgb), 0.38);
+  }
+
+  /* ── Override dynamically generated Bootstrap table ──────────── */
+  .table,
+  #results table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font);
+    font-size: 0.88rem;
+    letter-spacing: 0.08em;
+    color: var(--text) !important;
+    background: transparent !important;
+    border: none !important;
+  }
+  .table th,
+  #results table th {
+    font-size: 0.62rem;
+    letter-spacing: 0.24em;
+    color: var(--dim) !important;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border) !important;
+    border-top: none !important;
+    padding: 6px 10px 8px;
+    text-align: left;
+    background: transparent !important;
+  }
+  .table td,
+  #results table td {
+    padding: 7px 10px !important;
+    border: none !important;
+    border-bottom: 1px solid rgba(var(--border-rgb), 0.18) !important;
+    color: var(--text) !important;
+    vertical-align: middle;
+    background: transparent !important;
+  }
+  .table tr:hover td,
+  #results table tr:hover td {
+    background: rgba(var(--accent-rgb), 0.04) !important;
+  }
+  /* First column (roman numerals) */
+  #results table td:first-child {
+    color: var(--accent) !important;
+    letter-spacing: 0.14em;
+    font-size: 1rem;
+  }
+  /* Second column (note names) */
+  #results table td:nth-child(2) {
+    color: var(--rose) !important;
+    font-size: 1rem;
+    letter-spacing: 0.1em;
+  }
+
+  /* ── Override dynamically generated Bootstrap buttons ────────── */
+  .btn-outline-light,
+  #results .btn,
+  #results button {
+    font-family: var(--font) !important;
+    font-size: 0.68rem !important;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    border: 1px solid rgba(var(--mint-rgb), 0.4) !important;
+    background: transparent !important;
+    color: var(--mint) !important;
+    padding: 2px 8px !important;
+    border-radius: 0 !important;
+    cursor: pointer;
+    transition: border-color 0.14s, color 0.14s, box-shadow 0.14s;
+  }
+  .btn-outline-light:hover,
+  #results .btn:hover,
+  #results button:hover {
+    border-color: var(--mint) !important;
+    color: var(--mint) !important;
+    box-shadow: 0 0 8px rgba(var(--mint-rgb), 0.3) !important;
+    background: rgba(var(--mint-rgb), 0.06) !important;
+  }
+  #results a {
+    color: var(--mint) !important;
+    text-decoration: none;
+  }
+  #results a:hover {
+    color: var(--mint) !important;
+    text-shadow: 0 0 6px rgba(var(--mint-rgb), 0.5);
+  }
+
+  /* ── Override Bootstrap modal ────────────────────────────────── */
+  .modal-content {
+    background: var(--surface-hi) !important;
+    border: 1px solid var(--border-hi) !important;
+    border-radius: 0 !important;
+    color: var(--text) !important;
+    font-family: var(--font);
+    clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+  }
+  .modal-body {
+    padding: 18px !important;
+    font-family: var(--font);
+    letter-spacing: 0.1em;
+  }
+  .modal-body p {
+    color: var(--text);
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+  }
+  .modal {
+    z-index: 10500 !important;
+  }
+  .modal-backdrop {
+    z-index: 10400 !important;
+    background: rgba(8, 0, 18, 0.35) !important;
+  }
+  .modal-backdrop.show {
+    opacity: 1 !important;
+  }
+  #playButton {
+    font-family: var(--font) !important;
+    font-size: 0.82rem !important;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    border: 1px solid rgba(var(--accent-rgb), 0.5) !important;
+    background: var(--surface) !important;
+    color: var(--accent) !important;
+    padding: 5px 16px !important;
+    border-radius: 0 !important;
+    cursor: pointer;
+    transition: border-color 0.14s, color 0.14s, box-shadow 0.14s;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  }
+  #playButton:hover {
+    border-color: var(--accent) !important;
+    box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.35) !important;
+  }
+
+  /* ── Footer ─────────────────────────────────────────────────── */
+  .type-dim {
+    font-size: 0.9rem;
+    color: var(--dim);
+    letter-spacing: 0.06em;
   }
 </style>
 </head>
 <body>
-    <div class="container">
-        <div class="card text-bg-danger border-danger mb-3" style="background-color: #7b9cb76c"><!--Header panel-->
-            <div class="card-header border-danger">
-              <a href="https://www.entropyworship.com"><h1 class="heading display-6" style="font-size: 1.5rem;">ENTROPY WORSHIP</h1></a>
-                <h2 class="panel info shown" style="font-size: 1.5rem;">build 3.0.11.17.24</h1>
-            </div>
-            <div class="card-body">
-                <h2 class="panel info shown" style="font-size: 1.5rem;">ewmidicalc</h2>
-                <div class="form-group">
-                    <div class="row">
-                        <button class="btn btn-outline-light btn-sm button alert" id="stopAllButton" style="position: absolute; right: 20px;">Stop</button>
-                        <select id="noteroot" class="form-select form-select-lg btn-outline-light btn" onchange="updateResults()">
-                            <option value="C" selected>C</option>
-                            <option value="C♯">C♯</option>
-                            <option value="D">D</option>
-                            <option value="D♯">D♯</option>
-                            <option value="E">E</option>
-                            <option value="F">F</option>
-                            <option value="F♯">F♯</option>
-                            <option value="G">G</option>
-                            <option value="G♯">G♯</option>
-                            <option value="A">A</option>
-                            <option value="A♯">A♯</option>
-                            <option value="B">B</option>
-                        </select>
-                        <select id="mode" class="form-select form-select-lg btn-outline-light btn" onchange="updateResults()">
-                            <option value="Ionian" selected>Ionian</option>
-                            <option value="Dorian">Dorian</option>
-                            <option value="Phrygian">Phrygian</option>
-                            <option value="Lydian">Lydian</option>
-                            <option value="Mixolydian">Mixolydian</option>
-                            <option value="Aeolian">Aeolian</option>
-                            <option value="Locrian">Locrian</option>
-                        </select>
-                        <input type="range" class="form-range" id="volumeSlider" min="0" max="100" value="50">
-                        
-                    </div>
-                </div>
-                <div class="results" id="results"></div>
-                <!--TEST TEST TEST-->
-<!--                 <table class="table">
-                    <tbody>
-                      <tr>
-                        <td id="tonic">tonic</td>
-                      </tr>
-                      <tr>
-                        <td id="supertonic">supertonic</td>
-                      </tr>
-                      <tr>
-                        <td id="mediant">mediant</td>
-                      </tr>
-                      <tr>
-                        <td id="subdominant">subdominant</td>
-                      </tr>
-                      <tr>
-                        <td id="dominant">dominant</td>
-                      </tr>
-                      <tr>
-                        <td id="submediant">submediant</td>
-                      </tr>
-                      <tr>
-                        <td id="leadingTone">leadingTone</td>
-                      </tr>
-                    </tbody>
-                  </table> -->
+  <!-- ── Three.js Kaluza-Klein background ── -->
+  <canvas id="kk-bg"></canvas>
+  <!-- ── Grid overlay ── -->
+  <div id="grid-bg"></div>
+  <!-- ── Scanline overlay ── -->
+  <div id="scanlines"></div>
 
-                 <!-- Modal for MIDI note information -->
-                <div class="modal fade" id="midiModal" tabindex="-1" aria-labelledby="midiModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-body">
-                                <p id="midiValue"></p>
-                                <p id="frequency"></p>
-                                <p id="octave"></p>
-                                <button class="btn btn-dark button success" id="playButton">Play</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- Modal for Scale degree note information -->
-                <div class="modal fade" id="rootModal" tabindex="-1" aria-labelledby="rootModalLabel" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-body">
-                                <p id="rootNote"></p>
-                                <p id="thirdNote"></p>
-                                <p id="fifthNote"></p>
-                                <p id="seventhNote"></p>
-                                <p id="ninthNote"></p>
-                                <p id="chordSpelling"></p>
-                                <!--<p id="nextChord"></p>-->
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <div id="app">
+    <header>
+      <h1 class="hud-title">EWMIDICALC</h1>
+      <div id="meta">
+        <span>build 3.1.28.04.26</span>
+      </div>
+    </header>
+
+    <section class="page-section">
+      <div class="page-section-label">// MIDI Calculator</div>
+      <div class="hud-panel clip-tr">
+
+        <div class="controls-row">
+          <div>
+            <span class="control-label">ROOT</span>
+            <select id="noteroot" onchange="updateResults()">
+              <option value="C" selected>C</option>
+              <option value="C♯">C♯</option>
+              <option value="D">D</option>
+              <option value="D♯">D♯</option>
+              <option value="E">E</option>
+              <option value="F">F</option>
+              <option value="F♯">F♯</option>
+              <option value="G">G</option>
+              <option value="G♯">G♯</option>
+              <option value="A">A</option>
+              <option value="A♯">A♯</option>
+              <option value="B">B</option>
+            </select>
+          </div>
+          <div>
+            <span class="control-label">MODE</span>
+            <select id="mode" onchange="updateResults()">
+              <option value="Ionian" selected>Ionian</option>
+              <option value="Dorian">Dorian</option>
+              <option value="Phrygian">Phrygian</option>
+              <option value="Lydian">Lydian</option>
+              <option value="Mixolydian">Mixolydian</option>
+              <option value="Aeolian">Aeolian</option>
+              <option value="Locrian">Locrian</option>
+            </select>
+          </div>
+          <div>
+            <span class="control-label">VOLUME</span>
+            <input type="range" id="volumeSlider" min="0" max="100" value="50">
+            <span id="volumeValue" class="type-dim" style="font-size:0.65rem; margin-left:6px;">50</span>
+          </div>
+          <div style="margin-left:auto;">
+            <button class="btn-ew" id="stopAllButton">STOP</button>
+          </div>
         </div>
+
+        <div id="results"></div>
+      </div>
+    </section>
+
+    <div class="hud-panel" style="text-align:center; padding:12px;">
+      <span class="type-dim" style="letter-spacing:0.3em;"><a href="index.html" style="color:var(--dim); text-decoration:none;">ENTROPY WORSHIP</a></span>
     </div>
+  </div>
+
+  <!-- Modal for MIDI note information -->
+  <div class="modal fade" id="midiModal" tabindex="-1" aria-labelledby="midiModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+          <p id="midiValue"></p>
+          <p id="frequency"></p>
+          <p id="octave"></p>
+          <button id="playButton">Play</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal for Scale degree note information -->
+  <div class="modal fade" id="rootModal" tabindex="-1" aria-labelledby="rootModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-body">
+          <p id="rootNote"></p>
+          <p id="thirdNote"></p>
+          <p id="fifthNote"></p>
+          <p id="seventhNote"></p>
+          <p id="ninthNote"></p>
+          <p id="chordSpelling"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- ── Kaluza-Klein String Theory Background ──────────────────── -->
+<script type="module">
+  import * as THREE from "three";
+
+  const canvas = document.getElementById("kk-bg");
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.setClearColor(0x000000, 0);
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 1000);
+  camera.position.set(0, 0, 35);
+
+  function resize() {
+    renderer.setSize(innerWidth, innerHeight);
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+  }
+  resize();
+  addEventListener("resize", resize);
+
+  // Plasma colors
+  const purple = new THREE.Color(0xc844ff);
+  const magenta = new THREE.Color(0xff44c8);
+  const teal = new THREE.Color(0x44ffc8);
+  const dimPurple = new THREE.Color(0x300050);
+
+  // ── Kaluza-Klein compactified dimension torus ───────────────
+  // Represents the S1 fiber bundle: a tube whose cross-section
+  // oscillates through higher-dimensional vibration modes
+
+  const KK_STRINGS = 14;
+  const kkGroup = new THREE.Group();
+  scene.add(kkGroup);
+
+  // Each "string" is a tube along a path that wraps around compactified dimensions
+  const stringMeshes = [];
+  const stringData = [];
+
+  for (let s = 0; s < KK_STRINGS; s++) {
+    const data = {
+      majorR: 20 + Math.random() * 30,       // orbit radius
+      minorR: 0.02 + Math.random() * 0.06,   // string thickness
+      tilt: (Math.random() - 0.5) * Math.PI,
+      tiltY: (Math.random() - 0.5) * Math.PI * 0.6,
+      speed: (0.15 + Math.random() * 0.4) * (Math.random() < 0.5 ? 1 : -1),
+      vibFreq: 2 + Math.floor(Math.random() * 6),  // harmonic mode
+      vibAmp: 0.3 + Math.random() * 1.5,
+      phase: Math.random() * Math.PI * 2,
+      colorMix: Math.random(),
+    };
+    stringData.push(data);
+
+    // Create a curve that will be updated each frame
+    const pts = [];
+    const segments = 256;
+    for (let i = 0; i <= segments; i++) {
+      pts.push(new THREE.Vector3(0, 0, 0));
+    }
+    const curve = new THREE.CatmullRomCurve3(pts, true);
+    const tubeGeo = new THREE.TubeGeometry(curve, segments, data.minorR, 5, true);
+
+    const col = data.colorMix < 0.33 ? purple :
+                data.colorMix < 0.66 ? magenta : teal;
+
+    const mat = new THREE.MeshBasicMaterial({
+      color: col,
+      transparent: true,
+      opacity: 0.25 + Math.random() * 0.2,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      wireframe: true,
+    });
+
+    const mesh = new THREE.Mesh(tubeGeo, mat);
+    mesh.rotation.x = data.tilt;
+    mesh.rotation.y = data.tiltY;
+    kkGroup.add(mesh);
+    stringMeshes.push({ mesh, curve, data, segments });
+  }
+
+  // ── Calabi-Yau inspired central manifold ────────────────────
+  // Nested wireframe torus knots representing compactified extra dimensions
+  const manifolds = [];
+  const manifoldConfigs = [
+    { p: 2, q: 3, radius: 16, tube: 5,   opacity: 0.18, color: purple,  speed: 0.003 },
+    { p: 3, q: 5, radius: 12, tube: 3.5, opacity: 0.14, color: magenta, speed: -0.004 },
+    { p: 2, q: 5, radius: 20, tube: 2.5, opacity: 0.10, color: teal,    speed: 0.002 },
+    { p: 3, q: 7, radius: 10, tube: 3,   opacity: 0.12, color: purple,  speed: -0.005 },
+  ];
+
+  manifoldConfigs.forEach(cfg => {
+    const geo = new THREE.TorusKnotGeometry(cfg.radius, cfg.tube, 128, 12, cfg.p, cfg.q);
+    const mat = new THREE.MeshBasicMaterial({
+      color: cfg.color,
+      wireframe: true,
+      transparent: true,
+      opacity: cfg.opacity,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+    });
+    const mesh = new THREE.Mesh(geo, mat);
+    scene.add(mesh);
+    manifolds.push({ mesh, speed: cfg.speed, cfg });
+  });
+
+  // ── Vibrating string particles (quantum fluctuations) ───────
+  const NPARTS = 800;
+  const pPos = new Float32Array(NPARTS * 3);
+  const pCol = new Float32Array(NPARTS * 3);
+  const pPhase = new Float32Array(NPARTS);
+  const pRadius = new Float32Array(NPARTS);
+  const pSpeed = new Float32Array(NPARTS);
+  const pAxis = new Float32Array(NPARTS); // 0=XY, 1=XZ, 2=YZ
+
+  for (let i = 0; i < NPARTS; i++) {
+    pPhase[i] = Math.random() * Math.PI * 2;
+    pRadius[i] = 15 + Math.random() * 55;
+    pSpeed[i] = (0.2 + Math.random() * 0.8) * (Math.random() < 0.5 ? 1 : -1);
+    pAxis[i] = Math.floor(Math.random() * 3);
+    const c = [purple, magenta, teal][Math.floor(Math.random() * 3)];
+    pCol[i * 3] = c.r * (0.4 + Math.random() * 0.6);
+    pCol[i * 3 + 1] = c.g * (0.4 + Math.random() * 0.6);
+    pCol[i * 3 + 2] = c.b * (0.4 + Math.random() * 0.6);
+  }
+
+  // Circle sprite
+  const dotCanvas = document.createElement('canvas');
+  dotCanvas.width = 32; dotCanvas.height = 32;
+  const dctx = dotCanvas.getContext('2d');
+  dctx.beginPath();
+  dctx.arc(16, 16, 14, 0, Math.PI * 2);
+  dctx.fillStyle = '#ffffff';
+  dctx.fill();
+  const dotTex = new THREE.CanvasTexture(dotCanvas);
+
+  const pGeo = new THREE.BufferGeometry();
+  pGeo.setAttribute("position", new THREE.BufferAttribute(pPos, 3));
+  pGeo.setAttribute("color", new THREE.BufferAttribute(pCol, 3));
+  const pMat = new THREE.PointsMaterial({
+    size: 0.8, map: dotTex, vertexColors: true, transparent: true, opacity: 0.6,
+    blending: THREE.AdditiveBlending, depthWrite: false,
+  });
+  scene.add(new THREE.Points(pGeo, pMat));
+
+  // ── Animation ───────────────────────────────────────────────
+  let t = 0;
+
+  function animate() {
+    requestAnimationFrame(animate);
+    t += 0.008;
+
+    // Update string paths — Kaluza-Klein compactified loops with vibrational modes
+    stringMeshes.forEach(({ mesh, curve, data, segments }) => {
+      const pts = curve.points;
+      for (let i = 0; i <= segments; i++) {
+        const u = i / segments;
+        const angle = u * Math.PI * 2;
+
+        // Base circle in compactified dimension
+        let x = Math.cos(angle + t * data.speed) * data.majorR;
+        let y = Math.sin(angle + t * data.speed) * data.majorR;
+        let z = 0;
+
+        // Vibrational harmonics — string excitation modes
+        const vib = Math.sin(angle * data.vibFreq + t * 3 + data.phase) * data.vibAmp;
+        const vib2 = Math.cos(angle * (data.vibFreq + 1) + t * 2.3 + data.phase * 0.7) * data.vibAmp * 0.5;
+
+        // Displacement into extra dimensions (projected as perpendicular offset)
+        x += vib * Math.cos(angle);
+        y += vib * Math.sin(angle);
+        z += vib2;
+
+        // Kaluza-Klein tower: modulate radius by compactified momentum
+        const kkModulation = 1 + 0.15 * Math.sin(angle * 3 + t * 1.5 + data.phase);
+        x *= kkModulation;
+        y *= kkModulation;
+
+        pts[i].set(x, y, z);
+      }
+      curve.updateArcLengths();
+
+      // Rebuild tube geometry
+      const newGeo = new THREE.TubeGeometry(curve, segments, data.minorR, 5, true);
+      mesh.geometry.dispose();
+      mesh.geometry = newGeo;
+    });
+
+    // Rotate manifolds
+    manifolds.forEach(({ mesh, speed, cfg }) => {
+      mesh.rotation.x += speed;
+      mesh.rotation.y += speed * 0.7;
+      mesh.rotation.z += speed * 0.3;
+      // Breathe opacity
+      mesh.material.opacity = cfg.opacity + Math.sin(t * 2 + cfg.radius) * 0.04;
+    });
+
+    // Whole string group slow tumble
+    kkGroup.rotation.x = Math.sin(t * 0.08) * 0.3;
+    kkGroup.rotation.y += 0.001;
+    kkGroup.rotation.z = Math.cos(t * 0.06) * 0.15;
+
+    // Quantum fluctuation particles
+    for (let i = 0; i < NPARTS; i++) {
+      const angle = pPhase[i] + t * pSpeed[i];
+      const r = pRadius[i] + Math.sin(t * 1.5 + pPhase[i] * 3) * 2;
+      const wobble = Math.sin(angle * 5 + t * 2) * 1.5;
+      const ax = pAxis[i];
+      if (ax === 0) {
+        pPos[i*3]   = Math.cos(angle) * r;
+        pPos[i*3+1] = Math.sin(angle) * r + wobble;
+        pPos[i*3+2] = wobble * 0.5;
+      } else if (ax === 1) {
+        pPos[i*3]   = Math.cos(angle) * r;
+        pPos[i*3+1] = wobble * 0.5;
+        pPos[i*3+2] = Math.sin(angle) * r + wobble;
+      } else {
+        pPos[i*3]   = wobble * 0.5;
+        pPos[i*3+1] = Math.cos(angle) * r;
+        pPos[i*3+2] = Math.sin(angle) * r + wobble;
+      }
+    }
+    pGeo.attributes.position.needsUpdate = true;
+
+    // Camera gentle orbit
+    camera.position.x = Math.sin(t * 0.1) * 12;
+    camera.position.y = Math.cos(t * 0.07) * 8;
+    camera.lookAt(0, 0, 0);
+
+    renderer.render(scene, camera);
+  }
+  animate();
+</script>
+
 <!-- Script for establishing the key context and rendering the output -->
 <script src="scripts/midiCalc.js"></script>
 <!-- jQuery (v3.6.0) -->
