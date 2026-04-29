@@ -5,7 +5,7 @@
 // ============================================================
 
 // Production URL — update when deployed
-const WS_PROD = "wss://entropyworship-production.up.railway.app";
+const WS_PROD = "wss://ew-objects-production.up.railway.app";
 const WS_LOCAL_PORT = 3001;
 
 function resolveWsBase() {
