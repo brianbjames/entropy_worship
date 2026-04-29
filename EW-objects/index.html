@@ -46,7 +46,9 @@
         display: block;
         text-decoration: none;
         color: var(--text);
-        transition: border-color 0.14s, box-shadow 0.14s;
+        transition:
+          border-color 0.14s,
+          box-shadow 0.14s;
       }
       .object-card:hover {
         border-color: var(--accent);
@@ -110,30 +112,34 @@
       <div class="hud-panel clip-tr concept-panel">
         <div class="section-title">// DISTRIBUTED MODULAR AUDIO //</div>
         <p>
-          Each object is a standalone audio module connected via WebSocket rooms.
-          <strong style="color:var(--accent)">Room URLs are patch cables.</strong>
-          Paste one module's room name into another module's input to connect them.
+          Each object is a standalone audio module connected via WebSocket
+          rooms.
+          <strong style="color: var(--accent)"
+            >Room URLs are patch cables.</strong
+          >
+          Paste one module's room name into another module's input to connect
+          them.
         </p>
         <p>
           Modules can live in different browser tabs, machines, or be shared
           between users in real-time.
         </p>
-        <div class="stats-row" style="margin-top:10px">
+        <div class="stats-row" style="margin-top: 10px">
           <div class="stat-block">
             <div class="stat-label">PROTOCOL</div>
-            <div class="stat-val" style="font-size:1rem">WebSocket</div>
+            <div class="stat-val" style="font-size: 1rem">WebSocket</div>
           </div>
           <div class="stat-block">
             <div class="stat-label">CLOCK SYNC</div>
-            <div class="stat-val" style="font-size:1rem">NTP</div>
+            <div class="stat-val" style="font-size: 1rem">NTP</div>
           </div>
           <div class="stat-block">
             <div class="stat-label">AUDIO</div>
-            <div class="stat-val" style="font-size:1rem">Tone.js</div>
+            <div class="stat-val" style="font-size: 1rem">Tone.js</div>
           </div>
           <div class="stat-block">
             <div class="stat-label">UI</div>
-            <div class="stat-val" style="font-size:1rem">EWUILIB</div>
+            <div class="stat-val" style="font-size: 1rem">EWUILIB</div>
           </div>
         </div>
       </div>
@@ -162,9 +168,9 @@
           </div>
         </a>
 
-        <div class="hud-panel" style="opacity:0.4; pointer-events:none">
+        <div class="hud-panel" style="opacity: 0.4; pointer-events: none">
           <div class="obj-type">COMING SOON</div>
-          <div class="obj-name" style="color:var(--dim)">LFO</div>
+          <div class="obj-name" style="color: var(--dim)">LFO</div>
           <div class="obj-desc">
             Low-frequency oscillator for modulating other modules' parameters.
             Outputs a periodic control signal.
@@ -176,9 +182,9 @@
           </div>
         </div>
 
-        <div class="hud-panel" style="opacity:0.4; pointer-events:none">
+        <div class="hud-panel" style="opacity: 0.4; pointer-events: none">
           <div class="obj-type">COMING SOON</div>
-          <div class="obj-name" style="color:var(--dim)">FILTER</div>
+          <div class="obj-name" style="color: var(--dim)">FILTER</div>
           <div class="obj-desc">
             Audio filter with cutoff, resonance, and type controls. Accepts
             modulation signals on all parameters.
@@ -190,9 +196,9 @@
           </div>
         </div>
 
-        <div class="hud-panel" style="opacity:0.4; pointer-events:none">
+        <div class="hud-panel" style="opacity: 0.4; pointer-events: none">
           <div class="obj-type">COMING SOON</div>
-          <div class="obj-name" style="color:var(--dim)">SCOPE</div>
+          <div class="obj-name" style="color: var(--dim)">SCOPE</div>
           <div class="obj-desc">
             Oscilloscope and spectrum analyzer. Input-only module for
             visualizing signals from other objects.
@@ -207,27 +213,37 @@
       <div class="hud-panel clip-br concept-panel">
         <div class="section-title rose">// HOW TO CONNECT //</div>
         <p>
-          1. Open an object (e.g. Oscillator) in a browser tab.
-          The page auto-generates a room name and displays it in the
+          1. Open an object (e.g. Oscillator) in a browser tab. The page
+          auto-generates a room name and displays it in the
           <code>OUTPUT ROOM</code> panel.
         </p>
         <p>
-          2. Open another object in a second tab.
-          In the <code>INPUT CONNECTIONS</code> panel, paste the first
-          object's room name into the desired input port.
+          2. Open another object in a second tab. In the
+          <code>INPUT CONNECTIONS</code> panel, paste the first object's room
+          name into the desired input port.
         </p>
         <p>
-          3. Click <code>LINK</code>. The second object now receives
-          real-time parameter updates from the first.
+          3. Click <code>LINK</code>. The second object now receives real-time
+          parameter updates from the first.
         </p>
         <p>
-          4. Changes to the source object's controls are instantly reflected
-          in all connected subscribers.
+          4. Changes to the source object's controls are instantly reflected in
+          all connected subscribers.
         </p>
       </div>
 
-      <div style="text-align:center; padding:20px 0; font-size:0.72rem; letter-spacing:0.22em; color:var(--dim)">
-        <a href="../index.html" style="color:var(--dim); text-decoration:none">◂ ENTROPY WORSHIP</a>
+      <div
+        style="
+          text-align: center;
+          padding: 20px 0;
+          font-size: 0.72rem;
+          letter-spacing: 0.22em;
+          color: var(--dim);
+        "
+      >
+        <a href="../" style="color: var(--dim); text-decoration: none"
+          >ENTROPY WORSHIP</a
+        >
       </div>
     </div>
   </body>
