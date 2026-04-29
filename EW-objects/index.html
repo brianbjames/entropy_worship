@@ -182,19 +182,25 @@
           </div>
         </div>
 
-        <div class="hud-panel" style="opacity: 0.4; pointer-events: none">
-          <div class="obj-type">COMING SOON</div>
-          <div class="obj-name" style="color: var(--dim)">FILTER</div>
+        <a href="objects/filter.html" class="hud-panel object-card">
+          <div class="obj-type">SIGNAL PROCESSOR</div>
+          <div class="obj-name">FILTER</div>
           <div class="obj-desc">
-            Audio filter with cutoff, resonance, and type controls. Accepts
-            modulation signals on all parameters.
+            Multimode filter with cutoff, resonance, and type controls.
+            Link an oscillator room to its frequency input for audio-rate
+            cutoff modulation.
           </div>
           <div class="obj-ports">
-            <span class="tag">IN: cutoff</span>
-            <span class="tag">IN: resonance</span>
-            <span class="tag">OUT: cutoff</span>
+            <span class="tag mint">IN: cutoff</span>
+            <span class="tag mint">IN: Q</span>
+            <span class="tag mint">IN: gain</span>
+            <span class="tag mint">IN: type</span>
+            <span class="tag accent">OUT: cutoff</span>
+            <span class="tag accent">OUT: Q</span>
+            <span class="tag accent">OUT: gain</span>
+            <span class="tag accent">OUT: type</span>
           </div>
-        </div>
+        </a>
 
         <div class="hud-panel" style="opacity: 0.4; pointer-events: none">
           <div class="obj-type">COMING SOON</div>

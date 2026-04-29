@@ -1,0 +1,965 @@
+<!-- /-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\ -->
+<!-- |                                                                         | -->
+<!-- \ @@@@@@@@  @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@@@@@   @@@ @@@      / -->
+<!-- - @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@ @@@      - -->
+<!-- / @@!       @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!  @@@  @@! !@@      \ -->
+<!-- | !@!       !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!  @!@  !@! @!!      | -->
+<!-- \ @!!!:!    @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!@@!@!    !@!@!       / -->
+<!-- - !!!!!:    !@!  !!!    !!!    !!@!@!    !@!  !!!  !!@!!!      @!!!       - -->
+<!-- / !!:       !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:         !!:        \ -->
+<!-- | :!:       :!:  !:!    :!:    :!:  !:!  :!:  !:!  :!:         :!:        | -->
+<!-- \  :: ::::   ::   ::     ::    ::   :::  ::::: ::   ::          ::        / -->
+<!-- - : :: ::   ::    :      :      :   : :   : :  :    :           :         - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \ @@@  @@@  @@@   @@@@@@   @@@@@@@    @@@@@@   @@@  @@@  @@@  @@@@@@@     / -->
+<!-- - @@@  @@@  @@@  @@@@@@@@  @@@@@@@@  @@@@@@@   @@@  @@@  @@@  @@@@@@@@    - -->
+<!-- / @@!  @@!  @@!  @@!  @@@  @@!  @@@  !@@       @@!  @@@  @@!  @@!  @@@    \ -->
+<!-- | !@!  !@!  !@!  !@!  @!@  !@!  @!@  !@!       !@!  @!@  !@!  !@!  @!@    | -->
+<!-- \ @!!  !!@  @!@  @!@  !@!  @!@!!@!   !!@@!!    @!@!@!@!  !!@  @!@@!@!     / -->
+<!-- - !@!  !!!  !@!  !@!  !!!  !!@!@!     !!@!!!   !!!@!!!!  !!!  !!@!!!      - -->
+<!-- / !!:  !!:  !!:  !!:  !!!  !!: :!!        !:!  !!:  !!!  !!:  !!:         \ -->
+<!-- | :!:  :!:  :!:  :!:  !:!  :!:  !:!      !:!   :!:  !:!  :!:  :!:         | -->
+<!-- \  :::: :: :::   ::::: ::  ::   :::  :::: ::   ::   :::   ::   ::         / -->
+<!-- -   :: :  : :     : :  :    :   : :  :: : :     :   : :  :     :          - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FILTER</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=VT323&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css"
+    />
+    <link rel="stylesheet" href="../lib/ewuilib.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+    <style>
+      #filter-scope {
+        display: block;
+        width: 100%;
+        height: 120px;
+        background: #0e0400;
+      }
+      .param-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+      .param-row .control-label {
+        min-width: 80px;
+        margin-bottom: 0;
+        flex-shrink: 0;
+      }
+      #power-toggle .toggle-track.on .toggle-thumb {
+        left: 22px;
+      }
+      #meta .toggle-wrap {
+        align-self: center;
+      }
+      #meta .toggle-track {
+        margin: 0;
+      }
+      .param-row input[type="range"] {
+        flex: 1;
+      }
+      .param-row .range-val {
+        min-width: 72px;
+        text-align: right;
+      }
+      .room-entry {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 10px;
+        border: 1px solid var(--border);
+        margin-bottom: 6px;
+        text-decoration: none;
+        color: var(--text);
+        font-size: 0.82rem;
+        letter-spacing: 0.1em;
+        transition: border-color 0.14s, background 0.14s;
+        cursor: pointer;
+      }
+      .room-entry:hover {
+        border-color: var(--accent);
+        background: rgba(var(--accent-rgb), 0.06);
+      }
+      .room-entry-name {
+        color: var(--accent);
+      }
+      .room-entry-info {
+        font-size: 0.68rem;
+        color: var(--dim);
+        letter-spacing: 0.08em;
+      }
+      .mod-row {
+        opacity: 0.3;
+        pointer-events: none;
+        transition: opacity 0.2s;
+      }
+      .mod-row.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="grid-bg"></div>
+    <div id="scanlines"></div>
+    <div id="app"></div>
+
+    <script type="module">
+      import { EWObject } from "../lib/ew-object-base.js";
+      import {
+        buildHeaderBar,
+        buildInputPanel,
+        updateOutputStats,
+        wireRange,
+      } from "../lib/ew-object-ui.js";
+
+      // ── EWObject instance ──────────────────────────────────────
+
+      const ewObj = new EWObject({
+        name: "FLT-1",
+        objectType: "filter",
+        roomPrefix: "flt",
+        inputs: [
+          {
+            port: "frequency",
+            type: "number",
+            unit: "hz",
+            min: 20,
+            max: 20000,
+            default: 1000,
+          },
+          {
+            port: "Q",
+            type: "number",
+            unit: "",
+            min: 0.1,
+            max: 30,
+            default: 1,
+          },
+          {
+            port: "gain",
+            type: "number",
+            unit: "",
+            min: 0,
+            max: 1,
+            default: 1,
+          },
+          {
+            port: "type",
+            type: "enum",
+            values: ["lowpass", "highpass", "bandpass", "notch"],
+            default: "lowpass",
+          },
+        ],
+        outputs: [
+          { port: "frequency", type: "number", unit: "hz" },
+          { port: "Q", type: "number" },
+          { port: "type", type: "string" },
+          { port: "gain", type: "number" },
+          { port: "playing", type: "boolean" },
+          { port: "outputMode", type: "string" },
+          { port: "modChain", type: "object" },
+        ],
+      });
+
+      // ── Filter state ───────────────────────────────────────────
+
+      let baseCutoff = 1000;
+      let fmDepth = 500; // cutoff modulation depth in Hz
+      let baseQ = 1;
+      let qModDepth = 5;
+      let baseGain = 1;
+      let gainModDepth = 0.5;
+
+      // ── Tone.js audio ──────────────────────────────────────────
+
+      let filter = null;
+      let gainNode = null;
+      let analyser = null;
+      let filterRunning = false;
+      let audioReady = false;
+      let outputMode = "audio";
+
+      // Local source oscillator — created when a room is linked
+      // to the audio input. Mirrors the remote oscillator's params.
+      let sourceOsc = null;
+      let sourceGain = null;
+      let sourceConnected = false;
+
+      // Modulation chain state (same pattern as oscillator)
+      let fmModChain = null;
+      let fmModUpstreamChain = null;
+      let fmModWanted = false;
+      let fmModRemoteFreq = 2;
+      let fmModRemoteType = "sine";
+
+      let qModOsc = null;
+      let qModGain = null;
+      let qModWanted = false;
+      let qModRemoteFreq = 2;
+      let qModRemoteType = "sine";
+
+      let gainModOsc = null;
+      let gainModGainNode = null;
+      let gainModWanted = false;
+      let gainModRemoteFreq = 2;
+      let gainModRemoteType = "sine";
+
+      async function ensureAudio() {
+        if (audioReady) return;
+        await Tone.start();
+        filter = new Tone.Filter({
+          frequency: baseCutoff,
+          type: "lowpass",
+          Q: baseQ,
+          rolloff: -12,
+        });
+        gainNode = new Tone.Gain(1);
+        filter.connect(gainNode);
+        applyOutputRouting();
+        analyser = new Tone.Analyser("waveform", 256);
+        filter.connect(analyser);
+        audioReady = true;
+      }
+
+      function buildModChain(desc, targetSignal, level = 0) {
+        if (!desc) return null;
+        const modOsc = new Tone.Oscillator({ type: desc.type || "sine", frequency: desc.freq || 2 });
+        const modGain = new Tone.Gain(desc.depth || 200);
+        modOsc.connect(modGain);
+        modGain.connect(targetSignal);
+        modOsc.start();
+        let inner = null;
+        if (desc.mod) {
+          inner = buildModChain(desc.mod, modOsc.frequency, level + 1);
+        }
+        return { modOsc, modGain, inner };
+      }
+
+      function destroyModChain(chain) {
+        if (!chain) return;
+        if (chain.inner) destroyModChain(chain.inner);
+        chain.modOsc.stop();
+        chain.modOsc.disconnect();
+        chain.modOsc.dispose();
+        chain.modGain.disconnect();
+        chain.modGain.dispose();
+      }
+
+      function getModChainDesc() {
+        if (!fmModWanted) return null;
+        return {
+          freq: fmModRemoteFreq,
+          type: fmModRemoteType,
+          depth: fmDepth,
+          mod: fmModUpstreamChain,
+        };
+      }
+
+      function broadcastModChain() {
+        ewObj.setOutput("modChain", getModChainDesc(), { immediate: true });
+      }
+
+      function updateModChainParams(chain, desc) {
+        if (!chain || !desc) return;
+        chain.modOsc.frequency.value = desc.freq || 2;
+        try { chain.modOsc.type = desc.type || "sine"; } catch (_) {}
+        chain.modGain.gain.value = desc.depth || 200;
+        if (chain.inner && desc.mod) {
+          updateModChainParams(chain.inner, desc.mod);
+        } else if (!chain.inner && desc.mod) {
+          chain.inner = buildModChain(desc.mod, chain.modOsc.frequency);
+        } else if (chain.inner && !desc.mod) {
+          destroyModChain(chain.inner);
+          chain.inner = null;
+        }
+      }
+
+      // ── Cutoff frequency modulation ────────────────────────────
+
+      function connectFMMod() {
+        if (fmModChain || !filter) return;
+        const desc = { freq: fmModRemoteFreq, type: fmModRemoteType, depth: fmDepth, mod: fmModUpstreamChain };
+        fmModChain = buildModChain(desc, filter.frequency);
+        fmModWanted = true;
+        broadcastModChain();
+      }
+
+      function disconnectFMMod() {
+        if (fmModChain) { destroyModChain(fmModChain); fmModChain = null; }
+        fmModWanted = false;
+        fmModUpstreamChain = null;
+        broadcastModChain();
+      }
+
+      function rebuildFMMod() {
+        if (!fmModWanted || !filter) return;
+        if (fmModChain) { destroyModChain(fmModChain); fmModChain = null; }
+        const desc = { freq: fmModRemoteFreq, type: fmModRemoteType, depth: fmDepth, mod: fmModUpstreamChain };
+        fmModChain = buildModChain(desc, filter.frequency);
+        broadcastModChain();
+      }
+
+      // ── Q modulation ───────────────────────────────────────────
+
+      function connectQMod() {
+        if (qModOsc || !filter) return;
+        const desc = { freq: qModRemoteFreq, type: qModRemoteType, depth: qModDepth, mod: null };
+        const chain = buildModChain(desc, filter.Q);
+        qModOsc = chain.modOsc;
+        qModGain = chain.modGain;
+        qModWanted = true;
+      }
+
+      function disconnectQMod() {
+        if (qModOsc) {
+          qModOsc.stop(); qModOsc.disconnect(); qModOsc.dispose();
+          qModGain.disconnect(); qModGain.dispose();
+          qModOsc = null; qModGain = null;
+        }
+        qModWanted = false;
+      }
+
+      // ── Gain modulation ────────────────────────────────────────
+
+      function connectGainMod() {
+        if (gainModOsc || !gainNode) return;
+        const desc = { freq: gainModRemoteFreq, type: gainModRemoteType, depth: gainModDepth, mod: null };
+        const chain = buildModChain(desc, gainNode.gain);
+        gainModOsc = chain.modOsc;
+        gainModGainNode = chain.modGain;
+        gainModWanted = true;
+      }
+
+      function disconnectGainMod() {
+        if (gainModOsc) {
+          gainModOsc.stop(); gainModOsc.disconnect(); gainModOsc.dispose();
+          gainModGainNode.disconnect(); gainModGainNode.dispose();
+          gainModOsc = null; gainModGainNode = null;
+        }
+        gainModWanted = false;
+      }
+
+      function reconnectModulators() {
+        if (fmModWanted) {
+          if (fmModChain) destroyModChain(fmModChain);
+          fmModChain = null;
+          connectFMMod();
+        }
+        if (qModWanted) {
+          if (qModOsc) { qModOsc.stop(); qModOsc.disconnect(); qModOsc.dispose(); qModGain.disconnect(); qModGain.dispose(); }
+          qModOsc = null; qModGain = null;
+          connectQMod();
+        }
+        if (gainModWanted) {
+          if (gainModOsc) { gainModOsc.stop(); gainModOsc.disconnect(); gainModOsc.dispose(); gainModGainNode.disconnect(); gainModGainNode.dispose(); }
+          gainModOsc = null; gainModGainNode = null;
+          connectGainMod();
+        }
+      }
+
+      function applyOutputRouting() {
+        if (!gainNode) return;
+        gainNode.disconnect();
+        if (outputMode === "audio" || outputMode === "both") {
+          gainNode.toDestination();
+        }
+      }
+
+      // ── Source oscillator (audio input from room) ──────────────
+
+      function createSourceOsc(freq, type, gain) {
+        if (sourceOsc) destroySourceOsc();
+        sourceOsc = new Tone.Oscillator({ frequency: freq || 440, type: type || "sine" });
+        sourceGain = new Tone.Gain(gain !== undefined ? gain : 0.5);
+        sourceOsc.connect(sourceGain);
+        sourceGain.connect(filter);
+        if (filterRunning) sourceOsc.start();
+        sourceConnected = true;
+      }
+
+      function destroySourceOsc() {
+        if (sourceOsc) {
+          try { sourceOsc.stop(); } catch (_) {}
+          sourceOsc.disconnect();
+          sourceOsc.dispose();
+          sourceOsc = null;
+        }
+        if (sourceGain) {
+          sourceGain.disconnect();
+          sourceGain.dispose();
+          sourceGain = null;
+        }
+        sourceConnected = false;
+      }
+
+      async function startFilter() {
+        if (filterRunning) return;
+        await ensureAudio();
+        if (sourceOsc) sourceOsc.start();
+        filterRunning = true;
+        reconnectModulators();
+        updatePowerUI();
+        ewObj.setOutput("playing", true, { immediate: true });
+      }
+
+      function stopFilter() {
+        if (!filterRunning) return;
+        if (sourceOsc) {
+          const freq = sourceOsc.frequency.value;
+          const type = sourceOsc.type;
+          const gain = sourceGain ? sourceGain.gain.value : 0.5;
+          sourceOsc.stop();
+          sourceOsc.disconnect();
+          sourceOsc.dispose();
+          sourceOsc = new Tone.Oscillator({ frequency: freq, type: type });
+          sourceGain.disconnect();
+          sourceGain.dispose();
+          sourceGain = new Tone.Gain(gain);
+          sourceOsc.connect(sourceGain);
+          sourceGain.connect(filter);
+        }
+        filterRunning = false;
+        reconnectModulators();
+        updatePowerUI();
+        ewObj.setOutput("playing", false, { immediate: true });
+      }
+
+      // ── Log frequency mapping ──────────────────────────────────
+
+      const FREQ_MIN = 20;
+      const FREQ_MAX = 20000;
+      const LOG_MIN = Math.log(FREQ_MIN);
+      const LOG_MAX = Math.log(FREQ_MAX);
+
+      function sliderToFreq(val) {
+        return Math.exp(LOG_MIN + (val / 1000) * (LOG_MAX - LOG_MIN));
+      }
+
+      function freqToSlider(freq) {
+        return Math.round(((Math.log(freq) - LOG_MIN) / (LOG_MAX - LOG_MIN)) * 1000);
+      }
+
+      function formatFreq(val) {
+        const freq = sliderToFreq(val);
+        return freq >= 1000 ? (freq / 1000).toFixed(2) + " kHz" : freq.toFixed(1) + " Hz";
+      }
+
+      // ── Build UI ───────────────────────────────────────────────
+
+      const app = document.getElementById("app");
+
+      buildHeaderBar(ewObj, "FILTER", app);
+
+      document.getElementById("ew-header-controls").innerHTML = `
+        <select id="ew-theme" style="width:auto; padding:3px 24px 3px 8px">
+          <option value="theme-ethos">ETHOS</option>
+          <option value="">AMBER</option>
+          <option value="theme-phosphor">PHOSPHOR</option>
+          <option value="theme-cobalt">COBALT</option>
+          <option value="theme-plasma">PLASMA</option>
+          <option value="theme-danger">DANGER</option>
+          <option value="theme-matrix">MATRIX</option>
+          <option value="theme-solar">SOLAR</option>
+          <option value="theme-arctic">ARCTIC</option>
+        </select>
+        <select id="flt-output-mode" style="width:auto; padding:3px 24px 3px 8px">
+          <option value="audio">AUDIO</option>
+          <option value="control">CONTROL</option>
+          <option value="both">BOTH</option>
+        </select>
+        <div class="toggle-wrap" id="power-toggle" style="margin-bottom:0; cursor:pointer">
+          <div class="toggle-track" id="power-track">
+            <div class="toggle-thumb"></div>
+          </div>
+        </div>
+      `;
+
+      // Controls panel
+      const controlsPanel = document.createElement("div");
+      controlsPanel.className = "hud-panel clip-tr";
+      controlsPanel.innerHTML = `
+        <div class="control-group">
+          <div class="control-label">TYPE</div>
+          <select id="flt-type">
+            <option value="lowpass">LOWPASS</option>
+            <option value="highpass">HIGHPASS</option>
+            <option value="bandpass">BANDPASS</option>
+            <option value="notch">NOTCH</option>
+          </select>
+        </div>
+
+        <div class="param-row">
+          <div class="control-label">CUTOFF</div>
+          <input type="range" id="flt-freq" min="0" max="1000" value="${freqToSlider(1000)}" />
+          <span class="range-val" id="flt-freq-val">1000.0 Hz</span>
+        </div>
+
+        <div class="param-row">
+          <div class="control-label">Q</div>
+          <input type="range" id="flt-q" min="1" max="300" value="10" />
+          <span class="range-val" id="flt-q-val">1.0</span>
+        </div>
+
+        <div class="param-row">
+          <div class="control-label">GAIN</div>
+          <input type="range" id="flt-gain" min="0" max="100" value="100" />
+          <span class="range-val" id="flt-gain-val">1.00</span>
+        </div>
+
+        <div style="border-top:1px solid var(--border); padding-top:14px; margin-top:4px">
+          <div class="param-row mod-row" id="mod-fm-row">
+            <div class="control-label">CUT MOD</div>
+            <input type="range" id="flt-fm-depth" min="0" max="5000" value="500" />
+            <span class="range-val" id="flt-fm-depth-val">500 Hz</span>
+          </div>
+          <div class="param-row mod-row" id="mod-q-row">
+            <div class="control-label">Q MOD</div>
+            <input type="range" id="flt-q-mod-depth" min="0" max="300" value="50" />
+            <span class="range-val" id="flt-q-mod-depth-val">5.0</span>
+          </div>
+          <div class="param-row mod-row" id="mod-gain-row">
+            <div class="control-label">GM MOD</div>
+            <input type="range" id="flt-gain-mod-depth" min="0" max="100" value="50" />
+            <span class="range-val" id="flt-gain-mod-depth-val">0.50</span>
+          </div>
+        </div>
+      `;
+      app.appendChild(controlsPanel);
+
+      // Theme
+      document.getElementById("ew-theme").addEventListener("change", (e) => {
+        document.documentElement.className = e.target.value;
+      });
+      document.documentElement.className = "theme-ethos";
+
+      // Scope
+      const scopePanel = document.createElement("div");
+      scopePanel.className = "hud-panel";
+      scopePanel.innerHTML = `
+        <div class="screen-wrap">
+          <div class="screen-inner" style="padding:0; min-height:auto">
+            <canvas id="filter-scope"></canvas>
+            <div class="screen-scan"></div>
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
+          </div>
+        </div>
+      `;
+      app.appendChild(scopePanel);
+
+      // Input panel
+      buildInputPanel(ewObj, app);
+
+      // Rooms panel
+      const roomsPanel = document.createElement("div");
+      roomsPanel.className = "hud-panel";
+      roomsPanel.innerHTML = `
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px">
+          <span class="control-label" style="margin:0; flex-shrink:0">ROOM</span>
+          <input type="text" id="room-input" placeholder="ROOM-ID" maxlength="32" spellcheck="false" autocomplete="off" style="flex:1">
+          <button class="btn btn-sm" id="room-join-btn">JOIN</button>
+          <button class="btn btn-sm" id="privacy-btn">PUBLIC</button>
+        </div>
+        <hr class="hud-divider" style="margin:10px 0">
+        <div class="section-title">// AVAILABLE FILTERS //</div>
+        <div id="rooms-list">
+          <span class="type-dim">NO OTHER FILTERS AVAILABLE</span>
+        </div>
+      `;
+      app.appendChild(roomsPanel);
+
+      // Footer
+      const footer = document.createElement("div");
+      footer.style.cssText = "text-align:center; padding:20px 0; font-size:0.72rem; letter-spacing:0.22em; color:var(--dim)";
+      footer.innerHTML = '<a href="../../index.html" style="color:var(--dim); text-decoration:none">ENTROPY WORSHIP</a>';
+      app.appendChild(footer);
+
+      // ── Wire controls ──────────────────────────────────────────
+
+      function updatePowerUI() {
+        const track = document.getElementById("power-track");
+        track.classList.toggle("on", filterRunning);
+      }
+
+      document.getElementById("power-toggle").addEventListener("click", () => {
+        if (filterRunning) stopFilter(); else startFilter();
+      });
+
+      // Type select
+      document.getElementById("flt-type").addEventListener("change", (e) => {
+        if (filter) filter.type = e.target.value;
+        ewObj.setOutput("type", e.target.value, { immediate: true });
+        refreshStats();
+      });
+
+      // Output mode
+      document.getElementById("flt-output-mode").addEventListener("change", (e) => {
+        outputMode = e.target.value;
+        applyOutputRouting();
+        ewObj.setOutput("outputMode", outputMode, { immediate: true });
+      });
+
+      // Cutoff frequency slider (logarithmic)
+      const freqSlider = document.getElementById("flt-freq");
+      const freqVal = document.getElementById("flt-freq-val");
+
+      freqSlider.addEventListener("input", () => {
+        const freq = sliderToFreq(+freqSlider.value);
+        baseCutoff = freq;
+        freqVal.textContent = formatFreq(+freqSlider.value);
+        const pct = (+freqSlider.value / 1000) * 100;
+        freqSlider.style.setProperty("--val", pct + "%");
+        if (filter) filter.frequency.rampTo(freq, 0.01);
+        ewObj.setOutput("frequency", Math.round(freq * 10) / 10, { unit: "hz" });
+        refreshStats();
+      });
+      (() => {
+        const pct = (+freqSlider.value / 1000) * 100;
+        freqSlider.style.setProperty("--val", pct + "%");
+      })();
+
+      // Q slider (0.1 - 30, mapped from 1-300)
+      wireRange("flt-q", "flt-q-val", (v) => (v / 10).toFixed(1));
+      document.getElementById("flt-q").addEventListener("input", (e) => {
+        const q = +e.target.value / 10;
+        baseQ = q;
+        if (filter) filter.Q.rampTo(q, 0.01);
+        ewObj.setOutput("Q", Math.round(q * 10) / 10);
+        refreshStats();
+      });
+
+      // Gain slider
+      wireRange("flt-gain", "flt-gain-val", (v) => (v / 100).toFixed(2));
+      document.getElementById("flt-gain").addEventListener("input", (e) => {
+        const gain = +e.target.value / 100;
+        baseGain = gain;
+        if (gainNode) gainNode.gain.rampTo(gain, 0.01);
+        ewObj.setOutput("gain", Math.round(gain * 100) / 100);
+        refreshStats();
+      });
+
+      // Mod depth sliders
+      wireRange("flt-fm-depth", "flt-fm-depth-val", (v) => v + " Hz");
+      document.getElementById("flt-fm-depth").addEventListener("input", (e) => {
+        fmDepth = +e.target.value;
+        if (fmModChain) fmModChain.modGain.gain.rampTo(fmDepth, 0.01);
+        broadcastModChain();
+      });
+
+      wireRange("flt-q-mod-depth", "flt-q-mod-depth-val", (v) => (v / 10).toFixed(1));
+      document.getElementById("flt-q-mod-depth").addEventListener("input", (e) => {
+        qModDepth = +e.target.value / 10;
+        if (qModGain) qModGain.gain.rampTo(qModDepth, 0.01);
+      });
+
+      wireRange("flt-gain-mod-depth", "flt-gain-mod-depth-val", (v) => (v / 100).toFixed(2));
+      document.getElementById("flt-gain-mod-depth").addEventListener("input", (e) => {
+        gainModDepth = +e.target.value / 100;
+        if (gainModGainNode) gainModGainNode.gain.rampTo(gainModDepth, 0.01);
+      });
+
+      // ── Input signal handling ──────────────────────────────────
+
+      ewObj.onInput("frequency", (value, meta) => {
+        if (meta && meta.unit === "bipolar") return;
+
+        if (fmModWanted) {
+          if (meta && meta.port === "frequency" && typeof value === "number") {
+            fmModRemoteFreq = value;
+            if (fmModChain) fmModChain.modOsc.frequency.value = value;
+            broadcastModChain();
+          } else if (meta && meta.port === "waveform" && typeof value === "string") {
+            fmModRemoteType = value;
+            if (fmModChain) { try { fmModChain.modOsc.type = value; } catch (_) {} }
+            broadcastModChain();
+          } else if (meta && meta.port === "modChain") {
+            const incoming = JSON.stringify(value);
+            const current = JSON.stringify(fmModUpstreamChain);
+            if (incoming !== current) {
+              fmModUpstreamChain = value;
+              if (fmModChain && fmModChain.inner && value) {
+                updateModChainParams(fmModChain.inner, value);
+              } else {
+                rebuildFMMod();
+              }
+              broadcastModChain();
+            }
+          }
+          return;
+        }
+
+        // Direct cutoff set
+        if (typeof value === "number" && value >= 20 && value <= 20000) {
+          baseCutoff = value;
+          if (filter) filter.frequency.rampTo(value, 0.01);
+          freqSlider.value = freqToSlider(value);
+          freqVal.textContent = value >= 1000 ? (value / 1000).toFixed(2) + " kHz" : value.toFixed(1) + " Hz";
+          freqSlider.style.setProperty("--val", (+freqSlider.value / 1000) * 100 + "%");
+          ewObj.setOutput("frequency", value, { unit: "hz" });
+          refreshStats();
+        }
+
+        // Also sync source oscillator if present
+        if (sourceOsc && meta && meta.port === "frequency" && typeof value === "number") {
+          sourceOsc.frequency.value = value;
+        }
+        if (sourceOsc && meta && meta.port === "waveform" && typeof value === "string") {
+          try { sourceOsc.type = value; } catch (_) {}
+        }
+        if (sourceOsc && meta && meta.port === "gain" && typeof value === "number") {
+          if (sourceGain) sourceGain.gain.value = Math.max(0, Math.min(1, value));
+        }
+      });
+
+      ewObj.onInput("Q", (value, meta) => {
+        if (meta && meta.unit === "bipolar") return;
+
+        if (qModWanted) {
+          if (meta && meta.port === "frequency" && typeof value === "number") {
+            qModRemoteFreq = value;
+            if (qModOsc) qModOsc.frequency.value = value;
+          } else if (meta && meta.port === "waveform" && typeof value === "string") {
+            qModRemoteType = value;
+            if (qModOsc) { try { qModOsc.type = value; } catch (_) {} }
+          }
+          return;
+        }
+
+        if (typeof value === "number") {
+          const clamped = Math.max(0.1, Math.min(30, value));
+          baseQ = clamped;
+          if (filter) filter.Q.rampTo(clamped, 0.01);
+          document.getElementById("flt-q").value = Math.round(clamped * 10);
+          document.getElementById("flt-q-val").textContent = clamped.toFixed(1);
+          ewObj.setOutput("Q", clamped);
+          refreshStats();
+        }
+      });
+
+      ewObj.onInput("gain", (value, meta) => {
+        if (meta && meta.unit === "bipolar") return;
+
+        if (gainModWanted) {
+          if (meta && meta.port === "frequency" && typeof value === "number") {
+            gainModRemoteFreq = value;
+            if (gainModOsc) gainModOsc.frequency.value = value;
+          } else if (meta && meta.port === "waveform" && typeof value === "string") {
+            gainModRemoteType = value;
+            if (gainModOsc) { try { gainModOsc.type = value; } catch (_) {} }
+          }
+          return;
+        }
+
+        if (typeof value === "number") {
+          const clamped = Math.max(0, Math.min(1, value));
+          baseGain = clamped;
+          if (gainNode) gainNode.gain.rampTo(clamped, 0.01);
+          document.getElementById("flt-gain").value = Math.round(clamped * 100);
+          document.getElementById("flt-gain-val").textContent = clamped.toFixed(2);
+          ewObj.setOutput("gain", clamped);
+          refreshStats();
+        }
+      });
+
+      ewObj.onInput("type", (value, meta) => {
+        if (typeof value !== "string") return;
+        const valid = ["lowpass", "highpass", "bandpass", "notch"];
+        if (!valid.includes(value)) return;
+        if (filter) filter.type = value;
+        document.getElementById("flt-type").value = value;
+        ewObj.setOutput("type", value);
+        refreshStats();
+      });
+
+      // Room state sync
+      ewObj.onInput("playing", async (value) => {
+        if (typeof value !== "boolean") return;
+        if (value && !filterRunning) await startFilter();
+        else if (!value && filterRunning) stopFilter();
+      });
+
+      ewObj.onInput("outputMode", (value) => {
+        if (typeof value !== "string") return;
+        if (["audio", "control", "both"].includes(value)) {
+          outputMode = value;
+          document.getElementById("flt-output-mode").value = value;
+          applyOutputRouting();
+        }
+      });
+
+      // ── Modulator connect/disconnect ───────────────────────────
+
+      function updateModRowStates() {
+        document.getElementById("mod-fm-row").classList.toggle("active", fmModWanted);
+        document.getElementById("mod-q-row").classList.toggle("active", qModWanted);
+        document.getElementById("mod-gain-row").classList.toggle("active", gainModWanted);
+      }
+
+      ewObj.on("inputConnected", ({ room, portMapping }) => {
+        ensureAudio().then(() => {
+          for (const localPort of Object.values(portMapping)) {
+            if (localPort === "frequency") connectFMMod();
+            if (localPort === "Q") connectQMod();
+            if (localPort === "gain") connectGainMod();
+          }
+          updateModRowStates();
+        });
+      });
+
+      ewObj.on("inputDisconnected", ({ room }) => {
+        const subs = ewObj.getSubscriptions();
+        const activePorts = new Set();
+        for (const sub of subs) {
+          for (const local of Object.values(sub.portMapping)) activePorts.add(local);
+        }
+        if (!activePorts.has("frequency")) disconnectFMMod();
+        if (!activePorts.has("Q")) disconnectQMod();
+        if (!activePorts.has("gain")) disconnectGainMod();
+        updateModRowStates();
+      });
+
+      // ── Output stats ───────────────────────────────────────────
+
+      function refreshStats() {
+        updateOutputStats(ewObj, [
+          { port: "frequency", label: "CUT", unit: " Hz", formatter: (v) => v ? v.toFixed(1) : "—" },
+          { port: "Q", label: "Q", formatter: (v) => v !== undefined ? v.toFixed(1) : "—" },
+          { port: "type", label: "TYPE", formatter: (v) => v ? v.toUpperCase().slice(0, 4) : "—" },
+          { port: "gain", label: "GAIN", formatter: (v) => v !== undefined ? v.toFixed(2) : "—" },
+        ]);
+      }
+
+      // ── Scope ──────────────────────────────────────────────────
+
+      const scopeCanvas = document.getElementById("filter-scope");
+      const scopeCtx = scopeCanvas.getContext("2d");
+
+      function resizeScope() {
+        const rect = scopeCanvas.parentElement.getBoundingClientRect();
+        scopeCanvas.width = rect.width;
+        scopeCanvas.height = 120;
+      }
+
+      function drawScope() {
+        requestAnimationFrame(drawScope);
+        const w = scopeCanvas.width;
+        const h = scopeCanvas.height;
+        scopeCtx.fillStyle = "#080808";
+        scopeCtx.fillRect(0, 0, w, h);
+
+        // Grid
+        scopeCtx.strokeStyle = "rgba(128, 128, 128, 0.08)";
+        scopeCtx.lineWidth = 1;
+        for (let y = 0; y < h; y += 20) { scopeCtx.beginPath(); scopeCtx.moveTo(0, y); scopeCtx.lineTo(w, y); scopeCtx.stroke(); }
+        for (let x = 0; x < w; x += 20) { scopeCtx.beginPath(); scopeCtx.moveTo(x, 0); scopeCtx.lineTo(x, h); scopeCtx.stroke(); }
+
+        // Center line
+        scopeCtx.strokeStyle = "rgba(128, 128, 128, 0.2)";
+        scopeCtx.beginPath(); scopeCtx.moveTo(0, h / 2); scopeCtx.lineTo(w, h / 2); scopeCtx.stroke();
+
+        if (!analyser || !filterRunning) return;
+
+        const data = analyser.getValue();
+        scopeCtx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--accent");
+        scopeCtx.lineWidth = 2;
+        scopeCtx.shadowColor = "rgba(210, 210, 210, 0.4)";
+        scopeCtx.shadowBlur = 6;
+        scopeCtx.beginPath();
+        for (let i = 0; i < data.length; i++) {
+          const x = (i / data.length) * w;
+          const y = ((1 - data[i]) / 2) * h;
+          if (i === 0) scopeCtx.moveTo(x, y); else scopeCtx.lineTo(x, y);
+        }
+        scopeCtx.stroke();
+        scopeCtx.shadowBlur = 0;
+      }
+
+      // ── Room UI ────────────────────────────────────────────────
+
+      ewObj.on("connected", () => {
+        document.getElementById("room-input").value = ewObj.getOutputRoom();
+      });
+      document.getElementById("room-join-btn").addEventListener("click", () => {
+        const name = document.getElementById("room-input").value.trim().replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 32) || "default";
+        location.search = `?room=${encodeURIComponent(name)}`;
+      });
+      document.getElementById("room-input").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") document.getElementById("room-join-btn").click();
+      });
+
+      let roomPrivate = false;
+      function updatePrivacyBtn() {
+        const btn = document.getElementById("privacy-btn");
+        btn.textContent = roomPrivate ? "PRIVATE" : "PUBLIC";
+        btn.classList.toggle("active", roomPrivate);
+      }
+      document.getElementById("privacy-btn").addEventListener("click", () => {
+        roomPrivate = !roomPrivate;
+        ewObj.setPrivate(roomPrivate);
+        updatePrivacyBtn();
+      });
+      ewObj.on("stateSync", (msg) => {
+        roomPrivate = msg.private || false;
+        updatePrivacyBtn();
+        document.getElementById("room-input").value = msg.room || ewObj.getOutputRoom();
+      });
+      ewObj.on("roomPrivate", (msg) => { roomPrivate = msg.private; updatePrivacyBtn(); });
+
+      ewObj.on("rooms", (msg) => {
+        const el = document.getElementById("rooms-list");
+        if (!el) return;
+        const currentRoom = ewObj.getOutputRoom();
+        const others = (msg.rooms || []).filter((r) => r.name !== currentRoom);
+        if (!others.length) { el.innerHTML = '<span class="type-dim">NO OTHER FILTERS AVAILABLE</span>'; return; }
+        el.innerHTML = "";
+        for (const r of others) {
+          const a = document.createElement("a");
+          a.className = "room-entry";
+          a.href = `?room=${encodeURIComponent(r.name)}`;
+          const objs = r.objects && r.objects.length ? r.objects.join(", ").toUpperCase() : "";
+          a.innerHTML = `<span class="room-entry-name">${r.name}</span><span class="room-entry-info">${r.clients} PLR${objs ? " · " + objs : ""}</span>`;
+          el.appendChild(a);
+        }
+      });
+
+      // ── Initialize ─────────────────────────────────────────────
+
+      (() => {
+        const urlRoom = new URLSearchParams(location.search).get("room");
+        ewObj.connectOutput(urlRoom || undefined);
+
+        ewObj._outputValues["frequency"] = 1000;
+        ewObj._outputValues["Q"] = 1;
+        ewObj._outputValues["gain"] = 1;
+        ewObj._outputValues["type"] = "lowpass";
+        ewObj._outputValues["playing"] = false;
+        ewObj._outputValues["outputMode"] = "audio";
+
+        refreshStats();
+        resizeScope();
+        drawScope();
+      })();
+
+      window.addEventListener("resize", resizeScope);
+    </script>
+  </body>
+</html>
