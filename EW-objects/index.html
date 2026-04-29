@@ -330,6 +330,192 @@
             <span class="tag mint">IN: audio</span>
           </div>
         </a>
+
+        <a href="objects/clock.html" class="hud-panel object-card">
+          <div class="obj-type">TIMING</div>
+          <div class="obj-name">CLOCK</div>
+          <div class="obj-desc">
+            Master clock / trigger generator. Broadcasts regular trigger pulses
+            at configurable BPM with division, swing, and tap tempo.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: bpm</span>
+            <span class="tag mint">IN: division</span>
+            <span class="tag accent">OUT: signal</span>
+            <span class="tag accent">OUT: bpm</span>
+            <span class="tag accent">OUT: division</span>
+            <span class="tag accent">OUT: playing</span>
+          </div>
+        </a>
+
+        <a href="objects/sequencer.html" class="hud-panel object-card">
+          <div class="obj-type">SEQUENCING</div>
+          <div class="obj-name">SEQUENCER</div>
+          <div class="obj-desc">
+            8-step CV sequencer. Outputs a value per step, advances on trigger
+            input. Forward, reverse, pendulum, and random modes.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: trigger</span>
+            <span class="tag mint">IN: reset</span>
+            <span class="tag accent">OUT: signal</span>
+            <span class="tag accent">OUT: step</span>
+          </div>
+        </a>
+
+        <a href="objects/euclid.html" class="hud-panel object-card">
+          <div class="obj-type">SEQUENCING</div>
+          <div class="obj-name">EUCLID</div>
+          <div class="obj-desc">
+            Euclidean rhythm generator. Creates trigger patterns using
+            Bjorklund's algorithm with steps, beats, and offset controls.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: trigger</span>
+            <span class="tag mint">IN: steps</span>
+            <span class="tag mint">IN: beats</span>
+            <span class="tag mint">IN: offset</span>
+            <span class="tag accent">OUT: signal</span>
+            <span class="tag accent">OUT: pattern</span>
+          </div>
+        </a>
+
+        <a href="objects/drums.html" class="hud-panel object-card">
+          <div class="obj-type">INSTRUMENT</div>
+          <div class="obj-name">DRUMS</div>
+          <div class="obj-desc">
+            Drum machine with 16-step sequencer grid. 6 synthesized voices:
+            kick, snare, hihat, clap, ride, sub. Built-in clock.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: bpm</span>
+            <span class="tag mint">IN: trigger</span>
+            <span class="tag accent">OUT: signal</span>
+            <span class="tag accent">OUT: bpm</span>
+            <span class="tag accent">OUT: playing</span>
+          </div>
+        </a>
+
+        <a href="objects/samplehold.html" class="hud-panel object-card">
+          <div class="obj-type">MODULATION</div>
+          <div class="obj-name">SAMPLE & HOLD</div>
+          <div class="obj-desc">
+            Samples input on trigger, holds until next trigger. Adjustable slew
+            for glide between values.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: signal</span>
+            <span class="tag mint">IN: trigger</span>
+            <span class="tag accent">OUT: signal</span>
+          </div>
+        </a>
+
+        <a href="objects/quantizer.html" class="hud-panel object-card">
+          <div class="obj-type">UTILITY</div>
+          <div class="obj-name">QUANTIZER</div>
+          <div class="obj-desc">
+            Pitch quantizer. Snaps continuous signal to nearest scale degree.
+            Chromatic, major, minor, pentatonic, blues, and modal scales.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: signal</span>
+            <span class="tag mint">IN: root</span>
+            <span class="tag mint">IN: scale</span>
+            <span class="tag accent">OUT: frequency</span>
+            <span class="tag accent">OUT: signal</span>
+          </div>
+        </a>
+
+        <a href="objects/midicalc.html" class="hud-panel object-card">
+          <div class="obj-type">UTILITY</div>
+          <div class="obj-name">MIDI CALC</div>
+          <div class="obj-desc">
+            Scale/chord calculator. Shows scale degrees, MIDI values, and
+            frequencies for any root + mode combination.
+          </div>
+          <div class="obj-ports">
+            <span class="tag accent">OUT: root</span>
+            <span class="tag accent">OUT: mode</span>
+            <span class="tag accent">OUT: scale</span>
+          </div>
+        </a>
+
+        <a href="objects/math.html" class="hud-panel object-card">
+          <div class="obj-type">UTILITY</div>
+          <div class="obj-name">MATH</div>
+          <div class="obj-desc">
+            Signal math — combines two inputs with selectable operation.
+            Add, subtract, multiply, min, max, or average.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: A</span>
+            <span class="tag mint">IN: B</span>
+            <span class="tag accent">OUT: signal</span>
+          </div>
+        </a>
+
+        <a href="objects/phaser.html" class="hud-panel object-card">
+          <div class="obj-type">EFFECT</div>
+          <div class="obj-name">PHASER</div>
+          <div class="obj-desc">
+            Phaser effect with modulatable frequency, octaves, and base
+            frequency controls.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: audio</span>
+            <span class="tag mint">IN: frequency</span>
+            <span class="tag mint">IN: octaves</span>
+            <span class="tag mint">IN: wet</span>
+            <span class="tag accent">OUT: frequency</span>
+            <span class="tag accent">OUT: octaves</span>
+            <span class="tag accent">OUT: wet</span>
+          </div>
+        </a>
+
+        <a href="objects/bitcrusher.html" class="hud-panel object-card">
+          <div class="obj-type">EFFECT</div>
+          <div class="obj-name">BITCRUSHER</div>
+          <div class="obj-desc">
+            Bit depth reducer with modulatable bit depth. Lo-fi digital
+            degradation from 16-bit down to 1-bit.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: audio</span>
+            <span class="tag mint">IN: bits</span>
+            <span class="tag mint">IN: wet</span>
+            <span class="tag accent">OUT: bits</span>
+            <span class="tag accent">OUT: wet</span>
+          </div>
+        </a>
+
+        <a href="objects/pitchshift.html" class="hud-panel object-card">
+          <div class="obj-type">EFFECT</div>
+          <div class="obj-name">PITCH SHIFT</div>
+          <div class="obj-desc">
+            Pitch shifter with modulatable pitch. Shift up or down by
+            up to 24 semitones.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: audio</span>
+            <span class="tag mint">IN: pitch</span>
+            <span class="tag mint">IN: wet</span>
+            <span class="tag accent">OUT: pitch</span>
+            <span class="tag accent">OUT: wet</span>
+          </div>
+        </a>
+
+        <a href="objects/dbmeter.html" class="hud-panel object-card">
+          <div class="obj-type">VISUALIZER</div>
+          <div class="obj-name">DB METER</div>
+          <div class="obj-desc">
+            dB level meter with microphone or room audio input. VU meter bar
+            with peak hold. Can output level as modulation source.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: audio</span>
+            <span class="tag accent">OUT: signal</span>
+          </div>
+        </a>
       </div>
 
       <!-- How to connect -->

@@ -1,0 +1,643 @@
+<!-- /-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\ -->
+<!-- |                                                                         | -->
+<!-- \ @@@@@@@@  @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@@@@@   @@@ @@@      / -->
+<!-- - @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@ @@@      - -->
+<!-- / @@!       @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!  @@@  @@! !@@      \ -->
+<!-- | !@!       !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!  @!@  !@! @!!      | -->
+<!-- \ @!!!:!    @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!@@!@!    !@!@!       / -->
+<!-- - !!!!!:    !@!  !!!    !!!    !!@!@!    !@!  !!!  !!@!!!      @!!!       - -->
+<!-- / !!:       !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:         !!:        \ -->
+<!-- | :!:       :!:  !:!    :!:    :!:  !:!  :!:  !:!  :!:         :!:        | -->
+<!-- \  :: ::::   ::   ::     ::    ::   :::  ::::: ::   ::          ::        / -->
+<!-- - : :: ::   ::    :      :      :   : :   : :  :    :           :         - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \ @@@  @@@  @@@   @@@@@@   @@@@@@@    @@@@@@   @@@  @@@  @@@  @@@@@@@     / -->
+<!-- - @@@  @@@  @@@  @@@@@@@@  @@@@@@@@  @@@@@@@   @@@  @@@  @@@  @@@@@@@@    - -->
+<!-- / @@!  @@!  @@!  @@!  @@@  @@!  @@@  !@@       @@!  @@@  @@!  @@!  @@@    \ -->
+<!-- | !@!  !@!  !@!  !@!  @!@  !@!  @!@  !@!       !@!  @!@  !@!  !@!  @!@    | -->
+<!-- \ @!!  !!@  @!@  @!@  !@!  @!@!!@!   !!@@!!    @!@!@!@!  !!@  @!@@!@!     / -->
+<!-- - !@!  !!!  !@!  !@!  !!!  !!@!@!     !!@!!!   !!!@!!!!  !!!  !!@!!!      - -->
+<!-- / !!:  !!:  !!:  !!:  !!!  !!: :!!        !:!  !!:  !!!  !!:  !!:         \ -->
+<!-- | :!:  :!:  :!:  :!:  !:!  :!:  !:!      !:!   :!:  !:!  :!:  :!:         | -->
+<!-- \  :::: :: :::   ::::: ::  ::   :::  :::: ::   ::   :::   ::   ::         / -->
+<!-- -   :: :  : :     : :  :    :   : :  :: : :     :   : :  :     :          - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DB METER</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=VT323&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css"
+    />
+    <link rel="stylesheet" href="../lib/ewuilib.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+    <style>
+      .param-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+      .param-row .control-label {
+        min-width: 80px;
+        margin-bottom: 0;
+        flex-shrink: 0;
+      }
+      .param-row input[type="range"] {
+        flex: 1;
+      }
+      .param-row .range-val {
+        min-width: 72px;
+        text-align: right;
+      }
+      .room-entry {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 10px;
+        border: 1px solid var(--border);
+        margin-bottom: 6px;
+        text-decoration: none;
+        color: var(--text);
+        font-size: 0.82rem;
+        letter-spacing: 0.1em;
+        transition: border-color 0.14s, background 0.14s;
+        cursor: pointer;
+      }
+      .room-entry:hover {
+        border-color: var(--accent);
+        background: rgba(var(--accent-rgb), 0.06);
+      }
+      .room-entry-name {
+        color: var(--accent);
+      }
+      .room-entry-info {
+        font-size: 0.68rem;
+        color: var(--dim);
+        letter-spacing: 0.08em;
+      }
+
+      /* ── dB Meter display ─────────────────────────────────── */
+      .db-display {
+        text-align: center;
+        padding: 18px 0 10px;
+      }
+      .db-readout {
+        font-size: 3.6rem;
+        line-height: 1;
+        color: var(--accent);
+        letter-spacing: 0.08em;
+        text-shadow: 0 0 12px rgba(var(--accent-rgb), 0.5);
+      }
+      .db-unit {
+        font-size: 1.2rem;
+        color: var(--dim);
+        margin-left: 6px;
+        letter-spacing: 0.15em;
+      }
+      .bar-track {
+        position: relative;
+        width: 100%;
+        height: 18px;
+        background: #111;
+        border: 1px solid var(--border);
+        margin: 12px 0 6px;
+        overflow: hidden;
+      }
+      .bar-fill {
+        height: 100%;
+        width: 0%;
+        background: var(--accent);
+        opacity: 0.8;
+        transition: width 0.06s linear;
+      }
+      .bar-peak {
+        position: absolute;
+        top: 0;
+        width: 2px;
+        height: 100%;
+        background: var(--text);
+        opacity: 0.9;
+        left: 0%;
+        transition: left 0.06s linear;
+      }
+      .db-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.62rem;
+        color: var(--dim);
+        letter-spacing: 0.1em;
+        padding: 0 2px;
+      }
+      .source-toggle {
+        display: flex;
+        gap: 0;
+        border: 1px solid var(--border);
+      }
+      .source-toggle button {
+        flex: 1;
+        padding: 6px 16px;
+        background: transparent;
+        color: var(--dim);
+        border: none;
+        font-family: 'VT323', monospace;
+        font-size: 0.9rem;
+        letter-spacing: 0.12em;
+        cursor: pointer;
+        transition: background 0.14s, color 0.14s;
+      }
+      .source-toggle button.active {
+        background: var(--accent);
+        color: #000;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="grid-bg"></div>
+    <div id="scanlines"></div>
+    <div id="app"></div>
+
+    <script type="module">
+      import { EWObject } from "../lib/ew-object-base.js";
+      import {
+        buildHeaderBar,
+        buildInputPanel,
+        updateOutputStats,
+        wireRange,
+      } from "../lib/ew-object-ui.js";
+
+      // ── EWObject instance ──────────────────────────────────────
+
+      const ewObj = new EWObject({
+        name: "DB-1",
+        objectType: "dbmeter",
+        roomPrefix: "db",
+        inputs: [
+          {
+            port: "audio",
+            type: "room",
+            unit: "",
+            default: null,
+          },
+        ],
+        outputs: [
+          { port: "signal", type: "number" },
+        ],
+      });
+
+      // ── State ──────────────────────────────────────────────────
+
+      let sourceMode = "mic";   // "mic" | "room"
+      let smoothing = 0.8;
+      let analyser = null;
+      let micSource = null;
+      let micStream = null;
+      let meterRunning = false;
+
+      // Source osc for room mode
+      let sourceOsc = null;
+      let sourceGain = null;
+      let sourceConnected = false;
+
+      // Peak tracking
+      let peakDb = 0;
+      let peakDecayTimer = null;
+
+      // Worker for 30Hz analysis
+      let meterWorker = null;
+
+      // ── Audio init ─────────────────────────────────────────────
+
+      async function startMic() {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          micStream = stream;
+          await Tone.start();
+          const ctx = Tone.context.rawContext;
+          micSource = ctx.createMediaStreamSource(stream);
+          analyser = ctx.createAnalyser();
+          analyser.smoothingTimeConstant = smoothing;
+          analyser.fftSize = 2048;
+          micSource.connect(analyser);
+          meterRunning = true;
+          startMeterWorker();
+        } catch (err) {
+          console.error("[DB METER] Mic access denied:", err);
+        }
+      }
+
+      function stopMic() {
+        if (micSource) {
+          micSource.disconnect();
+          micSource = null;
+        }
+        if (micStream) {
+          micStream.getTracks().forEach(t => t.stop());
+          micStream = null;
+        }
+        stopMeterWorker();
+        meterRunning = false;
+      }
+
+      async function ensureRoomAnalyser() {
+        await Tone.start();
+        if (!analyser) {
+          const ctx = Tone.context.rawContext;
+          analyser = ctx.createAnalyser();
+          analyser.smoothingTimeConstant = smoothing;
+          analyser.fftSize = 2048;
+        }
+      }
+
+      // ── Source oscillator (room mode) ──────────────────────────
+
+      function createSourceOsc(freq, type, gain) {
+        if (sourceOsc) destroySourceOsc();
+        sourceOsc = new Tone.Oscillator({ frequency: freq || 440, type: type || "sine" });
+        sourceGain = new Tone.Gain(gain !== undefined ? gain : 0.5);
+        sourceOsc.connect(sourceGain);
+        // Route to analyser only — no destination output
+        const rawNode = sourceGain.output || sourceGain._gainNode || sourceGain;
+        if (rawNode.connect && analyser) {
+          try { rawNode.connect(analyser); } catch (_) {
+            // Fallback: use Tone's native context node
+            sourceGain.connect(Tone.context.createGain()).connect(analyser);
+          }
+        }
+        if (meterRunning) sourceOsc.start();
+        sourceConnected = true;
+      }
+
+      function destroySourceOsc() {
+        if (sourceOsc) {
+          try { sourceOsc.stop(); } catch (_) {}
+          sourceOsc.disconnect();
+          sourceOsc.dispose();
+          sourceOsc = null;
+        }
+        if (sourceGain) {
+          sourceGain.disconnect();
+          sourceGain.dispose();
+          sourceGain = null;
+        }
+        sourceConnected = false;
+      }
+
+      async function startRoomMode() {
+        await ensureRoomAnalyser();
+        if (sourceOsc) sourceOsc.start();
+        meterRunning = true;
+        startMeterWorker();
+      }
+
+      function stopRoomMode() {
+        if (sourceOsc) {
+          const freq = sourceOsc.frequency.value;
+          const type = sourceOsc.type;
+          const gain = sourceGain ? sourceGain.gain.value : 0.5;
+          sourceOsc.stop();
+          sourceOsc.disconnect();
+          sourceOsc.dispose();
+          sourceOsc = new Tone.Oscillator({ frequency: freq, type: type });
+          sourceGain.disconnect();
+          sourceGain.dispose();
+          sourceGain = new Tone.Gain(gain);
+          sourceOsc.connect(sourceGain);
+          if (analyser) {
+            const rawNode = sourceGain.output || sourceGain._gainNode || sourceGain;
+            try { rawNode.connect(analyser); } catch (_) {}
+          }
+        }
+        stopMeterWorker();
+        meterRunning = false;
+      }
+
+      // ── Meter analysis worker ──────────────────────────────────
+
+      function startMeterWorker() {
+        if (meterWorker) return;
+        const blob = new Blob([`
+          let id = setInterval(() => postMessage("tick"), 33);
+          onmessage = () => { clearInterval(id); close(); };
+        `], { type: "application/javascript" });
+        meterWorker = new Worker(URL.createObjectURL(blob));
+        meterWorker.onmessage = () => {
+          if (!meterRunning || !analyser) return;
+          const dataArray = new Uint8Array(analyser.frequencyBinCount);
+          analyser.getByteFrequencyData(dataArray);
+          const sum = dataArray.reduce((a, b) => a + b, 0);
+          const average = sum / dataArray.length;
+          const dB = average > 0 ? Math.round(20 * Math.log10(average / 255) + 60) : 0;
+          const normalized = Math.max(0, Math.min(1, dB / 60));
+
+          // Update display
+          updateMeterDisplay(dB, normalized);
+
+          // Track peak
+          if (dB > peakDb) {
+            peakDb = dB;
+            clearTimeout(peakDecayTimer);
+            peakDecayTimer = setTimeout(decayPeak, 1500);
+          }
+
+          // Broadcast signal
+          ewObj.setOutput("signal", Math.round(normalized * 1000) / 1000);
+        };
+      }
+
+      function stopMeterWorker() {
+        if (meterWorker) {
+          meterWorker.postMessage("stop");
+          meterWorker = null;
+        }
+      }
+
+      function decayPeak() {
+        peakDb = Math.max(0, peakDb - 2);
+        if (peakDb > 0) {
+          peakDecayTimer = setTimeout(decayPeak, 80);
+        }
+        const peakEl = document.getElementById("db-peak");
+        if (peakEl) {
+          peakEl.style.left = Math.max(0, Math.min(100, (peakDb / 60) * 100)) + "%";
+        }
+      }
+
+      function updateMeterDisplay(dB, normalized) {
+        const readout = document.getElementById("db-readout");
+        const fill = document.getElementById("db-fill");
+        const peakEl = document.getElementById("db-peak");
+        if (readout) readout.textContent = dB;
+        if (fill) fill.style.width = (normalized * 100) + "%";
+        if (peakEl) peakEl.style.left = Math.max(0, Math.min(100, (peakDb / 60) * 100)) + "%";
+      }
+
+      // ── Build UI ───────────────────────────────────────────────
+
+      const app = document.getElementById("app");
+
+      buildHeaderBar(ewObj, "DB METER", app);
+
+      // Header: theme selector only (no output mode, no power toggle)
+      document.getElementById("ew-header-controls").innerHTML = `
+        <select id="ew-theme" style="width:auto; padding:3px 24px 3px 8px">
+          <option value="theme-ethos">ETHOS</option>
+          <option value="">AMBER</option>
+          <option value="theme-phosphor">PHOSPHOR</option>
+          <option value="theme-cobalt">COBALT</option>
+          <option value="theme-plasma">PLASMA</option>
+          <option value="theme-danger">DANGER</option>
+          <option value="theme-matrix">MATRIX</option>
+          <option value="theme-solar">SOLAR</option>
+          <option value="theme-arctic">ARCTIC</option>
+        </select>
+      `;
+
+      // Controls panel
+      const controlsPanel = document.createElement("div");
+      controlsPanel.className = "hud-panel clip-tr";
+      controlsPanel.innerHTML = `
+        <div class="control-group">
+          <div class="control-label">SOURCE</div>
+          <div class="source-toggle">
+            <button id="src-mic" class="active">MIC</button>
+            <button id="src-room">ROOM</button>
+          </div>
+        </div>
+
+        <div class="param-row">
+          <div class="control-label">SMOOTH</div>
+          <input type="range" id="db-smoothing" min="0" max="99" value="80" />
+          <span class="range-val" id="db-smoothing-val">0.80</span>
+        </div>
+      `;
+      app.appendChild(controlsPanel);
+
+      // Theme
+      document.getElementById("ew-theme").addEventListener("change", (e) => {
+        document.documentElement.className = e.target.value;
+      });
+      document.documentElement.className = "theme-ethos";
+
+      // dB Meter display (instead of scope)
+      const meterPanel = document.createElement("div");
+      meterPanel.className = "hud-panel";
+      meterPanel.innerHTML = `
+        <div class="screen-wrap">
+          <div class="screen-inner" style="min-height:auto">
+            <div class="db-display">
+              <span class="db-readout stat-val" id="db-readout" style="font-size:3.6rem">0</span><span class="db-unit">dB</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" id="db-fill"></div>
+              <div class="bar-peak" id="db-peak"></div>
+            </div>
+            <div class="db-labels">
+              <span>0</span>
+              <span>10</span>
+              <span>20</span>
+              <span>30</span>
+              <span>40</span>
+              <span>50</span>
+              <span>60</span>
+            </div>
+            <div class="screen-scan"></div>
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
+          </div>
+        </div>
+      `;
+      app.appendChild(meterPanel);
+
+      // Input panel (shown conditionally for ROOM mode)
+      const inputPanelWrap = document.createElement("div");
+      inputPanelWrap.id = "input-panel-wrap";
+      inputPanelWrap.style.display = "none";
+      app.appendChild(inputPanelWrap);
+      buildInputPanel(ewObj, inputPanelWrap);
+
+      // Rooms panel
+      const roomsPanel = document.createElement("div");
+      roomsPanel.className = "hud-panel";
+      roomsPanel.innerHTML = `
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px">
+          <span class="control-label" style="margin:0; flex-shrink:0">ROOM</span>
+          <input type="text" id="room-input" placeholder="ROOM-ID" maxlength="32" spellcheck="false" autocomplete="off" style="flex:1">
+          <button class="btn btn-sm" id="room-join-btn">JOIN</button>
+          <button class="btn btn-sm" id="privacy-btn">PUBLIC</button>
+        </div>
+        <hr class="hud-divider" style="margin:10px 0">
+        <div class="section-title">// AVAILABLE DB METERS //</div>
+        <div id="rooms-list">
+          <span class="type-dim">NO OTHER DB METERS AVAILABLE</span>
+        </div>
+      `;
+      app.appendChild(roomsPanel);
+
+      // Footer
+      const footer = document.createElement("div");
+      footer.style.cssText = "text-align:center; padding:20px 0; font-size:0.72rem; letter-spacing:0.22em; color:var(--dim)";
+      footer.innerHTML = '<a href="../../index.html" style="color:var(--dim); text-decoration:none">ENTROPY WORSHIP</a>';
+      app.appendChild(footer);
+
+      // ── Wire controls ──────────────────────────────────────────
+
+      // Source mode toggle
+      document.getElementById("src-mic").addEventListener("click", () => {
+        if (sourceMode === "mic") return;
+        // Stop room mode
+        if (meterRunning) stopRoomMode();
+        destroySourceOsc();
+        sourceMode = "mic";
+        document.getElementById("src-mic").classList.add("active");
+        document.getElementById("src-room").classList.remove("active");
+        document.getElementById("input-panel-wrap").style.display = "none";
+        startMic();
+      });
+
+      document.getElementById("src-room").addEventListener("click", () => {
+        if (sourceMode === "room") return;
+        // Stop mic mode
+        if (meterRunning) stopMic();
+        sourceMode = "room";
+        document.getElementById("src-room").classList.add("active");
+        document.getElementById("src-mic").classList.remove("active");
+        document.getElementById("input-panel-wrap").style.display = "";
+        // Room mode starts when audio is linked via input panel
+        ensureRoomAnalyser();
+      });
+
+      // Smoothing slider (0-99 mapped to 0-0.99)
+      wireRange("db-smoothing", "db-smoothing-val", (v) => (v / 100).toFixed(2));
+      document.getElementById("db-smoothing").addEventListener("input", (e) => {
+        smoothing = +e.target.value / 100;
+        if (analyser) analyser.smoothingTimeConstant = smoothing;
+      });
+
+      // ── Input signal handling (room mode) ──────────────────────
+
+      ewObj.onInput("audio", (value, meta) => {
+        if (meta && meta.unit === "bipolar") return;
+        if (sourceMode !== "room") return;
+
+        if (meta && meta.port === "frequency" && typeof value === "number") {
+          if (!sourceConnected) {
+            ensureRoomAnalyser().then(() => {
+              createSourceOsc(value, "sine", 0.5);
+              if (!meterRunning) startRoomMode();
+            });
+          } else if (sourceOsc) {
+            sourceOsc.frequency.value = value;
+          }
+        } else if (meta && meta.port === "waveform" && typeof value === "string") {
+          if (sourceOsc) { try { sourceOsc.type = value; } catch (_) {} }
+        } else if (meta && meta.port === "gain" && typeof value === "number") {
+          if (sourceGain) sourceGain.gain.value = Math.max(0, Math.min(1, value));
+        } else if (meta && meta.port === "detune" && typeof value === "number") {
+          if (sourceOsc) sourceOsc.detune.value = value;
+        } else if (meta && meta.port === "playing" && typeof value === "boolean") {
+          if (value && sourceConnected && !meterRunning) startRoomMode();
+        }
+      });
+
+      ewObj.on("inputConnected", ({ room, portMapping }) => {
+        if (sourceMode !== "room") return;
+        ensureRoomAnalyser().then(() => {
+          for (const localPort of Object.values(portMapping)) {
+            if (localPort === "audio" && !sourceConnected) {
+              createSourceOsc(440, "sine", 0.5);
+              if (!meterRunning) startRoomMode();
+            }
+          }
+        });
+      });
+
+      ewObj.on("inputDisconnected", ({ room }) => {
+        const subs = ewObj.getSubscriptions();
+        const activePorts = new Set();
+        for (const sub of subs) {
+          for (const local of Object.values(sub.portMapping)) activePorts.add(local);
+        }
+        if (!activePorts.has("audio")) {
+          destroySourceOsc();
+          if (sourceMode === "room" && meterRunning) stopRoomMode();
+        }
+      });
+
+      // ── Room UI ────────────────────────────────────────────────
+
+      ewObj.on("connected", () => {
+        document.getElementById("room-input").value = ewObj.getOutputRoom();
+      });
+      document.getElementById("room-join-btn").addEventListener("click", () => {
+        const name = document.getElementById("room-input").value.trim().replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 32) || "default";
+        location.search = `?room=${encodeURIComponent(name)}`;
+      });
+      document.getElementById("room-input").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") document.getElementById("room-join-btn").click();
+      });
+
+      let roomPrivate = false;
+      function updatePrivacyBtn() {
+        const btn = document.getElementById("privacy-btn");
+        btn.textContent = roomPrivate ? "PRIVATE" : "PUBLIC";
+        btn.classList.toggle("active", roomPrivate);
+      }
+      document.getElementById("privacy-btn").addEventListener("click", () => {
+        roomPrivate = !roomPrivate;
+        ewObj.setPrivate(roomPrivate);
+        updatePrivacyBtn();
+      });
+      ewObj.on("stateSync", (msg) => {
+        roomPrivate = msg.private || false;
+        updatePrivacyBtn();
+        document.getElementById("room-input").value = msg.room || ewObj.getOutputRoom();
+      });
+      ewObj.on("roomPrivate", (msg) => { roomPrivate = msg.private; updatePrivacyBtn(); });
+
+      ewObj.on("rooms", (msg) => {
+        const el = document.getElementById("rooms-list");
+        if (!el) return;
+        const currentRoom = ewObj.getOutputRoom();
+        const others = (msg.rooms || []).filter((r) => r.name !== currentRoom);
+        if (!others.length) { el.innerHTML = '<span class="type-dim">NO OTHER DB METERS AVAILABLE</span>'; return; }
+        el.innerHTML = "";
+        for (const r of others) {
+          const a = document.createElement("a");
+          a.className = "room-entry";
+          a.href = `?room=${encodeURIComponent(r.name)}`;
+          const objs = r.objects && r.objects.length ? r.objects.join(", ").toUpperCase() : "";
+          a.innerHTML = `<span class="room-entry-name">${r.name}</span><span class="room-entry-info">${r.clients} PLR${objs ? " · " + objs : ""}</span>`;
+          el.appendChild(a);
+        }
+      });
+
+      // ── Initialize ─────────────────────────────────────────────
+
+      (() => {
+        const urlRoom = new URLSearchParams(location.search).get("room");
+        ewObj.connectOutput(urlRoom || undefined);
+
+        ewObj._outputValues["signal"] = 0;
+
+        // Start mic by default
+        startMic();
+      })();
+    </script>
+  </body>
+</html>
