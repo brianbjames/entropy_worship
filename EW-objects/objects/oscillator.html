@@ -221,17 +221,14 @@
         audioReady = true;
       }
 
-      // Create a local modulator that connects directly to an AudioParam
-      function createModulator(targetParam, depth) {
-        const ctx = Tone.context.rawContext;
-        const modOsc = ctx.createOscillator();
-        modOsc.type = "sine";
-        modOsc.frequency.value = 2;
-        const modGain = ctx.createGain();
-        modGain.gain.value = depth;
-        // Use raw Web Audio connect to bypass Tone.js's patched version
-        AudioNode.prototype.connect.call(modOsc, modGain);
-        AudioNode.prototype.connect.call(modGain, targetParam);
+      // Create a local modulator using Tone.js nodes.
+      // Tone.js Signal.connect() adds the modulator output to the
+      // param value at audio rate — true FM/modulation.
+      function createModulator(toneSignal, depth) {
+        const modOsc = new Tone.Oscillator({ type: "sine", frequency: 2 });
+        const modGain = new Tone.Gain(depth);
+        modOsc.connect(modGain);
+        modGain.connect(toneSignal);
         modOsc.start();
         return { modOsc, modGain };
       }
@@ -240,23 +237,14 @@
         if (!mod) return;
         mod.modOsc.stop();
         mod.modOsc.disconnect();
+        mod.modOsc.dispose();
         mod.modGain.disconnect();
-      }
-
-      // Get the native AudioParam from a Tone.js Signal/Param
-      function getNativeParam(toneParam) {
-        // Tone.js 14.x: Signal has an _param or overriddenValue
-        // The input node's native param is what we need
-        if (toneParam._param) return toneParam._param;
-        if (toneParam.input && toneParam.input.gain) return toneParam.input.gain;
-        // Fallback: try to get the raw AudioParam
-        return toneParam;
+        mod.modGain.dispose();
       }
 
       function connectFMMod() {
         if (fmModOsc || !osc) return;
-        const param = getNativeParam(osc.frequency);
-        const mod = createModulator(param, fmDepth);
+        const mod = createModulator(osc.frequency, fmDepth);
         fmModOsc = mod.modOsc;
         fmModGain = mod.modGain;
       }
@@ -271,8 +259,7 @@
 
       function connectDetuneMod() {
         if (detuneModOsc || !osc) return;
-        const param = getNativeParam(osc.detune);
-        const mod = createModulator(param, detuneModDepth);
+        const mod = createModulator(osc.detune, detuneModDepth);
         detuneModOsc = mod.modOsc;
         detuneModGain = mod.modGain;
       }
@@ -287,8 +274,7 @@
 
       function connectGainMod() {
         if (gainModOsc || !gainNode) return;
-        const param = getNativeParam(gainNode.gain);
-        const mod = createModulator(param, gainModDepth);
+        const mod = createModulator(gainNode.gain, gainModDepth);
         gainModOsc = mod.modOsc;
         gainModGainNode = mod.modGain;
       }
@@ -652,7 +638,7 @@
         .getElementById("osc-fm-depth")
         .addEventListener("input", (e) => {
           fmDepth = +e.target.value;
-          if (fmModGain) fmModGain.gain.value = fmDepth;
+          if (fmModGain) fmModGain.gain.rampTo(fmDepth, 0.01);
         });
 
       // Detune mod depth slider
@@ -661,7 +647,7 @@
         .getElementById("osc-detune-mod-depth")
         .addEventListener("input", (e) => {
           detuneModDepth = +e.target.value;
-          if (detuneModGain) detuneModGain.gain.value = detuneModDepth;
+          if (detuneModGain) detuneModGain.gain.rampTo(detuneModDepth, 0.01);
         });
 
       // Gain mod depth slider
@@ -670,7 +656,7 @@
         .getElementById("osc-gain-mod-depth")
         .addEventListener("input", (e) => {
           gainModDepth = +e.target.value / 100;
-          if (gainModGainNode) gainModGainNode.gain.value = gainModDepth;
+          if (gainModGainNode) gainModGainNode.gain.rampTo(gainModDepth, 0.01);
         });
 
       // ── Signal output loop ─────────────────────────────────────
