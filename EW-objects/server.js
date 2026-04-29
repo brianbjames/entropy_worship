@@ -167,6 +167,10 @@ function broadcastPublicRooms() {
 // ── WebSocket server ─────────────────────────────────────────
 const wss = new WebSocketServer({ server: httpServer });
 
+wss.on("error", (err) => {
+  console.error("[WSS] Server error:", err.message);
+});
+
 wss.on("connection", (ws, req) => {
   const roomName = parseRoom(req);
   const room = getRoom(roomName);
@@ -253,6 +257,10 @@ wss.on("connection", (ws, req) => {
         }
         break;
     }
+  });
+
+  ws.on("error", (err) => {
+    console.error(`[WS] Client ${clientId} error:`, err.message);
   });
 
   ws.on("close", () => {
