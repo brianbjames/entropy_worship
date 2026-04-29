@@ -1341,6 +1341,27 @@ html.theme-arctic {
                  drop-shadow(0 0 28px rgba(30,100,140,0.12));
 }
 
+/* 9 — ETHOS : hacker sci-fi terminal monochrome */
+html.theme-ethos {
+  --accent-rgb:  210, 210, 210;
+  --rose-rgb:    255, 255, 255;
+  --mint-rgb:    160, 160, 160;
+  --border-rgb:  80,  80,  80;
+  --dim-rgb:     60,  60,  60;
+  --html-bg:     #000000;
+  --surface:     rgba(8, 8, 8, 0.82);
+  --surface-hi:  rgba(16, 16, 16, 0.9);
+  --border:      rgba(80, 80, 80, 0.42);
+  --border-hi:   rgba(210, 210, 210, 0.78);
+  --text:        #e0e0e0;
+  --dim:         #484848;
+  --accent:      #d2d2d2;
+  --rose:        #ffffff;
+  --mint:        #a0a0a0;
+  --panel-glow:  drop-shadow(0 0 4px rgba(210,210,210,0.1))
+                 drop-shadow(0 0 20px rgba(80,80,80,0.08));
+}
+
 /* ── Augmented-UI CSS variable helpers ────────────────────── */
 /* Accent (amber) border */
 .aug-amber  { --aug-border-bg: rgba(var(--accent-rgb), 0.75); }

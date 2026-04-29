@@ -333,11 +333,10 @@ export class EWObject {
    */
   subscribe(roomName, portMapping = {}) {
     const clean = sanitizeRoom(roomName);
-    console.log("[EWObject] subscribe:", clean, "mapping:", JSON.stringify(portMapping), "own room:", this._outputRoom);
-    if (!clean) { console.log("[EWObject] subscribe rejected: empty room"); return false; }
+    if (!clean) return false;
 
     // Don't subscribe to own output room
-    if (clean === this._outputRoom) { console.log("[EWObject] subscribe rejected: own room"); return false; }
+    if (clean === this._outputRoom) return false;
 
     // If already subscribed to this room, merge the port mapping
     const existing = this._inputConns.get(clean);

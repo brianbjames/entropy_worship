@@ -30,7 +30,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>EW // OSCILLATOR</title>
+    <title>OSCILLATOR</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
       href="https://fonts.googleapis.com/css2?family=VT323&display=swap"
@@ -64,21 +64,21 @@
         margin-bottom: 0;
         flex-shrink: 0;
       }
+      #power-toggle .toggle-track.on .toggle-thumb {
+        left: 22px;
+      }
+      #meta .toggle-wrap {
+        align-self: center;
+      }
+      #meta .toggle-track {
+        margin: 0;
+      }
       .param-row input[type="range"] {
         flex: 1;
       }
       .param-row .range-val {
         min-width: 72px;
         text-align: right;
-      }
-
-      .power-row {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        margin-bottom: 14px;
-        padding-bottom: 14px;
-        border-bottom: 1px solid var(--border);
       }
       .room-entry {
         display: flex;
@@ -106,6 +106,15 @@
         color: var(--dim);
         letter-spacing: 0.08em;
       }
+      .mod-row {
+        opacity: 0.3;
+        pointer-events: none;
+        transition: opacity 0.2s;
+      }
+      .mod-row.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
     </style>
   </head>
   <body>
@@ -121,9 +130,7 @@
       import { EWObject } from "../lib/ew-object-base.js";
       import {
         buildHeaderBar,
-        buildOutputPanel,
         buildInputPanel,
-        buildUnlockOverlay,
         updateOutputStats,
         wireRange,
       } from "../lib/ew-object-ui.js";
@@ -172,6 +179,8 @@
           { port: "detune", type: "number", unit: "cents" },
           { port: "waveform", type: "string" },
           { port: "gain", type: "number" },
+          { port: "playing", type: "boolean" },
+          { port: "outputMode", type: "string" },
           { port: "modChain", type: "object" },
         ],
       });
@@ -242,7 +251,6 @@
       // level modulates the outer level's frequency — all at audio rate.
       function buildModChain(desc, targetSignal, level = 0) {
         if (!desc) return null;
-        console.log(`[OSC] buildModChain level ${level}: freq=${desc.freq} type=${desc.type} depth=${desc.depth} hasMod=${!!desc.mod}`);
         const modOsc = new Tone.Oscillator({ type: desc.type || "sine", frequency: desc.freq || 2 });
         const modGain = new Tone.Gain(desc.depth || 200);
         modOsc.connect(modGain);
@@ -433,10 +441,10 @@
         await ensureAudio();
         osc.start();
         oscRunning = true;
-        // Connect any modulators that were linked before power-on
         reconnectModulators();
         startSignalOutput();
         updatePowerUI();
+        ewObj.setOutput("playing", true, { immediate: true });
       }
 
       function stopOsc() {
@@ -444,7 +452,6 @@
         osc.stop();
         oscRunning = false;
         stopSignalOutput();
-        // Re-create oscillator (Tone.js oscillators can't restart)
         const freq = osc.frequency.value;
         const type = osc.type;
         osc.disconnect();
@@ -452,9 +459,9 @@
         osc = new Tone.Oscillator({ frequency: freq, type: type });
         osc.connect(gainNode);
         if (analyser) osc.connect(analyser);
-        // Reconnect any active modulators to the new osc
         reconnectModulators();
         updatePowerUI();
+        ewObj.setOutput("playing", false, { immediate: true });
       }
 
       // ── Logarithmic frequency mapping ──────────────────────────
@@ -489,29 +496,35 @@
       // Header
       buildHeaderBar(ewObj, "OSCILLATOR", app);
 
+      // Add power, output mode, and theme to header controls row
+      document.getElementById("ew-header-controls").innerHTML = `
+        <select id="ew-theme" style="width:auto; padding:3px 24px 3px 8px">
+          <option value="theme-ethos">ETHOS</option>
+          <option value="">AMBER</option>
+          <option value="theme-phosphor">PHOSPHOR</option>
+          <option value="theme-cobalt">COBALT</option>
+          <option value="theme-plasma">PLASMA</option>
+          <option value="theme-danger">DANGER</option>
+          <option value="theme-matrix">MATRIX</option>
+          <option value="theme-solar">SOLAR</option>
+          <option value="theme-arctic">ARCTIC</option>
+        </select>
+        <select id="osc-output-mode" style="width:auto; padding:3px 24px 3px 8px">
+          <option value="audio">AUDIO</option>
+          <option value="control">CONTROL</option>
+          <option value="both">BOTH</option>
+        </select>
+        <div class="toggle-wrap" id="power-toggle" style="margin-bottom:0; cursor:pointer">
+          <div class="toggle-track" id="power-track">
+            <div class="toggle-thumb"></div>
+          </div>
+        </div>
+      `;
+
       // Controls panel
       const controlsPanel = document.createElement("div");
       controlsPanel.className = "hud-panel clip-tr";
       controlsPanel.innerHTML = `
-        <div class="section-title">// OSCILLATOR CONTROLS //</div>
-
-        <div class="power-row">
-          <div class="toggle-wrap" id="power-toggle">
-            <div class="toggle-track" id="power-track">
-              <div class="toggle-thumb"></div>
-            </div>
-            <span class="toggle-label">POWER</span>
-          </div>
-          <span class="type-dim" id="power-status">OFF</span>
-          <span style="margin-left:auto">
-            <span class="control-label" style="display:inline; margin:0">OUTPUT</span>
-            <select id="osc-output-mode" style="width:auto; display:inline; padding:3px 24px 3px 8px">
-              <option value="audio">AUDIO</option>
-              <option value="control">CONTROL</option>
-              <option value="both">BOTH</option>
-            </select>
-          </span>
-        </div>
 
         <div class="control-group">
           <div class="control-label">WAVEFORM</div>
@@ -542,19 +555,18 @@
         </div>
 
         <div style="border-top:1px solid var(--border); padding-top:14px; margin-top:4px">
-          <div class="control-label" style="margin-bottom:8px; color:rgba(var(--rose-rgb),0.85)">MODULATION DEPTH (applied when signal input is linked)</div>
-          <div class="param-row">
+          <div class="param-row mod-row" id="mod-fm-row">
             <div class="control-label">FM</div>
             <input type="range" id="osc-fm-depth" min="0" max="2000" value="200" />
             <span class="range-val" id="osc-fm-depth-val">200 Hz</span>
           </div>
-          <div class="param-row">
-            <div class="control-label">DETUNE</div>
+          <div class="param-row mod-row" id="mod-detune-row">
+            <div class="control-label">DT MOD</div>
             <input type="range" id="osc-detune-mod-depth" min="0" max="1200" value="400" />
             <span class="range-val" id="osc-detune-mod-depth-val">400 ct</span>
           </div>
-          <div class="param-row">
-            <div class="control-label">GAIN</div>
+          <div class="param-row mod-row" id="mod-gain-row">
+            <div class="control-label">GM MOD</div>
             <input type="range" id="osc-gain-mod-depth" min="0" max="100" value="50" />
             <span class="range-val" id="osc-gain-mod-depth-val">0.50</span>
           </div>
@@ -562,11 +574,17 @@
       `;
       app.appendChild(controlsPanel);
 
+      // Theme selector
+      document.getElementById("ew-theme").addEventListener("change", (e) => {
+        document.documentElement.className = e.target.value;
+      });
+      // Set default theme
+      document.documentElement.className = "theme-ethos";
+
       // Waveform display
       const scopePanel = document.createElement("div");
       scopePanel.className = "hud-panel";
       scopePanel.innerHTML = `
-        <div class="section-title">// WAVEFORM //</div>
         <div class="screen-wrap">
           <div class="screen-inner" style="padding:0; min-height:auto">
             <canvas id="osc-scope"></canvas>
@@ -580,9 +598,6 @@
       `;
       app.appendChild(scopePanel);
 
-      // Output panel
-      buildOutputPanel(ewObj, app);
-
       // Input panel
       buildInputPanel(ewObj, app);
 
@@ -590,7 +605,6 @@
       const roomsPanel = document.createElement("div");
       roomsPanel.className = "hud-panel";
       roomsPanel.innerHTML = `
-        <div class="section-title">// ROOMS //</div>
         <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px">
           <span class="control-label" style="margin:0; flex-shrink:0">ROOM</span>
           <input type="text" id="room-input" placeholder="ROOM-ID" maxlength="32" spellcheck="false" autocomplete="off" style="flex:1">
@@ -598,9 +612,9 @@
           <button class="btn btn-sm" id="privacy-btn">PUBLIC</button>
         </div>
         <hr class="hud-divider" style="margin:10px 0">
-        <div class="section-title">// AVAILABLE ROOMS //</div>
+        <div class="section-title">// AVAILABLE OSCILLATORS //</div>
         <div id="rooms-list">
-          <span class="type-dim">NO ROOMS AVAILABLE</span>
+          <span class="type-dim">NO OTHER OSCILLATORS AVAILABLE</span>
         </div>
       `;
       app.appendChild(roomsPanel);
@@ -652,7 +666,7 @@
         const currentRoom = ewObj.getOutputRoom();
         const others = (msg.rooms || []).filter((r) => r.name !== currentRoom);
         if (!others.length) {
-          el.innerHTML = '<span class="type-dim">NO OTHER ROOMS AVAILABLE</span>';
+          el.innerHTML = '<span class="type-dim">NO OTHER OSCILLATORS AVAILABLE</span>';
           return;
         }
         el.innerHTML = "";
@@ -675,7 +689,7 @@
       footer.style.cssText =
         "text-align:center; padding:20px 0; font-size:0.72rem; letter-spacing:0.22em; color:var(--dim)";
       footer.innerHTML =
-        '<a href="../../index.html" style="color:var(--dim); text-decoration:none">◂ ENTROPY WORSHIP</a>';
+        '<a href="../../index.html" style="color:var(--dim); text-decoration:none">ENTROPY WORSHIP</a>';
       app.appendChild(footer);
 
       // ── Wire controls ──────────────────────────────────────────
@@ -683,15 +697,10 @@
       // Power toggle
       function updatePowerUI() {
         const track = document.getElementById("power-track");
-        const status = document.getElementById("power-status");
         if (oscRunning) {
           track.classList.add("on");
-          status.textContent = "ON";
-          status.style.color = "var(--mint)";
         } else {
           track.classList.remove("on");
-          status.textContent = "OFF";
-          status.style.color = "var(--dim)";
         }
       }
 
@@ -719,6 +728,7 @@
         .addEventListener("change", (e) => {
           outputMode = e.target.value;
           applyOutputRouting();
+          ewObj.setOutput("outputMode", outputMode, { immediate: true });
         });
 
       // Frequency slider (logarithmic)
@@ -981,7 +991,33 @@
         }
       });
 
+      // ── Room state sync (same room, different browser) ─────────
+
+      ewObj.onInput("playing", async (value) => {
+        if (typeof value !== "boolean") return;
+        if (value && !oscRunning) {
+          await startOsc();
+        } else if (!value && oscRunning) {
+          stopOsc();
+        }
+      });
+
+      ewObj.onInput("outputMode", (value) => {
+        if (typeof value !== "string") return;
+        if (["audio", "control", "both"].includes(value)) {
+          outputMode = value;
+          document.getElementById("osc-output-mode").value = value;
+          applyOutputRouting();
+        }
+      });
+
       // Connect/disconnect local modulators when inputs are linked/unlinked
+      function updateModRowStates() {
+        document.getElementById("mod-fm-row").classList.toggle("active", fmModWanted);
+        document.getElementById("mod-detune-row").classList.toggle("active", detuneModWanted);
+        document.getElementById("mod-gain-row").classList.toggle("active", gainModWanted);
+      }
+
       ewObj.on("inputConnected", ({ room, portMapping }) => {
         ensureAudio().then(() => {
           for (const localPort of Object.values(portMapping)) {
@@ -989,6 +1025,7 @@
             if (localPort === "detune") connectDetuneMod();
             if (localPort === "gain") connectGainMod();
           }
+          updateModRowStates();
         });
       });
 
@@ -1003,6 +1040,7 @@
         if (!activePorts.has("frequency")) disconnectFMMod();
         if (!activePorts.has("detune")) disconnectDetuneMod();
         if (!activePorts.has("gain")) disconnectGainMod();
+        updateModRowStates();
       });
 
       // ── Output stats ───────────────────────────────────────────
@@ -1098,15 +1136,18 @@
       // ── Initialize ──────────────────────────────────────────────
 
       (() => {
-        // Connect to room immediately — no user gesture needed for WebSocket
         const urlRoom = new URLSearchParams(location.search).get("room");
         ewObj.connectOutput(urlRoom || undefined);
 
-        // Set initial output values
-        ewObj.setOutput("frequency", 440, { unit: "hz", immediate: true });
-        ewObj.setOutput("detune", 0, { unit: "cents", immediate: true });
-        ewObj.setOutput("gain", 0.5, { immediate: true });
-        ewObj.setOutput("waveform", "sine", { immediate: true });
+        // Set local defaults (stored but not broadcast yet —
+        // the requestState response from existing peers will
+        // override these if someone is already in the room).
+        ewObj._outputValues["frequency"] = 440;
+        ewObj._outputValues["detune"] = 0;
+        ewObj._outputValues["gain"] = 0.5;
+        ewObj._outputValues["waveform"] = "sine";
+        ewObj._outputValues["playing"] = false;
+        ewObj._outputValues["outputMode"] = "audio";
 
         refreshStats();
         resizeScope();

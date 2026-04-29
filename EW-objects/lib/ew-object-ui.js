@@ -13,18 +13,40 @@
 export function buildHeaderBar(ewObj, title, container) {
   const header = document.createElement("header");
   header.innerHTML = `
-    <h1 class="hud-title">EW // ${title}</h1>
+    <h1 class="hud-title"><a href="?room=" id="ew-new-instance" style="color:inherit; text-decoration:none">${title} <span style="font-size:0.6em; opacity:0.5">+</span></a></h1>
     <div id="meta">
       <span class="status-item">
         <span class="status-dot offline" id="ew-status-dot"></span>
         <span id="ew-status-text">OFFLINE</span>
       </span>
-      <span id="ew-room-display"></span>
-      <span id="ew-peers">0 PLR</span>
-      <span id="ew-latency"></span>
+      <span class="type-mono" id="ew-output-room" style="font-size:0.82rem"></span>
+      <button class="btn btn-sm btn-mint" id="ew-copy-room" style="padding:2px 8px; font-size:0.62rem">COPY URL</button>
+      <span id="ew-peers" style="font-size:0.82rem">0 PLR</span>
+      <span id="ew-latency" style="font-size:0.82rem"></span>
+      <span id="ew-header-controls" style="display:contents"></span>
     </div>
   `;
   container.appendChild(header);
+
+  // New instance link opens a fresh oscillator in a new tab
+  header.querySelector("#ew-new-instance").addEventListener("click", (e) => {
+    e.preventDefault();
+    window.open(location.pathname, "_blank");
+  });
+
+  // Copy full room URL
+  header.querySelector("#ew-copy-room").addEventListener("click", () => {
+    const room = ewObj.getOutputRoom();
+    if (room) {
+      const url = new URL(location.href);
+      url.searchParams.set("room", room);
+      navigator.clipboard.writeText(url.toString()).then(() => {
+        const btn = document.getElementById("ew-copy-room");
+        btn.textContent = "COPIED";
+        setTimeout(() => (btn.textContent = "COPY URL"), 1500);
+      });
+    }
+  });
 
   // Wire up events
   ewObj.on("connected", () => {
@@ -32,7 +54,7 @@ export function buildHeaderBar(ewObj, title, container) {
     const text = document.getElementById("ew-status-text");
     dot.className = "status-dot live";
     text.textContent = "ONLINE";
-    document.getElementById("ew-room-display").textContent =
+    document.getElementById("ew-output-room").textContent =
       ewObj.getOutputRoom();
   });
 
@@ -46,7 +68,6 @@ export function buildHeaderBar(ewObj, title, container) {
   ewObj.on("peers", (msg) => {
     const count = msg.count || msg.peers.length;
     document.getElementById("ew-peers").textContent = `${count} PLR`;
-    // Show our own latency
     if (ewObj._outputConn) {
       const ms = Math.round(ewObj.getRTT() / 2);
       document.getElementById("ew-latency").textContent =
@@ -124,7 +145,6 @@ export function buildInputPanel(ewObj, container) {
   const panel = document.createElement("div");
   panel.className = "hud-panel";
   panel.innerHTML = `
-    <div class="section-title rose">// INPUT CONNECTIONS //</div>
     <div id="ew-input-ports"></div>
   `;
   container.appendChild(panel);
