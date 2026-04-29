@@ -1,8 +1,5 @@
 # EW/OBJECTS QA STATUS
 
-Manual browser testing. Mark each cell: PASS / FAIL / SKIP / N/A.
-Record issues in the ISSUES column.
-
 ---
 
 ## COMMON FEATURES (test on every object)
