@@ -195,6 +195,17 @@ export function buildInputPanel(ewObj, container) {
         connectBtn.style.display = "none";
         disconnectBtn.style.display = "";
         input.disabled = true;
+        input.style.borderColor = "";
+      } else {
+        // Show warning for invalid room name
+        input.style.borderColor = "var(--rose, #f44)";
+        src.textContent = "INVALID";
+        src.style.color = "var(--rose, #f44)";
+        setTimeout(() => {
+          src.textContent = "—";
+          src.style.color = "";
+          input.style.borderColor = "";
+        }, 2000);
       }
     });
 

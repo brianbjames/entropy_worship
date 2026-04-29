@@ -51,6 +51,13 @@
         height: 120px;
         background: #0e0400;
       }
+      #loop-freq {
+        display: block;
+        width: 100%;
+        height: 80px;
+        background: #0e0400;
+        margin-top: 2px;
+      }
       .param-row {
         display: flex;
         align-items: center;
@@ -246,6 +253,7 @@
       // Audio nodes
       let gainNode = null;
       let analyser = null;
+      let fftAnalyser = null;
 
       // Source oscillator (from upstream room)
       let sourceOsc = null;
@@ -279,7 +287,9 @@
 
         gainNode = new Tone.Gain(baseGain);
         analyser = new Tone.Analyser("waveform", 256);
+        fftAnalyser = new Tone.Analyser("fft", 1024);
         gainNode.connect(analyser);
+        gainNode.connect(fftAnalyser);
         applyOutputRouting();
 
         // ScriptProcessorNode for capturing input audio
@@ -304,6 +314,7 @@
         if (!gainNode) return;
         gainNode.disconnect();
         if (analyser) gainNode.connect(analyser);
+        if (fftAnalyser) gainNode.connect(fftAnalyser);
         if (outputMode === "audio" || outputMode === "both") {
           gainNode.toDestination();
         }
@@ -713,6 +724,7 @@
         <div class="screen-wrap">
           <div class="screen-inner" style="padding:0; min-height:auto">
             <canvas id="loop-scope"></canvas>
+            <canvas id="loop-freq" style="display:block; width:100%; height:80px; background:#0e0400; margin-top:2px"></canvas>
             <div class="screen-scan"></div>
             <div class="corner tl"></div>
             <div class="corner tr"></div>
@@ -737,9 +749,9 @@
           <button class="btn btn-sm" id="privacy-btn">PUBLIC</button>
         </div>
         <hr class="hud-divider" style="margin:10px 0">
-        <div class="section-title">// AVAILABLE LOOPERS //</div>
+        <div class="section-title">// AVAILABLE OBJECTS //</div>
         <div id="rooms-list">
-          <span class="type-dim">NO OTHER LOOPERS AVAILABLE</span>
+          <span class="type-dim">NO OTHER OBJECTS AVAILABLE</span>
         </div>
       `;
       app.appendChild(roomsPanel);
@@ -747,7 +759,7 @@
       // Footer
       const footer = document.createElement("div");
       footer.style.cssText = "text-align:center; padding:20px 0; font-size:0.72rem; letter-spacing:0.22em; color:var(--dim)";
-      footer.innerHTML = '<a href="../../index.html" style="color:var(--dim); text-decoration:none">ENTROPY WORSHIP</a>';
+      footer.innerHTML = '<a href="../../index.html" style="color:var(--dim); text-decoration:none">&copy; 2026 ENTROPY WORSHIP</a>';
       app.appendChild(footer);
 
       // ── Wire transport controls ────────────────────────────────
@@ -1002,6 +1014,38 @@
       const scopeCanvas = document.getElementById("loop-scope");
       const scopeCtx = scopeCanvas.getContext("2d");
 
+      const freqCanvas = document.getElementById("loop-freq");
+      const freqCtx = freqCanvas.getContext("2d");
+
+      function resizeFreq() {
+        const rect = freqCanvas.parentElement.getBoundingClientRect();
+        freqCanvas.width = rect.width;
+        freqCanvas.height = 80;
+      }
+
+      function drawFreq() {
+        const w = freqCanvas.width;
+        const h = freqCanvas.height;
+        freqCtx.fillStyle = "#0e0400";
+        freqCtx.fillRect(0, 0, w, h);
+        if (!fftAnalyser) return;
+        const data = fftAnalyser.getValue();
+        const accent = getComputedStyle(document.documentElement).getPropertyValue("--accent");
+        const len = data.length;
+        freqCtx.fillStyle = accent;
+        freqCtx.globalAlpha = 0.7;
+        for (let x = 0; x < w; x++) {
+          const pct = x / w;
+          const bin = Math.floor(Math.pow(pct, 2) * len);
+          if (bin >= len) continue;
+          const db = data[bin];
+          const norm = Math.max(0, (db + 100) / 100);
+          const barH = norm * h;
+          freqCtx.fillRect(x, h - barH, 1, barH);
+        }
+        freqCtx.globalAlpha = 1.0;
+      }
+
       function resizeScope() {
         const rect = scopeCanvas.parentElement.getBoundingClientRect();
         scopeCanvas.width = rect.width;
@@ -1098,6 +1142,7 @@
           scopeCtx.stroke();
           scopeCtx.shadowBlur = 0;
         }
+        drawFreq();
       }
 
       // ── Room UI ────────────────────────────────────────────────
@@ -1136,7 +1181,7 @@
         if (!el) return;
         const currentRoom = ewObj.getOutputRoom();
         const others = (msg.rooms || []).filter((r) => r.name !== currentRoom);
-        if (!others.length) { el.innerHTML = '<span class="type-dim">NO OTHER LOOPERS AVAILABLE</span>'; return; }
+        if (!others.length) { el.innerHTML = '<span class="type-dim">NO OTHER OBJECTS AVAILABLE</span>'; return; }
         el.innerHTML = "";
         for (const r of others) {
           const a = document.createElement("a");
@@ -1164,10 +1209,11 @@
         updateTransportUI();
         updateStateDisplay();
         resizeScope();
+        resizeFreq();
         drawScope();
       })();
 
-      window.addEventListener("resize", resizeScope);
+      window.addEventListener("resize", () => { resizeScope(); resizeFreq(); });
     </script>
   </body>
 </html>

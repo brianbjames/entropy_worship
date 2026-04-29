@@ -964,7 +964,16 @@
             if (detuneModOsc) detuneModOsc.frequency.value = value;
           } else if (meta && meta.port === "waveform" && typeof value === "string") {
             detuneModRemoteType = value;
-            if (detuneModOsc) { try { detuneModOsc.type = value; } catch (_) {} }
+            if (!toneWaveforms.includes(value)) {
+              if (detuneModOsc) {
+                detuneModOsc.stop(); detuneModOsc.disconnect(); detuneModOsc.dispose();
+                detuneModGain.disconnect(); detuneModGain.dispose();
+                detuneModOsc = null; detuneModGain = null;
+              }
+            } else {
+              if (!detuneModOsc) { connectDetuneMod(); }
+              else { try { detuneModOsc.type = value; } catch (_) {} }
+            }
           }
           return;
         }
@@ -994,7 +1003,16 @@
             if (gainModOsc) gainModOsc.frequency.value = value;
           } else if (meta && meta.port === "waveform" && typeof value === "string") {
             gainModRemoteType = value;
-            if (gainModOsc) { try { gainModOsc.type = value; } catch (_) {} }
+            if (!toneWaveforms.includes(value)) {
+              if (gainModOsc) {
+                gainModOsc.stop(); gainModOsc.disconnect(); gainModOsc.dispose();
+                gainModGainNode.disconnect(); gainModGainNode.dispose();
+                gainModOsc = null; gainModGainNode = null;
+              }
+            } else {
+              if (!gainModOsc) { connectGainMod(); }
+              else { try { gainModOsc.type = value; } catch (_) {} }
+            }
           }
           return;
         }
@@ -1077,9 +1095,19 @@
             activePorts.add(local);
           }
         }
-        if (!activePorts.has("frequency")) disconnectFMMod();
-        if (!activePorts.has("detune")) disconnectDetuneMod();
-        if (!activePorts.has("gain")) disconnectGainMod();
+        if (!activePorts.has("frequency")) {
+          disconnectFMMod();
+          // Snap frequency back to slider value after removing modulation
+          if (osc) osc.frequency.rampTo(baseFrequency, 0.01);
+        }
+        if (!activePorts.has("detune")) {
+          disconnectDetuneMod();
+          if (osc) osc.detune.rampTo(baseDetune, 0.01);
+        }
+        if (!activePorts.has("gain")) {
+          disconnectGainMod();
+          if (gainNode) gainNode.gain.rampTo(baseGain, 0.01);
+        }
         updateModRowStates();
       });
 

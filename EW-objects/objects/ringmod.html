@@ -186,6 +186,7 @@
       let outputMix = null;     // Mix dry + wet
       let outputGain = null;    // Final output gain
       let analyser = null;
+      let fftAnalyser = null;
       let ringRunning = false;
       let audioReady = false;
       let outputMode = "audio";
@@ -227,6 +228,8 @@
 
         analyser = new Tone.Analyser("waveform", 256);
         outputGain.connect(analyser);
+        fftAnalyser = new Tone.Analyser("fft", 1024);
+        outputGain.connect(fftAnalyser);
 
         audioReady = true;
       }
@@ -234,6 +237,8 @@
       function applyOutputRouting() {
         if (!outputGain) return;
         outputGain.disconnect();
+        if (analyser) outputGain.connect(analyser);
+        if (fftAnalyser) outputGain.connect(fftAnalyser);
         if (outputMode === "audio" || outputMode === "both") {
           outputGain.toDestination();
         }
@@ -414,6 +419,7 @@
         <div class="screen-wrap">
           <div class="screen-inner" style="padding:0; min-height:auto">
             <canvas id="rng-scope"></canvas>
+            <canvas id="rng-fft" style="display:block; width:100%; height:80px; background:#0e0400; margin-top:2px"></canvas>
             <div class="screen-scan"></div>
             <div class="corner tl"></div>
             <div class="corner tr"></div>
@@ -438,9 +444,9 @@
           <button class="btn btn-sm" id="privacy-btn">PUBLIC</button>
         </div>
         <hr class="hud-divider" style="margin:10px 0">
-        <div class="section-title">// AVAILABLE RING MODS //</div>
+        <div class="section-title">// AVAILABLE OBJECTS //</div>
         <div id="rooms-list">
-          <span class="type-dim">NO OTHER RING MODS AVAILABLE</span>
+          <span class="type-dim">NO OTHER OBJECTS AVAILABLE</span>
         </div>
       `;
       app.appendChild(roomsPanel);
@@ -448,7 +454,7 @@
       // Footer
       const footer = document.createElement("div");
       footer.style.cssText = "text-align:center; padding:20px 0; font-size:0.72rem; letter-spacing:0.22em; color:var(--dim)";
-      footer.innerHTML = '<a href="../../index.html" style="color:var(--dim); text-decoration:none">ENTROPY WORSHIP</a>';
+      footer.innerHTML = '<a href="../../index.html" style="color:var(--dim); text-decoration:none">&copy; 2026 ENTROPY WORSHIP</a>';
       app.appendChild(footer);
 
       // -- Wire controls ----------------------------------------------
@@ -672,6 +678,42 @@
         }
         scopeCtx.stroke();
         scopeCtx.shadowBlur = 0;
+
+        drawFreq();
+      }
+
+      // -- Frequency spectrum --------------------------------------------
+
+      const fftCanvas = document.getElementById("rng-fft");
+      const fftCtx = fftCanvas.getContext("2d");
+
+      function resizeFreq() {
+        const rect = fftCanvas.parentElement.getBoundingClientRect();
+        fftCanvas.width = rect.width;
+        fftCanvas.height = 80;
+      }
+
+      function drawFreq() {
+        const w = fftCanvas.width;
+        const h = fftCanvas.height;
+        fftCtx.fillStyle = "#0e0400";
+        fftCtx.fillRect(0, 0, w, h);
+        if (!fftAnalyser) return;
+        const data = fftAnalyser.getValue();
+        const accent = getComputedStyle(document.documentElement).getPropertyValue("--accent");
+        const len = data.length;
+        fftCtx.fillStyle = accent;
+        fftCtx.globalAlpha = 0.7;
+        for (let x = 0; x < w; x++) {
+          const pct = x / w;
+          const bin = Math.floor(Math.pow(pct, 2) * len);
+          if (bin >= len) continue;
+          const db = data[bin];
+          const norm = Math.max(0, (db + 100) / 100);
+          const barH = norm * h;
+          fftCtx.fillRect(x, h - barH, 1, barH);
+        }
+        fftCtx.globalAlpha = 1.0;
       }
 
       // -- Room UI ----------------------------------------------------
@@ -710,7 +752,7 @@
         if (!el) return;
         const currentRoom = ewObj.getOutputRoom();
         const others = (msg.rooms || []).filter((r) => r.name !== currentRoom);
-        if (!others.length) { el.innerHTML = '<span class="type-dim">NO OTHER RING MODS AVAILABLE</span>'; return; }
+        if (!others.length) { el.innerHTML = '<span class="type-dim">NO OTHER OBJECTS AVAILABLE</span>'; return; }
         el.innerHTML = "";
         for (const r of others) {
           const a = document.createElement("a");
@@ -736,10 +778,11 @@
 
         refreshStats();
         resizeScope();
+        resizeFreq();
         drawScope();
       })();
 
-      window.addEventListener("resize", resizeScope);
+      window.addEventListener("resize", () => { resizeScope(); resizeFreq(); });
     </script>
   </body>
 </html>

@@ -482,9 +482,9 @@
           <button class="btn btn-sm" id="privacy-btn">PUBLIC</button>
         </div>
         <hr class="hud-divider" style="margin:10px 0">
-        <div class="section-title">// AVAILABLE DB METERS //</div>
+        <div class="section-title">// AVAILABLE OBJECTS //</div>
         <div id="rooms-list">
-          <span class="type-dim">NO OTHER DB METERS AVAILABLE</span>
+          <span class="type-dim">NO OTHER OBJECTS AVAILABLE</span>
         </div>
       `;
       app.appendChild(roomsPanel);
@@ -492,7 +492,7 @@
       // Footer
       const footer = document.createElement("div");
       footer.style.cssText = "text-align:center; padding:20px 0; font-size:0.72rem; letter-spacing:0.22em; color:var(--dim)";
-      footer.innerHTML = '<a href="../../index.html" style="color:var(--dim); text-decoration:none">ENTROPY WORSHIP</a>';
+      footer.innerHTML = '<a href="../../index.html" style="color:var(--dim); text-decoration:none">&copy; 2026 ENTROPY WORSHIP</a>';
       app.appendChild(footer);
 
       // ── Wire controls ──────────────────────────────────────────
@@ -615,7 +615,7 @@
         if (!el) return;
         const currentRoom = ewObj.getOutputRoom();
         const others = (msg.rooms || []).filter((r) => r.name !== currentRoom);
-        if (!others.length) { el.innerHTML = '<span class="type-dim">NO OTHER DB METERS AVAILABLE</span>'; return; }
+        if (!others.length) { el.innerHTML = '<span class="type-dim">NO OTHER OBJECTS AVAILABLE</span>'; return; }
         el.innerHTML = "";
         for (const r of others) {
           const a = document.createElement("a");

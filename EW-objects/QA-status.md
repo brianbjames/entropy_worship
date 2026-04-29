@@ -9,26 +9,30 @@ Record issues in the ISSUES column.
 
 | #   | Test                                                            | Status | Issues |
 | --- | --------------------------------------------------------------- | ------ | ------ |
-| C1  | Page loads without console errors                               | PASS   |        |
-| C2  | WebSocket connects (status dot turns green, shows ONLINE)       | PASS   |        |
-| C3  | Room name auto-generates (e.g. `osc-A2WG9E`)                    | PASS   |        |
-| C4  | COPY URL button copies full room URL to clipboard               | PASS   |        |
-| C5  | Peer count updates when another tab joins same room             | PASS   |        |
-| C6  | Latency displays (ms) after connection                          | PASS   |        |
-| C7  | `<<` back-link navigates to /EW-objects/ index                  | PASS   |        |
-| C8  | Title link opens new instance in new tab                        | PASS   |        |
-| C9  | Theme selector changes color scheme (all 9 themes)              | PASS   |        |
-| C10 | Input ports show LINK/UNLINK buttons                            | PASS   |        |
-| C11 | Pasting a room URL and clicking LINK connects (dot turns green) | PASS   |        |
-| C12 | UNLINK disconnects input (dot turns gray)                       | PASS   |        |
-| C13 | Enter key in input field triggers LINK                          | PASS   |        |
-| C14 | Room panel JOIN button works                                    | PASS   |        |
-| C15 | Privacy toggle switches PUBLIC/PRIVATE                          | PASS   |        |
-| C16 | Available rooms list populates with other objects               | PASS   |        |
-| C17 | Scope/waveform canvas renders (if present)                      | PASS   |        |
-| C18 | Works in Chrome                                                 | PASS   |        |
-| C19 | Works in Safari                                                 | PASS   |        |
-| C20 | Works in Firefox                                                | PASS   |        |
+| C1  | Page loads without console errors                               |        |        |
+| C2  | WebSocket connects (status dot turns green, shows ONLINE)       |        |        |
+| C3  | Room name auto-generates (e.g. `osc-A2WG9E`)                    |        |        |
+| C4  | COPY URL button copies full room URL to clipboard               |        |        |
+| C5  | Peer count updates when another tab joins same room             |        |        |
+| C6  | Latency displays (ms) after connection                          |        |        |
+| C7  | `<<` back-link navigates to /EW-objects/ index                  |        |        |
+| C8  | Title link opens new instance in new tab                        |        |        |
+| C9  | Theme selector changes color scheme (all 9 themes)              |        |        |
+| C10 | Input ports show LINK/UNLINK buttons                            |        |        |
+| C11 | Pasting a room URL and clicking LINK connects (dot turns green) |        |        |
+| C12 | UNLINK disconnects input (dot turns gray)                       |        |        |
+| C13 | Enter key in input field triggers LINK                          |        |        |
+| C14 | Room panel JOIN button works                                    |        |        |
+| C15 | Privacy toggle switches PUBLIC/PRIVATE                          |        |        |
+| C16 | Available rooms list populates with other objects               |        |        |
+| C17 | Scope/waveform canvas renders (if present)                      |        |        |
+| C18 | Frequency spectrum analyzer renders below scope (if present)    |        |        |
+| C19 | Footer shows "© 2026 ENTROPY WORSHIP"                           |        |        |
+| C20 | Available rooms section title shows "// AVAILABLE OBJECTS //"   |        |        |
+| C21 | Empty rooms list shows "NO OTHER OBJECTS AVAILABLE"             |        |        |
+| C22 | Works in Chrome                                                 |        |        |
+| C23 | Works in Safari                                                 |        |        |
+| C24 | Works in Firefox                                                |        |        |
 
 ---
 
@@ -66,18 +70,18 @@ Record issues in the ISSUES column.
 
 ### 2. NOISE — `noise.html`
 
-| #   | Test                                           | Status | Issues                           |
-| --- | ---------------------------------------------- | ------ | -------------------------------- |
-| N1  | Power toggle starts/stops noise                | PASS   |                                  |
-| N2  | White noise type produces broadband hiss       | PASS   |                                  |
-| N3  | Pink noise type produces lower-frequency noise | PASS   |                                  |
-| N4  | Brown noise type produces low rumble           | PASS   |                                  |
-| N5  | Type selector switches noise color             | PASS   |                                  |
-| N6  | Gain slider controls output level              | PASS   |                                  |
-| N7  | Output mode: AUDIO / CONTROL / BOTH            | PASS   |                                  |
-| N8  | Room input for gain modulates level            | FAIL   | Most room LFO shapes do not work |
-| N9  | Room input for type changes noise color        | PASS   |                                  |
-| N10 | Scope shows noise waveform                     | PASS   |                                  |
+| #   | Test                                           | Status | Issues                                                               |
+| --- | ---------------------------------------------- | ------ | -------------------------------------------------------------------- |
+| N1  | Power toggle starts/stops noise                | PASS   |                                                                      |
+| N2  | White noise type produces broadband hiss       | PASS   |                                                                      |
+| N3  | Pink noise type produces lower-frequency noise | PASS   |                                                                      |
+| N4  | Brown noise type produces low rumble           | PASS   |                                                                      |
+| N5  | Type selector switches noise color             | PASS   |                                                                      |
+| N6  | Gain slider controls output level              | PASS   |                                                                      |
+| N7  | Output mode: AUDIO / CONTROL / BOTH            | PASS   |                                                                      |
+| N8  | Room input for gain modulates level            | FIXED  | Was: LFO custom shapes failed silently. Fix: destroy local modulator for non-standard waveforms, let bipolar signal handle modulation |
+| N9  | Room input for type changes noise color        | PASS   |                                                                      |
+| N10 | Scope shows noise waveform                     | PASS   |                                                                      |
 
 ### 3. OSCILLATOR — `oscillator.html`
 
@@ -90,14 +94,14 @@ Record issues in the ISSUES column.
 | O5  | Waveform selector: sine / triangle / sawtooth / square          | PASS   |                                                                                                                      |
 | O6  | Each waveform sounds distinct                                   | PASS   |                                                                                                                      |
 | O7  | Output mode: AUDIO / CONTROL / BOTH                             | PASS   |                                                                                                                      |
-| O8  | Room input for frequency: modulates pitch                       |        |                                                                                                                      |
-| O9  | Room input for frequency: FM synthesis works (link another osc) | PASS   | unlinking the room sets the pitch to a different value when turned off, pitch should snap back to the slider setting |
-| O10 | Room input for detune modulates tuning                          |        |                                                                                                                      |
-| O11 | Room input for gain modulates amplitude                         |        |                                                                                                                      |
-| O12 | Room input for waveform changes shape                           |        |                                                                                                                      |
-| O13 | Cascading FM: osc A -> osc B -> osc C produces complex timbres  |        |                                                                                                                      |
+| O8  | Room input for frequency: modulates pitch                       | PASS   |                                                                                                                      |
+| O9  | Room input for frequency: FM synthesis works (link another osc) | PASS   | FIXED: frequency/detune/gain now snap back to slider values on unlink |
+| O10 | Room input for detune modulates tuning                          | PASS   |                                                                                                                      |
+| O11 | Room input for gain modulates amplitude                         | PASS   |                                                                                                                      |
+| O12 | Room input for waveform changes shape                           | PASS   | FIXED: invalid room inputs now show red border + "INVALID" warning for 2s |
+| O13 | Cascading FM: osc A -> osc B -> osc C produces complex timbres  | PASS   |                                                                                                                      |
 | O14 | Scope shows waveform shape                                      | PASS   |                                                                                                                      |
-| O15 | Signal output broadcasts at ~100Hz                              |        |                                                                                                                      |
+| O15 | Signal output broadcasts at ~100Hz                              | PASS   |                                                                                                                      |
 
 ---
 
@@ -125,26 +129,26 @@ Record issues in the ISSUES column.
 
 ### 5. GRANULAR — `granular.html`
 
-| #   | Test                                                              | Status | Issues |
-| --- | ----------------------------------------------------------------- | ------ | ------ |
-| G1  | Sample dropdown lists built-in samples (Drums, 808, 909, Ambient) |        |        |
-| G2  | Selecting a sample loads it                                       |        |        |
-| G3  | Drag-and-drop loads custom audio file                             |        |        |
-| G4  | Trigger button starts granular playback                           |        |        |
-| G5  | Grain size slider changes grain duration (audible texture change) |        |        |
-| G6  | Overlap slider changes grain density                              |        |        |
-| G7  | Position slider scrubs through sample                             |        |        |
-| G8  | Spread slider randomizes grain position                           |        |        |
-| G9  | Pitch slider shifts pitch without changing speed                  |        |        |
-| G10 | Speed slider changes playback rate                                |        |        |
-| G11 | Gain slider controls volume                                       |        |        |
-| G12 | Reverse toggle reverses grain direction                           |        |        |
-| G13 | Loop toggle enables/disables looping                              |        |        |
-| G14 | Room input for position: LFO scanning through sample works        |        |        |
-| G15 | Room input for pitch: modulatable                                 |        |        |
-| G16 | Room input for trigger: triggers from clock/sequencer             |        |        |
-| G17 | Output mode: AUDIO / CONTROL / BOTH                               |        |        |
-| G18 | Scope shows output waveform                                       |        |        |
+| #   | Test                                                              | Status | Issues                      |
+| --- | ----------------------------------------------------------------- | ------ | --------------------------- |
+| G1  | Sample dropdown lists built-in samples (Drums, 808, 909, Ambient) | PASS   | need different samples      |
+| G2  | Selecting a sample loads it                                       | PASS   |                             |
+| G3  | Drag-and-drop loads custom audio file                             | PASS   |                             |
+| G4  | Trigger button starts granular playback                           | PASS   |                             |
+| G5  | Grain size slider changes grain duration (audible texture change) |        |                             |
+| G6  | Overlap slider changes grain density                              |        |                             |
+| G7  | Position slider scrubs through sample                             | PASS   |                             |
+| G8  | Spread slider randomizes grain position                           |        |                             |
+| G9  | Pitch slider shifts pitch without changing speed                  |        |                             |
+| G10 | Speed slider changes playback rate                                |        |                             |
+| G11 | Gain slider controls volume                                       |        |                             |
+| G12 | Reverse toggle reverses grain direction                           |        |                             |
+| G13 | Loop toggle enables/disables looping                              |        |                             |
+| G14 | Room input for position: LFO scanning through sample works        |        |                             |
+| G15 | Room input for pitch: modulatable                                 |        |                             |
+| G16 | Room input for trigger: triggers from clock/sequencer             |        |                             |
+| G17 | Output mode: AUDIO / CONTROL / BOTH                               |        | FIXED: added continuous analyser-based signal output (~100Hz bipolar broadcast, matching oscillator/noise pattern) |
+| G18 | Scope shows output waveform                                       | PASS   |                             |
 
 ### 6. LOOPER — `looper.html`
 
@@ -190,29 +194,29 @@ Record issues in the ISSUES column.
 
 ### 8. SYNTH — `synth.html`
 
-| #    | Test                                                                       | Status | Issues |
-| ---- | -------------------------------------------------------------------------- | ------ | ------ |
-| SY1  | Manual trigger button plays note (hold = sustain, release = release)       |        |        |
-| SY2  | Waveform selector: sine/tri/saw/square/fat variants/pwm/pulse              |        |        |
-| SY3  | Each waveform sounds distinct                                              |        |        |
-| SY4  | Octave shift transposes pitch                                              |        |        |
-| SY5  | Detune slider adjusts fine tuning                                          |        |        |
-| SY6  | Filter type: lowpass / highpass / bandpass                                 |        |        |
-| SY7  | Cutoff slider sweeps filter audibly                                        |        |        |
-| SY8  | Resonance (Q) slider adds emphasis at cutoff                               |        |        |
-| SY9  | Filter envelope ADSR shapes the filter sweep                               |        |        |
-| SY10 | Filter envelope octaves controls sweep range                               |        |        |
-| SY11 | Amplitude ADSR: attack ramps up                                            |        |        |
-| SY12 | Amplitude ADSR: decay falls to sustain                                     |        |        |
-| SY13 | Amplitude ADSR: sustain holds level                                        |        |        |
-| SY14 | Amplitude ADSR: release fades out after trigger off                        |        |        |
-| SY15 | Gain slider controls output level                                          |        |        |
-| SY16 | Room input for trigger: note on (positive edge) / note off (negative edge) |        |        |
-| SY17 | Room input for frequency: sets pitch (Hz from arpeggiator/quantizer)       |        |        |
-| SY18 | Room input for cutoff: modulates filter                                    |        |        |
-| SY19 | Current note display shows frequency + note name                           |        |        |
-| SY20 | Output mode: AUDIO / CONTROL / BOTH                                        |        |        |
-| SY21 | Scope shows output waveform                                                |        |        |
+| #    | Test                                                                       | Status | Issues                                         |
+| ---- | -------------------------------------------------------------------------- | ------ | ---------------------------------------------- |
+| SY1  | Manual trigger button plays note (hold = sustain, release = release)       | PASS   |                                                |
+| SY2  | Waveform selector: sine/tri/saw/square/fat variants/pwm/pulse              | PASS   |                                                |
+| SY3  | Each waveform sounds distinct                                              | PASS   |                                                |
+| SY4  | Octave shift transposes pitch                                              | FIXED  | Was: no live update during playback. Fix: rampTo(getEffectiveFrequency()) on slider change |
+| SY5  | Detune slider adjusts fine tuning                                          | PASS   |                                                |
+| SY6  | Filter type: lowpass / highpass / bandpass                                 | PASS   | FIXED: cutoff now sets filterEnvelope.baseFrequency (was only setting filter.frequency, overridden by envelope) |
+| SY7  | Cutoff slider sweeps filter audibly                                        |        |                                                |
+| SY8  | Resonance (Q) slider adds emphasis at cutoff                               |        |                                                |
+| SY9  | Filter envelope ADSR shapes the filter sweep                               | PASS   |                                                |
+| SY10 | Filter envelope octaves controls sweep range                               |        |                                                |
+| SY11 | Amplitude ADSR: attack ramps up                                            | PASS   |                                                |
+| SY12 | Amplitude ADSR: decay falls to sustain                                     | PASS   |                                                |
+| SY13 | Amplitude ADSR: sustain holds level                                        | PASS   |                                                |
+| SY14 | Amplitude ADSR: release fades out after trigger off                        | FIXED  | Was: slider changes lost if set before power-on. Fix: applySynthParams() syncs all sliders on audio init |
+| SY15 | Gain slider controls output level                                          | PASS   |                                                |
+| SY16 | Room input for trigger: note on (positive edge) / note off (negative edge) | PASS   |                                                |
+| SY17 | Room input for frequency: sets pitch (Hz from arpeggiator/quantizer)       | PASS   |                                                |
+| SY18 | Room input for cutoff: modulates filter                                    |        |                                                |
+| SY19 | Current note display shows frequency + note name                           | PASS   |                                                |
+| SY20 | Output mode: AUDIO / CONTROL / BOTH                                        | PASS   |                                                |
+| SY21 | Scope shows output waveform                                                | PASS   |                                                |
 
 ---
 
@@ -718,6 +722,21 @@ Record issues in the ISSUES column.
 
 ---
 
+## SYSTEM
+
+### 42. DISTRIBUTED OBJECTS (Dashboard) — `dashboard.html`
+
+| #   | Test                                                     | Status | Issues |
+| --- | -------------------------------------------------------- | ------ | ------ |
+| DA1 | Page loads and connects to WebSocket server              |        |        |
+| DA2 | Shows active rooms as nodes in topology graph            |        |        |
+| DA3 | Shows connections between rooms as edges                 |        |        |
+| DA4 | Graph updates in real-time as objects connect/disconnect |        |        |
+| DA5 | Signal flow hierarchy is visible                         |        |        |
+| DA6 | Interactive — nodes can be clicked/dragged               |        |        |
+
+---
+
 ## INTEGRATION TESTS
 
 Test signal chains across multiple objects.
@@ -744,6 +763,135 @@ Test signal chains across multiple objects.
 | INT18 | Granular with LFO → position (scanning granular texture)            |        |        |
 | INT19 | Two users: same room, parameter changes sync in real-time           |        |        |
 | INT20 | Cross-machine: modules on different devices, connected via room URL |        |        |
+
+---
+
+## OUTBOUND MODULATION
+
+Test that each object's output signal successfully modulates a parameter on a downstream target.
+Method: connect object output room → target input, verify modulation effect.
+
+### Signal Sources → Target
+
+| #    | Source → Target                                           | Status | Issues |
+| ---- | --------------------------------------------------------- | ------ | ------ |
+| OM1  | Audio Input → Filter cutoff (envelope follower behavior)  |        |        |
+| OM2  | Audio Input → Scope (waveform visible)                    |        |        |
+| OM3  | Noise → Filter cutoff (random modulation)                 |        |        |
+| OM4  | Noise → Oscillator frequency (noise FM)                   |        |        |
+| OM5  | Oscillator → Oscillator frequency (FM synthesis)          |        |        |
+| OM6  | Oscillator → Filter cutoff (audio-rate filter mod)        |        |        |
+| OM7  | Oscillator → Ring Mod carrier frequency                   |        |        |
+
+### Instruments → Target
+
+| #    | Source → Target                                           | Status | Issues |
+| ---- | --------------------------------------------------------- | ------ | ------ |
+| OM8  | Drums → Scope (trigger pulses visible)                    |        |        |
+| OM9  | Drums → Envelope trigger (drum-triggered envelope)        |        |        |
+| OM10 | Granular → Scope (output visible)                         |        |        |
+| OM11 | Granular → Filter audio input (granular → FX chain)       |        |        |
+| OM12 | Looper → Scope (loop output visible)                      |        |        |
+| OM13 | Looper → Reverb audio input (looper → FX chain)           |        |        |
+| OM14 | Sampler → Scope (sample output visible)                   |        |        |
+| OM15 | Sampler → Delay audio input (sampler → FX chain)          |        |        |
+| OM16 | Synth → Scope (synth output visible)                      |        |        |
+| OM17 | Synth → Filter audio input (synth → FX chain)             |        |        |
+
+### Effects → Target
+
+| #    | Source → Target                                           | Status | Issues |
+| ---- | --------------------------------------------------------- | ------ | ------ |
+| OM18 | Bitcrusher → Scope (crushed signal visible)               |        |        |
+| OM19 | Chorus → Scope (chorused signal visible)                  |        |        |
+| OM20 | Compressor → Scope (compressed signal visible)            |        |        |
+| OM21 | Delay → Scope (echoes visible)                            |        |        |
+| OM22 | Distortion → Scope (distorted signal visible)             |        |        |
+| OM23 | EQ → Scope (EQ'd signal visible)                          |        |        |
+| OM24 | Filter → Scope (filtered signal visible)                  |        |        |
+| OM25 | Filter → Reverb audio input (effect chaining)             |        |        |
+| OM26 | Panner → Scope (panned signal visible)                    |        |        |
+| OM27 | Phaser → Scope (phased signal visible)                    |        |        |
+| OM28 | Pitch Shift → Scope (shifted signal visible)              |        |        |
+| OM29 | Reverb → Scope (reverb tail visible)                      |        |        |
+| OM30 | Ring Mod → Scope (ring mod signal visible)                |        |        |
+| OM31 | Wavefolder → Scope (folded signal visible)                |        |        |
+
+### Modulation → Target
+
+| #    | Source → Target                                           | Status | Issues |
+| ---- | --------------------------------------------------------- | ------ | ------ |
+| OM32 | Envelope → Oscillator gain (amplitude shaping)            |        |        |
+| OM33 | Envelope → Filter cutoff (filter envelope)                |        |        |
+| OM34 | Envelope → Synth trigger (note on/off)                    |        |        |
+| OM35 | Func Gen → Oscillator frequency (pitch sweep)             |        |        |
+| OM36 | Func Gen → Filter cutoff (filter sweep)                   |        |        |
+| OM37 | Func Gen phase → Scope (phase ramp visible)               |        |        |
+| OM38 | LFO → Oscillator frequency (vibrato)                      |        |        |
+| OM39 | LFO → Oscillator gain (tremolo)                           |        |        |
+| OM40 | LFO → Filter cutoff (filter sweep)                        |        |        |
+| OM41 | LFO → Panner pan position (auto-pan)                      |        |        |
+| OM42 | LFO → Delay time (chorus-like modulation)                 |        |        |
+| OM43 | Sample & Hold → Oscillator frequency (stepped pitch)      |        |        |
+| OM44 | Sample & Hold → Filter cutoff (stepped filter)            |        |        |
+
+### Sequencing → Target
+
+| #    | Source → Target                                           | Status | Issues |
+| ---- | --------------------------------------------------------- | ------ | ------ |
+| OM45 | Arpeggiator freq → Oscillator frequency (arp melody)      |        |        |
+| OM46 | Arpeggiator freq → Synth frequency (arp synth)            |        |        |
+| OM47 | Arpeggiator gate → Envelope trigger (note gating)         |        |        |
+| OM48 | Clock → Sequencer trigger (clocked sequence)              |        |        |
+| OM49 | Clock → Euclid trigger (clocked euclidean)                |        |        |
+| OM50 | Clock → Arpeggiator trigger (clocked arp)                 |        |        |
+| OM51 | Clock → Drums trigger (external clock sync)               |        |        |
+| OM52 | Clock → Envelope trigger (rhythmic envelope)              |        |        |
+| OM53 | Clock → Sampler trigger (rhythmic sample playback)        |        |        |
+| OM54 | Euclid → Envelope trigger (euclidean rhythm)              |        |        |
+| OM55 | Euclid → Probability trigger (filtered euclidean)         |        |        |
+| OM56 | Sequencer → Oscillator frequency (sequenced pitch)        |        |        |
+| OM57 | Sequencer → Filter cutoff (sequenced filter)              |        |        |
+| OM58 | Sequencer → Gain level (sequenced amplitude)              |        |        |
+
+### Signal Routing → Target
+
+| #    | Source → Target                                           | Status | Issues |
+| ---- | --------------------------------------------------------- | ------ | ------ |
+| OM59 | Crossfader → Scope (mixed signal visible)                 |        |        |
+| OM60 | Crossfader → Reverb audio input (crossfaded → FX)         |        |        |
+| OM61 | Mixer → Scope (mixed signal visible)                      |        |        |
+| OM62 | Mixer → Compressor audio input (mix → dynamics)           |        |        |
+
+### Utility → Target
+
+| #    | Source → Target                                           | Status | Issues |
+| ---- | --------------------------------------------------------- | ------ | ------ |
+| OM63 | Gain → Scope (amplified signal visible)                   |        |        |
+| OM64 | Gain → Filter audio input (gain staging into FX)          |        |        |
+| OM65 | Gate state → Oscillator gain (gated drone)                |        |        |
+| OM66 | Gate signal → Scope (gated signal visible)                |        |        |
+| OM67 | Logic → Gate control (logic-controlled gate)              |        |        |
+| OM68 | Logic → Probability trigger (logic-filtered triggers)     |        |        |
+| OM69 | Math → Oscillator frequency (computed pitch)              |        |        |
+| OM70 | Math → Filter cutoff (computed modulation)                |        |        |
+| OM71 | MIDI Calc → Oscillator frequency (scale frequency)        |        |        |
+| OM72 | MIDI Calc → Synth frequency (scale-driven synth)          |        |        |
+| OM73 | Probability → Envelope trigger (probabilistic notes)      |        |        |
+| OM74 | Probability → Sampler trigger (probabilistic playback)    |        |        |
+| OM75 | Quantizer freq → Oscillator frequency (quantized pitch)   |        |        |
+| OM76 | Quantizer freq → Synth frequency (quantized synth)        |        |        |
+| OM77 | Quantizer signal → Scope (quantized steps visible)        |        |        |
+| OM78 | RNG → Oscillator frequency (random pitch)                 |        |        |
+| OM79 | RNG → Filter cutoff (random filter)                       |        |        |
+| OM80 | RNG → Sample & Hold signal (S&H source)                   |        |        |
+
+### Visualization → Target
+
+| #    | Source → Target                                           | Status | Issues |
+| ---- | --------------------------------------------------------- | ------ | ------ |
+| OM81 | DB Meter → Gain level (level-following dynamics)          |        |        |
+| OM82 | DB Meter → Filter cutoff (envelope follower)              |        |        |
 
 ---
 
@@ -792,3 +940,4 @@ Test signal chains across multiple objects.
 | RNG           |        |        |         |        |
 | DB Meter      |        |        |         |        |
 | Scope         |        |        |         |        |
+| Dashboard     |        |        |         |        |

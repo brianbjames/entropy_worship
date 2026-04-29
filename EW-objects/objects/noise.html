@@ -478,6 +478,8 @@
         updateModRowStates();
       });
 
+      const toneWaveforms = ["sine", "triangle", "sawtooth", "square"];
+
       ewObj.onInput("gain", (value, meta) => {
         if (meta && meta.unit === "bipolar" && typeof value === "number") {
           const modulated = baseGain + value * gainModDepth;
@@ -492,7 +494,27 @@
             if (gainModOsc) gainModOsc.frequency.value = value;
           } else if (meta && meta.port === "waveform" && typeof value === "string") {
             gainModRemoteType = value;
-            if (gainModOsc) { try { gainModOsc.type = value; } catch (_) {} }
+            // Custom LFO shapes (random, staircase, etc.) are not valid
+            // Tone.js oscillator types. Destroy the local modulator so
+            // only the bipolar control-rate signal handles modulation.
+            if (!toneWaveforms.includes(value)) {
+              if (gainModOsc) {
+                gainModOsc.stop();
+                gainModOsc.disconnect();
+                gainModOsc.dispose();
+                gainModGainNode.disconnect();
+                gainModGainNode.dispose();
+                gainModOsc = null;
+                gainModGainNode = null;
+              }
+            } else {
+              // Standard waveform — recreate local modulator if destroyed
+              if (!gainModOsc) {
+                connectGainMod();
+              } else {
+                try { gainModOsc.type = value; } catch (_) {}
+              }
+            }
           }
           return;
         }

@@ -42,6 +42,43 @@
     />
     <link rel="stylesheet" href="lib/ewuilib.css" />
     <style>
+      .alpha-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-top: 8px;
+      }
+      .alpha-badge, .issue-btn {
+        display: inline-block;
+        padding: 4px 12px;
+        font-family: var(--font-mono, 'VT323', monospace);
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+        border-radius: 2px;
+        box-sizing: border-box;
+        line-height: 1;
+      }
+      .alpha-badge {
+        color: #fff;
+        background: #cc0000;
+        border: 1px solid #ff3333;
+        animation: alpha-flash 1s ease-in-out infinite;
+      }
+      @keyframes alpha-flash {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.25; }
+      }
+      .issue-btn {
+        color: var(--text);
+        background: transparent;
+        border: 1px solid var(--dim);
+        cursor: pointer;
+        transition: border-color 0.14s, color 0.14s;
+      }
+      .issue-btn:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
       .object-card {
         display: block;
         text-decoration: none;
@@ -119,24 +156,11 @@
         <div class="section-title">
           // COLLABORATIVE DISTRIBUTED MODULAR RELAY NETWORK SYNTHESIZER //
         </div>
-        <p>
-          EWObjects is a novel modular audio synthesis environment that runs
-          entirely in the browser as a distributed network. Each object is a
-          self-contained module — an oscillator, a filter, a delay, a sequencer
-          — that generates, processes, or routes audio and control signals.
-        </p>
-        <p>
-          What makes this different from other browser synths:
-          <strong style="color: var(--accent)"
-            >every module connects to a shared WebSocket server, and room URLs
-            act as patch cables.</strong
-          >
-          Open an oscillator in one tab and a filter in another. Copy the
-          oscillator's room URL, paste it into the filter's audio input, click
-          LINK — and audio flows between them in real-time. These tabs can be on
-          the same machine, on different machines across a network, or shared
-          between multiple users collaborating on the same patch simultaneously.
-        </p>
+        <div class="alpha-row">
+          <span class="alpha-badge">ALPHA VERSION</span>
+          <button class="issue-btn" onclick="openIssue()">REPORT BUG</button>
+          <a class="issue-btn" href="https://github.com/bjamesm70/entropy_worship/blob/main/EW-objects/QA-status.md" target="_blank" style="text-decoration:none">QA STATUS</a>
+        </div>
       </div>
 
       <div class="page-section-label">// System</div>
@@ -193,7 +217,7 @@
           <div class="obj-type">SIGNAL SOURCE</div>
           <div class="obj-name">OSCILLATOR</div>
           <div class="obj-desc">
-            Tone.js oscillator with frequency, detune, gain, and waveform
+            Simple oscillator with frequency, detune, gain, and waveform
             controls. Outputs all parameters to a room for other modules to
             subscribe to.
           </div>
@@ -847,36 +871,68 @@
 
       <!-- How to connect -->
       <div class="hud-panel clip-br concept-panel">
-        <div class="section-title rose">// HOW TO CONNECT //</div>
+        <div class="section-title rose">// INTRODUCTION //</div>
         <p>
-          1. Open any object above — say, the <code>OSCILLATOR</code>. When the
-          page loads it automatically connects to the WebSocket server and
-          generates a unique room name (something like <code>osc-A2WG9E</code>).
-          You'll see it in the header bar next to the status dot.
+          EWObjects is a distributed modular audio environment that runs
+          entirely in the browser. Each object is a standalone
+          signal-processing node — an <code>OSCILLATOR</code>, a
+          <code>FILTER</code>, a <code>DELAY</code>, a sequencer — handling
+          synthesis, processing, or routing at the module level, with Tone.js
+          driving all DSP client-side.
         </p>
         <p>
-          2. Open a second object in another tab — a <code>FILTER</code>, a
-          <code>DELAY</code>, whatever you want to route into. Look for the
-          input fields at the bottom of the page. Each input port has a text
-          field and a <code>LINK</code> button.
+          The key architectural decision: WebSocket rooms replace patch cables.
+          Open an <code>OSCILLATOR</code> in one tab and a
+          <code>FILTER</code> in another. Copy the oscillator's room URL into
+          the filter's audio input, hit <code>LINK</code>, and control signals
+          flow between them at ~30Hz — the same publish/subscribe pattern that
+          SuperCollider uses with Buses or Pd uses with send/receive, except
+          the connection layer is the network itself. Modules can live in tabs
+          on one machine, across machines on a LAN, or across the internet with
+          multiple players patching into the same signal graph simultaneously.
+        </p>
+        <div class="section-title rose" style="margin-top: 14px">// HOW TO CONNECT //</div>
+        <p>
+          1. Open any object above — start with the
+          <code>OSCILLATOR</code>. On load, it handshakes with the WebSocket
+          server and claims a unique room name (something like
+          <code>osc-A2WG9E</code>). That room name is your output bus. You
+          will see it in the header bar next to the status indicator.
         </p>
         <p>
-          3. Go back to the first tab, click <code>COPY URL</code> to grab its
-          room URL, then paste that into the second tab's input port and click
-          <code>LINK</code>. The status dot turns green — the connection is
-          live.
+          2. Open a second object in a new tab — a <code>FILTER</code>, a
+          <code>DELAY</code>, anything that accepts input. At the bottom of
+          the page you will find labeled input ports, each with a text field
+          and a <code>LINK</code> button. These are your inlets.
         </p>
         <p>
-          4. Every knob you turn on the source module is now mirrored in
-          real-time on the receiving module. Change the oscillator's frequency
-          and the filter follows. Chain as many modules together as you want —
-          there's no limit.
+          3. Go back to the source module, click <code>COPY URL</code> to grab
+          its room name, then paste that into the destination module's input
+          field and click <code>LINK</code>. The status dot goes green — you
+          have a live connection. Think of it as plugging a patch cable from
+          one module's output jack into another's input jack.
         </p>
         <p>
-          5. To jam with someone else, just send them a room URL. They paste it
-          into their own module on their own machine and they're patched into
-          your signal chain. Multiple users can subscribe to the same room
-          simultaneously.
+          4. Parameter changes on the source module now propagate in real-time
+          to every subscriber. Sweep the oscillator's frequency and the
+          downstream filter tracks it. Chain as many modules as you want — the
+          signal graph is arbitrary and there is no fixed limit on connection
+          depth or fan-out.
+        </p>
+        <p>
+          5. To bring someone else into the patch, send them a room URL. They
+          paste it into their own module on their own machine and they are
+          subscribed to your signal output. Multiple users can monitor or
+          process the same room simultaneously — same as sharing a Bus in
+          SuperCollider, except the Bus spans the network.
+        </p>
+        <p>
+          6. Rooms can be set to private, restricting signal flow to only those
+          who know the room name — useful for isolating sub-patches or running
+          a closed session. The server itself is a standard Node.js WebSocket
+          process, so you can spin up your own instance on a local machine or
+          private network for zero-latency patching with full control over who
+          connects.
         </p>
         <div class="stats-row" style="margin-top: 14px">
           <div class="stat-block">
@@ -1114,6 +1170,57 @@
         renderer.render(scene, camera);
       }
       animate();
+    </script>
+    <script>
+      function openIssue() {
+        const ua = navigator.userAgent;
+        const screen = window.screen.width + 'x' + window.screen.height;
+        const dpr = window.devicePixelRatio || 1;
+        const audioCtx = window.AudioContext || window.webkitAudioContext;
+        const audioSupport = audioCtx ? 'AudioContext supported' : 'AudioContext NOT supported';
+        const wsSupport = 'WebSocket' in window ? 'WebSocket supported' : 'WebSocket NOT supported';
+        const toneLoaded = typeof Tone !== 'undefined' ? 'Tone.js ' + (Tone.version || 'loaded') : 'Tone.js not loaded';
+        const buildEl = document.querySelector('#meta span');
+        const build = buildEl ? buildEl.textContent.trim() : 'unknown';
+
+        const body = [
+          '## Bug Report',
+          '',
+          '**Describe the issue:**',
+          '<!-- What happened? What did you expect? -->',
+          '',
+          '',
+          '**Steps to reproduce:**',
+          '1. ',
+          '2. ',
+          '3. ',
+          '',
+          '**Which object(s) are affected?**',
+          '<!-- e.g. OSCILLATOR, FILTER, DELAY -->',
+          '',
+          '',
+          '---',
+          '### Environment (auto-collected)',
+          '',
+          '| Field | Value |',
+          '|-------|-------|',
+          '| Build | `' + build + '` |',
+          '| Browser | `' + ua + '` |',
+          '| Screen | `' + screen + ' @' + dpr + 'x` |',
+          '| Audio | `' + audioSupport + '` |',
+          '| WebSocket | `' + wsSupport + '` |',
+          '| Tone.js | `' + toneLoaded + '` |',
+          '| URL | `' + location.href + '` |',
+          '| Timestamp | `' + new Date().toISOString() + '` |',
+        ].join('\n');
+
+        const url = 'https://github.com/brianbjames/entropy_worship/issues/new'
+          + '?labels=EW-objects,bug'
+          + '&title=' + encodeURIComponent('[EW-objects] ')
+          + '&body=' + encodeURIComponent(body);
+
+        window.open(url, '_blank');
+      }
     </script>
   </body>
 </html>
