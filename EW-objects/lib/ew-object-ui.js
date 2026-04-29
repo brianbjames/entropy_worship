@@ -164,8 +164,10 @@ export function buildInputPanel(ewObj, container) {
     connectBtn.addEventListener("click", () => {
       const room = input.value.trim();
       if (!room) return;
-      // Create 1:1 port mapping (remote port name = local port name)
-      const mapping = { [def.port]: def.port };
+      // Map both the matching port name AND "signal" to this local port.
+      // This way a source sending waveform data on "signal" (bipolar)
+      // or parameter data on the same port name both arrive here.
+      const mapping = { [def.port]: def.port, signal: def.port };
       const ok = ewObj.subscribe(room, mapping);
       if (ok) {
         dot.className = "status-dot warn";

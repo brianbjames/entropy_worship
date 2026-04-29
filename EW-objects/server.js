@@ -85,6 +85,7 @@ let nextId = 1;
 function makeRoom(name) {
   return {
     name,
+    private: false,
     clients: new Map(), // clientId → { ws, rtt, objectInfo }
   };
 }
@@ -145,7 +146,7 @@ function broadcastObjectInfo(room) {
 
 function broadcastPublicRooms() {
   const list = [...rooms.values()]
-    .filter((r) => r.clients.size > 0)
+    .filter((r) => !r.private && r.clients.size > 0)
     .map((r) => {
       const objectTypes = [];
       for (const client of r.clients.values()) {
@@ -180,6 +181,7 @@ wss.on("connection", (ws, req) => {
     type: "state",
     clientId,
     room: roomName,
+    private: room.private,
   });
   broadcastPeers(room);
   broadcastPublicRooms();
@@ -239,6 +241,15 @@ wss.on("connection", (ws, req) => {
             client.objectInfo = msg.info;
             broadcastObjectInfo(room);
           }
+        }
+        break;
+
+      // ── Room privacy ────────────────────────────────────────
+      case "setPrivate":
+        if (typeof msg.private === "boolean") {
+          room.private = msg.private;
+          broadcastAll(room, { type: "roomPrivate", private: msg.private });
+          broadcastPublicRooms();
         }
         break;
     }

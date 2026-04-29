@@ -80,6 +80,32 @@
         padding-bottom: 14px;
         border-bottom: 1px solid var(--border);
       }
+      .room-entry {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 10px;
+        border: 1px solid var(--border);
+        margin-bottom: 6px;
+        text-decoration: none;
+        color: var(--text);
+        font-size: 0.82rem;
+        letter-spacing: 0.1em;
+        transition: border-color 0.14s, background 0.14s;
+        cursor: pointer;
+      }
+      .room-entry:hover {
+        border-color: var(--accent);
+        background: rgba(var(--accent-rgb), 0.06);
+      }
+      .room-entry-name {
+        color: var(--accent);
+      }
+      .room-entry-info {
+        font-size: 0.68rem;
+        color: var(--dim);
+        letter-spacing: 0.08em;
+      }
     </style>
   </head>
   <body>
@@ -141,12 +167,26 @@
           },
         ],
         outputs: [
+          { port: "signal", type: "number", unit: "bipolar" },
           { port: "frequency", type: "number", unit: "hz" },
           { port: "detune", type: "number", unit: "cents" },
           { port: "waveform", type: "string" },
           { port: "gain", type: "number" },
         ],
       });
+
+      // ── FM modulation state ────────────────────────────────────
+      // When another oscillator's signal arrives on the frequency
+      // input, it modulates this oscillator's frequency around its
+      // base value. The incoming bipolar signal (-1..+1) is scaled
+      // by fmDepth (in Hz).
+      let baseFrequency = 440; // center frequency set by the slider
+      let fmDepth = 200; // modulation depth in Hz
+      let baseDetune = 0; // center detune set by the slider
+      let detuneModDepth = 400; // modulation depth in cents
+      let baseGain = 0.5; // center gain set by the slider
+      let gainModDepth = 0.5; // modulation depth (0-1 range)
+      const waveforms = ["sine", "sawtooth", "triangle", "square"];
 
       // ── Tone.js audio ──────────────────────────────────────────
 
@@ -171,6 +211,7 @@
         if (!osc || oscRunning) return;
         osc.start();
         oscRunning = true;
+        startSignalOutput();
         updatePowerUI();
       }
 
@@ -178,6 +219,7 @@
         if (!osc || !oscRunning) return;
         osc.stop();
         oscRunning = false;
+        stopSignalOutput();
         // Re-create oscillator (Tone.js oscillators can't restart)
         const freq = osc.frequency.value;
         const type = osc.type;
@@ -264,6 +306,25 @@
           <input type="range" id="osc-gain" min="0" max="100" value="50" />
           <span class="range-val" id="osc-gain-val">0.50</span>
         </div>
+
+        <div style="border-top:1px solid var(--border); padding-top:14px; margin-top:4px">
+          <div class="control-label" style="margin-bottom:8px; color:rgba(var(--rose-rgb),0.85)">MODULATION DEPTH (applied when signal input is linked)</div>
+          <div class="param-row">
+            <div class="control-label">FM</div>
+            <input type="range" id="osc-fm-depth" min="0" max="2000" value="200" />
+            <span class="range-val" id="osc-fm-depth-val">200 Hz</span>
+          </div>
+          <div class="param-row">
+            <div class="control-label">DETUNE</div>
+            <input type="range" id="osc-detune-mod-depth" min="0" max="1200" value="400" />
+            <span class="range-val" id="osc-detune-mod-depth-val">400 ct</span>
+          </div>
+          <div class="param-row">
+            <div class="control-label">GAIN</div>
+            <input type="range" id="osc-gain-mod-depth" min="0" max="100" value="50" />
+            <span class="range-val" id="osc-gain-mod-depth-val">0.50</span>
+          </div>
+        </div>
       `;
       app.appendChild(controlsPanel);
 
@@ -291,12 +352,96 @@
       // Input panel
       buildInputPanel(ewObj, app);
 
+      // Rooms panel
+      const roomsPanel = document.createElement("div");
+      roomsPanel.className = "hud-panel";
+      roomsPanel.innerHTML = `
+        <div class="section-title">// ROOMS //</div>
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px">
+          <span class="control-label" style="margin:0; flex-shrink:0">ROOM</span>
+          <input type="text" id="room-input" placeholder="ROOM-ID" maxlength="32" spellcheck="false" autocomplete="off" style="flex:1">
+          <button class="btn btn-sm" id="room-join-btn">JOIN</button>
+          <button class="btn btn-sm" id="privacy-btn">PUBLIC</button>
+        </div>
+        <hr class="hud-divider" style="margin:10px 0">
+        <div class="section-title">// AVAILABLE ROOMS //</div>
+        <div id="rooms-list">
+          <span class="type-dim">NO ROOMS AVAILABLE</span>
+        </div>
+      `;
+      app.appendChild(roomsPanel);
+
+      ewObj.on("connected", () => {
+        document.getElementById("room-input").value = ewObj.getOutputRoom();
+      });
+      document.getElementById("room-join-btn").addEventListener("click", () => {
+        const name = document.getElementById("room-input").value
+          .trim()
+          .replace(/[^a-zA-Z0-9_-]/g, "")
+          .slice(0, 32) || "default";
+        location.search = `?room=${encodeURIComponent(name)}`;
+      });
+      document.getElementById("room-input").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") document.getElementById("room-join-btn").click();
+      });
+
+      // Privacy toggle
+      let roomPrivate = false;
+
+      function updatePrivacyBtn() {
+        const btn = document.getElementById("privacy-btn");
+        btn.textContent = roomPrivate ? "PRIVATE" : "PUBLIC";
+        btn.classList.toggle("active", roomPrivate);
+      }
+
+      document.getElementById("privacy-btn").addEventListener("click", () => {
+        roomPrivate = !roomPrivate;
+        ewObj.setPrivate(roomPrivate);
+        updatePrivacyBtn();
+      });
+
+      ewObj.on("stateSync", (msg) => {
+        roomPrivate = msg.private || false;
+        updatePrivacyBtn();
+        document.getElementById("room-input").value = msg.room || ewObj.getOutputRoom();
+      });
+
+      ewObj.on("roomPrivate", (msg) => {
+        roomPrivate = msg.private;
+        updatePrivacyBtn();
+      });
+
+      // Render available rooms
+      ewObj.on("rooms", (msg) => {
+        const el = document.getElementById("rooms-list");
+        if (!el) return;
+        const currentRoom = ewObj.getOutputRoom();
+        const others = (msg.rooms || []).filter((r) => r.name !== currentRoom);
+        if (!others.length) {
+          el.innerHTML = '<span class="type-dim">NO OTHER ROOMS AVAILABLE</span>';
+          return;
+        }
+        el.innerHTML = "";
+        for (const r of others) {
+          const a = document.createElement("a");
+          a.className = "room-entry";
+          a.href = `?room=${encodeURIComponent(r.name)}`;
+          const objs = r.objects && r.objects.length
+            ? r.objects.join(", ").toUpperCase()
+            : "";
+          a.innerHTML =
+            `<span class="room-entry-name">${r.name}</span>` +
+            `<span class="room-entry-info">${r.clients} PLR${objs ? " · " + objs : ""}</span>`;
+          el.appendChild(a);
+        }
+      });
+
       // Footer
       const footer = document.createElement("div");
       footer.style.cssText =
         "text-align:center; padding:20px 0; font-size:0.72rem; letter-spacing:0.22em; color:var(--dim)";
       footer.innerHTML =
-        '<a href="../index.html" style="color:var(--dim); text-decoration:none">◂ EW OBJECTS</a>';
+        '<a href="../../index.html" style="color:var(--dim); text-decoration:none">◂ ENTROPY WORSHIP</a>';
       app.appendChild(footer);
 
       // ── Wire controls ──────────────────────────────────────────
@@ -340,6 +485,7 @@
 
       freqSlider.addEventListener("input", () => {
         const freq = sliderToFreq(+freqSlider.value);
+        baseFrequency = freq;
         freqVal.textContent = formatFreq(+freqSlider.value);
 
         // Update slider fill
@@ -362,6 +508,7 @@
       wireRange("osc-detune", "osc-detune-val", (v) => v + " ct");
       document.getElementById("osc-detune").addEventListener("input", (e) => {
         const cents = +e.target.value;
+        baseDetune = cents;
         if (osc) osc.detune.rampTo(cents, 0.01);
         ewObj.setOutput("detune", cents, { unit: "cents" });
         refreshStats();
@@ -371,63 +518,160 @@
       wireRange("osc-gain", "osc-gain-val", (v) => (v / 100).toFixed(2));
       document.getElementById("osc-gain").addEventListener("input", (e) => {
         const gain = +e.target.value / 100;
+        baseGain = gain;
         if (gainNode) gainNode.gain.rampTo(gain, 0.01);
         ewObj.setOutput("gain", Math.round(gain * 100) / 100);
         refreshStats();
       });
 
+      // FM depth slider
+      wireRange("osc-fm-depth", "osc-fm-depth-val", (v) => v + " Hz");
+      document
+        .getElementById("osc-fm-depth")
+        .addEventListener("input", (e) => {
+          fmDepth = +e.target.value;
+        });
+
+      // Detune mod depth slider
+      wireRange("osc-detune-mod-depth", "osc-detune-mod-depth-val", (v) => v + " ct");
+      document
+        .getElementById("osc-detune-mod-depth")
+        .addEventListener("input", (e) => {
+          detuneModDepth = +e.target.value;
+        });
+
+      // Gain mod depth slider
+      wireRange("osc-gain-mod-depth", "osc-gain-mod-depth-val", (v) => (v / 100).toFixed(2));
+      document
+        .getElementById("osc-gain-mod-depth")
+        .addEventListener("input", (e) => {
+          gainModDepth = +e.target.value / 100;
+        });
+
+      // ── Signal output loop ─────────────────────────────────────
+      // Continuously sample the waveform and broadcast the current
+      // amplitude as a bipolar (-1..+1) signal at ~30Hz.
+      let signalOutputTimer = null;
+
+      function startSignalOutput() {
+        if (signalOutputTimer) return;
+        signalOutputTimer = setInterval(() => {
+          if (!analyser || !oscRunning) return;
+          const data = analyser.getValue();
+          // Take the middle sample as representative value
+          const sample = data[Math.floor(data.length / 2)];
+          ewObj.setOutput("signal", Math.round(sample * 1000) / 1000, {
+            unit: "bipolar",
+          });
+        }, 33); // ~30Hz
+      }
+
+      function stopSignalOutput() {
+        if (signalOutputTimer) {
+          clearInterval(signalOutputTimer);
+          signalOutputTimer = null;
+        }
+        ewObj.setOutput("signal", 0, { unit: "bipolar", immediate: true });
+      }
+
       // ── Input signal handling ──────────────────────────────────
 
-      ewObj.onInput("frequency", (value) => {
-        if (typeof value !== "number" || value < 20 || value > 20000) return;
-        if (osc) osc.frequency.rampTo(value, 0.01);
-        // Update slider to match
-        freqSlider.value = freqToSlider(value);
-        freqVal.textContent =
-          value >= 1000
-            ? (value / 1000).toFixed(2) + " kHz"
-            : value.toFixed(1) + " Hz";
-        const pct = (freqSlider.value / 1000) * 100;
-        freqSlider.style.setProperty("--val", pct + "%");
-        // Re-broadcast for downstream subscribers
-        ewObj.setOutput("frequency", value, { unit: "hz" });
-        refreshStats();
-      });
-
-      ewObj.onInput("detune", (value) => {
+      ewObj.onInput("frequency", (value, meta) => {
         if (typeof value !== "number") return;
-        const clamped = Math.max(-1200, Math.min(1200, value));
-        if (osc) osc.detune.rampTo(clamped, 0.01);
-        document.getElementById("osc-detune").value = clamped;
-        document.getElementById("osc-detune-val").textContent = clamped + " ct";
-        ewObj.setOutput("detune", clamped, { unit: "cents" });
-        refreshStats();
+
+        // If the incoming value is bipolar (-1..+1), it's a signal —
+        // apply as FM around the base frequency.
+        // If it's a normal frequency value (>1), set the base frequency.
+        if (value >= -1 && value <= 1 && meta && meta.unit === "bipolar") {
+          // FM modulation: base + signal * depth
+          const modulated = baseFrequency + value * fmDepth;
+          const clamped = Math.max(20, Math.min(20000, modulated));
+          if (osc) osc.frequency.value = clamped;
+        } else if (value >= 20 && value <= 20000) {
+          // Direct frequency set
+          baseFrequency = value;
+          if (osc) osc.frequency.rampTo(value, 0.01);
+          freqSlider.value = freqToSlider(value);
+          freqVal.textContent =
+            value >= 1000
+              ? (value / 1000).toFixed(2) + " kHz"
+              : value.toFixed(1) + " Hz";
+          const pct = (freqSlider.value / 1000) * 100;
+          freqSlider.style.setProperty("--val", pct + "%");
+          ewObj.setOutput("frequency", value, { unit: "hz" });
+          refreshStats();
+        }
       });
 
-      ewObj.onInput("gain", (value) => {
+      ewObj.onInput("detune", (value, meta) => {
         if (typeof value !== "number") return;
-        const clamped = Math.max(0, Math.min(1, value));
-        if (gainNode) gainNode.gain.rampTo(clamped, 0.01);
-        document.getElementById("osc-gain").value = Math.round(clamped * 100);
-        document.getElementById("osc-gain-val").textContent =
-          clamped.toFixed(2);
-        ewObj.setOutput("gain", clamped);
-        refreshStats();
+
+        if (meta && meta.unit === "bipolar") {
+          // Signal modulation: base + signal * depth
+          const modulated = baseDetune + value * detuneModDepth;
+          const clamped = Math.max(-1200, Math.min(1200, modulated));
+          if (osc) osc.detune.value = clamped;
+        } else {
+          // Direct detune set
+          const clamped = Math.max(-1200, Math.min(1200, value));
+          baseDetune = clamped;
+          if (osc) osc.detune.rampTo(clamped, 0.01);
+          document.getElementById("osc-detune").value = clamped;
+          document.getElementById("osc-detune-val").textContent = clamped + " ct";
+          ewObj.setOutput("detune", clamped, { unit: "cents" });
+          refreshStats();
+        }
       });
 
-      ewObj.onInput("waveform", (value) => {
-        const valid = ["sine", "sawtooth", "triangle", "square"];
-        if (!valid.includes(value)) return;
-        if (osc) osc.type = value;
-        document.getElementById("osc-waveform").value = value;
-        ewObj.setOutput("waveform", value);
-        refreshStats();
+      ewObj.onInput("gain", (value, meta) => {
+        if (typeof value !== "number") return;
+
+        if (meta && meta.unit === "bipolar") {
+          // Signal modulation: base + signal * depth, clamped to 0-1
+          const modulated = baseGain + value * gainModDepth;
+          const clamped = Math.max(0, Math.min(1, modulated));
+          if (gainNode) gainNode.gain.value = clamped;
+        } else {
+          // Direct gain set
+          const clamped = Math.max(0, Math.min(1, value));
+          baseGain = clamped;
+          if (gainNode) gainNode.gain.rampTo(clamped, 0.01);
+          document.getElementById("osc-gain").value = Math.round(clamped * 100);
+          document.getElementById("osc-gain-val").textContent =
+            clamped.toFixed(2);
+          ewObj.setOutput("gain", clamped);
+          refreshStats();
+        }
+      });
+
+      ewObj.onInput("waveform", (value, meta) => {
+        if (meta && meta.unit === "bipolar" && typeof value === "number") {
+          // Signal modulation: map bipolar -1..+1 to waveform index
+          // Positive half cycles through waveforms
+          const idx = Math.floor(((value + 1) / 2) * waveforms.length);
+          const type = waveforms[Math.max(0, Math.min(waveforms.length - 1, idx))];
+          if (osc) osc.type = type;
+          document.getElementById("osc-waveform").value = type;
+        } else {
+          // Direct waveform set
+          const valid = ["sine", "sawtooth", "triangle", "square"];
+          if (!valid.includes(value)) return;
+          if (osc) osc.type = value;
+          document.getElementById("osc-waveform").value = value;
+          ewObj.setOutput("waveform", value);
+          refreshStats();
+        }
       });
 
       // ── Output stats ───────────────────────────────────────────
 
       function refreshStats() {
         updateOutputStats(ewObj, [
+          {
+            port: "signal",
+            label: "SIGNAL",
+            formatter: (v) => (v !== undefined ? v.toFixed(3) : "0.000"),
+          },
           {
             port: "frequency",
             label: "FREQ",
@@ -439,12 +683,6 @@
             port: "gain",
             label: "GAIN",
             formatter: (v) => (v !== undefined ? v.toFixed(2) : "—"),
-          },
-          {
-            port: "detune",
-            label: "DETUNE",
-            unit: " ct",
-            formatter: (v) => (v !== undefined ? v : "—"),
           },
         ]);
       }
@@ -517,7 +755,9 @@
 
       // ── Unlock & Initialize ────────────────────────────────────
 
-      buildUnlockOverlay("OSCILLATOR", async () => {
+      // ── Initialize ──────────────────────────────────────────────
+
+      (async () => {
         await Tone.start();
         initAudio();
 
@@ -534,7 +774,7 @@
         refreshStats();
         resizeScope();
         drawScope();
-      });
+      })();
 
       window.addEventListener("resize", resizeScope);
     </script>

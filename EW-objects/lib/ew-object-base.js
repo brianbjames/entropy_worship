@@ -162,6 +162,10 @@ class RoomConnection {
         if (this.handlers.onRooms) this.handlers.onRooms(msg, this);
         break;
 
+      case "roomPrivate":
+        if (this.handlers.onRoomPrivate) this.handlers.onRoomPrivate(msg, this);
+        break;
+
       default:
         // Forward any unhandled message types
         if (this.handlers.onMessage) this.handlers.onMessage(msg, this);
@@ -264,6 +268,9 @@ export class EWObject {
         onRooms: (msg) => {
           this._emit("rooms", msg);
         },
+        onRoomPrivate: (msg) => {
+          this._emit("roomPrivate", msg);
+        },
       }
     );
 
@@ -284,6 +291,14 @@ export class EWObject {
   getOutputURL() {
     if (!this._outputRoom) return null;
     return `${this._wsBase}?room=${encodeURIComponent(this._outputRoom)}`;
+  }
+
+  /**
+   * Toggle room privacy.
+   */
+  setPrivate(isPrivate) {
+    if (!this._outputConn) return;
+    this._outputConn.send({ type: "setPrivate", private: isPrivate });
   }
 
   // ── Input Subscriptions ────────────────────────────────────
