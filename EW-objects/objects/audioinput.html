@@ -30,7 +30,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>MICROPHONE</title>
+    <title>AUDIO INPUT</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
       href="https://fonts.googleapis.com/css2?family=VT323&display=swap"
@@ -45,7 +45,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
 
     <style>
-      /* -- Microphone-specific styles ----------------------------- */
+      /* -- Audio Input styles ------------------------------------ */
       #mic-scope {
         display: block;
         width: 100%;
@@ -239,9 +239,9 @@
       // -- EWObject instance ------------------------------------
 
       const ewObj = new EWObject({
-        name: "MIC-1",
-        objectType: "microphone",
-        roomPrefix: "mic",
+        name: "AIN-1",
+        objectType: "audioinput",
+        roomPrefix: "ain",
         inputs: [
           {
             port: "gain",
@@ -273,6 +273,7 @@
 
       let audioReady = false;
       let micRunning = false;
+      let sourceType = "mic";       // "mic" | "screen"
       let outputMode = "control";  // "audio" | "control" | "both"
       let monitorOn = false;
       let inputGainVal = 1.0;
@@ -282,7 +283,9 @@
       let externalGate = 0;        // bipolar gate input from room
 
       // Audio nodes
-      let mic = null;               // Tone.UserMedia
+      let mic = null;               // Tone.UserMedia (mic mode)
+      let screenStream = null;      // MediaStream (screen mode)
+      let screenSource = null;      // MediaStreamSourceNode (screen mode)
       let inputGainNode = null;     // Tone.Gain — pre-amp
       let outputGainNode = null;    // Tone.Gain — main output level
       let monitorGainNode = null;   // Tone.Gain — to speakers (0 or 1)
@@ -334,43 +337,73 @@
         audioReady = true;
       }
 
-      async function openMic(deviceId) {
+      async function openSource(deviceId) {
         await ensureAudio();
+        closeSource();
 
-        // Close existing mic if open
-        if (mic) {
-          try { mic.close(); } catch (_) {}
-          mic.disconnect();
-          mic.dispose();
-          mic = null;
-        }
-
-        mic = new Tone.UserMedia();
-        try {
-          if (deviceId) {
-            await mic.open(deviceId);
-          } else {
-            await mic.open();
+        if (sourceType === "screen") {
+          // Screen/tab audio capture via getDisplayMedia
+          try {
+            screenStream = await navigator.mediaDevices.getDisplayMedia({
+              audio: true,
+              video: false,
+            });
+            const ctx = Tone.context.rawContext;
+            screenSource = ctx.createMediaStreamSource(screenStream);
+            // Wrap in Tone.Gain to stay in Tone.js graph
+            const bridge = new Tone.Gain(1);
+            screenSource.connect(bridge.input ? bridge.input : bridge._gainNode || bridge);
+            bridge.connect(inputGainNode);
+            // Handle user stopping screen share via browser UI
+            screenStream.getAudioTracks()[0].addEventListener("ended", () => {
+              closeSource();
+            });
+            micRunning = true;
+            startSignalOutput();
+            updatePowerUI();
+            updateEnableUI(true);
+            ewObj.setOutput("playing", true, { immediate: true });
+          } catch (err) {
+            console.error("[AUDIO INPUT] Screen capture denied:", err);
+            updateEnableUI(false, err.message || "ACCESS DENIED");
           }
-          currentDeviceId = deviceId || null;
-          mic.connect(inputGainNode);
-          micRunning = true;
-          startSignalOutput();
-          updatePowerUI();
-          updateEnableUI(true);
-          ewObj.setOutput("playing", true, { immediate: true });
-        } catch (err) {
-          console.error("[MICROPHONE] Mic access denied:", err);
-          updateEnableUI(false, err.message || "ACCESS DENIED");
+        } else {
+          // Microphone / line-in via UserMedia
+          mic = new Tone.UserMedia();
+          try {
+            if (deviceId) {
+              await mic.open(deviceId);
+            } else {
+              await mic.open();
+            }
+            currentDeviceId = deviceId || null;
+            mic.connect(inputGainNode);
+            micRunning = true;
+            startSignalOutput();
+            updatePowerUI();
+            updateEnableUI(true);
+            ewObj.setOutput("playing", true, { immediate: true });
+          } catch (err) {
+            console.error("[AUDIO INPUT] Mic access denied:", err);
+            updateEnableUI(false, err.message || "ACCESS DENIED");
+          }
         }
       }
 
-      function closeMic() {
+      function closeSource() {
         if (mic) {
           try { mic.close(); } catch (_) {}
           mic.disconnect();
           mic.dispose();
           mic = null;
+        }
+        if (screenSource) {
+          try { screenSource.disconnect(); } catch (_) {}
+          screenSource = null;
+        }
+        if (screenStream) {
+          screenStream.getTracks().forEach(t => t.stop());
+          screenStream = null;
         }
         micRunning = false;
         stopSignalOutput();
@@ -400,7 +433,7 @@
           const devices = await navigator.mediaDevices.enumerateDevices();
           return devices.filter(d => d.kind === "audioinput");
         } catch (err) {
-          console.error("[MICROPHONE] Cannot enumerate devices:", err);
+          console.error("[AUDIO INPUT] Cannot enumerate devices:", err);
           return [];
         }
       }
@@ -580,7 +613,7 @@
       const app = document.getElementById("app");
 
       // Header
-      buildHeaderBar(ewObj, "MICROPHONE", app);
+      buildHeaderBar(ewObj, "AUDIO INPUT", app);
 
       // Header controls: theme, output mode, power toggle
       document.getElementById("ew-header-controls").innerHTML = `
@@ -607,26 +640,41 @@
         </div>
       `;
 
-      // Enable microphone overlay (shown before permission is granted)
+      // Enable overlay (shown before permission is granted)
       const enablePanel = document.createElement("div");
       enablePanel.className = "hud-panel";
       enablePanel.id = "mic-enable-overlay";
       enablePanel.innerHTML = `
         <div class="mic-enable-overlay">
-          <button class="btn" id="mic-enable-btn">ENABLE MICROPHONE</button>
-          <span class="type-dim">click to request microphone access</span>
+          <div class="control-group" style="margin-bottom:16px; text-align:left; max-width:280px; margin-left:auto; margin-right:auto">
+            <div class="control-label">SOURCE</div>
+            <select id="source-type-select" style="width:100%">
+              <option value="mic">MICROPHONE</option>
+              <option value="screen">SCREEN / TAB AUDIO</option>
+            </select>
+          </div>
+          <button class="btn" id="mic-enable-btn">ENABLE AUDIO INPUT</button>
+          <span class="type-dim">click to request audio access</span>
           <span class="type-dim mic-error" style="display:none; color:var(--rose); margin-top:6px"></span>
         </div>
       `;
       app.appendChild(enablePanel);
 
-      // Controls panel (hidden until mic is enabled)
+      // Controls panel (hidden until source is enabled)
       const controlsPanel = document.createElement("div");
       controlsPanel.className = "hud-panel clip-tr";
       controlsPanel.id = "mic-controls";
       controlsPanel.style.display = "none";
       controlsPanel.innerHTML = `
         <div class="control-group">
+          <div class="control-label">SOURCE</div>
+          <select id="source-type-control" style="width:100%; margin-bottom:10px">
+            <option value="mic">MICROPHONE</option>
+            <option value="screen">SCREEN / TAB AUDIO</option>
+          </select>
+        </div>
+
+        <div class="control-group" id="device-group">
           <div class="control-label">INPUT DEVICE</div>
           <div class="device-row">
             <select id="mic-device"></select>
@@ -709,9 +757,9 @@
           <button class="btn btn-sm" id="privacy-btn">PUBLIC</button>
         </div>
         <hr class="hud-divider" style="margin:10px 0">
-        <div class="section-title">// AVAILABLE MICROPHONES //</div>
+        <div class="section-title">// AVAILABLE INPUTS //</div>
         <div id="rooms-list">
-          <span class="type-dim">NO OTHER MICROPHONES AVAILABLE</span>
+          <span class="type-dim">NO OTHER INPUTS AVAILABLE</span>
         </div>
       `;
       app.appendChild(roomsPanel);
@@ -732,19 +780,43 @@
       });
       document.documentElement.className = "theme-ethos";
 
-      // Enable microphone button
+      // Source type selector (on enable overlay)
+      document.getElementById("source-type-select").addEventListener("change", (e) => {
+        sourceType = e.target.value;
+      });
+
+      // Enable button
       document.getElementById("mic-enable-btn").addEventListener("click", async () => {
-        await openMic();
+        sourceType = document.getElementById("source-type-select").value;
+        await openSource();
+        // Sync source type control in controls panel
+        const ctrl = document.getElementById("source-type-control");
+        if (ctrl) ctrl.value = sourceType;
+        updateDeviceGroupVisibility();
       });
 
       // Power toggle
       document.getElementById("power-toggle").addEventListener("click", () => {
         if (micRunning) {
-          closeMic();
+          closeSource();
         } else {
-          openMic(currentDeviceId);
+          openSource(currentDeviceId);
         }
       });
+
+      // Source type selector (in controls panel)
+      document.getElementById("source-type-control").addEventListener("change", async (e) => {
+        sourceType = e.target.value;
+        updateDeviceGroupVisibility();
+        if (micRunning) {
+          await openSource(sourceType === "mic" ? currentDeviceId : null);
+        }
+      });
+
+      function updateDeviceGroupVisibility() {
+        const dg = document.getElementById("device-group");
+        if (dg) dg.style.display = sourceType === "mic" ? "" : "none";
+      }
 
       // Output mode select
       document.getElementById("mic-output-mode").addEventListener("change", (e) => {
@@ -756,8 +828,8 @@
       // Device selector
       document.getElementById("mic-device").addEventListener("change", async (e) => {
         const deviceId = e.target.value;
-        if (micRunning) {
-          await openMic(deviceId);
+        if (micRunning && sourceType === "mic") {
+          await openSource(deviceId);
         }
       });
 
@@ -879,7 +951,7 @@
         const currentRoom = ewObj.getOutputRoom();
         const others = (msg.rooms || []).filter((r) => r.name !== currentRoom);
         if (!others.length) {
-          el.innerHTML = '<span class="type-dim">NO OTHER MICROPHONES AVAILABLE</span>';
+          el.innerHTML = '<span class="type-dim">NO OTHER INPUTS AVAILABLE</span>';
           return;
         }
         el.innerHTML = "";
