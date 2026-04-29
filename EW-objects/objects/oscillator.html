@@ -240,18 +240,19 @@
       //   { freq: 440, type: "sine", depth: 200, mod: { freq: 4, type: "sine", depth: 100, mod: null } }
       // Each level creates an oscillator→gain chain, where the inner
       // level modulates the outer level's frequency — all at audio rate.
-      function buildModChain(desc, targetSignal) {
+      function buildModChain(desc, targetSignal, level = 0) {
         if (!desc) return null;
+        console.log(`[OSC] buildModChain level ${level}: freq=${desc.freq} type=${desc.type} depth=${desc.depth} hasMod=${!!desc.mod}`);
         const modOsc = new Tone.Oscillator({ type: desc.type || "sine", frequency: desc.freq || 2 });
         const modGain = new Tone.Gain(desc.depth || 200);
         modOsc.connect(modGain);
         modGain.connect(targetSignal);
-        // If there's a nested modulator, connect it to this oscillator's frequency
+        modOsc.start();
+        // Build inner chain AFTER starting this oscillator
         let inner = null;
         if (desc.mod) {
-          inner = buildModChain(desc.mod, modOsc.frequency);
+          inner = buildModChain(desc.mod, modOsc.frequency, level + 1);
         }
-        modOsc.start();
         return { modOsc, modGain, inner };
       }
 
@@ -280,8 +281,26 @@
       // Broadcast modChain whenever it changes so downstream can rebuild
       function broadcastModChain() {
         const desc = getModChainDesc();
-        console.log("[OSC] broadcasting modChain:", JSON.stringify(desc));
         ewObj.setOutput("modChain", desc, { immediate: true });
+      }
+
+      // Update an existing mod chain's parameters in-place (no rebuild).
+      // This avoids clicks from destroying/recreating audio nodes.
+      function updateModChainParams(chain, desc) {
+        if (!chain || !desc) return;
+        chain.modOsc.frequency.value = desc.freq || 2;
+        try { chain.modOsc.type = desc.type || "sine"; } catch (_) {}
+        chain.modGain.gain.value = desc.depth || 200;
+        if (chain.inner && desc.mod) {
+          updateModChainParams(chain.inner, desc.mod);
+        } else if (!chain.inner && desc.mod) {
+          // New inner level appeared — need to rebuild
+          chain.inner = buildModChain(desc.mod, chain.modOsc.frequency);
+        } else if (chain.inner && !desc.mod) {
+          // Inner level removed
+          destroyModChain(chain.inner);
+          chain.inner = null;
+        }
       }
 
       // FM modulator chain state
@@ -852,17 +871,24 @@
           if (meta && meta.port === "frequency" && typeof value === "number") {
             fmModRemoteFreq = value;
             if (fmModChain) fmModChain.modOsc.frequency.value = value;
+            broadcastModChain(); // re-broadcast so downstream rebuilds
           } else if (meta && meta.port === "waveform" && typeof value === "string") {
             fmModRemoteType = value;
             if (fmModChain) { try { fmModChain.modOsc.type = value; } catch (_) {} }
+            broadcastModChain();
           } else if (meta && meta.port === "modChain") {
-            // Upstream modulation chain changed — rebuild only if different
+            // Upstream modulation chain changed
             const incoming = JSON.stringify(value);
             const current = JSON.stringify(fmModUpstreamChain);
             if (incoming !== current) {
-              console.log("[OSC] received modChain:", incoming);
               fmModUpstreamChain = value;
-              rebuildFMMod();
+              // Try to update the inner chain in-place instead of rebuilding
+              if (fmModChain && fmModChain.inner && value) {
+                updateModChainParams(fmModChain.inner, value);
+              } else {
+                rebuildFMMod();
+              }
+              broadcastModChain();
             }
           }
           return;
