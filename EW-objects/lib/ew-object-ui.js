@@ -180,7 +180,7 @@ export function buildInputPanel(ewObj, container) {
 
     disconnectBtn.addEventListener("click", () => {
       const room = input.value.trim();
-      ewObj.unsubscribe(room);
+      ewObj.unsubscribe(room, def.port);
       dot.className = "status-dot offline";
       src.textContent = "—";
       disconnectBtn.style.display = "none";

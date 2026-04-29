@@ -319,33 +319,58 @@ export class EWObject {
     // Don't subscribe to own output room
     if (clean === this._outputRoom) return false;
 
-    // If already subscribed, disconnect first
-    this.unsubscribe(clean);
+    // If already subscribed to this room, merge the port mapping
+    const existing = this._inputConns.get(clean);
+    if (existing) {
+      Object.assign(existing.portMapping, portMapping);
+      this._emit("inputConnected", { room: clean, portMapping: existing.portMapping });
+      return true;
+    }
 
+    const mergedMapping = { ...portMapping };
     const conn = new RoomConnection(this._wsBase, clean, {
       onOpen: () => {
-        this._emit("inputConnected", { room: clean, portMapping });
+        this._emit("inputConnected", { room: clean, portMapping: mergedMapping });
       },
       onClose: () => {
         this._emit("inputDisconnected", { room: clean });
       },
       onSignal: (msg) => {
-        this._routeSubscribedSignal(msg, clean, portMapping);
+        this._routeSubscribedSignal(msg, clean, mergedMapping);
       },
     });
 
-    this._inputConns.set(clean, { conn, portMapping });
+    this._inputConns.set(clean, { conn, portMapping: mergedMapping });
     conn.connect();
     return true;
   }
 
   /**
-   * Unsubscribe from a room.
+   * Unsubscribe a specific port from a room, or the entire room.
+   * @param {string} roomName
+   * @param {string} [localPort] - If provided, only remove this port's mapping.
+   *                                Disconnects the room if no mappings remain.
    */
-  unsubscribe(roomName) {
+  unsubscribe(roomName, localPort) {
     const clean = sanitizeRoom(roomName);
     const entry = this._inputConns.get(clean);
-    if (entry) {
+    if (!entry) return;
+
+    if (localPort) {
+      // Remove only the mappings that target this local port
+      for (const [remote, local] of Object.entries(entry.portMapping)) {
+        if (local === localPort) {
+          delete entry.portMapping[remote];
+        }
+      }
+      // If no mappings remain, disconnect entirely
+      if (Object.keys(entry.portMapping).length === 0) {
+        entry.conn.destroy();
+        this._inputConns.delete(clean);
+        this._emit("inputDisconnected", { room: clean });
+      }
+    } else {
+      // Disconnect entirely
       entry.conn.destroy();
       this._inputConns.delete(clean);
       this._emit("inputDisconnected", { room: clean });
@@ -588,9 +613,16 @@ export class EWObject {
     const { data } = msg;
     if (!data) return;
 
+    // Check if "signal" is mapped — if so, skip non-signal ports that
+    // map to the same local port (signal modulation takes priority)
+    const signalTarget = portMapping["signal"];
+
     if (data.bundle) {
       for (const [remotePort, info] of Object.entries(data.bundle)) {
-        const localPort = portMapping[remotePort] || remotePort;
+        const localPort = portMapping[remotePort];
+        if (localPort === undefined) continue;
+        // If signal is mapped to this local port, skip non-signal sources
+        if (signalTarget === localPort && remotePort !== "signal") continue;
         this._fireInputCallbacks(localPort, info.value, {
           from: msg.from,
           room: roomName,
@@ -599,7 +631,10 @@ export class EWObject {
         });
       }
     } else if (data.port !== undefined) {
-      const localPort = portMapping[data.port] || data.port;
+      const localPort = portMapping[data.port];
+      if (localPort === undefined) return;
+      // If signal is mapped to this local port, skip non-signal sources
+      if (signalTarget === localPort && data.port !== "signal") return;
       this._fireInputCallbacks(localPort, data.value, {
         from: msg.from,
         room: roomName,
