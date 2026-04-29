@@ -137,6 +137,12 @@
         roomPrefix: "flt",
         inputs: [
           {
+            port: "audio",
+            type: "room",
+            unit: "",
+            default: null,
+          },
+          {
             port: "frequency",
             type: "number",
             unit: "hz",
@@ -679,6 +685,58 @@
 
       // ── Input signal handling ──────────────────────────────────
 
+      // Audio input — creates a local oscillator mirroring the remote
+      // source and routes it through the filter chain.
+      ewObj.onInput("audio", (value, meta) => {
+        if (meta && meta.unit === "bipolar") return;
+        if (!filter) return;
+
+        // Sync source oscillator params from the remote room
+        if (meta && meta.port === "frequency" && typeof value === "number") {
+          if (!sourceConnected) {
+            createSourceOsc(value, "sine", 0.5);
+          } else if (sourceOsc) {
+            sourceOsc.frequency.value = value;
+          }
+        } else if (meta && meta.port === "waveform" && typeof value === "string") {
+          if (sourceOsc) { try { sourceOsc.type = value; } catch (_) {} }
+        } else if (meta && meta.port === "gain" && typeof value === "number") {
+          if (sourceGain) sourceGain.gain.value = Math.max(0, Math.min(1, value));
+        } else if (meta && meta.port === "detune" && typeof value === "number") {
+          if (sourceOsc) sourceOsc.detune.value = value;
+        } else if (meta && meta.port === "playing" && typeof value === "boolean") {
+          // If remote turns on and we have a source but filter isn't running, start
+          if (value && sourceConnected && !filterRunning) startFilter();
+        }
+      });
+
+      ewObj.on("inputConnected", ({ room, portMapping }) => {
+        ensureAudio().then(() => {
+          for (const localPort of Object.values(portMapping)) {
+            if (localPort === "audio" && !sourceConnected) {
+              createSourceOsc(440, "sine", 0.5);
+            }
+            if (localPort === "frequency") connectFMMod();
+            if (localPort === "Q") connectQMod();
+            if (localPort === "gain") connectGainMod();
+          }
+          updateModRowStates();
+        });
+      });
+
+      ewObj.on("inputDisconnected", ({ room }) => {
+        const subs = ewObj.getSubscriptions();
+        const activePorts = new Set();
+        for (const sub of subs) {
+          for (const local of Object.values(sub.portMapping)) activePorts.add(local);
+        }
+        if (!activePorts.has("audio")) destroySourceOsc();
+        if (!activePorts.has("frequency")) disconnectFMMod();
+        if (!activePorts.has("Q")) disconnectQMod();
+        if (!activePorts.has("gain")) disconnectGainMod();
+        updateModRowStates();
+      });
+
       ewObj.onInput("frequency", (value, meta) => {
         if (meta && meta.unit === "bipolar") return;
 
@@ -716,17 +774,6 @@
           freqSlider.style.setProperty("--val", (+freqSlider.value / 1000) * 100 + "%");
           ewObj.setOutput("frequency", value, { unit: "hz" });
           refreshStats();
-        }
-
-        // Also sync source oscillator if present
-        if (sourceOsc && meta && meta.port === "frequency" && typeof value === "number") {
-          sourceOsc.frequency.value = value;
-        }
-        if (sourceOsc && meta && meta.port === "waveform" && typeof value === "string") {
-          try { sourceOsc.type = value; } catch (_) {}
-        }
-        if (sourceOsc && meta && meta.port === "gain" && typeof value === "number") {
-          if (sourceGain) sourceGain.gain.value = Math.max(0, Math.min(1, value));
         }
       });
 
@@ -813,29 +860,6 @@
         document.getElementById("mod-q-row").classList.toggle("active", qModWanted);
         document.getElementById("mod-gain-row").classList.toggle("active", gainModWanted);
       }
-
-      ewObj.on("inputConnected", ({ room, portMapping }) => {
-        ensureAudio().then(() => {
-          for (const localPort of Object.values(portMapping)) {
-            if (localPort === "frequency") connectFMMod();
-            if (localPort === "Q") connectQMod();
-            if (localPort === "gain") connectGainMod();
-          }
-          updateModRowStates();
-        });
-      });
-
-      ewObj.on("inputDisconnected", ({ room }) => {
-        const subs = ewObj.getSubscriptions();
-        const activePorts = new Set();
-        for (const sub of subs) {
-          for (const local of Object.values(sub.portMapping)) activePorts.add(local);
-        }
-        if (!activePorts.has("frequency")) disconnectFMMod();
-        if (!activePorts.has("Q")) disconnectQMod();
-        if (!activePorts.has("gain")) disconnectGainMod();
-        updateModRowStates();
-      });
 
       // ── Output stats ───────────────────────────────────────────
 
