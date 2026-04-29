@@ -223,10 +223,11 @@
 
       // Create a local modulator that connects directly to an AudioParam
       function createModulator(targetParam, depth) {
-        const modOsc = Tone.context.createOscillator();
+        const ctx = Tone.context.rawContext;
+        const modOsc = ctx.createOscillator();
         modOsc.type = "sine";
         modOsc.frequency.value = 2;
-        const modGain = Tone.context.createGain();
+        const modGain = ctx.createGain();
         modGain.gain.value = depth;
         modOsc.connect(modGain);
         modGain.connect(targetParam);
@@ -241,9 +242,20 @@
         mod.modGain.disconnect();
       }
 
+      // Get the native AudioParam from a Tone.js Signal/Param
+      function getNativeParam(toneParam) {
+        // Tone.js 14.x: Signal has an _param or overriddenValue
+        // The input node's native param is what we need
+        if (toneParam._param) return toneParam._param;
+        if (toneParam.input && toneParam.input.gain) return toneParam.input.gain;
+        // Fallback: try to get the raw AudioParam
+        return toneParam;
+      }
+
       function connectFMMod() {
         if (fmModOsc || !osc) return;
-        const mod = createModulator(osc.frequency._param, fmDepth);
+        const param = getNativeParam(osc.frequency);
+        const mod = createModulator(param, fmDepth);
         fmModOsc = mod.modOsc;
         fmModGain = mod.modGain;
       }
@@ -258,7 +270,8 @@
 
       function connectDetuneMod() {
         if (detuneModOsc || !osc) return;
-        const mod = createModulator(osc.detune._param, detuneModDepth);
+        const param = getNativeParam(osc.detune);
+        const mod = createModulator(param, detuneModDepth);
         detuneModOsc = mod.modOsc;
         detuneModGain = mod.modGain;
       }
@@ -273,7 +286,8 @@
 
       function connectGainMod() {
         if (gainModOsc || !gainNode) return;
-        const mod = createModulator(gainNode.gain._param, gainModDepth);
+        const param = getNativeParam(gainNode.gain);
+        const mod = createModulator(param, gainModDepth);
         gainModOsc = mod.modOsc;
         gainModGainNode = mod.modGain;
       }
