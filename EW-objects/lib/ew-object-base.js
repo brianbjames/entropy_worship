@@ -183,6 +183,10 @@ class RoomConnection {
         if (this.handlers.onRequestState) this.handlers.onRequestState(msg, this);
         break;
 
+      case "topology":
+        if (this.handlers.onTopology) this.handlers.onTopology(msg, this);
+        break;
+
       default:
         // Forward any unhandled message types
         if (this.handlers.onMessage) this.handlers.onMessage(msg, this);
@@ -363,6 +367,7 @@ export class EWObject {
 
     this._inputConns.set(clean, { conn, portMapping: mergedMapping });
     conn.connect();
+    this._sendObjectInfo();
     return true;
   }
 
@@ -389,12 +394,14 @@ export class EWObject {
         entry.conn.destroy();
         this._inputConns.delete(clean);
         this._emit("inputDisconnected", { room: clean });
+        this._sendObjectInfo();
       }
     } else {
       // Disconnect entirely
       entry.conn.destroy();
       this._inputConns.delete(clean);
       this._emit("inputDisconnected", { room: clean });
+      this._sendObjectInfo();
     }
   }
 
@@ -603,6 +610,7 @@ export class EWObject {
           type: d.type,
           unit: d.unit,
         })),
+        subscribedRooms: [...this._inputConns.keys()],
       },
     });
   }

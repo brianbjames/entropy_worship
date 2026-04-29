@@ -1,0 +1,1016 @@
+<!-- /-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\ -->
+<!-- |                                                                         | -->
+<!-- \ @@@@@@@@  @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@@@@@   @@@ @@@      / -->
+<!-- - @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@ @@@      - -->
+<!-- / @@!       @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!  @@@  @@! !@@      \ -->
+<!-- | !@!       !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!  @!@  !@! @!!      | -->
+<!-- \ @!!!:!    @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!@@!@!    !@!@!       / -->
+<!-- - !!!!!:    !@!  !!!    !!!    !!@!@!    !@!  !!!  !!@!!!      @!!!       - -->
+<!-- / !!:       !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:         !!:        \ -->
+<!-- | :!:       :!:  !:!    :!:    :!:  !:!  :!:  !:!  :!:         :!:        | -->
+<!-- \  :: ::::   ::   ::     ::    ::   :::  ::::: ::   ::          ::        / -->
+<!-- - : :: ::   ::    :      :      :   : :   : :  :    :           :         - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \ @@@  @@@  @@@   @@@@@@   @@@@@@@    @@@@@@   @@@  @@@  @@@  @@@@@@@     / -->
+<!-- - @@@  @@@  @@@  @@@@@@@@  @@@@@@@@  @@@@@@@   @@@  @@@  @@@  @@@@@@@@    - -->
+<!-- / @@!  @@!  @@!  @@!  @@@  @@!  @@@  !@@       @@!  @@@  @@!  @@!  @@@    \ -->
+<!-- | !@!  !@!  !@!  !@!  @!@  !@!  @!@  !@!       !@!  @!@  !@!  !@!  @!@    | -->
+<!-- \ @!!  !!@  @!@  @!@  !@!  @!@!!@!   !!@@!!    @!@!@!@!  !!@  @!@@!@!     / -->
+<!-- - !@!  !!!  !@!  !@!  !!!  !!@!@!     !!@!!!   !!!@!!!!  !!!  !!@!!!      - -->
+<!-- / !!:  !!:  !!:  !!:  !!!  !!: :!!        !:!  !!:  !!!  !!:  !!:         \ -->
+<!-- | :!:  :!:  :!:  :!:  !:!  :!:  !:!      !:!   :!:  !:!  :!:  :!:         | -->
+<!-- \  :::: :: :::   ::::: ::  ::   :::  :::: ::   ::   :::   ::   ::         / -->
+<!-- -   :: :  : :     : :  :    :   : :  :: : :     :   : :  :     :          - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EW/OBJECTS — PATCH DASHBOARD</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=VT323&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css"
+    />
+    <link rel="stylesheet" href="../lib/ewuilib.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@v0.171.0/build/three.module.js"
+        }
+      }
+    </script>
+    <style>
+      #patch-canvas {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 0;
+      }
+      #app {
+        pointer-events: none;
+      }
+      #app > * {
+        pointer-events: auto;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+      }
+      .back-link {
+        color: var(--dim);
+        text-decoration: none;
+        font-size: 1.2rem;
+        letter-spacing: 0.15em;
+      }
+      .back-link:hover {
+        color: var(--accent);
+      }
+      .dash-stats {
+        margin-top: 10px;
+      }
+      #room-panel {
+        position: fixed;
+        top: 100px;
+        right: 20px;
+        width: 320px;
+        max-height: calc(100vh - 140px);
+        overflow-y: auto;
+        z-index: 2;
+        pointer-events: auto;
+      }
+      .room-entry {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 10px;
+        border-bottom: 1px solid rgba(var(--accent-rgb), 0.12);
+        cursor: pointer;
+        text-decoration: none;
+        color: var(--text);
+        transition: background 0.12s;
+      }
+      .room-entry:hover {
+        background: rgba(var(--accent-rgb), 0.08);
+      }
+      .room-entry-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .room-entry-name {
+        font-size: 0.85rem;
+        letter-spacing: 0.12em;
+        color: var(--accent);
+        flex: 1;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .room-entry-type {
+        font-size: 0.68rem;
+        letter-spacing: 0.18em;
+        color: var(--dim);
+        text-transform: uppercase;
+      }
+      .room-entry-clients {
+        font-size: 0.72rem;
+        color: var(--dim);
+      }
+      #empty-msg {
+        text-align: center;
+        padding: 20px;
+        font-size: 0.82rem;
+        letter-spacing: 0.18em;
+        color: var(--dim);
+      }
+      .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 8px 10px;
+        border-bottom: 1px solid rgba(var(--accent-rgb), 0.12);
+      }
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.62rem;
+        letter-spacing: 0.14em;
+        color: var(--dim);
+        text-transform: uppercase;
+      }
+      .legend-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="patch-canvas"></canvas>
+    <div id="grid-bg"></div>
+    <div id="scanlines"></div>
+
+    <div id="app">
+      <header>
+        <a href="/EW-objects/" class="back-link">&larr; OBJECTS</a>
+        <h1 class="hud-title" style="font-size: 1.4rem">PATCH DASHBOARD</h1>
+        <span class="status-dot offline" id="status-dot"></span>
+      </header>
+
+      <div class="hud-panel clip-tr dash-stats">
+        <div class="stats-row">
+          <div class="stat-block">
+            <div class="stat-label">ROOMS</div>
+            <div class="stat-val" id="stat-rooms">0</div>
+          </div>
+          <div class="stat-block">
+            <div class="stat-label">OBJECTS</div>
+            <div class="stat-val" id="stat-objects">0</div>
+          </div>
+          <div class="stat-block">
+            <div class="stat-label">CONNECTIONS</div>
+            <div class="stat-val" id="stat-connections">0</div>
+          </div>
+          <div class="stat-block">
+            <div class="stat-label">SUBGRAPHS</div>
+            <div class="stat-val" id="stat-subgraphs">0</div>
+          </div>
+        </div>
+      </div>
+
+      <div id="room-panel" class="hud-panel clip-br">
+        <div class="section-title" style="padding: 8px 10px">
+          // ACTIVE ROOMS //
+        </div>
+        <div class="legend">
+          <div class="legend-item">
+            <span class="legend-dot" style="background: #ffaa00"></span> SRC
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background: #ff4477"></span> INST
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background: #00ffbb"></span> FX
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background: #dd66ff"></span> MOD
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background: #ff66dd"></span> SEQ
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background: #66ffdd"></span> RTE
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background: #aaaaaa"></span> UTL
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background: #ffdd00"></span> VIS
+          </div>
+        </div>
+        <div id="room-list">
+          <div id="empty-msg">NO ACTIVE ROOMS</div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import * as THREE from "three";
+      import { RoomConnection, resolveWsBase } from "../lib/ew-object-base.js";
+
+      // ── Category colors ──────────────────────────────────────
+      const CATEGORY_MAP = {
+        oscillator: "source",
+        noise: "source",
+        audioinput: "source",
+        drums: "instrument",
+        granular: "instrument",
+        looper: "instrument",
+        sampler: "instrument",
+        synth: "instrument",
+        bitcrusher: "effect",
+        chorus: "effect",
+        compressor: "effect",
+        delay: "effect",
+        distortion: "effect",
+        eq: "effect",
+        filter: "effect",
+        panner: "effect",
+        phaser: "effect",
+        pitchshift: "effect",
+        reverb: "effect",
+        ringmod: "effect",
+        wavefolder: "effect",
+        envelope: "modulation",
+        funcgen: "modulation",
+        lfo: "modulation",
+        samplehold: "modulation",
+        arpeggiator: "sequencing",
+        clock: "sequencing",
+        euclid: "sequencing",
+        sequencer: "sequencing",
+        crossfader: "routing",
+        mixer: "routing",
+        gain: "utility",
+        gate: "utility",
+        logic: "utility",
+        math: "utility",
+        midicalc: "utility",
+        probability: "utility",
+        quantizer: "utility",
+        rng: "utility",
+        dbmeter: "visualizer",
+        scope: "visualizer",
+      };
+
+      const CATEGORY_COLORS = {
+        source: "#ffaa00",
+        instrument: "#ff4477",
+        effect: "#00ffbb",
+        modulation: "#dd66ff",
+        sequencing: "#ff66dd",
+        routing: "#66ffdd",
+        utility: "#aaaaaa",
+        visualizer: "#ffdd00",
+        unknown: "#666666",
+      };
+
+      function getCategoryColor(objectType) {
+        const cat = CATEGORY_MAP[objectType] || "unknown";
+        return CATEGORY_COLORS[cat] || CATEGORY_COLORS.unknown;
+      }
+
+      // ── Three.js Setup ───────────────────────────────────────
+      const canvas = document.getElementById("patch-canvas");
+      const renderer = new THREE.WebGLRenderer({
+        canvas,
+        antialias: true,
+        alpha: true,
+      });
+      renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+      renderer.setClearColor(0x000000, 0);
+
+      const frustum = 60;
+      const aspect = innerWidth / innerHeight;
+      const camera = new THREE.OrthographicCamera(
+        -frustum * aspect,
+        frustum * aspect,
+        frustum,
+        -frustum,
+        0.1,
+        100,
+      );
+      camera.position.set(0, 0, 50);
+      camera.lookAt(0, 0, 0);
+
+      const scene = new THREE.Scene();
+      const edgeGroup = new THREE.Group();
+      const nodeGroup = new THREE.Group();
+      const particleGroup = new THREE.Group();
+      scene.add(edgeGroup);
+      scene.add(nodeGroup);
+      scene.add(particleGroup);
+
+      function resize() {
+        renderer.setSize(innerWidth, innerHeight);
+        const a = innerWidth / innerHeight;
+        camera.left = -frustum * a * zoom;
+        camera.right = frustum * a * zoom;
+        camera.top = frustum * zoom;
+        camera.bottom = -frustum * zoom;
+        camera.updateProjectionMatrix();
+      }
+
+      // ── Pan / Zoom ───────────────────────────────────────────
+      let zoom = 1;
+      let panX = 0,
+        panY = 0;
+      let dragging = false,
+        dragStartX = 0,
+        dragStartY = 0,
+        panStartX = 0,
+        panStartY = 0;
+
+      function updateCamera() {
+        const a = innerWidth / innerHeight;
+        camera.left = -frustum * a * zoom;
+        camera.right = frustum * a * zoom;
+        camera.top = frustum * zoom;
+        camera.bottom = -frustum * zoom;
+        camera.position.set(panX, panY, 50);
+        camera.lookAt(panX, panY, 0);
+        camera.updateProjectionMatrix();
+      }
+
+      canvas.addEventListener("wheel", (e) => {
+        e.preventDefault();
+        zoom *= e.deltaY > 0 ? 1.08 : 0.92;
+        zoom = Math.max(0.2, Math.min(5, zoom));
+        updateCamera();
+      }, { passive: false });
+
+      canvas.addEventListener("mousedown", (e) => {
+        if (e.button !== 0) return;
+        dragging = true;
+        dragStartX = e.clientX;
+        dragStartY = e.clientY;
+        panStartX = panX;
+        panStartY = panY;
+        canvas.style.cursor = "grabbing";
+      });
+
+      window.addEventListener("mousemove", (e) => {
+        if (!dragging) return;
+        const dx = e.clientX - dragStartX;
+        const dy = e.clientY - dragStartY;
+        const scale = (frustum * 2 * zoom) / innerHeight;
+        panX = panStartX - dx * scale;
+        panY = panStartY + dy * scale;
+        updateCamera();
+      });
+
+      window.addEventListener("mouseup", () => {
+        if (dragging) {
+          dragging = false;
+          canvas.style.cursor = "";
+        }
+      });
+
+      resize();
+      addEventListener("resize", resize);
+
+      // ── Raycasting ───────────────────────────────────────────
+      const raycaster = new THREE.Raycaster();
+      const mouse = new THREE.Vector2();
+      let hoveredSprite = null;
+
+      canvas.addEventListener("click", (e) => {
+        // Ignore if we were dragging
+        const dx = Math.abs(e.clientX - dragStartX);
+        const dy = Math.abs(e.clientY - dragStartY);
+        if (dx > 4 || dy > 4) return;
+
+        mouse.x = (e.clientX / innerWidth) * 2 - 1;
+        mouse.y = -(e.clientY / innerHeight) * 2 + 1;
+        raycaster.setFromCamera(mouse, camera);
+        const hits = raycaster.intersectObjects(nodeGroup.children);
+        if (hits.length > 0) {
+          const data = hits[0].object.userData;
+          if (data.objectType && data.roomName) {
+            window.open(
+              `/EW-objects/objects/${data.objectType}.html?room=${data.roomName}`,
+              "_blank",
+            );
+          }
+        }
+      });
+
+      canvas.addEventListener("mousemove", (e) => {
+        if (dragging) return;
+        mouse.x = (e.clientX / innerWidth) * 2 - 1;
+        mouse.y = -(e.clientY / innerHeight) * 2 + 1;
+        raycaster.setFromCamera(mouse, camera);
+        const hits = raycaster.intersectObjects(nodeGroup.children);
+
+        if (hoveredSprite && (!hits.length || hits[0].object !== hoveredSprite)) {
+          hoveredSprite.scale.copy(hoveredSprite.userData._baseScale);
+          hoveredSprite.material.opacity = 1;
+          hoveredSprite = null;
+          canvas.style.cursor = "";
+        }
+        if (hits.length > 0 && hits[0].object !== hoveredSprite) {
+          hoveredSprite = hits[0].object;
+          hoveredSprite.userData._baseScale =
+            hoveredSprite.userData._baseScale || hoveredSprite.scale.clone();
+          hoveredSprite.scale
+            .copy(hoveredSprite.userData._baseScale)
+            .multiplyScalar(1.12);
+          canvas.style.cursor = "pointer";
+        }
+      });
+
+      // ── Node Texture Generation ──────────────────────────────
+      const NODE_W = 256;
+      const NODE_H = 96;
+
+      function makeNodeTexture(roomName, objectType, clients) {
+        const c = document.createElement("canvas");
+        c.width = NODE_W;
+        c.height = NODE_H;
+        const ctx = c.getContext("2d");
+
+        const color = getCategoryColor(objectType);
+
+        // Background
+        ctx.fillStyle = "rgba(14, 6, 0, 0.85)";
+        ctx.fillRect(0, 0, NODE_W, NODE_H);
+
+        // Border
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.strokeRect(1, 1, NODE_W - 2, NODE_H - 2);
+
+        // Corner accents
+        ctx.fillStyle = color;
+        ctx.fillRect(0, 0, 8, 2);
+        ctx.fillRect(0, 0, 2, 8);
+        ctx.fillRect(NODE_W - 8, 0, 8, 2);
+        ctx.fillRect(NODE_W - 2, 0, 2, 8);
+        ctx.fillRect(0, NODE_H - 2, 8, 2);
+        ctx.fillRect(0, NODE_H - 8, 2, 8);
+        ctx.fillRect(NODE_W - 8, NODE_H - 2, 8, 2);
+        ctx.fillRect(NODE_W - 2, NODE_H - 8, 2, 8);
+
+        // Object type label
+        ctx.font = '14px "VT323", monospace';
+        ctx.fillStyle = "rgba(255,255,255,0.4)";
+        ctx.textAlign = "left";
+        ctx.fillText(
+          (objectType || "UNKNOWN").toUpperCase(),
+          12,
+          24,
+        );
+
+        // Room name
+        ctx.font = '22px "VT323", monospace';
+        ctx.fillStyle = color;
+        ctx.fillText(roomName, 12, 52);
+
+        // Client count
+        ctx.font = '14px "VT323", monospace';
+        ctx.fillStyle = "rgba(255,255,255,0.3)";
+        ctx.textAlign = "right";
+        ctx.fillText(`${clients} PLR`, NODE_W - 12, 80);
+
+        // Category tag
+        const cat = (CATEGORY_MAP[objectType] || "UNKNOWN").toUpperCase();
+        ctx.textAlign = "left";
+        ctx.fillStyle = color;
+        ctx.globalAlpha = 0.5;
+        ctx.fillText(cat, 12, 80);
+        ctx.globalAlpha = 1;
+
+        const tex = new THREE.CanvasTexture(c);
+        tex.minFilter = THREE.LinearFilter;
+        return tex;
+      }
+
+      // ── Force-Directed Layout ────────────────────────────────
+      class ForceLayout {
+        constructor() {
+          this.nodes = new Map(); // name → { x, y, vx, vy }
+          this.edges = []; // [{ from, to }]
+          this.k = 30;
+          this.temperature = 50;
+          this.cooling = 0.995;
+          this.minTemp = 0.5;
+        }
+
+        setGraph(nodeNames, edges) {
+          // Keep existing positions, add new nodes
+          for (const name of nodeNames) {
+            if (!this.nodes.has(name)) {
+              const angle = Math.random() * Math.PI * 2;
+              const r = 20 + Math.random() * 40;
+              this.nodes.set(name, {
+                x: Math.cos(angle) * r,
+                y: Math.sin(angle) * r,
+                vx: 0,
+                vy: 0,
+              });
+            }
+          }
+          // Remove nodes no longer present
+          for (const name of this.nodes.keys()) {
+            if (!nodeNames.includes(name)) {
+              this.nodes.delete(name);
+            }
+          }
+          this.edges = edges;
+          // Reheat
+          this.temperature = Math.max(this.temperature, 10);
+        }
+
+        step() {
+          const nodes = [...this.nodes.entries()];
+          const n = nodes.length;
+          if (n === 0) return;
+
+          const k = this.k;
+          const k2 = k * k;
+
+          // Reset velocities
+          for (const [, nd] of nodes) {
+            nd.vx = 0;
+            nd.vy = 0;
+          }
+
+          // Repulsion (all pairs)
+          for (let i = 0; i < n; i++) {
+            for (let j = i + 1; j < n; j++) {
+              let dx = nodes[i][1].x - nodes[j][1].x;
+              let dy = nodes[i][1].y - nodes[j][1].y;
+              let dist = Math.sqrt(dx * dx + dy * dy) || 0.1;
+              const force = k2 / dist;
+              const fx = (dx / dist) * force;
+              const fy = (dy / dist) * force;
+              nodes[i][1].vx += fx;
+              nodes[i][1].vy += fy;
+              nodes[j][1].vx -= fx;
+              nodes[j][1].vy -= fy;
+            }
+          }
+
+          // Attraction (edges)
+          for (const edge of this.edges) {
+            const a = this.nodes.get(edge.from);
+            const b = this.nodes.get(edge.to);
+            if (!a || !b) continue;
+            let dx = b.x - a.x;
+            let dy = b.y - a.y;
+            let dist = Math.sqrt(dx * dx + dy * dy) || 0.1;
+            const force = (dist * dist) / k;
+            const fx = (dx / dist) * force;
+            const fy = (dy / dist) * force;
+            a.vx += fx;
+            a.vy += fy;
+            b.vx -= fx;
+            b.vy -= fy;
+          }
+
+          // Center gravity
+          for (const [, nd] of nodes) {
+            nd.vx -= nd.x * 0.01;
+            nd.vy -= nd.y * 0.01;
+          }
+
+          // Apply with temperature clamping
+          const t = this.temperature;
+          for (const [, nd] of nodes) {
+            const len = Math.sqrt(nd.vx * nd.vx + nd.vy * nd.vy) || 0.1;
+            const capped = Math.min(len, t);
+            nd.x += (nd.vx / len) * capped;
+            nd.y += (nd.vy / len) * capped;
+          }
+
+          this.temperature = Math.max(
+            this.temperature * this.cooling,
+            this.minTemp,
+          );
+        }
+
+        getPos(name) {
+          return this.nodes.get(name);
+        }
+      }
+
+      const layout = new ForceLayout();
+
+      // ── Scene State ──────────────────────────────────────────
+      const nodeMeshes = new Map(); // roomName → sprite
+      let edgeLines = []; // { line, from, to }
+      let flowParticles = null; // THREE.Points
+      let flowData = []; // [{ from, to, t }]
+      let currentTopology = null;
+
+      function countSubgraphs(nodeNames, edges) {
+        if (nodeNames.length === 0) return 0;
+        const adj = new Map();
+        for (const name of nodeNames) adj.set(name, []);
+        for (const e of edges) {
+          if (adj.has(e.from) && adj.has(e.to)) {
+            adj.get(e.from).push(e.to);
+            adj.get(e.to).push(e.from);
+          }
+        }
+        const visited = new Set();
+        let count = 0;
+        for (const name of nodeNames) {
+          if (visited.has(name)) continue;
+          count++;
+          const stack = [name];
+          while (stack.length) {
+            const cur = stack.pop();
+            if (visited.has(cur)) continue;
+            visited.add(cur);
+            for (const nb of adj.get(cur) || []) {
+              if (!visited.has(nb)) stack.push(nb);
+            }
+          }
+        }
+        return count;
+      }
+
+      function reconcile(topology) {
+        if (!topology) return;
+        currentTopology = topology;
+        const rooms = topology.rooms || [];
+
+        // Build graph data
+        const nodeNames = rooms.map((r) => r.name);
+        const edges = [];
+        const roomInfo = new Map(); // name → { objectType, clients }
+
+        for (const room of rooms) {
+          const primaryObj = room.objects[0];
+          roomInfo.set(room.name, {
+            objectType: primaryObj ? primaryObj.objectType : null,
+            clients: room.clients,
+          });
+          for (const obj of room.objects) {
+            if (obj.subscribedRooms) {
+              for (const sub of obj.subscribedRooms) {
+                if (nodeNames.includes(sub)) {
+                  edges.push({ from: sub, to: room.name });
+                }
+              }
+            }
+          }
+        }
+
+        // Update layout
+        layout.setGraph(nodeNames, edges);
+
+        // Reconcile node sprites
+        const currentNames = new Set(nodeMeshes.keys());
+        const newNames = new Set(nodeNames);
+
+        // Remove stale
+        for (const name of currentNames) {
+          if (!newNames.has(name)) {
+            const sprite = nodeMeshes.get(name);
+            sprite.material.map.dispose();
+            sprite.material.dispose();
+            nodeGroup.remove(sprite);
+            nodeMeshes.delete(name);
+          }
+        }
+
+        // Add or update
+        for (const name of nodeNames) {
+          const info = roomInfo.get(name);
+          if (nodeMeshes.has(name)) {
+            // Update texture if info changed
+            const sprite = nodeMeshes.get(name);
+            if (
+              sprite.userData._objectType !== info.objectType ||
+              sprite.userData._clients !== info.clients
+            ) {
+              sprite.material.map.dispose();
+              sprite.material.map = makeNodeTexture(
+                name,
+                info.objectType,
+                info.clients,
+              );
+              sprite.material.needsUpdate = true;
+              sprite.userData._objectType = info.objectType;
+              sprite.userData._clients = info.clients;
+            }
+          } else {
+            const tex = makeNodeTexture(
+              name,
+              info.objectType,
+              info.clients,
+            );
+            const mat = new THREE.SpriteMaterial({
+              map: tex,
+              transparent: true,
+              depthWrite: false,
+            });
+            const sprite = new THREE.Sprite(mat);
+            sprite.scale.set(25, 9.4, 1);
+            sprite.userData = {
+              roomName: name,
+              objectType: info.objectType,
+              _objectType: info.objectType,
+              _clients: info.clients,
+              _baseScale: new THREE.Vector3(25, 9.4, 1),
+            };
+            nodeGroup.add(sprite);
+            nodeMeshes.set(name, sprite);
+          }
+        }
+
+        // Rebuild edges
+        for (const { line } of edgeLines) {
+          line.geometry.dispose();
+          line.material.dispose();
+          edgeGroup.remove(line);
+        }
+        edgeLines = [];
+
+        for (const edge of edges) {
+          const fromInfo = roomInfo.get(edge.from);
+          const color = getCategoryColor(
+            fromInfo ? fromInfo.objectType : null,
+          );
+          const geo = new THREE.BufferGeometry();
+          geo.setAttribute(
+            "position",
+            new THREE.Float32BufferAttribute([0, 0, 0, 0, 0, 0], 3),
+          );
+          const mat = new THREE.LineBasicMaterial({
+            color: new THREE.Color(color),
+            transparent: true,
+            opacity: 0.45,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+          });
+          const line = new THREE.Line(geo, mat);
+          edgeGroup.add(line);
+          edgeLines.push({ line, from: edge.from, to: edge.to });
+        }
+
+        // Rebuild flow particles
+        if (flowParticles) {
+          flowParticles.geometry.dispose();
+          flowParticles.material.dispose();
+          particleGroup.remove(flowParticles);
+          flowParticles = null;
+        }
+        flowData = [];
+
+        if (edges.length > 0) {
+          const particlesPerEdge = 3;
+          const totalParticles = edges.length * particlesPerEdge;
+          const positions = new Float32Array(totalParticles * 3);
+          const colors = new Float32Array(totalParticles * 3);
+
+          for (let i = 0; i < edges.length; i++) {
+            const fromInfo = roomInfo.get(edges[i].from);
+            const color = new THREE.Color(
+              getCategoryColor(fromInfo ? fromInfo.objectType : null),
+            );
+            for (let p = 0; p < particlesPerEdge; p++) {
+              const idx = i * particlesPerEdge + p;
+              colors[idx * 3] = color.r;
+              colors[idx * 3 + 1] = color.g;
+              colors[idx * 3 + 2] = color.b;
+              flowData.push({
+                edgeIdx: i,
+                from: edges[i].from,
+                to: edges[i].to,
+                t: p / particlesPerEdge,
+              });
+            }
+          }
+
+          const geo = new THREE.BufferGeometry();
+          geo.setAttribute(
+            "position",
+            new THREE.Float32BufferAttribute(positions, 3),
+          );
+          geo.setAttribute(
+            "color",
+            new THREE.Float32BufferAttribute(colors, 3),
+          );
+
+          // Dot texture
+          const dotCanvas = document.createElement("canvas");
+          dotCanvas.width = 16;
+          dotCanvas.height = 16;
+          const dctx = dotCanvas.getContext("2d");
+          dctx.beginPath();
+          dctx.arc(8, 8, 6, 0, Math.PI * 2);
+          dctx.fillStyle = "#ffffff";
+          dctx.fill();
+          const dotTex = new THREE.CanvasTexture(dotCanvas);
+
+          const mat = new THREE.PointsMaterial({
+            size: 2.5,
+            map: dotTex,
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.7,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+          });
+
+          flowParticles = new THREE.Points(geo, mat);
+          particleGroup.add(flowParticles);
+        }
+
+        // Update stats
+        document.getElementById("stat-rooms").textContent = rooms.length;
+        document.getElementById("stat-objects").textContent = rooms.reduce(
+          (s, r) => s + r.objects.length,
+          0,
+        );
+        document.getElementById("stat-connections").textContent = edges.length;
+        document.getElementById("stat-subgraphs").textContent =
+          countSubgraphs(nodeNames, edges);
+
+        // Update room list
+        updateRoomList(rooms);
+      }
+
+      function updateRoomList(rooms) {
+        const list = document.getElementById("room-list");
+        if (rooms.length === 0) {
+          list.innerHTML = '<div id="empty-msg">NO ACTIVE ROOMS</div>';
+          return;
+        }
+
+        let html = "";
+        for (const room of rooms) {
+          const obj = room.objects[0];
+          const type = obj ? obj.objectType : "unknown";
+          const color = getCategoryColor(type);
+          html += `<a class="room-entry" href="/EW-objects/objects/${type}.html?room=${room.name}" target="_blank">
+            <span class="room-entry-dot" style="background:${color}"></span>
+            <span class="room-entry-name">${room.name}</span>
+            <span class="room-entry-type">${type}</span>
+            <span class="room-entry-clients">${room.clients} PLR</span>
+          </a>`;
+        }
+        list.innerHTML = html;
+      }
+
+      // ── Empty state sprite ───────────────────────────────────
+      let emptySprite = null;
+
+      function showEmptyState() {
+        if (emptySprite) return;
+        const c = document.createElement("canvas");
+        c.width = 512;
+        c.height = 64;
+        const ctx = c.getContext("2d");
+        ctx.font = '28px "VT323", monospace';
+        ctx.fillStyle = "rgba(255, 170, 0, 0.3)";
+        ctx.textAlign = "center";
+        ctx.fillText("WAITING FOR OBJECTS...", 256, 40);
+        const tex = new THREE.CanvasTexture(c);
+        tex.minFilter = THREE.LinearFilter;
+        const mat = new THREE.SpriteMaterial({
+          map: tex,
+          transparent: true,
+          depthWrite: false,
+        });
+        emptySprite = new THREE.Sprite(mat);
+        emptySprite.scale.set(60, 7.5, 1);
+        scene.add(emptySprite);
+      }
+
+      function hideEmptyState() {
+        if (!emptySprite) return;
+        emptySprite.material.map.dispose();
+        emptySprite.material.dispose();
+        scene.remove(emptySprite);
+        emptySprite = null;
+      }
+
+      // ── WebSocket ────────────────────────────────────────────
+      const wsBase = resolveWsBase();
+      const statusDot = document.getElementById("status-dot");
+      let topoPollTimer = null;
+
+      const conn = new RoomConnection(wsBase, "_dashboard", {
+        onOpen: () => {
+          statusDot.className = "status-dot live";
+          conn.send({ type: "setPrivate", private: true });
+          conn.send({ type: "requestTopology" });
+          topoPollTimer = setInterval(() => {
+            conn.send({ type: "requestTopology" });
+          }, 4000);
+        },
+        onClose: () => {
+          statusDot.className = "status-dot offline";
+          if (topoPollTimer) {
+            clearInterval(topoPollTimer);
+            topoPollTimer = null;
+          }
+        },
+        onRooms: (msg) => {
+          // Instant sidebar update from broadcast
+          if (msg.rooms) updateRoomList(msg.rooms);
+        },
+        onTopology: (msg) => {
+          reconcile(msg);
+        },
+      });
+
+      // Wait for font then connect
+      document.fonts.ready.then(() => {
+        conn.connect();
+        showEmptyState();
+      });
+
+      // ── Animation Loop ───────────────────────────────────────
+      let time = 0;
+
+      function animate() {
+        requestAnimationFrame(animate);
+        time += 0.016;
+
+        layout.step();
+
+        // Update node positions
+        for (const [name, sprite] of nodeMeshes) {
+          const pos = layout.getPos(name);
+          if (pos) {
+            sprite.position.set(pos.x, pos.y, 0);
+          }
+        }
+
+        // Update edge endpoints
+        for (const { line, from, to } of edgeLines) {
+          const a = layout.getPos(from);
+          const b = layout.getPos(to);
+          if (a && b) {
+            const arr = line.geometry.attributes.position.array;
+            arr[0] = a.x;
+            arr[1] = a.y;
+            arr[2] = 0;
+            arr[3] = b.x;
+            arr[4] = b.y;
+            arr[5] = 0;
+            line.geometry.attributes.position.needsUpdate = true;
+          }
+        }
+
+        // Update flow particles
+        if (flowParticles && flowData.length > 0) {
+          const arr = flowParticles.geometry.attributes.position.array;
+          for (let i = 0; i < flowData.length; i++) {
+            const fd = flowData[i];
+            fd.t += 0.008;
+            if (fd.t > 1) fd.t -= 1;
+            const a = layout.getPos(fd.from);
+            const b = layout.getPos(fd.to);
+            if (a && b) {
+              arr[i * 3] = a.x + (b.x - a.x) * fd.t;
+              arr[i * 3 + 1] = a.y + (b.y - a.y) * fd.t;
+              arr[i * 3 + 2] = 0.1;
+            }
+          }
+          flowParticles.geometry.attributes.position.needsUpdate = true;
+        }
+
+        // Empty state pulse
+        if (emptySprite) {
+          emptySprite.material.opacity = 0.4 + Math.sin(time * 2) * 0.2;
+          if (nodeMeshes.size > 0) hideEmptyState();
+        }
+
+        renderer.render(scene, camera);
+      }
+
+      animate();
+    </script>
+  </body>
+</html>

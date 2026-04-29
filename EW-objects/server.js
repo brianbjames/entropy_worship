@@ -263,6 +263,28 @@ wss.on("connection", (ws, req) => {
       case "requestState":
         broadcastRoom(room, { type: "requestState" }, clientId);
         break;
+
+      // ── Topology query ─────────────────────────────────────
+      // Dashboard clients request the full public room topology.
+      case "requestTopology": {
+        const topo = [...rooms.values()]
+          .filter((r) => !r.private && r.clients.size > 0)
+          .map((r) => {
+            const objects = [];
+            for (const [id, client] of r.clients) {
+              if (client.objectInfo) {
+                objects.push({ clientId: id, ...client.objectInfo });
+              }
+            }
+            return {
+              name: r.name,
+              clients: r.clients.size,
+              objects,
+            };
+          });
+        send(ws, { type: "topology", rooms: topo });
+        break;
+      }
     }
   });
 
