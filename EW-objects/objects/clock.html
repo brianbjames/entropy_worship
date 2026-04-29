@@ -1,0 +1,539 @@
+<!-- /-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\ -->
+<!-- |                                                                         | -->
+<!-- \ @@@@@@@@  @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@@@@@   @@@ @@@      / -->
+<!-- - @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@ @@@      - -->
+<!-- / @@!       @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!  @@@  @@! !@@      \ -->
+<!-- | !@!       !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!  @!@  !@! @!!      | -->
+<!-- \ @!!!:!    @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!@@!@!    !@!@!       / -->
+<!-- - !!!!!:    !@!  !!!    !!!    !!@!@!    !@!  !!!  !!@!!!      @!!!       - -->
+<!-- / !!:       !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:         !!:        \ -->
+<!-- | :!:       :!:  !:!    :!:    :!:  !:!  :!:  !:!  :!:         :!:        | -->
+<!-- \  :: ::::   ::   ::     ::    ::   :::  ::::: ::   ::          ::        / -->
+<!-- - : :: ::   ::    :      :      :   : :   : :  :    :           :         - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \ @@@  @@@  @@@   @@@@@@   @@@@@@@    @@@@@@   @@@  @@@  @@@  @@@@@@@     / -->
+<!-- - @@@  @@@  @@@  @@@@@@@@  @@@@@@@@  @@@@@@@   @@@  @@@  @@@  @@@@@@@@    - -->
+<!-- / @@!  @@!  @@!  @@!  @@@  @@!  @@@  !@@       @@!  @@@  @@!  @@!  @@@    \ -->
+<!-- | !@!  !@!  !@!  !@!  @!@  !@!  @!@  !@!       !@!  @!@  !@!  !@!  @!@    | -->
+<!-- \ @!!  !!@  @!@  @!@  !@!  @!@!!@!   !!@@!!    @!@!@!@!  !!@  @!@@!@!     / -->
+<!-- - !@!  !!!  !@!  !@!  !!!  !!@!@!     !!@!!!   !!!@!!!!  !!!  !!@!!!      - -->
+<!-- / !!:  !!:  !!:  !!:  !!!  !!: :!!        !:!  !!:  !!!  !!:  !!:         \ -->
+<!-- | :!:  :!:  :!:  :!:  !:!  :!:  !:!      !:!   :!:  !:!  :!:  :!:         | -->
+<!-- \  :::: :: :::   ::::: ::  ::   :::  :::: ::   ::   :::   ::   ::         / -->
+<!-- -   :: :  : :     : :  :    :   : :  :: : :     :   : :  :     :          - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CLOCK</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css" />
+    <link rel="stylesheet" href="../lib/ewuilib.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <style>
+      #clock-scope {
+        display: block; width: 100%; height: 120px; background: #080808;
+      }
+      .param-row {
+        display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+      }
+      .param-row .control-label { min-width: 80px; margin-bottom: 0; flex-shrink: 0; }
+      .param-row input[type="range"] { flex: 1; }
+      .param-row .range-val { min-width: 72px; text-align: right; }
+      #power-toggle .toggle-track.on .toggle-thumb { left: 22px; }
+      #meta .toggle-wrap { align-self: center; }
+      #meta .toggle-track { margin: 0; }
+      .room-entry {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 6px 10px; border: 1px solid var(--border); margin-bottom: 6px;
+        text-decoration: none; color: var(--text); font-size: 0.82rem;
+        letter-spacing: 0.1em; transition: border-color 0.14s, background 0.14s; cursor: pointer;
+      }
+      .room-entry:hover { border-color: var(--accent); background: rgba(var(--accent-rgb), 0.06); }
+      .room-entry-name { color: var(--accent); }
+      .room-entry-info { font-size: 0.68rem; color: var(--dim); letter-spacing: 0.08em; }
+      #tap-btn {
+        padding: 6px 18px; font-size: 0.9rem; letter-spacing: 0.12em;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="grid-bg"></div>
+    <div id="scanlines"></div>
+    <div id="app"></div>
+
+    <script type="module">
+      import { EWObject } from "../lib/ew-object-base.js";
+      import {
+        buildHeaderBar,
+        buildInputPanel,
+        updateOutputStats,
+        wireRange,
+      } from "../lib/ew-object-ui.js";
+
+      // ── EWObject instance ──────────────────────────────────────
+
+      const ewObj = new EWObject({
+        name: "CLK-1",
+        objectType: "clock",
+        roomPrefix: "clk",
+        inputs: [
+          { port: "bpm", type: "number", unit: "bpm", min: 20, max: 300, default: 120 },
+          { port: "division", type: "enum", values: ["1/1", "1/2", "1/4", "1/8", "1/16", "1/32"], default: "1/4" },
+          { port: "playing", type: "boolean", default: false },
+        ],
+        outputs: [
+          { port: "signal", type: "number", unit: "bipolar" },
+          { port: "bpm", type: "number", unit: "bpm" },
+          { port: "division", type: "string" },
+          { port: "playing", type: "boolean" },
+        ],
+      });
+
+      // ── Clock state ────────────────────────────────────────────
+
+      let bpm = 120;
+      let division = "1/4";
+      let swing = 0;
+      let pulseWidth = 10;
+      let clockRunning = false;
+      let audioReady = false;
+      let currentSignal = -1;
+
+      const divisionMap = {
+        "1/1": 4, "1/2": 2, "1/4": 1, "1/8": 0.5, "1/16": 0.25, "1/32": 0.125,
+      };
+
+      function getDivisionMultiplier() {
+        return divisionMap[division] || 1;
+      }
+
+      // ── Audio (control-only — no Tone.js needed) ──────────────
+
+      async function ensureAudio() {
+        if (audioReady) return;
+        audioReady = true;
+      }
+
+      // ── Signal output via Web Worker ───────────────────────────
+
+      let signalWorker = null;
+
+      function startClock() {
+        if (clockRunning) return;
+        ensureAudio();
+        clockRunning = true;
+        startSignalOutput();
+        updatePowerUI();
+        ewObj.setOutput("playing", true, { immediate: true });
+      }
+
+      function stopClock() {
+        if (!clockRunning) return;
+        clockRunning = false;
+        stopSignalOutput();
+        updatePowerUI();
+        ewObj.setOutput("playing", false, { immediate: true });
+      }
+
+      function startSignalOutput() {
+        if (signalWorker) return;
+        currentSignal = -1;
+
+        const workerCode = `
+          let bpm = 120, division = 1, swing = 0, pulseWidth = 10;
+          let nextTick = 0;
+          let isOdd = false;
+
+          function tick() {
+            const now = performance.now();
+            if (nextTick === 0) nextTick = now;
+            if (now >= nextTick) {
+              postMessage({ type: "pulse", value: 1 });
+              setTimeout(() => postMessage({ type: "pulse", value: -1 }), pulseWidth);
+              const interval = (60 / bpm) * 1000 * division;
+              const swingDelay = isOdd ? interval * (swing / 100) * 0.5 : 0;
+              nextTick += interval + swingDelay;
+              isOdd = !isOdd;
+            }
+          }
+
+          let id = setInterval(tick, 1);
+
+          onmessage = (e) => {
+            if (e.data.bpm) bpm = e.data.bpm;
+            if (e.data.division) division = e.data.division;
+            if (e.data.swing !== undefined) swing = e.data.swing;
+            if (e.data.pulseWidth) pulseWidth = e.data.pulseWidth;
+            if (e.data.stop) { clearInterval(id); nextTick = 0; close(); }
+            if (e.data.reset) { nextTick = 0; isOdd = false; }
+          };
+        `;
+
+        const blob = new Blob([workerCode], { type: "application/javascript" });
+        signalWorker = new Worker(URL.createObjectURL(blob));
+
+        // Send initial params
+        signalWorker.postMessage({
+          bpm: bpm,
+          division: getDivisionMultiplier(),
+          swing: swing,
+          pulseWidth: pulseWidth,
+        });
+
+        signalWorker.onmessage = (e) => {
+          if (!clockRunning) return;
+          if (e.data.type === "pulse") {
+            currentSignal = e.data.value;
+            ewObj.setOutput("signal", currentSignal, { unit: "bipolar", immediate: true });
+            pushScopeValue(currentSignal);
+          }
+        };
+      }
+
+      function stopSignalOutput() {
+        if (signalWorker) {
+          signalWorker.postMessage({ stop: true });
+          signalWorker = null;
+        }
+        currentSignal = -1;
+        ewObj.setOutput("signal", -1, { unit: "bipolar", immediate: true });
+      }
+
+      // ── Scope ──────────────────────────────────────────────────
+
+      const SCOPE_SAMPLES = 200;
+      let scopeHistory = new Float32Array(SCOPE_SAMPLES);
+      let scopeWriteIdx = 0;
+
+      function pushScopeValue(val) {
+        scopeHistory[scopeWriteIdx] = val;
+        scopeWriteIdx = (scopeWriteIdx + 1) % SCOPE_SAMPLES;
+      }
+
+      // ── TAP TEMPO ──────────────────────────────────────────────
+
+      let tapTimes = [];
+
+      function tapTempo() {
+        const now = performance.now();
+        tapTimes.push(now);
+        // Keep only last 5 taps (4 intervals)
+        if (tapTimes.length > 5) tapTimes.shift();
+        if (tapTimes.length < 2) return;
+
+        let totalInterval = 0;
+        for (let i = 1; i < tapTimes.length; i++) {
+          totalInterval += tapTimes[i] - tapTimes[i - 1];
+        }
+        const avgInterval = totalInterval / (tapTimes.length - 1);
+        const tappedBpm = Math.round(60000 / avgInterval);
+        const clamped = Math.max(20, Math.min(300, tappedBpm));
+
+        bpm = clamped;
+        document.getElementById("clk-bpm").value = clamped;
+        document.getElementById("clk-bpm-val").textContent = clamped + " BPM";
+        const pct = ((clamped - 20) / (300 - 20)) * 100;
+        document.getElementById("clk-bpm").style.setProperty("--val", pct + "%");
+
+        if (signalWorker) signalWorker.postMessage({ bpm: clamped, reset: true });
+        ewObj.setOutput("bpm", clamped, { immediate: true });
+
+        // Reset taps after 2 seconds of inactivity
+        clearTimeout(tapTimes._resetTimer);
+        tapTimes._resetTimer = setTimeout(() => { tapTimes = []; }, 2000);
+      }
+
+      // ── Build UI ───────────────────────────────────────────────
+
+      const app = document.getElementById("app");
+
+      buildHeaderBar(ewObj, "CLOCK", app);
+
+      document.getElementById("ew-header-controls").innerHTML = `
+        <select id="ew-theme" style="width:auto; padding:3px 24px 3px 8px">
+          <option value="theme-ethos">ETHOS</option>
+          <option value="">AMBER</option>
+          <option value="theme-phosphor">PHOSPHOR</option>
+          <option value="theme-cobalt">COBALT</option>
+          <option value="theme-plasma">PLASMA</option>
+          <option value="theme-danger">DANGER</option>
+          <option value="theme-matrix">MATRIX</option>
+          <option value="theme-solar">SOLAR</option>
+          <option value="theme-arctic">ARCTIC</option>
+        </select>
+        <div class="toggle-wrap" id="power-toggle" style="margin-bottom:0; cursor:pointer">
+          <div class="toggle-track" id="power-track">
+            <div class="toggle-thumb"></div>
+          </div>
+        </div>
+      `;
+
+      // Controls
+      const controlsPanel = document.createElement("div");
+      controlsPanel.className = "hud-panel clip-tr";
+      controlsPanel.innerHTML = `
+        <div class="param-row">
+          <div class="control-label">BPM</div>
+          <input type="range" id="clk-bpm" min="20" max="300" value="120" />
+          <span class="range-val" id="clk-bpm-val">120 BPM</span>
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">DIVISION</div>
+          <select id="clk-division">
+            <option value="1/1">1/1</option>
+            <option value="1/2">1/2</option>
+            <option value="1/4" selected>1/4</option>
+            <option value="1/8">1/8</option>
+            <option value="1/16">1/16</option>
+            <option value="1/32">1/32</option>
+          </select>
+        </div>
+
+        <div class="param-row">
+          <div class="control-label">SWING</div>
+          <input type="range" id="clk-swing" min="0" max="100" value="0" />
+          <span class="range-val" id="clk-swing-val">0%</span>
+        </div>
+
+        <div class="param-row">
+          <div class="control-label">PULSE W</div>
+          <input type="range" id="clk-pulse" min="1" max="500" value="10" />
+          <span class="range-val" id="clk-pulse-val">10 ms</span>
+        </div>
+
+        <div style="text-align:center; margin-top:8px">
+          <button class="btn" id="tap-btn">TAP TEMPO</button>
+        </div>
+      `;
+      app.appendChild(controlsPanel);
+
+      // Theme
+      document.getElementById("ew-theme").addEventListener("change", (e) => {
+        document.documentElement.className = e.target.value;
+      });
+      document.documentElement.className = "theme-ethos";
+
+      // Scope
+      const scopePanel = document.createElement("div");
+      scopePanel.className = "hud-panel";
+      scopePanel.innerHTML = `
+        <div class="screen-wrap">
+          <div class="screen-inner" style="padding:0; min-height:auto">
+            <canvas id="clock-scope"></canvas>
+            <div class="screen-scan"></div>
+            <div class="corner tl"></div><div class="corner tr"></div>
+            <div class="corner bl"></div><div class="corner br"></div>
+          </div>
+        </div>
+      `;
+      app.appendChild(scopePanel);
+
+      // Input panel
+      buildInputPanel(ewObj, app);
+
+      // Rooms
+      const roomsPanel = document.createElement("div");
+      roomsPanel.className = "hud-panel";
+      roomsPanel.innerHTML = `
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px">
+          <span class="control-label" style="margin:0; flex-shrink:0">ROOM</span>
+          <input type="text" id="room-input" placeholder="ROOM-ID" maxlength="32" spellcheck="false" autocomplete="off" style="flex:1">
+          <button class="btn btn-sm" id="room-join-btn">JOIN</button>
+          <button class="btn btn-sm" id="privacy-btn">PUBLIC</button>
+        </div>
+        <hr class="hud-divider" style="margin:10px 0">
+        <div class="section-title">// AVAILABLE CLOCKS //</div>
+        <div id="rooms-list"><span class="type-dim">NO OTHER CLOCKS AVAILABLE</span></div>
+      `;
+      app.appendChild(roomsPanel);
+
+      // Footer
+      const footer = document.createElement("div");
+      footer.style.cssText = "text-align:center; padding:20px 0; font-size:0.72rem; letter-spacing:0.22em; color:var(--dim)";
+      footer.innerHTML = '<a href="../../index.html" style="color:var(--dim); text-decoration:none">ENTROPY WORSHIP</a>';
+      app.appendChild(footer);
+
+      // ── Wire controls ──────────────────────────────────────────
+
+      function updatePowerUI() {
+        document.getElementById("power-track").classList.toggle("on", clockRunning);
+      }
+
+      document.getElementById("power-toggle").addEventListener("click", () => {
+        if (clockRunning) stopClock(); else startClock();
+      });
+
+      // BPM slider
+      wireRange("clk-bpm", "clk-bpm-val", (v) => v + " BPM");
+      document.getElementById("clk-bpm").addEventListener("input", (e) => {
+        bpm = +e.target.value;
+        if (signalWorker) signalWorker.postMessage({ bpm });
+        ewObj.setOutput("bpm", bpm);
+      });
+
+      // Division select
+      document.getElementById("clk-division").addEventListener("change", (e) => {
+        division = e.target.value;
+        if (signalWorker) signalWorker.postMessage({ division: getDivisionMultiplier(), reset: true });
+        ewObj.setOutput("division", division, { immediate: true });
+      });
+
+      // Swing slider
+      wireRange("clk-swing", "clk-swing-val", (v) => v + "%");
+      document.getElementById("clk-swing").addEventListener("input", (e) => {
+        swing = +e.target.value;
+        if (signalWorker) signalWorker.postMessage({ swing });
+      });
+
+      // Pulse width slider
+      wireRange("clk-pulse", "clk-pulse-val", (v) => v + " ms");
+      document.getElementById("clk-pulse").addEventListener("input", (e) => {
+        pulseWidth = +e.target.value;
+        if (signalWorker) signalWorker.postMessage({ pulseWidth });
+      });
+
+      // Tap tempo
+      document.getElementById("tap-btn").addEventListener("click", tapTempo);
+
+      // ── Input handlers ─────────────────────────────────────────
+
+      ewObj.onInput("bpm", (value, meta) => {
+        if (typeof value !== "number") return;
+        const clamped = Math.max(20, Math.min(300, Math.round(value)));
+        bpm = clamped;
+        document.getElementById("clk-bpm").value = clamped;
+        document.getElementById("clk-bpm-val").textContent = clamped + " BPM";
+        const pct = ((clamped - 20) / (300 - 20)) * 100;
+        document.getElementById("clk-bpm").style.setProperty("--val", pct + "%");
+        if (signalWorker) signalWorker.postMessage({ bpm: clamped });
+        ewObj.setOutput("bpm", clamped);
+      });
+
+      ewObj.onInput("division", (value, meta) => {
+        if (typeof value !== "string") return;
+        if (!divisionMap.hasOwnProperty(value)) return;
+        division = value;
+        document.getElementById("clk-division").value = value;
+        if (signalWorker) signalWorker.postMessage({ division: getDivisionMultiplier(), reset: true });
+        ewObj.setOutput("division", value);
+      });
+
+      ewObj.onInput("playing", async (value) => {
+        if (typeof value !== "boolean") return;
+        if (value && !clockRunning) startClock();
+        else if (!value && clockRunning) stopClock();
+      });
+
+      // ── Scope drawing ──────────────────────────────────────────
+
+      const scopeCanvas = document.getElementById("clock-scope");
+      const scopeCtx = scopeCanvas.getContext("2d");
+
+      function resizeScope() {
+        const rect = scopeCanvas.parentElement.getBoundingClientRect();
+        scopeCanvas.width = rect.width;
+        scopeCanvas.height = 120;
+      }
+
+      function drawScope() {
+        requestAnimationFrame(drawScope);
+        const w = scopeCanvas.width, h = scopeCanvas.height;
+        scopeCtx.fillStyle = "#080808";
+        scopeCtx.fillRect(0, 0, w, h);
+
+        // Grid
+        scopeCtx.strokeStyle = "rgba(128,128,128,0.08)";
+        scopeCtx.lineWidth = 1;
+        for (let y = 0; y < h; y += 20) { scopeCtx.beginPath(); scopeCtx.moveTo(0, y); scopeCtx.lineTo(w, y); scopeCtx.stroke(); }
+        for (let x = 0; x < w; x += 20) { scopeCtx.beginPath(); scopeCtx.moveTo(x, 0); scopeCtx.lineTo(x, h); scopeCtx.stroke(); }
+        scopeCtx.strokeStyle = "rgba(128,128,128,0.2)";
+        scopeCtx.beginPath(); scopeCtx.moveTo(0, h / 2); scopeCtx.lineTo(w, h / 2); scopeCtx.stroke();
+
+        if (!clockRunning) return;
+
+        // Draw history
+        scopeCtx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--accent");
+        scopeCtx.lineWidth = 2;
+        scopeCtx.shadowColor = "rgba(210,210,210,0.4)";
+        scopeCtx.shadowBlur = 6;
+        scopeCtx.beginPath();
+        for (let i = 0; i < SCOPE_SAMPLES; i++) {
+          const idx = (scopeWriteIdx + i) % SCOPE_SAMPLES;
+          const x = (i / SCOPE_SAMPLES) * w;
+          const y = ((1 - scopeHistory[idx]) / 2) * h;
+          if (i === 0) scopeCtx.moveTo(x, y); else scopeCtx.lineTo(x, y);
+        }
+        scopeCtx.stroke();
+        scopeCtx.shadowBlur = 0;
+      }
+
+      // ── Room UI ────────────────────────────────────────────────
+
+      ewObj.on("connected", () => {
+        document.getElementById("room-input").value = ewObj.getOutputRoom();
+      });
+      document.getElementById("room-join-btn").addEventListener("click", () => {
+        const name = document.getElementById("room-input").value.trim().replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 32) || "default";
+        location.search = `?room=${encodeURIComponent(name)}`;
+      });
+      document.getElementById("room-input").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") document.getElementById("room-join-btn").click();
+      });
+
+      let roomPrivate = false;
+      function updatePrivacyBtn() {
+        const btn = document.getElementById("privacy-btn");
+        btn.textContent = roomPrivate ? "PRIVATE" : "PUBLIC";
+        btn.classList.toggle("active", roomPrivate);
+      }
+      document.getElementById("privacy-btn").addEventListener("click", () => {
+        roomPrivate = !roomPrivate; ewObj.setPrivate(roomPrivate); updatePrivacyBtn();
+      });
+      ewObj.on("stateSync", (msg) => {
+        roomPrivate = msg.private || false; updatePrivacyBtn();
+        document.getElementById("room-input").value = msg.room || ewObj.getOutputRoom();
+      });
+      ewObj.on("roomPrivate", (msg) => { roomPrivate = msg.private; updatePrivacyBtn(); });
+      ewObj.on("rooms", (msg) => {
+        const el = document.getElementById("rooms-list");
+        if (!el) return;
+        const currentRoom = ewObj.getOutputRoom();
+        const others = (msg.rooms || []).filter((r) => r.name !== currentRoom);
+        if (!others.length) { el.innerHTML = '<span class="type-dim">NO OTHER CLOCKS AVAILABLE</span>'; return; }
+        el.innerHTML = "";
+        for (const r of others) {
+          const a = document.createElement("a");
+          a.className = "room-entry";
+          a.href = `?room=${encodeURIComponent(r.name)}`;
+          const objs = r.objects && r.objects.length ? r.objects.join(", ").toUpperCase() : "";
+          a.innerHTML = `<span class="room-entry-name">${r.name}</span><span class="room-entry-info">${r.clients} PLR${objs ? " · " + objs : ""}</span>`;
+          el.appendChild(a);
+        }
+      });
+
+      // ── Initialize ─────────────────────────────────────────────
+
+      (() => {
+        const urlRoom = new URLSearchParams(location.search).get("room");
+        ewObj.connectOutput(urlRoom || undefined);
+        ewObj._outputValues["signal"] = -1;
+        ewObj._outputValues["bpm"] = 120;
+        ewObj._outputValues["division"] = "1/4";
+        ewObj._outputValues["playing"] = false;
+        resizeScope();
+        drawScope();
+      })();
+
+      window.addEventListener("resize", resizeScope);
+    </script>
+  </body>
+</html>

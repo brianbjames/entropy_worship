@@ -1,0 +1,655 @@
+<!-- /-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\ -->
+<!-- |                                                                         | -->
+<!-- \ @@@@@@@@  @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@@@@@   @@@ @@@      / -->
+<!-- - @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@ @@@      - -->
+<!-- / @@!       @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!  @@@  @@! !@@      \ -->
+<!-- | !@!       !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!  @!@  !@! @!!      | -->
+<!-- \ @!!!:!    @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!@@!@!    !@!@!       / -->
+<!-- - !!!!!:    !@!  !!!    !!!    !!@!@!    !@!  !!!  !!@!!!      @!!!       - -->
+<!-- / !!:       !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:         !!:        \ -->
+<!-- | :!:       :!:  !:!    :!:    :!:  !:!  :!:  !:!  :!:         :!:        | -->
+<!-- \  :: ::::   ::   ::     ::    ::   :::  ::::: ::   ::          ::        / -->
+<!-- - : :: ::   ::    :      :      :   : :   : :  :    :           :         - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \ @@@  @@@  @@@   @@@@@@   @@@@@@@    @@@@@@   @@@  @@@  @@@  @@@@@@@     / -->
+<!-- - @@@  @@@  @@@  @@@@@@@@  @@@@@@@@  @@@@@@@   @@@  @@@  @@@  @@@@@@@@    - -->
+<!-- / @@!  @@!  @@!  @@!  @@@  @@!  @@@  !@@       @@!  @@@  @@!  @@!  @@@    \ -->
+<!-- | !@!  !@!  !@!  !@!  @!@  !@!  @!@  !@!       !@!  @!@  !@!  !@!  @!@    | -->
+<!-- \ @!!  !!@  @!@  @!@  !@!  @!@!!@!   !!@@!!    @!@!@!@!  !!@  @!@@!@!     / -->
+<!-- - !@!  !!!  !@!  !@!  !!!  !!@!@!     !!@!!!   !!!@!!!!  !!!  !!@!!!      - -->
+<!-- / !!:  !!:  !!:  !!:  !!!  !!: :!!        !:!  !!:  !!!  !!:  !!:         \ -->
+<!-- | :!:  :!:  :!:  :!:  !:!  :!:  !:!      !:!   :!:  !:!  :!:  :!:         | -->
+<!-- \  :::: :: :::   ::::: ::  ::   :::  :::: ::   ::   :::   ::   ::         / -->
+<!-- -   :: :  : :     : :  :    :   : :  :: : :     :   : :  :     :          - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GAIN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=VT323&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css"
+    />
+    <link rel="stylesheet" href="../lib/ewuilib.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+    <style>
+      #gain-scope {
+        display: block;
+        width: 100%;
+        height: 120px;
+        background: #0e0400;
+      }
+      .param-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+      .param-row .control-label {
+        min-width: 80px;
+        margin-bottom: 0;
+        flex-shrink: 0;
+      }
+      #power-toggle .toggle-track.on .toggle-thumb {
+        left: 22px;
+      }
+      #meta .toggle-wrap {
+        align-self: center;
+      }
+      #meta .toggle-track {
+        margin: 0;
+      }
+      .param-row input[type="range"] {
+        flex: 1;
+      }
+      .param-row .range-val {
+        min-width: 72px;
+        text-align: right;
+      }
+      .room-entry {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 10px;
+        border: 1px solid var(--border);
+        margin-bottom: 6px;
+        text-decoration: none;
+        color: var(--text);
+        font-size: 0.82rem;
+        letter-spacing: 0.1em;
+        transition: border-color 0.14s, background 0.14s;
+        cursor: pointer;
+      }
+      .room-entry:hover {
+        border-color: var(--accent);
+        background: rgba(var(--accent-rgb), 0.06);
+      }
+      .room-entry-name {
+        color: var(--accent);
+      }
+      .room-entry-info {
+        font-size: 0.68rem;
+        color: var(--dim);
+        letter-spacing: 0.08em;
+      }
+      .mod-row {
+        opacity: 0.3;
+        pointer-events: none;
+        transition: opacity 0.2s;
+      }
+      .mod-row.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="grid-bg"></div>
+    <div id="scanlines"></div>
+    <div id="app"></div>
+
+    <script type="module">
+      import { EWObject } from "../lib/ew-object-base.js";
+      import {
+        buildHeaderBar,
+        buildInputPanel,
+        updateOutputStats,
+        wireRange,
+      } from "../lib/ew-object-ui.js";
+
+      // ── EWObject instance ──────────────────────────────────────
+
+      const ewObj = new EWObject({
+        name: "GN-1",
+        objectType: "gain",
+        roomPrefix: "gn",
+        inputs: [
+          {
+            port: "audio",
+            type: "room",
+            unit: "",
+            default: null,
+          },
+          {
+            port: "gain",
+            type: "number",
+            unit: "",
+            min: 0,
+            max: 2,
+            default: 1,
+          },
+        ],
+        outputs: [
+          { port: "gain", type: "number" },
+          { port: "playing", type: "boolean" },
+          { port: "outputMode", type: "string" },
+        ],
+      });
+
+      // ── Gain state ─────────────────────────────────────────────
+
+      let baseGain = 1;
+      let gainModDepth = 0.5;
+
+      // ── Tone.js audio ──────────────────────────────────────────
+
+      let gainNode = null;
+      let analyser = null;
+      let gainRunning = false;
+      let audioReady = false;
+      let outputMode = "audio";
+
+      // Local source oscillator — created when a room is linked
+      // to the audio input. Mirrors the remote oscillator's params.
+      let sourceOsc = null;
+      let sourceGain = null;
+      let sourceConnected = false;
+
+      // Gain modulation state
+      let gainModOsc = null;
+      let gainModGainNode = null;
+      let gainModWanted = false;
+      let gainModRemoteFreq = 2;
+      let gainModRemoteType = "sine";
+
+      async function ensureAudio() {
+        if (audioReady) return;
+        await Tone.start();
+        gainNode = new Tone.Gain(baseGain);
+        applyOutputRouting();
+        analyser = new Tone.Analyser("waveform", 256);
+        gainNode.connect(analyser);
+        audioReady = true;
+      }
+
+      // ── Gain modulation ────────────────────────────────────────
+
+      function connectGainMod() {
+        if (gainModOsc || !gainNode) return;
+        gainModOsc = new Tone.Oscillator({ type: gainModRemoteType, frequency: gainModRemoteFreq });
+        gainModGainNode = new Tone.Gain(gainModDepth);
+        gainModOsc.connect(gainModGainNode);
+        gainModGainNode.connect(gainNode.gain);
+        gainModOsc.start();
+        gainModWanted = true;
+      }
+
+      function disconnectGainMod() {
+        if (gainModOsc) {
+          gainModOsc.stop();
+          gainModOsc.disconnect();
+          gainModOsc.dispose();
+          gainModGainNode.disconnect();
+          gainModGainNode.dispose();
+          gainModOsc = null;
+          gainModGainNode = null;
+        }
+        gainModWanted = false;
+      }
+
+      function reconnectModulators() {
+        if (gainModWanted) {
+          if (gainModOsc) {
+            gainModOsc.stop(); gainModOsc.disconnect(); gainModOsc.dispose();
+            gainModGainNode.disconnect(); gainModGainNode.dispose();
+          }
+          gainModOsc = null; gainModGainNode = null;
+          connectGainMod();
+        }
+      }
+
+      function applyOutputRouting() {
+        if (!gainNode) return;
+        gainNode.disconnect();
+        if (analyser) gainNode.connect(analyser);
+        if (outputMode === "audio" || outputMode === "both") {
+          gainNode.toDestination();
+        }
+      }
+
+      // ── Source oscillator (audio input from room) ──────────────
+
+      function createSourceOsc(freq, type, gain) {
+        if (sourceOsc) destroySourceOsc();
+        sourceOsc = new Tone.Oscillator({ frequency: freq || 440, type: type || "sine" });
+        sourceGain = new Tone.Gain(gain !== undefined ? gain : 0.5);
+        sourceOsc.connect(sourceGain);
+        sourceGain.connect(gainNode);
+        if (gainRunning) sourceOsc.start();
+        sourceConnected = true;
+      }
+
+      function destroySourceOsc() {
+        if (sourceOsc) {
+          try { sourceOsc.stop(); } catch (_) {}
+          sourceOsc.disconnect();
+          sourceOsc.dispose();
+          sourceOsc = null;
+        }
+        if (sourceGain) {
+          sourceGain.disconnect();
+          sourceGain.dispose();
+          sourceGain = null;
+        }
+        sourceConnected = false;
+      }
+
+      async function startGain() {
+        if (gainRunning) return;
+        await ensureAudio();
+        if (sourceOsc) sourceOsc.start();
+        gainRunning = true;
+        reconnectModulators();
+        updatePowerUI();
+        ewObj.setOutput("playing", true, { immediate: true });
+      }
+
+      function stopGain() {
+        if (!gainRunning) return;
+        if (sourceOsc) {
+          const freq = sourceOsc.frequency.value;
+          const type = sourceOsc.type;
+          const gain = sourceGain ? sourceGain.gain.value : 0.5;
+          sourceOsc.stop();
+          sourceOsc.disconnect();
+          sourceOsc.dispose();
+          sourceOsc = new Tone.Oscillator({ frequency: freq, type: type });
+          sourceGain.disconnect();
+          sourceGain.dispose();
+          sourceGain = new Tone.Gain(gain);
+          sourceOsc.connect(sourceGain);
+          sourceGain.connect(gainNode);
+        }
+        gainRunning = false;
+        reconnectModulators();
+        updatePowerUI();
+        ewObj.setOutput("playing", false, { immediate: true });
+      }
+
+      // ── Build UI ───────────────────────────────────────────────
+
+      const app = document.getElementById("app");
+
+      buildHeaderBar(ewObj, "GAIN", app);
+
+      document.getElementById("ew-header-controls").innerHTML = `
+        <select id="ew-theme" style="width:auto; padding:3px 24px 3px 8px">
+          <option value="theme-ethos">ETHOS</option>
+          <option value="">AMBER</option>
+          <option value="theme-phosphor">PHOSPHOR</option>
+          <option value="theme-cobalt">COBALT</option>
+          <option value="theme-plasma">PLASMA</option>
+          <option value="theme-danger">DANGER</option>
+          <option value="theme-matrix">MATRIX</option>
+          <option value="theme-solar">SOLAR</option>
+          <option value="theme-arctic">ARCTIC</option>
+        </select>
+        <select id="gn-output-mode" style="width:auto; padding:3px 24px 3px 8px">
+          <option value="audio">AUDIO</option>
+          <option value="control">CONTROL</option>
+          <option value="both">BOTH</option>
+        </select>
+        <div class="toggle-wrap" id="power-toggle" style="margin-bottom:0; cursor:pointer">
+          <div class="toggle-track" id="power-track">
+            <div class="toggle-thumb"></div>
+          </div>
+        </div>
+      `;
+
+      // Controls panel
+      const controlsPanel = document.createElement("div");
+      controlsPanel.className = "hud-panel clip-tr";
+      controlsPanel.innerHTML = `
+        <div class="param-row">
+          <div class="control-label">GAIN</div>
+          <input type="range" id="gn-gain" min="0" max="200" value="100" />
+          <span class="range-val" id="gn-gain-val">1.00</span>
+        </div>
+
+        <div style="border-top:1px solid var(--border); padding-top:14px; margin-top:4px">
+          <div class="param-row mod-row" id="mod-gain-row">
+            <div class="control-label">GM MOD</div>
+            <input type="range" id="gn-gain-mod-depth" min="0" max="100" value="50" />
+            <span class="range-val" id="gn-gain-mod-depth-val">0.50</span>
+          </div>
+        </div>
+      `;
+      app.appendChild(controlsPanel);
+
+      // Theme
+      document.getElementById("ew-theme").addEventListener("change", (e) => {
+        document.documentElement.className = e.target.value;
+      });
+      document.documentElement.className = "theme-ethos";
+
+      // Scope
+      const scopePanel = document.createElement("div");
+      scopePanel.className = "hud-panel";
+      scopePanel.innerHTML = `
+        <div class="screen-wrap">
+          <div class="screen-inner" style="padding:0; min-height:auto">
+            <canvas id="gain-scope"></canvas>
+            <div class="screen-scan"></div>
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
+          </div>
+        </div>
+      `;
+      app.appendChild(scopePanel);
+
+      // Input panel
+      buildInputPanel(ewObj, app);
+
+      // Rooms panel
+      const roomsPanel = document.createElement("div");
+      roomsPanel.className = "hud-panel";
+      roomsPanel.innerHTML = `
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px">
+          <span class="control-label" style="margin:0; flex-shrink:0">ROOM</span>
+          <input type="text" id="room-input" placeholder="ROOM-ID" maxlength="32" spellcheck="false" autocomplete="off" style="flex:1">
+          <button class="btn btn-sm" id="room-join-btn">JOIN</button>
+          <button class="btn btn-sm" id="privacy-btn">PUBLIC</button>
+        </div>
+        <hr class="hud-divider" style="margin:10px 0">
+        <div class="section-title">// AVAILABLE GAINS //</div>
+        <div id="rooms-list">
+          <span class="type-dim">NO OTHER GAINS AVAILABLE</span>
+        </div>
+      `;
+      app.appendChild(roomsPanel);
+
+      // Footer
+      const footer = document.createElement("div");
+      footer.style.cssText = "text-align:center; padding:20px 0; font-size:0.72rem; letter-spacing:0.22em; color:var(--dim)";
+      footer.innerHTML = '<a href="../../index.html" style="color:var(--dim); text-decoration:none">ENTROPY WORSHIP</a>';
+      app.appendChild(footer);
+
+      // ── Wire controls ──────────────────────────────────────────
+
+      function updatePowerUI() {
+        const track = document.getElementById("power-track");
+        track.classList.toggle("on", gainRunning);
+      }
+
+      document.getElementById("power-toggle").addEventListener("click", () => {
+        if (gainRunning) stopGain(); else startGain();
+      });
+
+      // Output mode
+      document.getElementById("gn-output-mode").addEventListener("change", (e) => {
+        outputMode = e.target.value;
+        applyOutputRouting();
+        ewObj.setOutput("outputMode", outputMode, { immediate: true });
+      });
+
+      // Gain slider (0-2, mapped from 0-200)
+      wireRange("gn-gain", "gn-gain-val", (v) => (v / 100).toFixed(2));
+      document.getElementById("gn-gain").addEventListener("input", (e) => {
+        const gain = +e.target.value / 100;
+        baseGain = gain;
+        if (gainNode) gainNode.gain.rampTo(gain, 0.01);
+        ewObj.setOutput("gain", Math.round(gain * 100) / 100);
+        refreshStats();
+      });
+
+      // Gain mod depth slider
+      wireRange("gn-gain-mod-depth", "gn-gain-mod-depth-val", (v) => (v / 100).toFixed(2));
+      document.getElementById("gn-gain-mod-depth").addEventListener("input", (e) => {
+        gainModDepth = +e.target.value / 100;
+        if (gainModGainNode) gainModGainNode.gain.rampTo(gainModDepth, 0.01);
+      });
+
+      // ── Input signal handling ──────────────────────────────────
+
+      // Audio input — creates a local oscillator mirroring the remote
+      // source and routes it through the gain node.
+      ewObj.onInput("audio", (value, meta) => {
+        if (meta && meta.unit === "bipolar") return;
+        if (!gainNode) return;
+
+        if (meta && meta.port === "frequency" && typeof value === "number") {
+          if (!sourceConnected) {
+            createSourceOsc(value, "sine", 0.5);
+          } else if (sourceOsc) {
+            sourceOsc.frequency.value = value;
+          }
+        } else if (meta && meta.port === "waveform" && typeof value === "string") {
+          if (sourceOsc) { try { sourceOsc.type = value; } catch (_) {} }
+        } else if (meta && meta.port === "gain" && typeof value === "number") {
+          if (sourceGain) sourceGain.gain.value = Math.max(0, Math.min(1, value));
+        } else if (meta && meta.port === "detune" && typeof value === "number") {
+          if (sourceOsc) sourceOsc.detune.value = value;
+        } else if (meta && meta.port === "playing" && typeof value === "boolean") {
+          if (value && sourceConnected && !gainRunning) startGain();
+        }
+      });
+
+      ewObj.on("inputConnected", ({ room, portMapping }) => {
+        ensureAudio().then(() => {
+          for (const localPort of Object.values(portMapping)) {
+            if (localPort === "audio" && !sourceConnected) {
+              createSourceOsc(440, "sine", 0.5);
+            }
+            if (localPort === "gain") connectGainMod();
+          }
+          updateModRowStates();
+        });
+      });
+
+      ewObj.on("inputDisconnected", ({ room }) => {
+        const subs = ewObj.getSubscriptions();
+        const activePorts = new Set();
+        for (const sub of subs) {
+          for (const local of Object.values(sub.portMapping)) activePorts.add(local);
+        }
+        if (!activePorts.has("audio")) destroySourceOsc();
+        if (!activePorts.has("gain")) disconnectGainMod();
+        updateModRowStates();
+      });
+
+      ewObj.onInput("gain", (value, meta) => {
+        if (meta && meta.unit === "bipolar" && typeof value === "number") {
+          const modulated = baseGain + value * gainModDepth;
+          const clamped = Math.max(0, Math.min(2, modulated));
+          if (gainNode) gainNode.gain.rampTo(clamped, 0.012);
+          return;
+        }
+
+        if (gainModWanted) {
+          if (meta && meta.port === "frequency" && typeof value === "number") {
+            gainModRemoteFreq = value;
+            if (gainModOsc) gainModOsc.frequency.value = value;
+          } else if (meta && meta.port === "waveform" && typeof value === "string") {
+            gainModRemoteType = value;
+            if (gainModOsc) { try { gainModOsc.type = value; } catch (_) {} }
+          }
+          return;
+        }
+
+        if (typeof value === "number") {
+          const clamped = Math.max(0, Math.min(2, value));
+          baseGain = clamped;
+          if (gainNode) gainNode.gain.rampTo(clamped, 0.01);
+          document.getElementById("gn-gain").value = Math.round(clamped * 100);
+          document.getElementById("gn-gain-val").textContent = clamped.toFixed(2);
+          ewObj.setOutput("gain", clamped);
+          refreshStats();
+        }
+      });
+
+      // Room state sync
+      ewObj.onInput("playing", async (value) => {
+        if (typeof value !== "boolean") return;
+        if (value && !gainRunning) await startGain();
+        else if (!value && gainRunning) stopGain();
+      });
+
+      ewObj.onInput("outputMode", (value) => {
+        if (typeof value !== "string") return;
+        if (["audio", "control", "both"].includes(value)) {
+          outputMode = value;
+          document.getElementById("gn-output-mode").value = value;
+          applyOutputRouting();
+        }
+      });
+
+      // ── Modulator connect/disconnect ───────────────────────────
+
+      function updateModRowStates() {
+        document.getElementById("mod-gain-row").classList.toggle("active", gainModWanted);
+      }
+
+      // ── Output stats ───────────────────────────────────────────
+
+      function refreshStats() {
+        updateOutputStats(ewObj, [
+          { port: "gain", label: "GAIN", formatter: (v) => v !== undefined ? v.toFixed(2) : "---" },
+        ]);
+      }
+
+      // ── Scope ──────────────────────────────────────────────────
+
+      const scopeCanvas = document.getElementById("gain-scope");
+      const scopeCtx = scopeCanvas.getContext("2d");
+
+      function resizeScope() {
+        const rect = scopeCanvas.parentElement.getBoundingClientRect();
+        scopeCanvas.width = rect.width;
+        scopeCanvas.height = 120;
+      }
+
+      function drawScope() {
+        requestAnimationFrame(drawScope);
+        const w = scopeCanvas.width;
+        const h = scopeCanvas.height;
+        scopeCtx.fillStyle = "#080808";
+        scopeCtx.fillRect(0, 0, w, h);
+
+        // Grid
+        scopeCtx.strokeStyle = "rgba(128, 128, 128, 0.08)";
+        scopeCtx.lineWidth = 1;
+        for (let y = 0; y < h; y += 20) { scopeCtx.beginPath(); scopeCtx.moveTo(0, y); scopeCtx.lineTo(w, y); scopeCtx.stroke(); }
+        for (let x = 0; x < w; x += 20) { scopeCtx.beginPath(); scopeCtx.moveTo(x, 0); scopeCtx.lineTo(x, h); scopeCtx.stroke(); }
+
+        // Center line
+        scopeCtx.strokeStyle = "rgba(128, 128, 128, 0.2)";
+        scopeCtx.beginPath(); scopeCtx.moveTo(0, h / 2); scopeCtx.lineTo(w, h / 2); scopeCtx.stroke();
+
+        if (!analyser || !gainRunning) return;
+
+        const data = analyser.getValue();
+        scopeCtx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--accent");
+        scopeCtx.lineWidth = 2;
+        scopeCtx.shadowColor = "rgba(210, 210, 210, 0.4)";
+        scopeCtx.shadowBlur = 6;
+        scopeCtx.beginPath();
+        for (let i = 0; i < data.length; i++) {
+          const x = (i / data.length) * w;
+          const y = ((1 - data[i]) / 2) * h;
+          if (i === 0) scopeCtx.moveTo(x, y); else scopeCtx.lineTo(x, y);
+        }
+        scopeCtx.stroke();
+        scopeCtx.shadowBlur = 0;
+      }
+
+      // ── Room UI ────────────────────────────────────────────────
+
+      ewObj.on("connected", () => {
+        document.getElementById("room-input").value = ewObj.getOutputRoom();
+      });
+      document.getElementById("room-join-btn").addEventListener("click", () => {
+        const name = document.getElementById("room-input").value.trim().replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 32) || "default";
+        location.search = `?room=${encodeURIComponent(name)}`;
+      });
+      document.getElementById("room-input").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") document.getElementById("room-join-btn").click();
+      });
+
+      let roomPrivate = false;
+      function updatePrivacyBtn() {
+        const btn = document.getElementById("privacy-btn");
+        btn.textContent = roomPrivate ? "PRIVATE" : "PUBLIC";
+        btn.classList.toggle("active", roomPrivate);
+      }
+      document.getElementById("privacy-btn").addEventListener("click", () => {
+        roomPrivate = !roomPrivate;
+        ewObj.setPrivate(roomPrivate);
+        updatePrivacyBtn();
+      });
+      ewObj.on("stateSync", (msg) => {
+        roomPrivate = msg.private || false;
+        updatePrivacyBtn();
+        document.getElementById("room-input").value = msg.room || ewObj.getOutputRoom();
+      });
+      ewObj.on("roomPrivate", (msg) => { roomPrivate = msg.private; updatePrivacyBtn(); });
+
+      ewObj.on("rooms", (msg) => {
+        const el = document.getElementById("rooms-list");
+        if (!el) return;
+        const currentRoom = ewObj.getOutputRoom();
+        const others = (msg.rooms || []).filter((r) => r.name !== currentRoom);
+        if (!others.length) { el.innerHTML = '<span class="type-dim">NO OTHER GAINS AVAILABLE</span>'; return; }
+        el.innerHTML = "";
+        for (const r of others) {
+          const a = document.createElement("a");
+          a.className = "room-entry";
+          a.href = `?room=${encodeURIComponent(r.name)}`;
+          const objs = r.objects && r.objects.length ? r.objects.join(", ").toUpperCase() : "";
+          a.innerHTML = `<span class="room-entry-name">${r.name}</span><span class="room-entry-info">${r.clients} PLR${objs ? " · " + objs : ""}</span>`;
+          el.appendChild(a);
+        }
+      });
+
+      // ── Initialize ─────────────────────────────────────────────
+
+      (() => {
+        const urlRoom = new URLSearchParams(location.search).get("room");
+        ewObj.connectOutput(urlRoom || undefined);
+
+        ewObj._outputValues["gain"] = 1;
+        ewObj._outputValues["playing"] = false;
+        ewObj._outputValues["outputMode"] = "audio";
+
+        refreshStats();
+        resizeScope();
+        drawScope();
+      })();
+
+      window.addEventListener("resize", resizeScope);
+    </script>
+  </body>
+</html>

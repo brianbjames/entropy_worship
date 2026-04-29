@@ -1,0 +1,739 @@
+<!-- /-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\ -->
+<!-- |                                                                         | -->
+<!-- \ @@@@@@@@  @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@@@@@   @@@ @@@      / -->
+<!-- - @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@ @@@      - -->
+<!-- / @@!       @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!  @@@  @@! !@@      \ -->
+<!-- | !@!       !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!  @!@  !@! @!!      | -->
+<!-- \ @!!!:!    @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!@@!@!    !@!@!       / -->
+<!-- - !!!!!:    !@!  !!!    !!!    !!@!@!    !@!  !!!  !!@!!!      @!!!       - -->
+<!-- / !!:       !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:         !!:        \ -->
+<!-- | :!:       :!:  !:!    :!:    :!:  !:!  :!:  !:!  :!:         :!:        | -->
+<!-- \  :: ::::   ::   ::     ::    ::   :::  ::::: ::   ::          ::        / -->
+<!-- - : :: ::   ::    :      :      :   : :   : :  :    :           :         - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \ @@@  @@@  @@@   @@@@@@   @@@@@@@    @@@@@@   @@@  @@@  @@@  @@@@@@@     / -->
+<!-- - @@@  @@@  @@@  @@@@@@@@  @@@@@@@@  @@@@@@@   @@@  @@@  @@@  @@@@@@@@    - -->
+<!-- / @@!  @@!  @@!  @@!  @@@  @@!  @@@  !@@       @@!  @@@  @@!  @@!  @@@    \ -->
+<!-- | !@!  !@!  !@!  !@!  @!@  !@!  @!@  !@!       !@!  @!@  !@!  !@!  @!@    | -->
+<!-- \ @!!  !!@  @!@  @!@  !@!  @!@!!@!   !!@@!!    @!@!@!@!  !!@  @!@@!@!     / -->
+<!-- - !@!  !!!  !@!  !@!  !!!  !!@!@!     !!@!!!   !!!@!!!!  !!!  !!@!!!      - -->
+<!-- / !!:  !!:  !!:  !!:  !!!  !!: :!!        !:!  !!:  !!!  !!:  !!:         \ -->
+<!-- | :!:  :!:  :!:  :!:  !:!  :!:  !:!      !:!   :!:  !:!  :!:  :!:         | -->
+<!-- \  :::: :: :::   ::::: ::  ::   :::  :::: ::   ::   :::   ::   ::         / -->
+<!-- -   :: :  : :     : :  :    :   : :  :: : :     :   : :  :     :          - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DRUMS</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css" />
+    <link rel="stylesheet" href="../lib/ewuilib.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <style>
+      #drum-scope {
+        display: block; width: 100%; height: 120px; background: #080808;
+      }
+      .param-row {
+        display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+      }
+      .param-row .control-label { min-width: 80px; margin-bottom: 0; flex-shrink: 0; }
+      .param-row input[type="range"] { flex: 1; }
+      .param-row .range-val { min-width: 72px; text-align: right; }
+      #power-toggle .toggle-track.on .toggle-thumb { left: 22px; }
+      #meta .toggle-wrap { align-self: center; }
+      #meta .toggle-track { margin: 0; }
+      .room-entry {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 6px 10px; border: 1px solid var(--border); margin-bottom: 6px;
+        text-decoration: none; color: var(--text); font-size: 0.82rem;
+        letter-spacing: 0.1em; transition: border-color 0.14s, background 0.14s; cursor: pointer;
+      }
+      .room-entry:hover { border-color: var(--accent); background: rgba(var(--accent-rgb), 0.06); }
+      .room-entry-name { color: var(--accent); }
+      .room-entry-info { font-size: 0.68rem; color: var(--dim); letter-spacing: 0.08em; }
+      .drum-grid { margin-bottom: 14px; }
+      .drum-row { display: flex; align-items: center; gap: 2px; margin-bottom: 2px; }
+      .drum-label { min-width: 50px; font-size: 0.62rem; letter-spacing: 0.14em; color: var(--dim); text-transform: uppercase; }
+      .step-btn { width: 100%; aspect-ratio: 1; border: 1px solid var(--border); background: var(--surface); cursor: pointer; padding: 0; flex: 1; }
+      .step-btn:hover { border-color: var(--accent); }
+      .step-btn.active { background: rgba(var(--accent-rgb), 0.3); border-color: var(--accent); }
+      .step-btn.current { box-shadow: 0 0 6px rgba(var(--accent-rgb), 0.5); }
+      .step-indicators { display: flex; gap: 2px; margin-bottom: 4px; margin-left: 52px; }
+      .step-indicator { flex: 1; height: 4px; background: var(--surface); }
+      .step-indicator.current { background: var(--accent); }
+      .transport-row {
+        display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="grid-bg"></div>
+    <div id="scanlines"></div>
+    <div id="app"></div>
+
+    <script type="module">
+      import { EWObject } from "../lib/ew-object-base.js";
+      import {
+        buildHeaderBar,
+        buildInputPanel,
+        updateOutputStats,
+        wireRange,
+      } from "../lib/ew-object-ui.js";
+
+      // ── EWObject instance ──────────────────────────────────────
+
+      const ewObj = new EWObject({
+        name: "DRM-1",
+        objectType: "drums",
+        roomPrefix: "drm",
+        inputs: [
+          { port: "bpm", type: "number", unit: "bpm", min: 20, max: 300, default: 120 },
+          { port: "trigger", type: "number", unit: "", min: -1, max: 1, default: 0 },
+        ],
+        outputs: [
+          { port: "signal", type: "number" },
+          { port: "bpm", type: "number", unit: "bpm" },
+          { port: "playing", type: "boolean" },
+          { port: "outputMode", type: "string" },
+        ],
+      });
+
+      // ── Drum pattern state ─────────────────────────────────────
+
+      const ROWS = ["KICK", "SNARE", "HIHAT", "CLAP", "RIDE", "SUB"];
+      const STEPS = 16;
+      let drumPattern = ROWS.map(() => new Array(STEPS).fill(false));
+      let currentStep = -1;
+      let isPlaying = false;
+      let bpm = 120;
+      let outputMode = "audio";
+      let drumRunning = false;
+      let audioReady = false;
+      let useExternalTrigger = false;
+      let prevTriggerValue = 0;
+
+      // ── Web Audio synthesis ────────────────────────────────────
+
+      let audioCtx = null;
+      let masterGain = null;
+      let analyser = null;
+      let analyserData = null;
+
+      async function ensureAudio() {
+        if (audioReady) return;
+        await Tone.start();
+        audioCtx = Tone.context.rawContext;
+        masterGain = audioCtx.createGain();
+        masterGain.gain.value = 0.85;
+        applyOutputRouting();
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 512;
+        analyserData = new Float32Array(analyser.fftSize);
+        masterGain.connect(analyser);
+        audioReady = true;
+      }
+
+      function applyOutputRouting() {
+        if (!masterGain) return;
+        try { masterGain.disconnect(audioCtx.destination); } catch (_) {}
+        if (outputMode === "audio" || outputMode === "both") {
+          masterGain.connect(audioCtx.destination);
+        }
+      }
+
+      function makeNoiseBuffer(duration) {
+        const len = Math.ceil(audioCtx.sampleRate * duration);
+        const buf = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+        const d = buf.getChannelData(0);
+        for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+        return buf;
+      }
+
+      function noiseSource(duration) {
+        const src = audioCtx.createBufferSource();
+        src.buffer = makeNoiseBuffer(duration);
+        return src;
+      }
+
+      function triggerKick(t) {
+        const osc = audioCtx.createOscillator();
+        osc.frequency.setValueAtTime(150, t);
+        osc.frequency.exponentialRampToValueAtTime(50, t + 0.28);
+        const g = audioCtx.createGain();
+        g.gain.setValueAtTime(0.8, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.42);
+        osc.connect(g);
+        g.connect(masterGain);
+        osc.start(t);
+        osc.stop(t + 0.45);
+
+        const ns = noiseSource(0.04);
+        const hp = audioCtx.createBiquadFilter();
+        hp.type = "highpass";
+        hp.frequency.value = 90;
+        const ng = audioCtx.createGain();
+        ng.gain.setValueAtTime(0.25, t);
+        ng.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
+        ns.connect(hp);
+        hp.connect(ng);
+        ng.connect(masterGain);
+        ns.start(t);
+        ns.stop(t + 0.04);
+      }
+
+      function triggerSnare(t) {
+        const ns = noiseSource(0.22);
+        const bp = audioCtx.createBiquadFilter();
+        bp.type = "bandpass";
+        bp.frequency.value = 1000;
+        bp.Q.value = 0.6;
+        const g = audioCtx.createGain();
+        g.gain.setValueAtTime(0.7, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+        ns.connect(bp);
+        bp.connect(g);
+        g.connect(masterGain);
+        ns.start(t);
+        ns.stop(t + 0.22);
+
+        const osc = audioCtx.createOscillator();
+        osc.frequency.value = 200;
+        const og = audioCtx.createGain();
+        og.gain.setValueAtTime(0.4, t);
+        og.gain.exponentialRampToValueAtTime(0.001, t + 0.12);
+        osc.connect(og);
+        og.connect(masterGain);
+        osc.start(t);
+        osc.stop(t + 0.12);
+      }
+
+      function triggerHihat(t) {
+        const dur = 0.065;
+        const ns = noiseSource(dur);
+        const hp = audioCtx.createBiquadFilter();
+        hp.type = "highpass";
+        hp.frequency.value = 8000;
+        const g = audioCtx.createGain();
+        g.gain.setValueAtTime(0.5, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+        ns.connect(hp);
+        hp.connect(g);
+        g.connect(masterGain);
+        ns.start(t);
+        ns.stop(t + dur);
+      }
+
+      function triggerClap(t) {
+        for (let i = 0; i < 3; i++) {
+          const dt = t + i * 0.011;
+          const ns = noiseSource(0.07);
+          const bp = audioCtx.createBiquadFilter();
+          bp.type = "bandpass";
+          bp.frequency.value = 1500;
+          bp.Q.value = 0.45;
+          const g = audioCtx.createGain();
+          g.gain.setValueAtTime(0.5, dt);
+          g.gain.exponentialRampToValueAtTime(0.001, dt + 0.09);
+          ns.connect(bp);
+          bp.connect(g);
+          g.connect(masterGain);
+          ns.start(dt);
+          ns.stop(dt + 0.09);
+        }
+      }
+
+      function triggerRide(t) {
+        const dur = 0.38;
+        const ns = noiseSource(dur);
+        const bp = audioCtx.createBiquadFilter();
+        bp.type = "bandpass";
+        bp.frequency.setValueAtTime(6000, t);
+        bp.frequency.exponentialRampToValueAtTime(3000, t + dur);
+        bp.Q.value = 2.2;
+        const hp = audioCtx.createBiquadFilter();
+        hp.type = "highpass";
+        hp.frequency.value = 3200;
+        const g = audioCtx.createGain();
+        g.gain.setValueAtTime(0.4, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+        ns.connect(bp);
+        bp.connect(hp);
+        hp.connect(g);
+        g.connect(masterGain);
+        ns.start(t);
+        ns.stop(t + dur);
+      }
+
+      function triggerSub(t) {
+        const osc = audioCtx.createOscillator();
+        osc.type = "sine";
+        osc.frequency.setValueAtTime(60, t);
+        const g = audioCtx.createGain();
+        g.gain.setValueAtTime(0.85, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.52);
+        osc.connect(g);
+        g.connect(masterGain);
+        osc.start(t);
+        osc.stop(t + 0.55);
+      }
+
+      const voiceTriggers = [triggerKick, triggerSnare, triggerHihat, triggerClap, triggerRide, triggerSub];
+
+      function triggerVoice(rowIndex, time) {
+        voiceTriggers[rowIndex](time);
+      }
+
+      // ── Sequencer ──────────────────────────────────────────────
+
+      let clockWorker = null;
+
+      function stepDurationMs() {
+        return (60 / bpm / 4) * 1000;
+      }
+
+      function advanceStep() {
+        if (!audioReady) return;
+        currentStep = (currentStep + 1) % STEPS;
+        const now = audioCtx.currentTime;
+        let anyHit = false;
+
+        for (let row = 0; row < ROWS.length; row++) {
+          if (drumPattern[row][currentStep]) {
+            triggerVoice(row, now);
+            anyHit = true;
+          }
+        }
+
+        // Broadcast signal
+        if (anyHit) {
+          ewObj.setOutput("signal", 1, { immediate: true });
+          setTimeout(() => {
+            ewObj.setOutput("signal", -1, { immediate: true });
+          }, 10);
+        }
+
+        updateStepIndicators();
+        updateGridHighlight();
+      }
+
+      async function startSequencer() {
+        if (isPlaying) return;
+        await ensureAudio();
+        isPlaying = true;
+        drumRunning = true;
+        currentStep = -1;
+        updatePowerUI();
+        updatePlayBtn();
+        ewObj.setOutput("playing", true, { immediate: true });
+
+        if (!useExternalTrigger) {
+          startInternalClock();
+        }
+      }
+
+      function stopSequencer() {
+        if (!isPlaying) return;
+        isPlaying = false;
+        drumRunning = false;
+        stopInternalClock();
+        currentStep = -1;
+        updatePowerUI();
+        updatePlayBtn();
+        updateStepIndicators();
+        updateGridHighlight();
+        ewObj.setOutput("playing", false, { immediate: true });
+      }
+
+      function startInternalClock() {
+        if (clockWorker) return;
+        const blob = new Blob([`
+          let interval = ${stepDurationMs()};
+          let id = setInterval(() => postMessage("tick"), interval);
+          onmessage = (e) => {
+            if (e.data === "stop") { clearInterval(id); close(); }
+            else if (typeof e.data === "number") {
+              clearInterval(id);
+              interval = e.data;
+              id = setInterval(() => postMessage("tick"), interval);
+            }
+          };
+        `], { type: "application/javascript" });
+        clockWorker = new Worker(URL.createObjectURL(blob));
+        clockWorker.onmessage = () => {
+          if (isPlaying && !useExternalTrigger) advanceStep();
+        };
+      }
+
+      function stopInternalClock() {
+        if (clockWorker) {
+          clockWorker.postMessage("stop");
+          clockWorker = null;
+        }
+      }
+
+      function updateClockInterval() {
+        if (clockWorker) {
+          clockWorker.postMessage(stepDurationMs());
+        }
+      }
+
+      // ── Build UI ───────────────────────────────────────────────
+
+      const app = document.getElementById("app");
+
+      buildHeaderBar(ewObj, "DRUMS", app);
+
+      document.getElementById("ew-header-controls").innerHTML = `
+        <select id="ew-theme" style="width:auto; padding:3px 24px 3px 8px">
+          <option value="theme-ethos">ETHOS</option>
+          <option value="">AMBER</option>
+          <option value="theme-phosphor">PHOSPHOR</option>
+          <option value="theme-cobalt">COBALT</option>
+          <option value="theme-plasma">PLASMA</option>
+          <option value="theme-danger">DANGER</option>
+          <option value="theme-matrix">MATRIX</option>
+          <option value="theme-solar">SOLAR</option>
+          <option value="theme-arctic">ARCTIC</option>
+        </select>
+        <select id="drm-output-mode" style="width:auto; padding:3px 24px 3px 8px">
+          <option value="audio">AUDIO</option>
+          <option value="control">CONTROL</option>
+          <option value="both">BOTH</option>
+        </select>
+        <div class="toggle-wrap" id="power-toggle" style="margin-bottom:0; cursor:pointer">
+          <div class="toggle-track" id="power-track">
+            <div class="toggle-thumb"></div>
+          </div>
+        </div>
+      `;
+
+      // Transport
+      const transportPanel = document.createElement("div");
+      transportPanel.className = "hud-panel clip-tr";
+      transportPanel.innerHTML = `
+        <div class="transport-row">
+          <button class="btn btn-sm" id="drm-play">PLAY</button>
+          <button class="btn btn-sm" id="drm-stop">STOP</button>
+          <button class="btn btn-sm" id="drm-clear">CLEAR</button>
+        </div>
+        <div class="param-row">
+          <div class="control-label">BPM</div>
+          <input type="range" id="drm-bpm" min="20" max="300" value="120" />
+          <span class="range-val" id="drm-bpm-val">120</span>
+        </div>
+      `;
+      app.appendChild(transportPanel);
+
+      // Grid
+      const gridPanel = document.createElement("div");
+      gridPanel.className = "hud-panel";
+      gridPanel.innerHTML = `<div class="drum-grid" id="drum-grid"></div>`;
+      app.appendChild(gridPanel);
+
+      function buildGrid() {
+        const grid = document.getElementById("drum-grid");
+        grid.innerHTML = "";
+
+        // Step indicators
+        const indicators = document.createElement("div");
+        indicators.className = "step-indicators";
+        indicators.id = "step-indicators";
+        for (let s = 0; s < STEPS; s++) {
+          const ind = document.createElement("div");
+          ind.className = "step-indicator";
+          ind.dataset.step = s;
+          indicators.appendChild(ind);
+        }
+        grid.appendChild(indicators);
+
+        // Drum rows
+        for (let r = 0; r < ROWS.length; r++) {
+          const row = document.createElement("div");
+          row.className = "drum-row";
+
+          const label = document.createElement("span");
+          label.className = "drum-label";
+          label.textContent = ROWS[r];
+          row.appendChild(label);
+
+          for (let s = 0; s < STEPS; s++) {
+            const btn = document.createElement("button");
+            btn.className = "step-btn";
+            btn.dataset.row = r;
+            btn.dataset.step = s;
+            if (drumPattern[r][s]) btn.classList.add("active");
+            btn.addEventListener("click", () => {
+              drumPattern[r][s] = !drumPattern[r][s];
+              btn.classList.toggle("active", drumPattern[r][s]);
+            });
+            row.appendChild(btn);
+          }
+
+          grid.appendChild(row);
+        }
+      }
+
+      function updateStepIndicators() {
+        const indicators = document.querySelectorAll(".step-indicator");
+        indicators.forEach((ind) => {
+          ind.classList.toggle("current", +ind.dataset.step === currentStep);
+        });
+      }
+
+      function updateGridHighlight() {
+        const btns = document.querySelectorAll(".step-btn");
+        btns.forEach((btn) => {
+          btn.classList.toggle("current", +btn.dataset.step === currentStep);
+        });
+      }
+
+      buildGrid();
+
+      // Theme
+      document.getElementById("ew-theme").addEventListener("change", (e) => {
+        document.documentElement.className = e.target.value;
+      });
+      document.documentElement.className = "theme-ethos";
+
+      // Scope
+      const scopePanel = document.createElement("div");
+      scopePanel.className = "hud-panel";
+      scopePanel.innerHTML = `
+        <div class="screen-wrap">
+          <div class="screen-inner" style="padding:0; min-height:auto">
+            <canvas id="drum-scope"></canvas>
+            <div class="screen-scan"></div>
+            <div class="corner tl"></div><div class="corner tr"></div>
+            <div class="corner bl"></div><div class="corner br"></div>
+          </div>
+        </div>
+      `;
+      app.appendChild(scopePanel);
+
+      // Input panel
+      buildInputPanel(ewObj, app);
+
+      // Rooms
+      const roomsPanel = document.createElement("div");
+      roomsPanel.className = "hud-panel";
+      roomsPanel.innerHTML = `
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px">
+          <span class="control-label" style="margin:0; flex-shrink:0">ROOM</span>
+          <input type="text" id="room-input" placeholder="ROOM-ID" maxlength="32" spellcheck="false" autocomplete="off" style="flex:1">
+          <button class="btn btn-sm" id="room-join-btn">JOIN</button>
+          <button class="btn btn-sm" id="privacy-btn">PUBLIC</button>
+        </div>
+        <hr class="hud-divider" style="margin:10px 0">
+        <div class="section-title">// AVAILABLE DRUM MACHINES //</div>
+        <div id="rooms-list"><span class="type-dim">NO OTHER DRUM MACHINES AVAILABLE</span></div>
+      `;
+      app.appendChild(roomsPanel);
+
+      // Footer
+      const footer = document.createElement("div");
+      footer.style.cssText = "text-align:center; padding:20px 0; font-size:0.72rem; letter-spacing:0.22em; color:var(--dim)";
+      footer.innerHTML = '<a href="../../index.html" style="color:var(--dim); text-decoration:none">ENTROPY WORSHIP</a>';
+      app.appendChild(footer);
+
+      // ── Wire controls ──────────────────────────────────────────
+
+      function updatePowerUI() {
+        document.getElementById("power-track").classList.toggle("on", drumRunning);
+      }
+
+      function updatePlayBtn() {
+        document.getElementById("drm-play").textContent = isPlaying ? "PLAYING" : "PLAY";
+      }
+
+      document.getElementById("power-toggle").addEventListener("click", () => {
+        if (drumRunning) stopSequencer(); else startSequencer();
+      });
+
+      document.getElementById("drm-play").addEventListener("click", () => {
+        if (!isPlaying) startSequencer();
+      });
+
+      document.getElementById("drm-stop").addEventListener("click", () => {
+        if (isPlaying) stopSequencer();
+      });
+
+      document.getElementById("drm-clear").addEventListener("click", () => {
+        drumPattern = ROWS.map(() => new Array(STEPS).fill(false));
+        document.querySelectorAll(".step-btn").forEach((btn) => {
+          btn.classList.remove("active");
+        });
+      });
+
+      // Output mode
+      document.getElementById("drm-output-mode").addEventListener("change", (e) => {
+        outputMode = e.target.value;
+        applyOutputRouting();
+        ewObj.setOutput("outputMode", outputMode, { immediate: true });
+      });
+
+      // BPM slider
+      wireRange("drm-bpm", "drm-bpm-val", (v) => String(v));
+      document.getElementById("drm-bpm").addEventListener("input", (e) => {
+        bpm = +e.target.value;
+        updateClockInterval();
+        ewObj.setOutput("bpm", bpm, { immediate: true });
+      });
+
+      // ── Input handlers ─────────────────────────────────────────
+
+      ewObj.onInput("bpm", (value) => {
+        if (typeof value !== "number") return;
+        const clamped = Math.max(20, Math.min(300, Math.round(value)));
+        bpm = clamped;
+        document.getElementById("drm-bpm").value = clamped;
+        document.getElementById("drm-bpm-val").textContent = clamped;
+        const pct = ((clamped - 20) / (300 - 20)) * 100;
+        document.getElementById("drm-bpm").style.setProperty("--val", pct + "%");
+        updateClockInterval();
+        ewObj.setOutput("bpm", bpm, { immediate: true });
+      });
+
+      ewObj.onInput("trigger", (value) => {
+        if (typeof value !== "number") return;
+
+        // Detect positive edge
+        const isPositiveEdge = value > 0 && prevTriggerValue <= 0;
+        prevTriggerValue = value;
+
+        if (!isPositiveEdge) return;
+        if (!isPlaying) return;
+
+        // Switch to external trigger mode
+        if (!useExternalTrigger) {
+          useExternalTrigger = true;
+          stopInternalClock();
+        }
+
+        advanceStep();
+      });
+
+      ewObj.onInput("playing", async (value) => {
+        if (typeof value !== "boolean") return;
+        if (value && !isPlaying) await startSequencer();
+        else if (!value && isPlaying) stopSequencer();
+      });
+
+      ewObj.onInput("outputMode", (value) => {
+        if (typeof value !== "string") return;
+        if (["audio", "control", "both"].includes(value)) {
+          outputMode = value;
+          document.getElementById("drm-output-mode").value = value;
+          applyOutputRouting();
+        }
+      });
+
+      // ── Scope ──────────────────────────────────────────────────
+
+      const scopeCanvas = document.getElementById("drum-scope");
+      const scopeCtx = scopeCanvas.getContext("2d");
+
+      function resizeScope() {
+        const rect = scopeCanvas.parentElement.getBoundingClientRect();
+        scopeCanvas.width = rect.width;
+        scopeCanvas.height = 120;
+      }
+
+      function drawScope() {
+        requestAnimationFrame(drawScope);
+        const w = scopeCanvas.width, h = scopeCanvas.height;
+        scopeCtx.fillStyle = "#080808";
+        scopeCtx.fillRect(0, 0, w, h);
+
+        // Grid
+        scopeCtx.strokeStyle = "rgba(128,128,128,0.08)";
+        scopeCtx.lineWidth = 1;
+        for (let y = 0; y < h; y += 20) { scopeCtx.beginPath(); scopeCtx.moveTo(0, y); scopeCtx.lineTo(w, y); scopeCtx.stroke(); }
+        for (let x = 0; x < w; x += 20) { scopeCtx.beginPath(); scopeCtx.moveTo(x, 0); scopeCtx.lineTo(x, h); scopeCtx.stroke(); }
+        scopeCtx.strokeStyle = "rgba(128,128,128,0.2)";
+        scopeCtx.beginPath(); scopeCtx.moveTo(0, h / 2); scopeCtx.lineTo(w, h / 2); scopeCtx.stroke();
+
+        if (!analyser || !drumRunning) return;
+
+        analyser.getFloatTimeDomainData(analyserData);
+        scopeCtx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--accent");
+        scopeCtx.lineWidth = 2;
+        scopeCtx.shadowColor = "rgba(210,210,210,0.4)";
+        scopeCtx.shadowBlur = 6;
+        scopeCtx.beginPath();
+        for (let i = 0; i < analyserData.length; i++) {
+          const x = (i / analyserData.length) * w;
+          const y = ((1 - analyserData[i]) / 2) * h;
+          if (i === 0) scopeCtx.moveTo(x, y); else scopeCtx.lineTo(x, y);
+        }
+        scopeCtx.stroke();
+        scopeCtx.shadowBlur = 0;
+      }
+
+      // ── Room UI ────────────────────────────────────────────────
+
+      ewObj.on("connected", () => {
+        document.getElementById("room-input").value = ewObj.getOutputRoom();
+      });
+      document.getElementById("room-join-btn").addEventListener("click", () => {
+        const name = document.getElementById("room-input").value.trim().replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 32) || "default";
+        location.search = `?room=${encodeURIComponent(name)}`;
+      });
+      document.getElementById("room-input").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") document.getElementById("room-join-btn").click();
+      });
+
+      let roomPrivate = false;
+      function updatePrivacyBtn() {
+        const btn = document.getElementById("privacy-btn");
+        btn.textContent = roomPrivate ? "PRIVATE" : "PUBLIC";
+        btn.classList.toggle("active", roomPrivate);
+      }
+      document.getElementById("privacy-btn").addEventListener("click", () => {
+        roomPrivate = !roomPrivate; ewObj.setPrivate(roomPrivate); updatePrivacyBtn();
+      });
+      ewObj.on("stateSync", (msg) => {
+        roomPrivate = msg.private || false; updatePrivacyBtn();
+        document.getElementById("room-input").value = msg.room || ewObj.getOutputRoom();
+      });
+      ewObj.on("roomPrivate", (msg) => { roomPrivate = msg.private; updatePrivacyBtn(); });
+      ewObj.on("rooms", (msg) => {
+        const el = document.getElementById("rooms-list");
+        if (!el) return;
+        const currentRoom = ewObj.getOutputRoom();
+        const others = (msg.rooms || []).filter((r) => r.name !== currentRoom);
+        if (!others.length) { el.innerHTML = '<span class="type-dim">NO OTHER DRUM MACHINES AVAILABLE</span>'; return; }
+        el.innerHTML = "";
+        for (const r of others) {
+          const a = document.createElement("a");
+          a.className = "room-entry";
+          a.href = `?room=${encodeURIComponent(r.name)}`;
+          const objs = r.objects && r.objects.length ? r.objects.join(", ").toUpperCase() : "";
+          a.innerHTML = `<span class="room-entry-name">${r.name}</span><span class="room-entry-info">${r.clients} PLR${objs ? " · " + objs : ""}</span>`;
+          el.appendChild(a);
+        }
+      });
+
+      // ── Initialize ─────────────────────────────────────────────
+
+      (() => {
+        const urlRoom = new URLSearchParams(location.search).get("room");
+        ewObj.connectOutput(urlRoom || undefined);
+        ewObj._outputValues["signal"] = 0;
+        ewObj._outputValues["bpm"] = 120;
+        ewObj._outputValues["playing"] = false;
+        ewObj._outputValues["outputMode"] = "audio";
+        resizeScope();
+        drawScope();
+      })();
+
+      window.addEventListener("resize", resizeScope);
+    </script>
+  </body>
+</html>

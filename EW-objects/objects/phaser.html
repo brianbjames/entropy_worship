@@ -1,0 +1,803 @@
+<!-- /-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\ -->
+<!-- |                                                                         | -->
+<!-- \ @@@@@@@@  @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@@@@@   @@@ @@@      / -->
+<!-- - @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@ @@@      - -->
+<!-- / @@!       @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!  @@@  @@! !@@      \ -->
+<!-- | !@!       !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!  @!@  !@! @!!      | -->
+<!-- \ @!!!:!    @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!@@!@!    !@!@!       / -->
+<!-- - !!!!!:    !@!  !!!    !!!    !!@!@!    !@!  !!!  !!@!!!      @!!!       - -->
+<!-- / !!:       !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:         !!:        \ -->
+<!-- | :!:       :!:  !:!    :!:    :!:  !:!  :!:  !:!  :!:         :!:        | -->
+<!-- \  :: ::::   ::   ::     ::    ::   :::  ::::: ::   ::          ::        / -->
+<!-- - : :: ::   ::    :      :      :   : :   : :  :    :           :         - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \ @@@  @@@  @@@   @@@@@@   @@@@@@@    @@@@@@   @@@  @@@  @@@  @@@@@@@     / -->
+<!-- - @@@  @@@  @@@  @@@@@@@@  @@@@@@@@  @@@@@@@   @@@  @@@  @@@  @@@@@@@@    - -->
+<!-- / @@!  @@!  @@!  @@!  @@@  @@!  @@@  !@@       @@!  @@@  @@!  @@!  @@@    \ -->
+<!-- | !@!  !@!  !@!  !@!  @!@  !@!  @!@  !@!       !@!  @!@  !@!  !@!  @!@    | -->
+<!-- \ @!!  !!@  @!@  @!@  !@!  @!@!!@!   !!@@!!    @!@!@!@!  !!@  @!@@!@!     / -->
+<!-- - !@!  !!!  !@!  !@!  !!!  !!@!@!     !!@!!!   !!!@!!!!  !!!  !!@!!!      - -->
+<!-- / !!:  !!:  !!:  !!:  !!!  !!: :!!        !:!  !!:  !!!  !!:  !!:         \ -->
+<!-- | :!:  :!:  :!:  :!:  !:!  :!:  !:!      !:!   :!:  !:!  :!:  :!:         | -->
+<!-- \  :::: :: :::   ::::: ::  ::   :::  :::: ::   ::   :::   ::   ::         / -->
+<!-- -   :: :  : :     : :  :    :   : :  :: : :     :   : :  :     :          - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PHASER</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=VT323&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css"
+    />
+    <link rel="stylesheet" href="../lib/ewuilib.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+    <style>
+      #phaser-scope {
+        display: block;
+        width: 100%;
+        height: 120px;
+        background: #0e0400;
+      }
+      .param-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+      .param-row .control-label {
+        min-width: 80px;
+        margin-bottom: 0;
+        flex-shrink: 0;
+      }
+      #power-toggle .toggle-track.on .toggle-thumb {
+        left: 22px;
+      }
+      #meta .toggle-wrap {
+        align-self: center;
+      }
+      #meta .toggle-track {
+        margin: 0;
+      }
+      .param-row input[type="range"] {
+        flex: 1;
+      }
+      .param-row .range-val {
+        min-width: 72px;
+        text-align: right;
+      }
+      .room-entry {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 10px;
+        border: 1px solid var(--border);
+        margin-bottom: 6px;
+        text-decoration: none;
+        color: var(--text);
+        font-size: 0.82rem;
+        letter-spacing: 0.1em;
+        transition: border-color 0.14s, background 0.14s;
+        cursor: pointer;
+      }
+      .room-entry:hover {
+        border-color: var(--accent);
+        background: rgba(var(--accent-rgb), 0.06);
+      }
+      .room-entry-name {
+        color: var(--accent);
+      }
+      .room-entry-info {
+        font-size: 0.68rem;
+        color: var(--dim);
+        letter-spacing: 0.08em;
+      }
+      .mod-row {
+        opacity: 0.3;
+        pointer-events: none;
+        transition: opacity 0.2s;
+      }
+      .mod-row.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="grid-bg"></div>
+    <div id="scanlines"></div>
+    <div id="app"></div>
+
+    <script type="module">
+      import { EWObject } from "../lib/ew-object-base.js";
+      import {
+        buildHeaderBar,
+        buildInputPanel,
+        updateOutputStats,
+        wireRange,
+      } from "../lib/ew-object-ui.js";
+
+      // ── EWObject instance ──────────────────────────────────────
+
+      const ewObj = new EWObject({
+        name: "PHS-1",
+        objectType: "phaser",
+        roomPrefix: "phs",
+        inputs: [
+          {
+            port: "audio",
+            type: "room",
+            unit: "",
+            default: null,
+          },
+          {
+            port: "frequency",
+            type: "number",
+            unit: "hz",
+            min: 0.1,
+            max: 20,
+            default: 0.5,
+          },
+          {
+            port: "octaves",
+            type: "number",
+            unit: "",
+            min: 1,
+            max: 6,
+            default: 3,
+          },
+          {
+            port: "wet",
+            type: "number",
+            unit: "",
+            min: 0,
+            max: 1,
+            default: 0.5,
+          },
+          {
+            port: "gain",
+            type: "number",
+            unit: "",
+            min: 0,
+            max: 1,
+            default: 1,
+          },
+        ],
+        outputs: [
+          { port: "frequency", type: "number", unit: "hz" },
+          { port: "octaves", type: "number" },
+          { port: "baseFrequency", type: "number", unit: "hz" },
+          { port: "wet", type: "number" },
+          { port: "gain", type: "number" },
+          { port: "playing", type: "boolean" },
+          { port: "outputMode", type: "string" },
+        ],
+      });
+
+      // ── Phaser state ───────────────────────────────────────────
+
+      let baseFreq = 0.5;        // LFO rate
+      let freqModDepth = 5;      // Hz depth for frequency modulation
+      let baseOctaves = 3;
+      let baseBaseFreq = 350;
+      let baseWet = 0.5;
+      let baseGain = 1;
+
+      // ── Tone.js audio ──────────────────────────────────────────
+
+      let phaser = null;
+      let gainNode = null;
+      let analyser = null;
+      let phaserRunning = false;
+      let audioReady = false;
+      let outputMode = "audio";
+
+      // Local source oscillator
+      let sourceOsc = null;
+      let sourceGain = null;
+      let sourceConnected = false;
+
+      // Frequency modulation state
+      let freqModOsc = null;
+      let freqModGain = null;
+      let freqModWanted = false;
+      let freqModRemoteFreq = 2;
+      let freqModRemoteType = "sine";
+
+      async function ensureAudio() {
+        if (audioReady) return;
+        phaser = new Tone.Phaser({
+          frequency: baseFreq,
+          octaves: baseOctaves,
+          baseFrequency: baseBaseFreq,
+        });
+        phaser.wet.value = baseWet;
+        gainNode = new Tone.Gain(baseGain);
+        phaser.connect(gainNode);
+        applyOutputRouting();
+        analyser = new Tone.Analyser("waveform", 256);
+        phaser.connect(analyser);
+        audioReady = true;
+      }
+
+      function applyOutputRouting() {
+        if (!gainNode) return;
+        gainNode.disconnect();
+        if (outputMode === "audio" || outputMode === "both") {
+          gainNode.toDestination();
+        }
+      }
+
+      // ── Source oscillator (audio input from room) ──────────────
+
+      function createSourceOsc(freq, type, gain) {
+        if (sourceOsc) destroySourceOsc();
+        sourceOsc = new Tone.Oscillator({ frequency: freq || 440, type: type || "sine" });
+        sourceGain = new Tone.Gain(gain !== undefined ? gain : 0.5);
+        sourceOsc.connect(sourceGain);
+        sourceGain.connect(phaser);
+        if (phaserRunning) sourceOsc.start();
+        sourceConnected = true;
+      }
+
+      function destroySourceOsc() {
+        if (sourceOsc) {
+          try { sourceOsc.stop(); } catch (_) {}
+          sourceOsc.disconnect();
+          sourceOsc.dispose();
+          sourceOsc = null;
+        }
+        if (sourceGain) {
+          sourceGain.disconnect();
+          sourceGain.dispose();
+          sourceGain = null;
+        }
+        sourceConnected = false;
+      }
+
+      async function startPhaser() {
+        if (phaserRunning) return;
+        await Tone.start();
+        await ensureAudio();
+        if (sourceOsc) sourceOsc.start();
+        phaserRunning = true;
+        reconnectModulators();
+        updatePowerUI();
+        ewObj.setOutput("playing", true, { immediate: true });
+      }
+
+      function stopPhaser() {
+        if (!phaserRunning) return;
+        if (sourceOsc) {
+          const freq = sourceOsc.frequency.value;
+          const type = sourceOsc.type;
+          const gain = sourceGain ? sourceGain.gain.value : 0.5;
+          sourceOsc.stop();
+          sourceOsc.disconnect();
+          sourceOsc.dispose();
+          sourceOsc = new Tone.Oscillator({ frequency: freq, type: type });
+          sourceGain.disconnect();
+          sourceGain.dispose();
+          sourceGain = new Tone.Gain(gain);
+          sourceOsc.connect(sourceGain);
+          sourceGain.connect(phaser);
+        }
+        phaserRunning = false;
+        reconnectModulators();
+        updatePowerUI();
+        ewObj.setOutput("playing", false, { immediate: true });
+      }
+
+      // ── Frequency modulation ───────────────────────────────────
+
+      function connectFreqMod() {
+        if (freqModOsc || !phaser) return;
+        freqModOsc = new Tone.Oscillator({ type: freqModRemoteType, frequency: freqModRemoteFreq });
+        freqModGain = new Tone.Gain(freqModDepth);
+        freqModOsc.connect(freqModGain);
+        freqModGain.connect(phaser.frequency);
+        freqModOsc.start();
+        freqModWanted = true;
+      }
+
+      function disconnectFreqMod() {
+        if (freqModOsc) {
+          freqModOsc.stop();
+          freqModOsc.disconnect();
+          freqModOsc.dispose();
+          freqModGain.disconnect();
+          freqModGain.dispose();
+          freqModOsc = null;
+          freqModGain = null;
+        }
+        freqModWanted = false;
+      }
+
+      function reconnectModulators() {
+        if (freqModWanted) {
+          if (freqModOsc) {
+            freqModOsc.stop();
+            freqModOsc.disconnect();
+            freqModOsc.dispose();
+            freqModGain.disconnect();
+            freqModGain.dispose();
+          }
+          freqModOsc = null;
+          freqModGain = null;
+          connectFreqMod();
+        }
+      }
+
+      // ── Build UI ───────────────────────────────────────────────
+
+      const app = document.getElementById("app");
+
+      buildHeaderBar(ewObj, "PHASER", app);
+
+      document.getElementById("ew-header-controls").innerHTML = `
+        <select id="ew-theme" style="width:auto; padding:3px 24px 3px 8px">
+          <option value="theme-ethos">ETHOS</option>
+          <option value="">AMBER</option>
+          <option value="theme-phosphor">PHOSPHOR</option>
+          <option value="theme-cobalt">COBALT</option>
+          <option value="theme-plasma">PLASMA</option>
+          <option value="theme-danger">DANGER</option>
+          <option value="theme-matrix">MATRIX</option>
+          <option value="theme-solar">SOLAR</option>
+          <option value="theme-arctic">ARCTIC</option>
+        </select>
+        <select id="phs-output-mode" style="width:auto; padding:3px 24px 3px 8px">
+          <option value="audio">AUDIO</option>
+          <option value="control">CONTROL</option>
+          <option value="both">BOTH</option>
+        </select>
+        <div class="toggle-wrap" id="power-toggle" style="margin-bottom:0; cursor:pointer">
+          <div class="toggle-track" id="power-track">
+            <div class="toggle-thumb"></div>
+          </div>
+        </div>
+      `;
+
+      // Controls panel
+      const controlsPanel = document.createElement("div");
+      controlsPanel.className = "hud-panel clip-tr";
+      controlsPanel.innerHTML = `
+        <div class="param-row">
+          <div class="control-label">FREQ</div>
+          <input type="range" id="phs-freq" min="1" max="200" value="5" />
+          <span class="range-val" id="phs-freq-val">0.5 Hz</span>
+        </div>
+
+        <div class="param-row">
+          <div class="control-label">OCTAVES</div>
+          <input type="range" id="phs-octaves" min="1" max="6" value="3" />
+          <span class="range-val" id="phs-octaves-val">3</span>
+        </div>
+
+        <div class="param-row">
+          <div class="control-label">BASE FRQ</div>
+          <input type="range" id="phs-base-freq" min="100" max="2000" value="350" />
+          <span class="range-val" id="phs-base-freq-val">350 Hz</span>
+        </div>
+
+        <div class="param-row">
+          <div class="control-label">WET</div>
+          <input type="range" id="phs-wet" min="0" max="100" value="50" />
+          <span class="range-val" id="phs-wet-val">0.50</span>
+        </div>
+
+        <div class="param-row">
+          <div class="control-label">GAIN</div>
+          <input type="range" id="phs-gain" min="0" max="100" value="100" />
+          <span class="range-val" id="phs-gain-val">1.00</span>
+        </div>
+
+        <div style="border-top:1px solid var(--border); padding-top:14px; margin-top:4px">
+          <div class="param-row mod-row" id="mod-freq-row">
+            <div class="control-label">FREQ MOD</div>
+            <input type="range" id="phs-freq-mod-depth" min="0" max="100" value="50" />
+            <span class="range-val" id="phs-freq-mod-depth-val">5.0 Hz</span>
+          </div>
+        </div>
+      `;
+      app.appendChild(controlsPanel);
+
+      // Theme
+      document.getElementById("ew-theme").addEventListener("change", (e) => {
+        document.documentElement.className = e.target.value;
+      });
+      document.documentElement.className = "theme-ethos";
+
+      // Scope
+      const scopePanel = document.createElement("div");
+      scopePanel.className = "hud-panel";
+      scopePanel.innerHTML = `
+        <div class="screen-wrap">
+          <div class="screen-inner" style="padding:0; min-height:auto">
+            <canvas id="phaser-scope"></canvas>
+            <div class="screen-scan"></div>
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
+          </div>
+        </div>
+      `;
+      app.appendChild(scopePanel);
+
+      // Input panel
+      buildInputPanel(ewObj, app);
+
+      // Rooms panel
+      const roomsPanel = document.createElement("div");
+      roomsPanel.className = "hud-panel";
+      roomsPanel.innerHTML = `
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px">
+          <span class="control-label" style="margin:0; flex-shrink:0">ROOM</span>
+          <input type="text" id="room-input" placeholder="ROOM-ID" maxlength="32" spellcheck="false" autocomplete="off" style="flex:1">
+          <button class="btn btn-sm" id="room-join-btn">JOIN</button>
+          <button class="btn btn-sm" id="privacy-btn">PUBLIC</button>
+        </div>
+        <hr class="hud-divider" style="margin:10px 0">
+        <div class="section-title">// AVAILABLE PHASERS //</div>
+        <div id="rooms-list">
+          <span class="type-dim">NO OTHER PHASERS AVAILABLE</span>
+        </div>
+      `;
+      app.appendChild(roomsPanel);
+
+      // Footer
+      const footer = document.createElement("div");
+      footer.style.cssText = "text-align:center; padding:20px 0; font-size:0.72rem; letter-spacing:0.22em; color:var(--dim)";
+      footer.innerHTML = '<a href="../../index.html" style="color:var(--dim); text-decoration:none">ENTROPY WORSHIP</a>';
+      app.appendChild(footer);
+
+      // ── Wire controls ──────────────────────────────────────────
+
+      function updatePowerUI() {
+        const track = document.getElementById("power-track");
+        track.classList.toggle("on", phaserRunning);
+      }
+
+      document.getElementById("power-toggle").addEventListener("click", () => {
+        if (phaserRunning) stopPhaser(); else startPhaser();
+      });
+
+      // Output mode
+      document.getElementById("phs-output-mode").addEventListener("change", (e) => {
+        outputMode = e.target.value;
+        applyOutputRouting();
+        ewObj.setOutput("outputMode", outputMode, { immediate: true });
+      });
+
+      // Frequency slider (0.1-20 Hz, slider 1-200 mapped /10)
+      wireRange("phs-freq", "phs-freq-val", (v) => (v / 10).toFixed(1) + " Hz");
+      document.getElementById("phs-freq").addEventListener("input", (e) => {
+        const freq = +e.target.value / 10;
+        baseFreq = freq;
+        if (phaser) phaser.frequency.rampTo(freq, 0.01);
+        ewObj.setOutput("frequency", Math.round(freq * 10) / 10, { unit: "hz" });
+        refreshStats();
+      });
+
+      // Octaves slider
+      wireRange("phs-octaves", "phs-octaves-val", (v) => v.toString());
+      document.getElementById("phs-octaves").addEventListener("input", (e) => {
+        const oct = +e.target.value;
+        baseOctaves = oct;
+        if (phaser) phaser.octaves = oct;
+        ewObj.setOutput("octaves", oct);
+        refreshStats();
+      });
+
+      // Base frequency slider
+      wireRange("phs-base-freq", "phs-base-freq-val", (v) => v + " Hz");
+      document.getElementById("phs-base-freq").addEventListener("input", (e) => {
+        const bf = +e.target.value;
+        baseBaseFreq = bf;
+        if (phaser) phaser.baseFrequency = bf;
+        ewObj.setOutput("baseFrequency", bf, { unit: "hz" });
+        refreshStats();
+      });
+
+      // Wet slider
+      wireRange("phs-wet", "phs-wet-val", (v) => (v / 100).toFixed(2));
+      document.getElementById("phs-wet").addEventListener("input", (e) => {
+        const wet = +e.target.value / 100;
+        baseWet = wet;
+        if (phaser) phaser.wet.rampTo(wet, 0.01);
+        ewObj.setOutput("wet", Math.round(wet * 100) / 100);
+        refreshStats();
+      });
+
+      // Gain slider
+      wireRange("phs-gain", "phs-gain-val", (v) => (v / 100).toFixed(2));
+      document.getElementById("phs-gain").addEventListener("input", (e) => {
+        const gain = +e.target.value / 100;
+        baseGain = gain;
+        if (gainNode) gainNode.gain.rampTo(gain, 0.01);
+        ewObj.setOutput("gain", Math.round(gain * 100) / 100);
+        refreshStats();
+      });
+
+      // Freq mod depth slider (0-10 Hz, slider 0-100 mapped /10)
+      wireRange("phs-freq-mod-depth", "phs-freq-mod-depth-val", (v) => (v / 10).toFixed(1) + " Hz");
+      document.getElementById("phs-freq-mod-depth").addEventListener("input", (e) => {
+        freqModDepth = +e.target.value / 10;
+        if (freqModGain) freqModGain.gain.rampTo(freqModDepth, 0.01);
+      });
+
+      // ── Input signal handling ──────────────────────────────────
+
+      ewObj.onInput("audio", (value, meta) => {
+        if (meta && meta.unit === "bipolar") return;
+        if (!phaser) return;
+
+        if (meta && meta.port === "frequency" && typeof value === "number") {
+          if (!sourceConnected) {
+            createSourceOsc(value, "sine", 0.5);
+          } else if (sourceOsc) {
+            sourceOsc.frequency.value = value;
+          }
+        } else if (meta && meta.port === "waveform" && typeof value === "string") {
+          if (sourceOsc) { try { sourceOsc.type = value; } catch (_) {} }
+        } else if (meta && meta.port === "gain" && typeof value === "number") {
+          if (sourceGain) sourceGain.gain.value = Math.max(0, Math.min(1, value));
+        } else if (meta && meta.port === "detune" && typeof value === "number") {
+          if (sourceOsc) sourceOsc.detune.value = value;
+        } else if (meta && meta.port === "playing" && typeof value === "boolean") {
+          if (value && sourceConnected && !phaserRunning) startPhaser();
+        }
+      });
+
+      ewObj.on("inputConnected", ({ room, portMapping }) => {
+        ensureAudio().then(() => {
+          for (const localPort of Object.values(portMapping)) {
+            if (localPort === "audio" && !sourceConnected) {
+              createSourceOsc(440, "sine", 0.5);
+            }
+            if (localPort === "frequency") connectFreqMod();
+          }
+          updateModRowStates();
+        });
+      });
+
+      ewObj.on("inputDisconnected", ({ room }) => {
+        const subs = ewObj.getSubscriptions();
+        const activePorts = new Set();
+        for (const sub of subs) {
+          for (const local of Object.values(sub.portMapping)) activePorts.add(local);
+        }
+        if (!activePorts.has("audio")) destroySourceOsc();
+        if (!activePorts.has("frequency")) disconnectFreqMod();
+        updateModRowStates();
+      });
+
+      ewObj.onInput("frequency", (value, meta) => {
+        if (meta && meta.unit === "bipolar" && typeof value === "number") {
+          const modulated = baseFreq + value * freqModDepth;
+          const clamped = Math.max(0.1, Math.min(20, modulated));
+          if (phaser) phaser.frequency.rampTo(clamped, 0.012);
+          return;
+        }
+
+        if (freqModWanted) {
+          if (meta && meta.port === "frequency" && typeof value === "number") {
+            freqModRemoteFreq = value;
+            if (freqModOsc) freqModOsc.frequency.value = value;
+          } else if (meta && meta.port === "waveform" && typeof value === "string") {
+            freqModRemoteType = value;
+            if (freqModOsc) { try { freqModOsc.type = value; } catch (_) {} }
+          }
+          return;
+        }
+
+        if (typeof value === "number") {
+          const clamped = Math.max(0.1, Math.min(20, value));
+          baseFreq = clamped;
+          if (phaser) phaser.frequency.rampTo(clamped, 0.01);
+          document.getElementById("phs-freq").value = Math.round(clamped * 10);
+          document.getElementById("phs-freq-val").textContent = clamped.toFixed(1) + " Hz";
+          ewObj.setOutput("frequency", clamped, { unit: "hz" });
+          refreshStats();
+        }
+      });
+
+      ewObj.onInput("octaves", (value, meta) => {
+        if (meta && meta.unit === "bipolar") return;
+        if (typeof value === "number") {
+          const clamped = Math.max(1, Math.min(6, Math.round(value)));
+          baseOctaves = clamped;
+          if (phaser) phaser.octaves = clamped;
+          document.getElementById("phs-octaves").value = clamped;
+          document.getElementById("phs-octaves-val").textContent = clamped.toString();
+          ewObj.setOutput("octaves", clamped);
+          refreshStats();
+        }
+      });
+
+      ewObj.onInput("wet", (value, meta) => {
+        if (meta && meta.unit === "bipolar") return;
+        if (typeof value === "number") {
+          const clamped = Math.max(0, Math.min(1, value));
+          baseWet = clamped;
+          if (phaser) phaser.wet.rampTo(clamped, 0.01);
+          document.getElementById("phs-wet").value = Math.round(clamped * 100);
+          document.getElementById("phs-wet-val").textContent = clamped.toFixed(2);
+          ewObj.setOutput("wet", clamped);
+          refreshStats();
+        }
+      });
+
+      ewObj.onInput("gain", (value, meta) => {
+        if (meta && meta.unit === "bipolar") return;
+        if (typeof value === "number") {
+          const clamped = Math.max(0, Math.min(1, value));
+          baseGain = clamped;
+          if (gainNode) gainNode.gain.rampTo(clamped, 0.01);
+          document.getElementById("phs-gain").value = Math.round(clamped * 100);
+          document.getElementById("phs-gain-val").textContent = clamped.toFixed(2);
+          ewObj.setOutput("gain", clamped);
+          refreshStats();
+        }
+      });
+
+      ewObj.onInput("playing", async (value) => {
+        if (typeof value !== "boolean") return;
+        if (value && !phaserRunning) await startPhaser();
+        else if (!value && phaserRunning) stopPhaser();
+      });
+
+      ewObj.onInput("outputMode", (value) => {
+        if (typeof value !== "string") return;
+        if (["audio", "control", "both"].includes(value)) {
+          outputMode = value;
+          document.getElementById("phs-output-mode").value = value;
+          applyOutputRouting();
+        }
+      });
+
+      // ── Mod row states ─────────────────────────────────────────
+
+      function updateModRowStates() {
+        document.getElementById("mod-freq-row").classList.toggle("active", freqModWanted);
+      }
+
+      // ── Output stats ───────────────────────────────────────────
+
+      function refreshStats() {
+        updateOutputStats(ewObj, [
+          { port: "frequency", label: "FREQ", unit: " Hz", formatter: (v) => v ? v.toFixed(1) : "—" },
+          { port: "octaves", label: "OCT", formatter: (v) => v !== undefined ? v.toString() : "—" },
+          { port: "baseFrequency", label: "BASE", unit: " Hz", formatter: (v) => v ? v.toString() : "—" },
+          { port: "wet", label: "WET", formatter: (v) => v !== undefined ? v.toFixed(2) : "—" },
+          { port: "gain", label: "GAIN", formatter: (v) => v !== undefined ? v.toFixed(2) : "—" },
+        ]);
+      }
+
+      // ── Scope ──────────────────────────────────────────────────
+
+      const scopeCanvas = document.getElementById("phaser-scope");
+      const scopeCtx = scopeCanvas.getContext("2d");
+
+      function resizeScope() {
+        const rect = scopeCanvas.parentElement.getBoundingClientRect();
+        scopeCanvas.width = rect.width;
+        scopeCanvas.height = 120;
+      }
+
+      function drawScope() {
+        requestAnimationFrame(drawScope);
+        const w = scopeCanvas.width;
+        const h = scopeCanvas.height;
+        scopeCtx.fillStyle = "#080808";
+        scopeCtx.fillRect(0, 0, w, h);
+
+        scopeCtx.strokeStyle = "rgba(128, 128, 128, 0.08)";
+        scopeCtx.lineWidth = 1;
+        for (let y = 0; y < h; y += 20) { scopeCtx.beginPath(); scopeCtx.moveTo(0, y); scopeCtx.lineTo(w, y); scopeCtx.stroke(); }
+        for (let x = 0; x < w; x += 20) { scopeCtx.beginPath(); scopeCtx.moveTo(x, 0); scopeCtx.lineTo(x, h); scopeCtx.stroke(); }
+
+        scopeCtx.strokeStyle = "rgba(128, 128, 128, 0.2)";
+        scopeCtx.beginPath(); scopeCtx.moveTo(0, h / 2); scopeCtx.lineTo(w, h / 2); scopeCtx.stroke();
+
+        if (!analyser || !phaserRunning) return;
+
+        const data = analyser.getValue();
+        scopeCtx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--accent");
+        scopeCtx.lineWidth = 2;
+        scopeCtx.shadowColor = "rgba(210, 210, 210, 0.4)";
+        scopeCtx.shadowBlur = 6;
+        scopeCtx.beginPath();
+        for (let i = 0; i < data.length; i++) {
+          const x = (i / data.length) * w;
+          const y = ((1 - data[i]) / 2) * h;
+          if (i === 0) scopeCtx.moveTo(x, y); else scopeCtx.lineTo(x, y);
+        }
+        scopeCtx.stroke();
+        scopeCtx.shadowBlur = 0;
+      }
+
+      // ── Room UI ────────────────────────────────────────────────
+
+      ewObj.on("connected", () => {
+        document.getElementById("room-input").value = ewObj.getOutputRoom();
+      });
+      document.getElementById("room-join-btn").addEventListener("click", () => {
+        const name = document.getElementById("room-input").value.trim().replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 32) || "default";
+        location.search = `?room=${encodeURIComponent(name)}`;
+      });
+      document.getElementById("room-input").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") document.getElementById("room-join-btn").click();
+      });
+
+      let roomPrivate = false;
+      function updatePrivacyBtn() {
+        const btn = document.getElementById("privacy-btn");
+        btn.textContent = roomPrivate ? "PRIVATE" : "PUBLIC";
+        btn.classList.toggle("active", roomPrivate);
+      }
+      document.getElementById("privacy-btn").addEventListener("click", () => {
+        roomPrivate = !roomPrivate;
+        ewObj.setPrivate(roomPrivate);
+        updatePrivacyBtn();
+      });
+      ewObj.on("stateSync", (msg) => {
+        roomPrivate = msg.private || false;
+        updatePrivacyBtn();
+        document.getElementById("room-input").value = msg.room || ewObj.getOutputRoom();
+      });
+      ewObj.on("roomPrivate", (msg) => { roomPrivate = msg.private; updatePrivacyBtn(); });
+
+      ewObj.on("rooms", (msg) => {
+        const el = document.getElementById("rooms-list");
+        if (!el) return;
+        const currentRoom = ewObj.getOutputRoom();
+        const others = (msg.rooms || []).filter((r) => r.name !== currentRoom);
+        if (!others.length) { el.innerHTML = '<span class="type-dim">NO OTHER PHASERS AVAILABLE</span>'; return; }
+        el.innerHTML = "";
+        for (const r of others) {
+          const a = document.createElement("a");
+          a.className = "room-entry";
+          a.href = `?room=${encodeURIComponent(r.name)}`;
+          const objs = r.objects && r.objects.length ? r.objects.join(", ").toUpperCase() : "";
+          a.innerHTML = `<span class="room-entry-name">${r.name}</span><span class="room-entry-info">${r.clients} PLR${objs ? " · " + objs : ""}</span>`;
+          el.appendChild(a);
+        }
+      });
+
+      // ── Initialize ─────────────────────────────────────────────
+
+      (() => {
+        const urlRoom = new URLSearchParams(location.search).get("room");
+        ewObj.connectOutput(urlRoom || undefined);
+
+        ewObj._outputValues["frequency"] = 0.5;
+        ewObj._outputValues["octaves"] = 3;
+        ewObj._outputValues["baseFrequency"] = 350;
+        ewObj._outputValues["wet"] = 0.5;
+        ewObj._outputValues["gain"] = 1;
+        ewObj._outputValues["playing"] = false;
+        ewObj._outputValues["outputMode"] = "audio";
+
+        refreshStats();
+        resizeScope();
+        drawScope();
+      })();
+
+      window.addEventListener("resize", resizeScope);
+    </script>
+  </body>
+</html>

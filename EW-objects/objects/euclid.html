@@ -1,0 +1,529 @@
+<!-- /-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\ -->
+<!-- |                                                                         | -->
+<!-- \ @@@@@@@@  @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@@@@@   @@@ @@@      / -->
+<!-- - @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@ @@@      - -->
+<!-- / @@!       @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!  @@@  @@! !@@      \ -->
+<!-- | !@!       !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!  @!@  !@! @!!      | -->
+<!-- \ @!!!:!    @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!@@!@!    !@!@!       / -->
+<!-- - !!!!!:    !@!  !!!    !!!    !!@!@!    !@!  !!!  !!@!!!      @!!!       - -->
+<!-- / !!:       !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:         !!:        \ -->
+<!-- | :!:       :!:  !:!    :!:    :!:  !:!  :!:  !:!  :!:         :!:        | -->
+<!-- \  :: ::::   ::   ::     ::    ::   :::  ::::: ::   ::          ::        / -->
+<!-- - : :: ::   ::    :      :      :   : :   : :  :    :           :         - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \ @@@  @@@  @@@   @@@@@@   @@@@@@@    @@@@@@   @@@  @@@  @@@  @@@@@@@     / -->
+<!-- - @@@  @@@  @@@  @@@@@@@@  @@@@@@@@  @@@@@@@   @@@  @@@  @@@  @@@@@@@@    - -->
+<!-- / @@!  @@!  @@!  @@!  @@@  @@!  @@@  !@@       @@!  @@@  @@!  @@!  @@@    \ -->
+<!-- | !@!  !@!  !@!  !@!  @!@  !@!  @!@  !@!       !@!  @!@  !@!  !@!  @!@    | -->
+<!-- \ @!!  !!@  @!@  @!@  !@!  @!@!!@!   !!@@!!    @!@!@!@!  !!@  @!@@!@!     / -->
+<!-- - !@!  !!!  !@!  !@!  !!!  !!@!@!     !!@!!!   !!!@!!!!  !!!  !!@!!!      - -->
+<!-- / !!:  !!:  !!:  !!:  !!!  !!: :!!        !:!  !!:  !!!  !!:  !!:         \ -->
+<!-- | :!:  :!:  :!:  :!:  !:!  :!:  !:!      !:!   :!:  !:!  :!:  :!:         | -->
+<!-- \  :::: :: :::   ::::: ::  ::   :::  :::: ::   ::   :::   ::   ::         / -->
+<!-- -   :: :  : :     : :  :    :   : :  :: : :     :   : :  :     :          - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EUCLID</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css" />
+    <link rel="stylesheet" href="../lib/ewuilib.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <style>
+      .param-row {
+        display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+      }
+      .param-row .control-label { min-width: 80px; margin-bottom: 0; flex-shrink: 0; }
+      .param-row input[type="range"] { flex: 1; }
+      .param-row .range-val { min-width: 72px; text-align: right; }
+      #power-toggle .toggle-track.on .toggle-thumb { left: 22px; }
+      #meta .toggle-wrap { align-self: center; }
+      #meta .toggle-track { margin: 0; }
+      .room-entry {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 6px 10px; border: 1px solid var(--border); margin-bottom: 6px;
+        text-decoration: none; color: var(--text); font-size: 0.82rem;
+        letter-spacing: 0.1em; transition: border-color 0.14s, background 0.14s; cursor: pointer;
+      }
+      .room-entry:hover { border-color: var(--accent); background: rgba(var(--accent-rgb), 0.06); }
+      .room-entry-name { color: var(--accent); }
+      .room-entry-info { font-size: 0.68rem; color: var(--dim); letter-spacing: 0.08em; }
+      #euclid-ring {
+        display: block; margin: 0 auto;
+      }
+      .pattern-display {
+        display: flex; gap: 2px; flex-wrap: wrap; margin-top: 10px;
+      }
+      .pattern-step {
+        width: 12px; height: 12px; border: 1px solid var(--border);
+        background: var(--surface); flex-shrink: 0;
+      }
+      .pattern-step.active {
+        background: rgba(var(--accent-rgb), 0.5); border-color: var(--accent);
+      }
+      .pattern-step.current {
+        box-shadow: 0 0 6px rgba(var(--accent-rgb), 0.7);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="grid-bg"></div>
+    <div id="scanlines"></div>
+    <div id="app"></div>
+
+    <script type="module">
+      import { EWObject } from "../lib/ew-object-base.js";
+      import {
+        buildHeaderBar,
+        buildInputPanel,
+        updateOutputStats,
+        wireRange,
+      } from "../lib/ew-object-ui.js";
+
+      // ── EWObject instance ──────────────────────────────────────
+
+      const ewObj = new EWObject({
+        name: "EUC-1",
+        objectType: "euclid",
+        roomPrefix: "euc",
+        inputs: [
+          { port: "trigger", type: "number", unit: "", min: -1, max: 1, default: 0 },
+          { port: "steps", type: "number", unit: "", min: 2, max: 32, default: 16 },
+          { port: "beats", type: "number", unit: "", min: 0, max: 32, default: 4 },
+          { port: "offset", type: "number", unit: "", min: 0, max: 32, default: 0 },
+        ],
+        outputs: [
+          { port: "signal", type: "number" },
+          { port: "steps", type: "number" },
+          { port: "beats", type: "number" },
+          { port: "offset", type: "number" },
+        ],
+      });
+
+      // ── Euclidean algorithm ────────────────────────────────────
+
+      function euclidean(beats, steps, offset) {
+        beats = Math.max(0, Math.min(Math.round(beats), steps));
+        steps = Math.max(1, Math.round(steps));
+        offset = ((Math.round(offset) % steps) + steps) % steps;
+
+        const pattern = [];
+        let bucket = 0;
+        for (let i = 0; i < steps; i++) {
+          bucket += beats;
+          if (bucket >= steps) {
+            pattern.push(1);
+            bucket -= steps;
+          } else {
+            pattern.push(0);
+          }
+        }
+        return pattern.slice(offset).concat(pattern.slice(0, offset));
+      }
+
+      // ── State ──────────────────────────────────────────────────
+
+      let numSteps = 16;
+      let numBeats = 4;
+      let numOffset = 0;
+      let pattern = euclidean(numBeats, numSteps, numOffset);
+      let currentStep = -1;
+      let prevTriggerValue = 0;
+      let powerOn = true;
+
+      function regeneratePattern() {
+        pattern = euclidean(numBeats, numSteps, numOffset);
+        // Reset step if it exceeds new steps count
+        if (currentStep >= numSteps) currentStep = 0;
+        drawRing();
+        drawPatternDisplay();
+        ewObj.setOutput("steps", numSteps, { immediate: true });
+        ewObj.setOutput("beats", numBeats, { immediate: true });
+        ewObj.setOutput("offset", numOffset, { immediate: true });
+      }
+
+      // ── Build UI ───────────────────────────────────────────────
+
+      const app = document.getElementById("app");
+
+      buildHeaderBar(ewObj, "EUCLID", app);
+
+      document.getElementById("ew-header-controls").innerHTML = `
+        <select id="ew-theme" style="width:auto; padding:3px 24px 3px 8px">
+          <option value="theme-ethos">ETHOS</option>
+          <option value="">AMBER</option>
+          <option value="theme-phosphor">PHOSPHOR</option>
+          <option value="theme-cobalt">COBALT</option>
+          <option value="theme-plasma">PLASMA</option>
+          <option value="theme-danger">DANGER</option>
+          <option value="theme-matrix">MATRIX</option>
+          <option value="theme-solar">SOLAR</option>
+          <option value="theme-arctic">ARCTIC</option>
+        </select>
+        <div class="toggle-wrap" id="power-toggle" style="margin-bottom:0; cursor:pointer">
+          <div class="toggle-track on" id="power-track">
+            <div class="toggle-thumb"></div>
+          </div>
+        </div>
+      `;
+
+      // Ring display
+      const ringPanel = document.createElement("div");
+      ringPanel.className = "hud-panel";
+      ringPanel.style.textAlign = "center";
+      ringPanel.innerHTML = `<canvas id="euclid-ring" width="200" height="200"></canvas>`;
+      app.appendChild(ringPanel);
+
+      // Controls
+      const controlsPanel = document.createElement("div");
+      controlsPanel.className = "hud-panel clip-tr";
+      controlsPanel.innerHTML = `
+        <div class="param-row">
+          <div class="control-label">STEPS</div>
+          <input type="range" id="euc-steps" min="2" max="32" value="16" />
+          <span class="range-val" id="euc-steps-val">16</span>
+        </div>
+        <div class="param-row">
+          <div class="control-label">BEATS</div>
+          <input type="range" id="euc-beats" min="0" max="16" value="4" />
+          <span class="range-val" id="euc-beats-val">4</span>
+        </div>
+        <div class="param-row">
+          <div class="control-label">OFFSET</div>
+          <input type="range" id="euc-offset" min="0" max="15" value="0" />
+          <span class="range-val" id="euc-offset-val">0</span>
+        </div>
+        <div id="pattern-display" class="pattern-display"></div>
+      `;
+      app.appendChild(controlsPanel);
+
+      // Theme
+      document.getElementById("ew-theme").addEventListener("change", (e) => {
+        document.documentElement.className = e.target.value;
+      });
+      document.documentElement.className = "theme-ethos";
+
+      // Input panel
+      buildInputPanel(ewObj, app);
+
+      // Rooms
+      const roomsPanel = document.createElement("div");
+      roomsPanel.className = "hud-panel";
+      roomsPanel.innerHTML = `
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px">
+          <span class="control-label" style="margin:0; flex-shrink:0">ROOM</span>
+          <input type="text" id="room-input" placeholder="ROOM-ID" maxlength="32" spellcheck="false" autocomplete="off" style="flex:1">
+          <button class="btn btn-sm" id="room-join-btn">JOIN</button>
+          <button class="btn btn-sm" id="privacy-btn">PUBLIC</button>
+        </div>
+        <hr class="hud-divider" style="margin:10px 0">
+        <div class="section-title">// AVAILABLE EUCLIDS //</div>
+        <div id="rooms-list"><span class="type-dim">NO OTHER EUCLIDS AVAILABLE</span></div>
+      `;
+      app.appendChild(roomsPanel);
+
+      // Footer
+      const footer = document.createElement("div");
+      footer.style.cssText = "text-align:center; padding:20px 0; font-size:0.72rem; letter-spacing:0.22em; color:var(--dim)";
+      footer.innerHTML = '<a href="../../index.html" style="color:var(--dim); text-decoration:none">ENTROPY WORSHIP</a>';
+      app.appendChild(footer);
+
+      // ── Wire controls ──────────────────────────────────────────
+
+      // Power toggle
+      function updatePowerUI() {
+        document.getElementById("power-track").classList.toggle("on", powerOn);
+      }
+      document.getElementById("power-toggle").addEventListener("click", () => {
+        powerOn = !powerOn;
+        updatePowerUI();
+      });
+
+      // Steps slider
+      wireRange("euc-steps", "euc-steps-val", (v) => String(v));
+      document.getElementById("euc-steps").addEventListener("input", (e) => {
+        numSteps = +e.target.value;
+        // Dynamically clamp beats max
+        const beatsSlider = document.getElementById("euc-beats");
+        beatsSlider.max = numSteps;
+        if (numBeats > numSteps) {
+          numBeats = numSteps;
+          beatsSlider.value = numBeats;
+          document.getElementById("euc-beats-val").textContent = numBeats;
+        }
+        // Dynamically clamp offset max
+        const offsetSlider = document.getElementById("euc-offset");
+        offsetSlider.max = numSteps - 1;
+        if (numOffset >= numSteps) {
+          numOffset = 0;
+          offsetSlider.value = 0;
+          document.getElementById("euc-offset-val").textContent = 0;
+        }
+        regeneratePattern();
+      });
+
+      // Beats slider
+      wireRange("euc-beats", "euc-beats-val", (v) => String(v));
+      document.getElementById("euc-beats").addEventListener("input", (e) => {
+        numBeats = +e.target.value;
+        regeneratePattern();
+      });
+
+      // Offset slider
+      wireRange("euc-offset", "euc-offset-val", (v) => String(v));
+      document.getElementById("euc-offset").addEventListener("input", (e) => {
+        numOffset = +e.target.value;
+        regeneratePattern();
+      });
+
+      // ── Ring drawing ───────────────────────────────────────────
+
+      const ringCanvas = document.getElementById("euclid-ring");
+      const ringCtx = ringCanvas.getContext("2d");
+
+      function drawRing() {
+        const W = ringCanvas.width;
+        const H = ringCanvas.height;
+        const cx = W / 2;
+        const cy = H / 2;
+        const R = W * 0.36;
+
+        ringCtx.clearRect(0, 0, W, H);
+
+        // Background circle
+        ringCtx.beginPath();
+        ringCtx.arc(cx, cy, R + 16, 0, Math.PI * 2);
+        ringCtx.fillStyle = "rgba(0, 3, 10, 0.75)";
+        ringCtx.fill();
+
+        // Ring outline
+        ringCtx.beginPath();
+        ringCtx.arc(cx, cy, R, 0, Math.PI * 2);
+        ringCtx.strokeStyle = "rgba(255,255,255,0.07)";
+        ringCtx.lineWidth = 1;
+        ringCtx.stroke();
+
+        const accent = getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#d4a017";
+        const n = numSteps;
+
+        // Current step indicator line
+        if (currentStep >= 0 && currentStep < n) {
+          const a = (currentStep / n) * Math.PI * 2 - Math.PI / 2;
+          ringCtx.beginPath();
+          ringCtx.moveTo(cx, cy);
+          ringCtx.lineTo(cx + R * Math.cos(a), cy + R * Math.sin(a));
+          ringCtx.strokeStyle = "rgba(255,255,255,0.14)";
+          ringCtx.lineWidth = 1;
+          ringCtx.stroke();
+        }
+
+        // Lines from center to active beats
+        for (let i = 0; i < n; i++) {
+          if (pattern[i] === 1) {
+            const a = (i / n) * Math.PI * 2 - Math.PI / 2;
+            ringCtx.beginPath();
+            ringCtx.moveTo(cx, cy);
+            ringCtx.lineTo(cx + R * Math.cos(a), cy + R * Math.sin(a));
+            ringCtx.strokeStyle = "rgba(var(--accent-rgb), 0.15)";
+            ringCtx.lineWidth = 1;
+            ringCtx.stroke();
+          }
+        }
+
+        const beatR = Math.max(2.5, Math.min(7, 100 / n));
+        const emptyR = Math.max(1.4, Math.min(3.2, 55 / n));
+
+        for (let i = 0; i < n; i++) {
+          const a = (i / n) * Math.PI * 2 - Math.PI / 2;
+          const x = cx + R * Math.cos(a);
+          const y = cy + R * Math.sin(a);
+          const isBeat = pattern[i] === 1;
+          const isCur = i === currentStep;
+
+          ringCtx.shadowBlur = 0;
+
+          if (isCur) {
+            ringCtx.beginPath();
+            ringCtx.arc(x, y, isBeat ? beatR + 2 : emptyR + 2, 0, Math.PI * 2);
+            ringCtx.fillStyle = "rgba(255,255,255,0.95)";
+            ringCtx.shadowColor = "white";
+            ringCtx.shadowBlur = 14;
+            ringCtx.fill();
+            ringCtx.shadowBlur = 0;
+          } else if (isBeat) {
+            ringCtx.beginPath();
+            ringCtx.arc(x, y, beatR, 0, Math.PI * 2);
+            ringCtx.fillStyle = accent;
+            ringCtx.shadowColor = accent;
+            ringCtx.shadowBlur = 16;
+            ringCtx.fill();
+            ringCtx.shadowBlur = 0;
+          } else {
+            ringCtx.beginPath();
+            ringCtx.arc(x, y, emptyR, 0, Math.PI * 2);
+            ringCtx.fillStyle = "rgba(255,255,255,0.16)";
+            ringCtx.fill();
+          }
+        }
+
+        ringCtx.shadowBlur = 0;
+        ringCtx.font = "15px VT323, monospace";
+        ringCtx.fillStyle = "rgba(255,255,255,0.45)";
+        ringCtx.textAlign = "center";
+        ringCtx.textBaseline = "middle";
+        ringCtx.fillText(`${numBeats}:${numSteps}`, cx, cy);
+      }
+
+      // ── Pattern display (row of squares) ───────────────────────
+
+      function drawPatternDisplay() {
+        const container = document.getElementById("pattern-display");
+        container.innerHTML = "";
+        for (let i = 0; i < numSteps; i++) {
+          const div = document.createElement("div");
+          div.className = "pattern-step";
+          if (pattern[i] === 1) div.classList.add("active");
+          if (i === currentStep) div.classList.add("current");
+          container.appendChild(div);
+        }
+      }
+
+      // ── Input handlers ─────────────────────────────────────────
+
+      ewObj.onInput("trigger", (value, meta) => {
+        if (typeof value !== "number") return;
+
+        // Detect positive edge
+        const isPositiveEdge = value > 0 && prevTriggerValue <= 0;
+        prevTriggerValue = value;
+
+        if (!isPositiveEdge) return;
+
+        // Advance step
+        currentStep = (currentStep + 1) % numSteps;
+
+        // Redraw
+        drawRing();
+        drawPatternDisplay();
+
+        if (!powerOn) return;
+
+        // Broadcast trigger
+        if (pattern[currentStep] === 1) {
+          ewObj.setOutput("signal", 1, { immediate: true });
+          setTimeout(() => {
+            ewObj.setOutput("signal", -1, { immediate: true });
+          }, 10);
+        } else {
+          ewObj.setOutput("signal", -1, { immediate: true });
+        }
+      });
+
+      ewObj.onInput("steps", (value) => {
+        if (typeof value !== "number") return;
+        const clamped = Math.max(2, Math.min(32, Math.round(value)));
+        numSteps = clamped;
+        document.getElementById("euc-steps").value = clamped;
+        document.getElementById("euc-steps-val").textContent = clamped;
+        // Clamp beats & offset
+        const beatsSlider = document.getElementById("euc-beats");
+        beatsSlider.max = numSteps;
+        if (numBeats > numSteps) {
+          numBeats = numSteps;
+          beatsSlider.value = numBeats;
+          document.getElementById("euc-beats-val").textContent = numBeats;
+        }
+        const offsetSlider = document.getElementById("euc-offset");
+        offsetSlider.max = numSteps - 1;
+        if (numOffset >= numSteps) {
+          numOffset = 0;
+          offsetSlider.value = 0;
+          document.getElementById("euc-offset-val").textContent = 0;
+        }
+        regeneratePattern();
+      });
+
+      ewObj.onInput("beats", (value) => {
+        if (typeof value !== "number") return;
+        const clamped = Math.max(0, Math.min(numSteps, Math.round(value)));
+        numBeats = clamped;
+        document.getElementById("euc-beats").value = clamped;
+        document.getElementById("euc-beats-val").textContent = clamped;
+        regeneratePattern();
+      });
+
+      ewObj.onInput("offset", (value) => {
+        if (typeof value !== "number") return;
+        const clamped = Math.max(0, Math.min(numSteps - 1, Math.round(value)));
+        numOffset = clamped;
+        document.getElementById("euc-offset").value = clamped;
+        document.getElementById("euc-offset-val").textContent = clamped;
+        regeneratePattern();
+      });
+
+      // ── Room UI ────────────────────────────────────────────────
+
+      ewObj.on("connected", () => {
+        document.getElementById("room-input").value = ewObj.getOutputRoom();
+      });
+      document.getElementById("room-join-btn").addEventListener("click", () => {
+        const name = document.getElementById("room-input").value.trim().replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 32) || "default";
+        location.search = `?room=${encodeURIComponent(name)}`;
+      });
+      document.getElementById("room-input").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") document.getElementById("room-join-btn").click();
+      });
+
+      let roomPrivate = false;
+      function updatePrivacyBtn() {
+        const btn = document.getElementById("privacy-btn");
+        btn.textContent = roomPrivate ? "PRIVATE" : "PUBLIC";
+        btn.classList.toggle("active", roomPrivate);
+      }
+      document.getElementById("privacy-btn").addEventListener("click", () => {
+        roomPrivate = !roomPrivate; ewObj.setPrivate(roomPrivate); updatePrivacyBtn();
+      });
+      ewObj.on("stateSync", (msg) => {
+        roomPrivate = msg.private || false; updatePrivacyBtn();
+        document.getElementById("room-input").value = msg.room || ewObj.getOutputRoom();
+      });
+      ewObj.on("roomPrivate", (msg) => { roomPrivate = msg.private; updatePrivacyBtn(); });
+      ewObj.on("rooms", (msg) => {
+        const el = document.getElementById("rooms-list");
+        if (!el) return;
+        const currentRoom = ewObj.getOutputRoom();
+        const others = (msg.rooms || []).filter((r) => r.name !== currentRoom);
+        if (!others.length) { el.innerHTML = '<span class="type-dim">NO OTHER EUCLIDS AVAILABLE</span>'; return; }
+        el.innerHTML = "";
+        for (const r of others) {
+          const a = document.createElement("a");
+          a.className = "room-entry";
+          a.href = `?room=${encodeURIComponent(r.name)}`;
+          const objs = r.objects && r.objects.length ? r.objects.join(", ").toUpperCase() : "";
+          a.innerHTML = `<span class="room-entry-name">${r.name}</span><span class="room-entry-info">${r.clients} PLR${objs ? " · " + objs : ""}</span>`;
+          el.appendChild(a);
+        }
+      });
+
+      // ── Initialize ─────────────────────────────────────────────
+
+      (() => {
+        const urlRoom = new URLSearchParams(location.search).get("room");
+        ewObj.connectOutput(urlRoom || undefined);
+        ewObj._outputValues["signal"] = 0;
+        ewObj._outputValues["steps"] = 16;
+        ewObj._outputValues["beats"] = 4;
+        ewObj._outputValues["offset"] = 0;
+        drawRing();
+        drawPatternDisplay();
+      })();
+    </script>
+  </body>
+</html>

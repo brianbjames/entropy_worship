@@ -1,0 +1,734 @@
+<!-- /-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\ -->
+<!-- |                                                                         | -->
+<!-- \ @@@@@@@@  @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@@@@@   @@@ @@@      / -->
+<!-- - @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@ @@@      - -->
+<!-- / @@!       @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!  @@@  @@! !@@      \ -->
+<!-- | !@!       !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!  @!@  !@! @!!      | -->
+<!-- \ @!!!:!    @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!@@!@!    !@!@!       / -->
+<!-- - !!!!!:    !@!  !!!    !!!    !!@!@!    !@!  !!!  !!@!!!      @!!!       - -->
+<!-- / !!:       !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:         !!:        \ -->
+<!-- | :!:       :!:  !:!    :!:    :!:  !:!  :!:  !:!  :!:         :!:        | -->
+<!-- \  :: ::::   ::   ::     ::    ::   :::  ::::: ::   ::          ::        / -->
+<!-- - : :: ::   ::    :      :      :   : :   : :  :    :           :         - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \ @@@  @@@  @@@   @@@@@@   @@@@@@@    @@@@@@   @@@  @@@  @@@  @@@@@@@     / -->
+<!-- - @@@  @@@  @@@  @@@@@@@@  @@@@@@@@  @@@@@@@   @@@  @@@  @@@  @@@@@@@@    - -->
+<!-- / @@!  @@!  @@!  @@!  @@@  @@!  @@@  !@@       @@!  @@@  @@!  @@!  @@@    \ -->
+<!-- | !@!  !@!  !@!  !@!  @!@  !@!  @!@  !@!       !@!  @!@  !@!  !@!  @!@    | -->
+<!-- \ @!!  !!@  @!@  @!@  !@!  @!@!!@!   !!@@!!    @!@!@!@!  !!@  @!@@!@!     / -->
+<!-- - !@!  !!!  !@!  !@!  !!!  !!@!@!     !!@!!!   !!!@!!!!  !!!  !!@!!!      - -->
+<!-- / !!:  !!:  !!:  !!:  !!!  !!: :!!        !:!  !!:  !!!  !!:  !!:         \ -->
+<!-- | :!:  :!:  :!:  :!:  !:!  :!:  !:!      !:!   :!:  !:!  :!:  :!:         | -->
+<!-- \  :::: :: :::   ::::: ::  ::   :::  :::: ::   ::   :::   ::   ::         / -->
+<!-- -   :: :  : :     : :  :    :   : :  :: : :     :   : :  :     :          - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ENVELOPE</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=VT323&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css"
+    />
+    <link rel="stylesheet" href="../lib/ewuilib.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+    <style>
+      #env-scope {
+        display: block;
+        width: 100%;
+        height: 120px;
+        background: #0e0400;
+      }
+      .param-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+      .param-row .control-label {
+        min-width: 80px;
+        margin-bottom: 0;
+        flex-shrink: 0;
+      }
+      #power-toggle .toggle-track.on .toggle-thumb {
+        left: 22px;
+      }
+      #meta .toggle-wrap {
+        align-self: center;
+      }
+      #meta .toggle-track {
+        margin: 0;
+      }
+      .param-row input[type="range"] {
+        flex: 1;
+      }
+      .param-row .range-val {
+        min-width: 72px;
+        text-align: right;
+      }
+      .room-entry {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 10px;
+        border: 1px solid var(--border);
+        margin-bottom: 6px;
+        text-decoration: none;
+        color: var(--text);
+        font-size: 0.82rem;
+        letter-spacing: 0.1em;
+        transition: border-color 0.14s, background 0.14s;
+        cursor: pointer;
+      }
+      .room-entry:hover {
+        border-color: var(--accent);
+        background: rgba(var(--accent-rgb), 0.06);
+      }
+      .room-entry-name {
+        color: var(--accent);
+      }
+      .room-entry-info {
+        font-size: 0.68rem;
+        color: var(--dim);
+        letter-spacing: 0.08em;
+      }
+      .mod-row {
+        opacity: 0.3;
+        pointer-events: none;
+        transition: opacity 0.2s;
+      }
+      .mod-row.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      #trigger-btn {
+        width: 100%;
+        padding: 10px;
+        font-size: 1.1rem;
+        letter-spacing: 0.2em;
+        cursor: pointer;
+      }
+      #trigger-btn.active {
+        background: var(--accent);
+        color: var(--bg);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="grid-bg"></div>
+    <div id="scanlines"></div>
+    <div id="app"></div>
+
+    <script type="module">
+      import { EWObject } from "../lib/ew-object-base.js";
+      import {
+        buildHeaderBar,
+        buildInputPanel,
+        updateOutputStats,
+        wireRange,
+      } from "../lib/ew-object-ui.js";
+
+      // ── EWObject instance ──────────────────────────────────────
+
+      const ewObj = new EWObject({
+        name: "ENV-1",
+        objectType: "envelope",
+        roomPrefix: "env",
+        inputs: [
+          {
+            port: "audio",
+            type: "room",
+            unit: "",
+            default: null,
+          },
+          {
+            port: "trigger",
+            type: "number",
+            unit: "bipolar",
+            min: -1,
+            max: 1,
+            default: 0,
+          },
+        ],
+        outputs: [
+          { port: "attack", type: "number", unit: "s" },
+          { port: "decay", type: "number", unit: "s" },
+          { port: "sustain", type: "number" },
+          { port: "release", type: "number", unit: "s" },
+          { port: "playing", type: "boolean" },
+          { port: "outputMode", type: "string" },
+        ],
+      });
+
+      // ── Envelope state ─────────────────────────────────────────
+
+      let attackTime = 0.01;
+      let decayTime = 0.1;
+      let sustainLevel = 0.5;
+      let releaseTime = 0.5;
+
+      // ── Tone.js audio ──────────────────────────────────────────
+
+      let env = null;
+      let gainNode = null;
+      let analyser = null;
+      let envRunning = false;
+      let audioReady = false;
+      let outputMode = "audio";
+      let envHeld = false; // manual trigger state
+
+      // Local source oscillator — created when a room is linked
+      let sourceOsc = null;
+      let sourceGain = null;
+      let sourceConnected = false;
+
+      // Trigger input tracking
+      let prevTriggerValue = 0;
+
+      async function ensureAudio() {
+        if (audioReady) return;
+        await Tone.start();
+        env = new Tone.AmplitudeEnvelope({
+          attack: attackTime,
+          decay: decayTime,
+          sustain: sustainLevel,
+          release: releaseTime,
+        });
+        gainNode = new Tone.Gain(1);
+        env.connect(gainNode);
+        applyOutputRouting();
+        analyser = new Tone.Analyser("waveform", 256);
+        env.connect(analyser);
+        audioReady = true;
+      }
+
+      function applyOutputRouting() {
+        if (!gainNode) return;
+        gainNode.disconnect();
+        if (outputMode === "audio" || outputMode === "both") {
+          gainNode.toDestination();
+        }
+      }
+
+      // ── Source oscillator (audio input from room) ──────────────
+
+      function createSourceOsc(freq, type, gain) {
+        if (sourceOsc) destroySourceOsc();
+        sourceOsc = new Tone.Oscillator({ frequency: freq || 440, type: type || "sine" });
+        sourceGain = new Tone.Gain(gain !== undefined ? gain : 0.5);
+        sourceOsc.connect(sourceGain);
+        sourceGain.connect(env);
+        if (envRunning) sourceOsc.start();
+        sourceConnected = true;
+      }
+
+      function destroySourceOsc() {
+        if (sourceOsc) {
+          try { sourceOsc.stop(); } catch (_) {}
+          sourceOsc.disconnect();
+          sourceOsc.dispose();
+          sourceOsc = null;
+        }
+        if (sourceGain) {
+          sourceGain.disconnect();
+          sourceGain.dispose();
+          sourceGain = null;
+        }
+        sourceConnected = false;
+      }
+
+      async function startEnv() {
+        if (envRunning) return;
+        await ensureAudio();
+        if (sourceOsc) sourceOsc.start();
+        envRunning = true;
+        updatePowerUI();
+        ewObj.setOutput("playing", true, { immediate: true });
+      }
+
+      function stopEnv() {
+        if (!envRunning) return;
+        if (sourceOsc) {
+          const freq = sourceOsc.frequency.value;
+          const type = sourceOsc.type;
+          const gain = sourceGain ? sourceGain.gain.value : 0.5;
+          sourceOsc.stop();
+          sourceOsc.disconnect();
+          sourceOsc.dispose();
+          sourceOsc = new Tone.Oscillator({ frequency: freq, type: type });
+          sourceGain.disconnect();
+          sourceGain.dispose();
+          sourceGain = new Tone.Gain(gain);
+          sourceOsc.connect(sourceGain);
+          sourceGain.connect(env);
+        }
+        envRunning = false;
+        envHeld = false;
+        updateTriggerUI();
+        updatePowerUI();
+        ewObj.setOutput("playing", false, { immediate: true });
+      }
+
+      // ── Logarithmic time mapping ───────────────────────────────
+
+      const TIME_MIN_SHORT = 0.001;
+      const TIME_MAX_SHORT = 5;
+      const LOG_MIN_SHORT = Math.log(TIME_MIN_SHORT);
+      const LOG_MAX_SHORT = Math.log(TIME_MAX_SHORT);
+
+      const TIME_MIN_LONG = 0.001;
+      const TIME_MAX_LONG = 10;
+      const LOG_MIN_LONG = Math.log(TIME_MIN_LONG);
+      const LOG_MAX_LONG = Math.log(TIME_MAX_LONG);
+
+      function sliderToTime(val, long) {
+        const logMin = long ? LOG_MIN_LONG : LOG_MIN_SHORT;
+        const logMax = long ? LOG_MAX_LONG : LOG_MAX_SHORT;
+        return Math.exp(logMin + (val / 1000) * (logMax - logMin));
+      }
+
+      function timeToSlider(t, long) {
+        const logMin = long ? LOG_MIN_LONG : LOG_MIN_SHORT;
+        const logMax = long ? LOG_MAX_LONG : LOG_MAX_SHORT;
+        return Math.round(((Math.log(t) - logMin) / (logMax - logMin)) * 1000);
+      }
+
+      function formatTime(val, long) {
+        const t = sliderToTime(val, long);
+        return t >= 1 ? t.toFixed(2) + " s" : (t * 1000).toFixed(1) + " ms";
+      }
+
+      // ── Build UI ───────────────────────────────────────────────
+
+      const app = document.getElementById("app");
+
+      buildHeaderBar(ewObj, "ENVELOPE", app);
+
+      document.getElementById("ew-header-controls").innerHTML = `
+        <select id="ew-theme" style="width:auto; padding:3px 24px 3px 8px">
+          <option value="theme-ethos">ETHOS</option>
+          <option value="">AMBER</option>
+          <option value="theme-phosphor">PHOSPHOR</option>
+          <option value="theme-cobalt">COBALT</option>
+          <option value="theme-plasma">PLASMA</option>
+          <option value="theme-danger">DANGER</option>
+          <option value="theme-matrix">MATRIX</option>
+          <option value="theme-solar">SOLAR</option>
+          <option value="theme-arctic">ARCTIC</option>
+        </select>
+        <select id="env-output-mode" style="width:auto; padding:3px 24px 3px 8px">
+          <option value="audio">AUDIO</option>
+          <option value="control">CONTROL</option>
+          <option value="both">BOTH</option>
+        </select>
+        <div class="toggle-wrap" id="power-toggle" style="margin-bottom:0; cursor:pointer">
+          <div class="toggle-track" id="power-track">
+            <div class="toggle-thumb"></div>
+          </div>
+        </div>
+      `;
+
+      // Controls panel
+      const controlsPanel = document.createElement("div");
+      controlsPanel.className = "hud-panel clip-tr";
+      controlsPanel.innerHTML = `
+        <div class="param-row">
+          <div class="control-label">ATTACK</div>
+          <input type="range" id="env-attack" min="0" max="1000" value="${timeToSlider(0.01, false)}" />
+          <span class="range-val" id="env-attack-val">${formatTime(timeToSlider(0.01, false), false)}</span>
+        </div>
+
+        <div class="param-row">
+          <div class="control-label">DECAY</div>
+          <input type="range" id="env-decay" min="0" max="1000" value="${timeToSlider(0.1, false)}" />
+          <span class="range-val" id="env-decay-val">${formatTime(timeToSlider(0.1, false), false)}</span>
+        </div>
+
+        <div class="param-row">
+          <div class="control-label">SUSTAIN</div>
+          <input type="range" id="env-sustain" min="0" max="100" value="50" />
+          <span class="range-val" id="env-sustain-val">0.50</span>
+        </div>
+
+        <div class="param-row">
+          <div class="control-label">RELEASE</div>
+          <input type="range" id="env-release" min="0" max="1000" value="${timeToSlider(0.5, true)}" />
+          <span class="range-val" id="env-release-val">${formatTime(timeToSlider(0.5, true), true)}</span>
+        </div>
+
+        <div style="border-top:1px solid var(--border); padding-top:14px; margin-top:4px">
+          <button class="btn" id="trigger-btn">TRIGGER</button>
+        </div>
+      `;
+      app.appendChild(controlsPanel);
+
+      // Theme
+      document.getElementById("ew-theme").addEventListener("change", (e) => {
+        document.documentElement.className = e.target.value;
+      });
+      document.documentElement.className = "theme-ethos";
+
+      // Scope
+      const scopePanel = document.createElement("div");
+      scopePanel.className = "hud-panel";
+      scopePanel.innerHTML = `
+        <div class="screen-wrap">
+          <div class="screen-inner" style="padding:0; min-height:auto">
+            <canvas id="env-scope"></canvas>
+            <div class="screen-scan"></div>
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
+          </div>
+        </div>
+      `;
+      app.appendChild(scopePanel);
+
+      // Input panel
+      buildInputPanel(ewObj, app);
+
+      // Rooms panel
+      const roomsPanel = document.createElement("div");
+      roomsPanel.className = "hud-panel";
+      roomsPanel.innerHTML = `
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px">
+          <span class="control-label" style="margin:0; flex-shrink:0">ROOM</span>
+          <input type="text" id="room-input" placeholder="ROOM-ID" maxlength="32" spellcheck="false" autocomplete="off" style="flex:1">
+          <button class="btn btn-sm" id="room-join-btn">JOIN</button>
+          <button class="btn btn-sm" id="privacy-btn">PUBLIC</button>
+        </div>
+        <hr class="hud-divider" style="margin:10px 0">
+        <div class="section-title">// AVAILABLE ENVELOPES //</div>
+        <div id="rooms-list">
+          <span class="type-dim">NO OTHER ENVELOPES AVAILABLE</span>
+        </div>
+      `;
+      app.appendChild(roomsPanel);
+
+      // Footer
+      const footer = document.createElement("div");
+      footer.style.cssText = "text-align:center; padding:20px 0; font-size:0.72rem; letter-spacing:0.22em; color:var(--dim)";
+      footer.innerHTML = '<a href="../../index.html" style="color:var(--dim); text-decoration:none">ENTROPY WORSHIP</a>';
+      app.appendChild(footer);
+
+      // ── Wire controls ──────────────────────────────────────────
+
+      function updatePowerUI() {
+        const track = document.getElementById("power-track");
+        track.classList.toggle("on", envRunning);
+      }
+
+      function updateTriggerUI() {
+        const btn = document.getElementById("trigger-btn");
+        btn.textContent = envHeld ? "RELEASE" : "TRIGGER";
+        btn.classList.toggle("active", envHeld);
+      }
+
+      document.getElementById("power-toggle").addEventListener("click", () => {
+        if (envRunning) stopEnv(); else startEnv();
+      });
+
+      // Output mode
+      document.getElementById("env-output-mode").addEventListener("change", (e) => {
+        outputMode = e.target.value;
+        applyOutputRouting();
+        ewObj.setOutput("outputMode", outputMode, { immediate: true });
+      });
+
+      // Trigger button
+      document.getElementById("trigger-btn").addEventListener("click", async () => {
+        if (!envRunning) await startEnv();
+        if (!env) return;
+        if (envHeld) {
+          env.triggerRelease();
+          envHeld = false;
+        } else {
+          env.triggerAttack();
+          envHeld = true;
+        }
+        updateTriggerUI();
+      });
+
+      // Attack slider (logarithmic, 0.001 – 5s)
+      const attackSlider = document.getElementById("env-attack");
+      const attackVal = document.getElementById("env-attack-val");
+
+      attackSlider.addEventListener("input", () => {
+        const t = sliderToTime(+attackSlider.value, false);
+        attackTime = t;
+        attackVal.textContent = formatTime(+attackSlider.value, false);
+        const pct = (+attackSlider.value / 1000) * 100;
+        attackSlider.style.setProperty("--val", pct + "%");
+        if (env) env.attack = t;
+        ewObj.setOutput("attack", Math.round(t * 10000) / 10000, { unit: "s" });
+        refreshStats();
+      });
+      (() => {
+        const pct = (+attackSlider.value / 1000) * 100;
+        attackSlider.style.setProperty("--val", pct + "%");
+      })();
+
+      // Decay slider (logarithmic, 0.001 – 5s)
+      const decaySlider = document.getElementById("env-decay");
+      const decayVal = document.getElementById("env-decay-val");
+
+      decaySlider.addEventListener("input", () => {
+        const t = sliderToTime(+decaySlider.value, false);
+        decayTime = t;
+        decayVal.textContent = formatTime(+decaySlider.value, false);
+        const pct = (+decaySlider.value / 1000) * 100;
+        decaySlider.style.setProperty("--val", pct + "%");
+        if (env) env.decay = t;
+        ewObj.setOutput("decay", Math.round(t * 10000) / 10000, { unit: "s" });
+        refreshStats();
+      });
+      (() => {
+        const pct = (+decaySlider.value / 1000) * 100;
+        decaySlider.style.setProperty("--val", pct + "%");
+      })();
+
+      // Sustain slider (linear, 0 – 1)
+      wireRange("env-sustain", "env-sustain-val", (v) => (v / 100).toFixed(2));
+      document.getElementById("env-sustain").addEventListener("input", (e) => {
+        const s = +e.target.value / 100;
+        sustainLevel = s;
+        if (env) env.sustain = s;
+        ewObj.setOutput("sustain", Math.round(s * 100) / 100);
+        refreshStats();
+      });
+
+      // Release slider (logarithmic, 0.001 – 10s)
+      const releaseSlider = document.getElementById("env-release");
+      const releaseVal = document.getElementById("env-release-val");
+
+      releaseSlider.addEventListener("input", () => {
+        const t = sliderToTime(+releaseSlider.value, true);
+        releaseTime = t;
+        releaseVal.textContent = formatTime(+releaseSlider.value, true);
+        const pct = (+releaseSlider.value / 1000) * 100;
+        releaseSlider.style.setProperty("--val", pct + "%");
+        if (env) env.release = t;
+        ewObj.setOutput("release", Math.round(t * 10000) / 10000, { unit: "s" });
+        refreshStats();
+      });
+      (() => {
+        const pct = (+releaseSlider.value / 1000) * 100;
+        releaseSlider.style.setProperty("--val", pct + "%");
+      })();
+
+      // ── Input signal handling ──────────────────────────────────
+
+      // Audio input — creates a local oscillator mirroring the remote
+      ewObj.onInput("audio", (value, meta) => {
+        if (meta && meta.unit === "bipolar") return;
+        if (!env) return;
+
+        if (meta && meta.port === "frequency" && typeof value === "number") {
+          if (!sourceConnected) {
+            createSourceOsc(value, "sine", 0.5);
+          } else if (sourceOsc) {
+            sourceOsc.frequency.value = value;
+          }
+        } else if (meta && meta.port === "waveform" && typeof value === "string") {
+          if (sourceOsc) { try { sourceOsc.type = value; } catch (_) {} }
+        } else if (meta && meta.port === "gain" && typeof value === "number") {
+          if (sourceGain) sourceGain.gain.value = Math.max(0, Math.min(1, value));
+        } else if (meta && meta.port === "detune" && typeof value === "number") {
+          if (sourceOsc) sourceOsc.detune.value = value;
+        } else if (meta && meta.port === "playing" && typeof value === "boolean") {
+          if (value && sourceConnected && !envRunning) startEnv();
+        }
+      });
+
+      // Trigger input — bipolar signal edge detection
+      ewObj.onInput("trigger", (value, meta) => {
+        if (typeof value !== "number") return;
+        if (!env || !envRunning) return;
+
+        // Edge detection: negative-to-positive = attack, positive-to-negative = release
+        if (prevTriggerValue <= 0 && value > 0) {
+          env.triggerAttack();
+          envHeld = true;
+          updateTriggerUI();
+        } else if (prevTriggerValue > 0 && value <= 0) {
+          env.triggerRelease();
+          envHeld = false;
+          updateTriggerUI();
+        }
+        prevTriggerValue = value;
+      });
+
+      ewObj.on("inputConnected", ({ room, portMapping }) => {
+        ensureAudio().then(() => {
+          for (const localPort of Object.values(portMapping)) {
+            if (localPort === "audio" && !sourceConnected) {
+              createSourceOsc(440, "sine", 0.5);
+            }
+          }
+        });
+      });
+
+      ewObj.on("inputDisconnected", ({ room }) => {
+        const subs = ewObj.getSubscriptions();
+        const activePorts = new Set();
+        for (const sub of subs) {
+          for (const local of Object.values(sub.portMapping)) activePorts.add(local);
+        }
+        if (!activePorts.has("audio")) destroySourceOsc();
+      });
+
+      // Room state sync
+      ewObj.onInput("playing", async (value) => {
+        if (typeof value !== "boolean") return;
+        if (value && !envRunning) await startEnv();
+        else if (!value && envRunning) stopEnv();
+      });
+
+      ewObj.onInput("outputMode", (value) => {
+        if (typeof value !== "string") return;
+        if (["audio", "control", "both"].includes(value)) {
+          outputMode = value;
+          document.getElementById("env-output-mode").value = value;
+          applyOutputRouting();
+        }
+      });
+
+      // ── Output stats ───────────────────────────────────────────
+
+      function refreshStats() {
+        updateOutputStats(ewObj, [
+          { port: "attack", label: "ATK", formatter: (v) => v !== undefined ? (v >= 1 ? v.toFixed(2) + " s" : (v * 1000).toFixed(1) + " ms") : "---" },
+          { port: "decay", label: "DEC", formatter: (v) => v !== undefined ? (v >= 1 ? v.toFixed(2) + " s" : (v * 1000).toFixed(1) + " ms") : "---" },
+          { port: "sustain", label: "SUS", formatter: (v) => v !== undefined ? v.toFixed(2) : "---" },
+          { port: "release", label: "REL", formatter: (v) => v !== undefined ? (v >= 1 ? v.toFixed(2) + " s" : (v * 1000).toFixed(1) + " ms") : "---" },
+        ]);
+      }
+
+      // ── Scope ──────────────────────────────────────────────────
+
+      const scopeCanvas = document.getElementById("env-scope");
+      const scopeCtx = scopeCanvas.getContext("2d");
+
+      function resizeScope() {
+        const rect = scopeCanvas.parentElement.getBoundingClientRect();
+        scopeCanvas.width = rect.width;
+        scopeCanvas.height = 120;
+      }
+
+      function drawScope() {
+        requestAnimationFrame(drawScope);
+        const w = scopeCanvas.width;
+        const h = scopeCanvas.height;
+        scopeCtx.fillStyle = "#080808";
+        scopeCtx.fillRect(0, 0, w, h);
+
+        // Grid
+        scopeCtx.strokeStyle = "rgba(128, 128, 128, 0.08)";
+        scopeCtx.lineWidth = 1;
+        for (let y = 0; y < h; y += 20) { scopeCtx.beginPath(); scopeCtx.moveTo(0, y); scopeCtx.lineTo(w, y); scopeCtx.stroke(); }
+        for (let x = 0; x < w; x += 20) { scopeCtx.beginPath(); scopeCtx.moveTo(x, 0); scopeCtx.lineTo(x, h); scopeCtx.stroke(); }
+
+        // Center line
+        scopeCtx.strokeStyle = "rgba(128, 128, 128, 0.2)";
+        scopeCtx.beginPath(); scopeCtx.moveTo(0, h / 2); scopeCtx.lineTo(w, h / 2); scopeCtx.stroke();
+
+        if (!analyser || !envRunning) return;
+
+        const data = analyser.getValue();
+        scopeCtx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--accent");
+        scopeCtx.lineWidth = 2;
+        scopeCtx.shadowColor = "rgba(210, 210, 210, 0.4)";
+        scopeCtx.shadowBlur = 6;
+        scopeCtx.beginPath();
+        for (let i = 0; i < data.length; i++) {
+          const x = (i / data.length) * w;
+          const y = ((1 - data[i]) / 2) * h;
+          if (i === 0) scopeCtx.moveTo(x, y); else scopeCtx.lineTo(x, y);
+        }
+        scopeCtx.stroke();
+        scopeCtx.shadowBlur = 0;
+      }
+
+      // ── Room UI ────────────────────────────────────────────────
+
+      ewObj.on("connected", () => {
+        document.getElementById("room-input").value = ewObj.getOutputRoom();
+      });
+      document.getElementById("room-join-btn").addEventListener("click", () => {
+        const name = document.getElementById("room-input").value.trim().replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 32) || "default";
+        location.search = `?room=${encodeURIComponent(name)}`;
+      });
+      document.getElementById("room-input").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") document.getElementById("room-join-btn").click();
+      });
+
+      let roomPrivate = false;
+      function updatePrivacyBtn() {
+        const btn = document.getElementById("privacy-btn");
+        btn.textContent = roomPrivate ? "PRIVATE" : "PUBLIC";
+        btn.classList.toggle("active", roomPrivate);
+      }
+      document.getElementById("privacy-btn").addEventListener("click", () => {
+        roomPrivate = !roomPrivate;
+        ewObj.setPrivate(roomPrivate);
+        updatePrivacyBtn();
+      });
+      ewObj.on("stateSync", (msg) => {
+        roomPrivate = msg.private || false;
+        updatePrivacyBtn();
+        document.getElementById("room-input").value = msg.room || ewObj.getOutputRoom();
+      });
+      ewObj.on("roomPrivate", (msg) => { roomPrivate = msg.private; updatePrivacyBtn(); });
+
+      ewObj.on("rooms", (msg) => {
+        const el = document.getElementById("rooms-list");
+        if (!el) return;
+        const currentRoom = ewObj.getOutputRoom();
+        const others = (msg.rooms || []).filter((r) => r.name !== currentRoom);
+        if (!others.length) { el.innerHTML = '<span class="type-dim">NO OTHER ENVELOPES AVAILABLE</span>'; return; }
+        el.innerHTML = "";
+        for (const r of others) {
+          const a = document.createElement("a");
+          a.className = "room-entry";
+          a.href = `?room=${encodeURIComponent(r.name)}`;
+          const objs = r.objects && r.objects.length ? r.objects.join(", ").toUpperCase() : "";
+          a.innerHTML = `<span class="room-entry-name">${r.name}</span><span class="room-entry-info">${r.clients} PLR${objs ? " · " + objs : ""}</span>`;
+          el.appendChild(a);
+        }
+      });
+
+      // ── Initialize ─────────────────────────────────────────────
+
+      (() => {
+        const urlRoom = new URLSearchParams(location.search).get("room");
+        ewObj.connectOutput(urlRoom || undefined);
+
+        ewObj._outputValues["attack"] = 0.01;
+        ewObj._outputValues["decay"] = 0.1;
+        ewObj._outputValues["sustain"] = 0.5;
+        ewObj._outputValues["release"] = 0.5;
+        ewObj._outputValues["playing"] = false;
+        ewObj._outputValues["outputMode"] = "audio";
+
+        refreshStats();
+        resizeScope();
+        drawScope();
+      })();
+
+      window.addEventListener("resize", resizeScope);
+    </script>
+  </body>
+</html>

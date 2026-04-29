@@ -221,15 +221,115 @@
           </div>
         </a>
 
-        <div class="hud-panel" style="opacity: 0.4; pointer-events: none">
+        <a href="objects/gain.html" class="hud-panel object-card">
+          <div class="obj-type">UTILITY</div>
+          <div class="obj-name">GAIN</div>
           <div class="obj-desc">
-            Oscilloscope and spectrum analyzer. Input-only module for
-            visualizing signals from other objects.
+            Simple gain/VCA node. Amplify, attenuate, or modulate signal level.
           </div>
           <div class="obj-ports">
-            <span class="tag">IN: signal</span>
+            <span class="tag mint">IN: audio</span>
+            <span class="tag mint">IN: gain</span>
+            <span class="tag accent">OUT: gain</span>
           </div>
-        </div>
+        </a>
+
+        <a href="objects/noise.html" class="hud-panel object-card">
+          <div class="obj-type">SIGNAL SOURCE</div>
+          <div class="obj-name">NOISE</div>
+          <div class="obj-desc">
+            White, pink, and brown noise generator. Audio source or modulation source.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: gain</span>
+            <span class="tag mint">IN: type</span>
+            <span class="tag accent">OUT: signal</span>
+            <span class="tag accent">OUT: gain</span>
+          </div>
+        </a>
+
+        <a href="objects/delay.html" class="hud-panel object-card">
+          <div class="obj-type">EFFECT</div>
+          <div class="obj-name">DELAY</div>
+          <div class="obj-desc">
+            Feedback delay with modulatable delay time.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: audio</span>
+            <span class="tag mint">IN: time</span>
+            <span class="tag mint">IN: feedback</span>
+            <span class="tag accent">OUT: time</span>
+            <span class="tag accent">OUT: feedback</span>
+          </div>
+        </a>
+
+        <a href="objects/reverb.html" class="hud-panel object-card">
+          <div class="obj-type">EFFECT</div>
+          <div class="obj-name">REVERB</div>
+          <div class="obj-desc">
+            Convolution reverb with adjustable decay time.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: audio</span>
+            <span class="tag mint">IN: decay</span>
+            <span class="tag mint">IN: wet</span>
+            <span class="tag accent">OUT: decay</span>
+            <span class="tag accent">OUT: wet</span>
+          </div>
+        </a>
+
+        <a href="objects/distortion.html" class="hud-panel object-card">
+          <div class="obj-type">EFFECT</div>
+          <div class="obj-name">DISTORTION</div>
+          <div class="obj-desc">
+            Waveshaper distortion with modulatable drive and oversampling.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: audio</span>
+            <span class="tag mint">IN: amount</span>
+            <span class="tag accent">OUT: amount</span>
+            <span class="tag accent">OUT: wet</span>
+          </div>
+        </a>
+
+        <a href="objects/chorus.html" class="hud-panel object-card">
+          <div class="obj-type">EFFECT</div>
+          <div class="obj-name">CHORUS</div>
+          <div class="obj-desc">
+            Chorus effect with modulatable rate, depth, and delay.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: audio</span>
+            <span class="tag mint">IN: frequency</span>
+            <span class="tag mint">IN: depth</span>
+            <span class="tag accent">OUT: frequency</span>
+            <span class="tag accent">OUT: depth</span>
+          </div>
+        </a>
+
+        <a href="objects/envelope.html" class="hud-panel object-card">
+          <div class="obj-type">MODULATION</div>
+          <div class="obj-name">ENVELOPE</div>
+          <div class="obj-desc">
+            ADSR amplitude envelope. Trigger via room input or manual button.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: audio</span>
+            <span class="tag mint">IN: trigger</span>
+            <span class="tag accent">OUT: ADSR</span>
+          </div>
+        </a>
+
+        <a href="objects/scope.html" class="hud-panel object-card">
+          <div class="obj-type">VISUALIZER</div>
+          <div class="obj-name">SCOPE</div>
+          <div class="obj-desc">
+            Oscilloscope with time/gain scaling and trigger modes. Input-only.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: audio</span>
+          </div>
+        </a>
       </div>
 
       <!-- How to connect -->
