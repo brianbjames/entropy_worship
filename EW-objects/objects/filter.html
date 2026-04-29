@@ -738,7 +738,12 @@
       });
 
       ewObj.onInput("frequency", (value, meta) => {
-        if (meta && meta.unit === "bipolar") return;
+        if (meta && meta.unit === "bipolar" && typeof value === "number") {
+          const modulated = baseCutoff + value * fmDepth;
+          const clamped = Math.max(20, Math.min(20000, modulated));
+          if (filter) filter.frequency.rampTo(clamped, 0.012);
+          return;
+        }
 
         if (fmModWanted) {
           if (meta && meta.port === "frequency" && typeof value === "number") {
@@ -778,7 +783,12 @@
       });
 
       ewObj.onInput("Q", (value, meta) => {
-        if (meta && meta.unit === "bipolar") return;
+        if (meta && meta.unit === "bipolar" && typeof value === "number") {
+          const modulated = baseQ + value * qModDepth;
+          const clamped = Math.max(0.1, Math.min(30, modulated));
+          if (filter) filter.Q.rampTo(clamped, 0.012);
+          return;
+        }
 
         if (qModWanted) {
           if (meta && meta.port === "frequency" && typeof value === "number") {
@@ -803,7 +813,12 @@
       });
 
       ewObj.onInput("gain", (value, meta) => {
-        if (meta && meta.unit === "bipolar") return;
+        if (meta && meta.unit === "bipolar" && typeof value === "number") {
+          const modulated = baseGain + value * gainModDepth;
+          const clamped = Math.max(0, Math.min(1, modulated));
+          if (gainNode) gainNode.gain.rampTo(clamped, 0.012);
+          return;
+        }
 
         if (gainModWanted) {
           if (meta && meta.port === "frequency" && typeof value === "number") {

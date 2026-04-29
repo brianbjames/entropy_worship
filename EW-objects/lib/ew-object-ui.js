@@ -13,7 +13,7 @@
 export function buildHeaderBar(ewObj, title, container) {
   const header = document.createElement("header");
   header.innerHTML = `
-    <h1 class="hud-title"><a href="?room=" id="ew-new-instance" style="color:inherit; text-decoration:none">${title} <span style="font-size:0.6em; opacity:0.5">+</span></a></h1>
+    <h1 class="hud-title"><a href="/EW-objects/" style="color:var(--dim); text-decoration:none; transition:color 0.14s" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--dim)'">&laquo;</a><a href="?room=" id="ew-new-instance" style="color:inherit; text-decoration:none">${title}</a></h1>
     <div id="meta">
       <span class="status-item">
         <span class="status-dot offline" id="ew-status-dot"></span>

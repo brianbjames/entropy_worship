@@ -168,19 +168,23 @@
           </div>
         </a>
 
-        <div class="hud-panel" style="opacity: 0.4; pointer-events: none">
-          <div class="obj-type">COMING SOON</div>
-          <div class="obj-name" style="color: var(--dim)">LFO</div>
+        <a href="objects/lfo.html" class="hud-panel object-card">
+          <div class="obj-type">MODULATION SOURCE</div>
+          <div class="obj-name">LFO</div>
           <div class="obj-desc">
-            Low-frequency oscillator for modulating other modules' parameters.
-            Outputs a periodic control signal.
+            Low-frequency oscillator with 12 waveforms: sine, triangle,
+            sawtooth, square, pulses, exponentials, staircase, S&H,
+            smooth random, and wander. Control-only output.
           </div>
           <div class="obj-ports">
-            <span class="tag">IN: rate</span>
-            <span class="tag">IN: depth</span>
-            <span class="tag">OUT: signal</span>
+            <span class="tag mint">IN: rate</span>
+            <span class="tag mint">IN: depth</span>
+            <span class="tag mint">IN: waveform</span>
+            <span class="tag accent">OUT: signal</span>
+            <span class="tag accent">OUT: rate</span>
+            <span class="tag accent">OUT: waveform</span>
           </div>
-        </div>
+        </a>
 
         <a href="objects/filter.html" class="hud-panel object-card">
           <div class="obj-type">SIGNAL PROCESSOR</div>

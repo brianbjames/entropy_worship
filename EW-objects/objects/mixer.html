@@ -575,7 +575,13 @@
       // ── Master mod input handler ───────────────────────────────
 
       ewObj.onInput("master", (value, meta) => {
-        if (meta && meta.unit === "bipolar") return;
+        // Bipolar signal — apply directly as gain modulation
+        if (meta && meta.unit === "bipolar" && typeof value === "number") {
+          const modulated = baseMaster + value * masterModDepth;
+          const clamped = Math.max(0, Math.min(2, modulated));
+          if (masterGain) masterGain.gain.rampTo(clamped, 0.012);
+          return;
+        }
 
         if (masterModWanted) {
           if (meta && meta.port === "frequency" && typeof value === "number") {
@@ -583,7 +589,24 @@
             updateMasterModParams();
           } else if (meta && meta.port === "waveform" && typeof value === "string") {
             masterModRemoteType = value;
-            updateMasterModParams();
+            // For custom waveforms, disable tremolo and let bipolar signals handle it
+            const toneWaveforms = ["sine", "triangle", "sawtooth", "square"];
+            if (!toneWaveforms.includes(value)) {
+              if (masterTremolo) {
+                try { masterGain.disconnect(masterTremolo); } catch (_) {}
+                masterTremolo.stop();
+                masterTremolo.disconnect();
+                masterTremolo.dispose();
+                masterTremolo = null;
+                applyOutputRouting();
+              }
+            } else {
+              if (!masterTremolo) {
+                connectMasterMod();
+              } else {
+                updateMasterModParams();
+              }
+            }
           }
           return;
         }

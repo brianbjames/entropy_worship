@@ -873,18 +873,43 @@
       // is created at audio rate. Incoming room messages sync the
       // modulator's frequency and waveform from the remote source.
 
+      const toneWaveforms = ["sine", "triangle", "sawtooth", "square"];
+
       ewObj.onInput("frequency", (value, meta) => {
-        if (meta && meta.unit === "bipolar") return; // ignore legacy signal samples
+        // Bipolar signal — apply directly as modulation
+        if (meta && meta.unit === "bipolar" && typeof value === "number") {
+          // Always apply bipolar signals directly — this handles LFO
+          // custom waveforms and any control-rate modulation source.
+          // If a local mod chain exists, the bipolar signal adds on top.
+          const modulated = baseFrequency + value * fmDepth;
+          const clamped = Math.max(20, Math.min(20000, modulated));
+          if (osc) osc.frequency.rampTo(clamped, 0.012);
+          return;
+        }
 
         if (fmModWanted) {
           // A local FM modulator is active — sync its params from remote
           if (meta && meta.port === "frequency" && typeof value === "number") {
             fmModRemoteFreq = value;
             if (fmModChain) fmModChain.modOsc.frequency.value = value;
-            broadcastModChain(); // re-broadcast so downstream rebuilds
+            broadcastModChain();
           } else if (meta && meta.port === "waveform" && typeof value === "string") {
             fmModRemoteType = value;
-            if (fmModChain) { try { fmModChain.modOsc.type = value; } catch (_) {} }
+            // If waveform is a custom type, destroy the local mod chain
+            // so bipolar signals take over modulation instead
+            if (!toneWaveforms.includes(value)) {
+              if (fmModChain) {
+                destroyModChain(fmModChain);
+                fmModChain = null;
+              }
+            } else {
+              // Standard waveform — rebuild chain if it was destroyed
+              if (!fmModChain) {
+                connectFMMod();
+              } else {
+                try { fmModChain.modOsc.type = value; } catch (_) {}
+              }
+            }
             broadcastModChain();
           } else if (meta && meta.port === "modChain") {
             // Upstream modulation chain changed
@@ -921,7 +946,12 @@
       });
 
       ewObj.onInput("detune", (value, meta) => {
-        if (meta && meta.unit === "bipolar") return;
+        if (meta && meta.unit === "bipolar" && typeof value === "number") {
+          const modulated = baseDetune + value * detuneModDepth;
+          const clamped = Math.max(-1200, Math.min(1200, modulated));
+          if (osc) osc.detune.rampTo(clamped, 0.012);
+          return;
+        }
 
         if (detuneModWanted) {
           if (meta && meta.port === "frequency" && typeof value === "number") {
@@ -946,7 +976,12 @@
       });
 
       ewObj.onInput("gain", (value, meta) => {
-        if (meta && meta.unit === "bipolar") return;
+        if (meta && meta.unit === "bipolar" && typeof value === "number") {
+          const modulated = baseGain + value * gainModDepth;
+          const clamped = Math.max(0, Math.min(1, modulated));
+          if (gainNode) gainNode.gain.rampTo(clamped, 0.012);
+          return;
+        }
 
         if (gainModWanted) {
           if (meta && meta.port === "frequency" && typeof value === "number") {
@@ -972,7 +1007,7 @@
       });
 
       ewObj.onInput("waveform", (value, meta) => {
-        if (meta && meta.unit === "bipolar") return;
+        if (meta && meta.unit === "bipolar") return; // waveform can't be modulated by signal
         if (typeof value !== "string") return;
         const valid = ["sine", "sawtooth", "triangle", "square"];
         if (!valid.includes(value)) return;
