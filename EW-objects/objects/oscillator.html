@@ -207,6 +207,18 @@
       let gainModOsc = null;
       let gainModGainNode = null;
 
+      // Track which modulator connections are wanted (survive stop/start)
+      let fmModWanted = false;
+      let detuneModWanted = false;
+      let gainModWanted = false;
+      // Store remote modulator params to restore after reconnect
+      let fmModRemoteFreq = 2;
+      let fmModRemoteType = "sine";
+      let detuneModRemoteFreq = 2;
+      let detuneModRemoteType = "sine";
+      let gainModRemoteFreq = 2;
+      let gainModRemoteType = "sine";
+
       async function ensureAudio() {
         if (audioReady) return;
         await Tone.start();
@@ -247,6 +259,9 @@
         const mod = createModulator(osc.frequency, fmDepth);
         fmModOsc = mod.modOsc;
         fmModGain = mod.modGain;
+        fmModOsc.frequency.value = fmModRemoteFreq;
+        try { fmModOsc.type = fmModRemoteType; } catch (_) {}
+        fmModWanted = true;
       }
 
       function disconnectFMMod() {
@@ -255,6 +270,7 @@
           fmModOsc = null;
           fmModGain = null;
         }
+        fmModWanted = false;
       }
 
       function connectDetuneMod() {
@@ -262,6 +278,9 @@
         const mod = createModulator(osc.detune, detuneModDepth);
         detuneModOsc = mod.modOsc;
         detuneModGain = mod.modGain;
+        detuneModOsc.frequency.value = detuneModRemoteFreq;
+        try { detuneModOsc.type = detuneModRemoteType; } catch (_) {}
+        detuneModWanted = true;
       }
 
       function disconnectDetuneMod() {
@@ -270,6 +289,7 @@
           detuneModOsc = null;
           detuneModGain = null;
         }
+        detuneModWanted = false;
       }
 
       function connectGainMod() {
@@ -277,6 +297,9 @@
         const mod = createModulator(gainNode.gain, gainModDepth);
         gainModOsc = mod.modOsc;
         gainModGainNode = mod.modGain;
+        gainModOsc.frequency.value = gainModRemoteFreq;
+        try { gainModOsc.type = gainModRemoteType; } catch (_) {}
+        gainModWanted = true;
       }
 
       function disconnectGainMod() {
@@ -284,6 +307,28 @@
           destroyModulator({ modOsc: gainModOsc, modGain: gainModGainNode });
           gainModOsc = null;
           gainModGainNode = null;
+        }
+        gainModWanted = false;
+      }
+
+      // Reconnect all wanted modulators to the current osc/gainNode.
+      // Called after osc is recreated (stop/start cycle).
+      function reconnectModulators() {
+        if (fmModWanted) {
+          // Destroy old connection, recreate on new osc
+          if (fmModOsc) destroyModulator({ modOsc: fmModOsc, modGain: fmModGain });
+          fmModOsc = null; fmModGain = null;
+          connectFMMod();
+        }
+        if (detuneModWanted) {
+          if (detuneModOsc) destroyModulator({ modOsc: detuneModOsc, modGain: detuneModGain });
+          detuneModOsc = null; detuneModGain = null;
+          connectDetuneMod();
+        }
+        if (gainModWanted) {
+          if (gainModOsc) destroyModulator({ modOsc: gainModOsc, modGain: gainModGainNode });
+          gainModOsc = null; gainModGainNode = null;
+          connectGainMod();
         }
       }
 
@@ -303,6 +348,8 @@
         await ensureAudio();
         osc.start();
         oscRunning = true;
+        // Connect any modulators that were linked before power-on
+        reconnectModulators();
         startSignalOutput();
         updatePowerUI();
       }
@@ -320,6 +367,8 @@
         osc = new Tone.Oscillator({ frequency: freq, type: type });
         osc.connect(gainNode);
         if (analyser) osc.connect(analyser);
+        // Reconnect any active modulators to the new osc
+        reconnectModulators();
         updatePowerUI();
       }
 
@@ -731,12 +780,14 @@
       ewObj.onInput("frequency", (value, meta) => {
         if (meta && meta.unit === "bipolar") return; // ignore legacy signal samples
 
-        if (fmModOsc) {
+        if (fmModWanted) {
           // A local FM modulator is active — sync its params from remote
           if (meta && meta.port === "frequency" && typeof value === "number") {
-            fmModOsc.frequency.value = value;
+            fmModRemoteFreq = value;
+            if (fmModOsc) fmModOsc.frequency.value = value;
           } else if (meta && meta.port === "waveform" && typeof value === "string") {
-            try { fmModOsc.type = value; } catch (_) {}
+            fmModRemoteType = value;
+            if (fmModOsc) { try { fmModOsc.type = value; } catch (_) {} }
           }
           // ignore other ports
           return;
@@ -761,11 +812,13 @@
       ewObj.onInput("detune", (value, meta) => {
         if (meta && meta.unit === "bipolar") return;
 
-        if (detuneModOsc) {
+        if (detuneModWanted) {
           if (meta && meta.port === "frequency" && typeof value === "number") {
-            detuneModOsc.frequency.value = value;
+            detuneModRemoteFreq = value;
+            if (detuneModOsc) detuneModOsc.frequency.value = value;
           } else if (meta && meta.port === "waveform" && typeof value === "string") {
-            try { detuneModOsc.type = value; } catch (_) {}
+            detuneModRemoteType = value;
+            if (detuneModOsc) { try { detuneModOsc.type = value; } catch (_) {} }
           }
           return;
         }
@@ -784,11 +837,13 @@
       ewObj.onInput("gain", (value, meta) => {
         if (meta && meta.unit === "bipolar") return;
 
-        if (gainModOsc) {
+        if (gainModWanted) {
           if (meta && meta.port === "frequency" && typeof value === "number") {
-            gainModOsc.frequency.value = value;
+            gainModRemoteFreq = value;
+            if (gainModOsc) gainModOsc.frequency.value = value;
           } else if (meta && meta.port === "waveform" && typeof value === "string") {
-            try { gainModOsc.type = value; } catch (_) {}
+            gainModRemoteType = value;
+            if (gainModOsc) { try { gainModOsc.type = value; } catch (_) {} }
           }
           return;
         }
