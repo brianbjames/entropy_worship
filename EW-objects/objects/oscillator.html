@@ -229,8 +229,9 @@
         modOsc.frequency.value = 2;
         const modGain = ctx.createGain();
         modGain.gain.value = depth;
-        modOsc.connect(modGain);
-        modGain.connect(targetParam);
+        // Use raw Web Audio connect to bypass Tone.js's patched version
+        AudioNode.prototype.connect.call(modOsc, modGain);
+        AudioNode.prototype.connect.call(modGain, targetParam);
         modOsc.start();
         return { modOsc, modGain };
       }
