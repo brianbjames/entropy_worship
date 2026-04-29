@@ -19,8 +19,20 @@ function resolveWsBase() {
 }
 
 function sanitizeRoom(name) {
-  return (name || "")
-    .trim()
+  if (!name) return "";
+  let room = name.trim();
+  // If a full URL was pasted, extract the room query param
+  if (room.includes("?room=")) {
+    try {
+      const url = new URL(room);
+      room = url.searchParams.get("room") || "";
+    } catch {
+      // Try extracting with regex as fallback
+      const match = room.match(/[?&]room=([^&]+)/);
+      room = match ? decodeURIComponent(match[1]) : "";
+    }
+  }
+  return room
     .replace(/[^a-zA-Z0-9_-]/g, "")
     .slice(0, 32);
 }
@@ -204,7 +216,7 @@ export class EWObject {
     // Throttle state for setOutput
     this._throttleTimers = new Map(); // portName → timer
     this._throttlePending = new Map(); // portName → {value, unit}
-    this._THROTTLE_MS = 33; // ~30Hz
+    this._THROTTLE_MS = 10; // ~100Hz
 
     // Initialize output values from defaults
     for (const def of inputs) {
@@ -314,10 +326,11 @@ export class EWObject {
    */
   subscribe(roomName, portMapping = {}) {
     const clean = sanitizeRoom(roomName);
-    if (!clean) return false;
+    console.log("[EWObject] subscribe:", clean, "mapping:", JSON.stringify(portMapping), "own room:", this._outputRoom);
+    if (!clean) { console.log("[EWObject] subscribe rejected: empty room"); return false; }
 
     // Don't subscribe to own output room
-    if (clean === this._outputRoom) return false;
+    if (clean === this._outputRoom) { console.log("[EWObject] subscribe rejected: own room"); return false; }
 
     // If already subscribed to this room, merge the port mapping
     const existing = this._inputConns.get(clean);
@@ -613,34 +626,47 @@ export class EWObject {
     const { data } = msg;
     if (!data) return;
 
-    // Check if "signal" is mapped — if so, skip non-signal ports that
-    // map to the same local port (signal modulation takes priority)
-    const signalTarget = portMapping["signal"];
-
     if (data.bundle) {
       for (const [remotePort, info] of Object.entries(data.bundle)) {
+        // Route to mapped port, or pass through with original port name
         const localPort = portMapping[remotePort];
-        if (localPort === undefined) continue;
-        // If signal is mapped to this local port, skip non-signal sources
-        if (signalTarget === localPort && remotePort !== "signal") continue;
-        this._fireInputCallbacks(localPort, info.value, {
-          from: msg.from,
-          room: roomName,
-          port: remotePort,
-          unit: info.unit,
-        });
+        // If explicitly mapped, route there
+        if (localPort !== undefined) {
+          this._fireInputCallbacks(localPort, info.value, {
+            from: msg.from,
+            room: roomName,
+            port: remotePort,
+            unit: info.unit,
+          });
+        }
+        // Also fire for any port that has a wildcard "*" mapping
+        if (portMapping["*"]) {
+          this._fireInputCallbacks(portMapping["*"], info.value, {
+            from: msg.from,
+            room: roomName,
+            port: remotePort,
+            unit: info.unit,
+          });
+        }
       }
     } else if (data.port !== undefined) {
       const localPort = portMapping[data.port];
-      if (localPort === undefined) return;
-      // If signal is mapped to this local port, skip non-signal sources
-      if (signalTarget === localPort && data.port !== "signal") return;
-      this._fireInputCallbacks(localPort, data.value, {
-        from: msg.from,
-        room: roomName,
-        port: data.port,
-        unit: data.unit,
-      });
+      if (localPort !== undefined) {
+        this._fireInputCallbacks(localPort, data.value, {
+          from: msg.from,
+          room: roomName,
+          port: data.port,
+          unit: data.unit,
+        });
+      }
+      if (portMapping["*"]) {
+        this._fireInputCallbacks(portMapping["*"], data.value, {
+          from: msg.from,
+          room: roomName,
+          port: data.port,
+          unit: data.unit,
+        });
+      }
     }
   }
 

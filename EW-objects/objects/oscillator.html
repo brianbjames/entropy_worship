@@ -195,11 +195,23 @@
       let analyser = null;
       let oscRunning = false;
       let audioReady = false;
+      let outputMode = "audio"; // "audio" | "control" | "both"
+
+      // Local modulator oscillators — created when a room signal is
+      // linked to an input. These run at audio rate inside Web Audio,
+      // with their parameters synced from the remote room.
+      let fmModOsc = null; // modulates osc.frequency
+      let fmModGain = null; // scales modulator output by fmDepth
+      let detuneModOsc = null;
+      let detuneModGain = null;
+      let gainModOsc = null;
+      let gainModGainNode = null;
 
       async function ensureAudio() {
         if (audioReady) return;
         await Tone.start();
-        gainNode = new Tone.Gain(0.5).toDestination();
+        gainNode = new Tone.Gain(0.5);
+        applyOutputRouting();
         osc = new Tone.Oscillator({
           frequency: 440,
           type: "sine",
@@ -207,6 +219,82 @@
         analyser = new Tone.Analyser("waveform", 256);
         osc.connect(analyser);
         audioReady = true;
+      }
+
+      // Create a local modulator that connects directly to an AudioParam
+      function createModulator(targetParam, depth) {
+        const modOsc = Tone.context.createOscillator();
+        modOsc.type = "sine";
+        modOsc.frequency.value = 2;
+        const modGain = Tone.context.createGain();
+        modGain.gain.value = depth;
+        modOsc.connect(modGain);
+        modGain.connect(targetParam);
+        modOsc.start();
+        return { modOsc, modGain };
+      }
+
+      function destroyModulator(mod) {
+        if (!mod) return;
+        mod.modOsc.stop();
+        mod.modOsc.disconnect();
+        mod.modGain.disconnect();
+      }
+
+      function connectFMMod() {
+        if (fmModOsc || !osc) return;
+        const mod = createModulator(osc.frequency._param, fmDepth);
+        fmModOsc = mod.modOsc;
+        fmModGain = mod.modGain;
+      }
+
+      function disconnectFMMod() {
+        if (fmModOsc) {
+          destroyModulator({ modOsc: fmModOsc, modGain: fmModGain });
+          fmModOsc = null;
+          fmModGain = null;
+        }
+      }
+
+      function connectDetuneMod() {
+        if (detuneModOsc || !osc) return;
+        const mod = createModulator(osc.detune._param, detuneModDepth);
+        detuneModOsc = mod.modOsc;
+        detuneModGain = mod.modGain;
+      }
+
+      function disconnectDetuneMod() {
+        if (detuneModOsc) {
+          destroyModulator({ modOsc: detuneModOsc, modGain: detuneModGain });
+          detuneModOsc = null;
+          detuneModGain = null;
+        }
+      }
+
+      function connectGainMod() {
+        if (gainModOsc || !gainNode) return;
+        const mod = createModulator(gainNode.gain._param, gainModDepth);
+        gainModOsc = mod.modOsc;
+        gainModGainNode = mod.modGain;
+      }
+
+      function disconnectGainMod() {
+        if (gainModOsc) {
+          destroyModulator({ modOsc: gainModOsc, modGain: gainModGainNode });
+          gainModOsc = null;
+          gainModGainNode = null;
+        }
+      }
+
+      function applyOutputRouting() {
+        if (!gainNode) return;
+        gainNode.disconnect();
+        if (outputMode === "audio" || outputMode === "both") {
+          gainNode.toDestination();
+        }
+        // "control" mode: gainNode is disconnected from destination
+        // but the oscillator still runs so the analyser can sample it
+        // and the signal output loop can broadcast values to the room.
       }
 
       async function startOsc() {
@@ -230,7 +318,7 @@
         osc.dispose();
         osc = new Tone.Oscillator({ frequency: freq, type: type });
         osc.connect(gainNode);
-        osc.connect(analyser);
+        if (analyser) osc.connect(analyser);
         updatePowerUI();
       }
 
@@ -280,6 +368,14 @@
             <span class="toggle-label">POWER</span>
           </div>
           <span class="type-dim" id="power-status">OFF</span>
+          <span style="margin-left:auto">
+            <span class="control-label" style="display:inline; margin:0">OUTPUT</span>
+            <select id="osc-output-mode" style="width:auto; display:inline; padding:3px 24px 3px 8px">
+              <option value="audio">AUDIO</option>
+              <option value="control">CONTROL</option>
+              <option value="both">BOTH</option>
+            </select>
+          </span>
         </div>
 
         <div class="control-group">
@@ -482,6 +578,14 @@
           refreshStats();
         });
 
+      // Output mode select
+      document
+        .getElementById("osc-output-mode")
+        .addEventListener("change", (e) => {
+          outputMode = e.target.value;
+          applyOutputRouting();
+        });
+
       // Frequency slider (logarithmic)
       const freqSlider = document.getElementById("osc-freq");
       const freqVal = document.getElementById("osc-freq-val");
@@ -533,6 +637,7 @@
         .getElementById("osc-fm-depth")
         .addEventListener("input", (e) => {
           fmDepth = +e.target.value;
+          if (fmModGain) fmModGain.gain.value = fmDepth;
         });
 
       // Detune mod depth slider
@@ -541,6 +646,7 @@
         .getElementById("osc-detune-mod-depth")
         .addEventListener("input", (e) => {
           detuneModDepth = +e.target.value;
+          if (detuneModGain) detuneModGain.gain.value = detuneModDepth;
         });
 
       // Gain mod depth slider
@@ -549,49 +655,94 @@
         .getElementById("osc-gain-mod-depth")
         .addEventListener("input", (e) => {
           gainModDepth = +e.target.value / 100;
+          if (gainModGainNode) gainModGainNode.gain.value = gainModDepth;
         });
 
       // ── Signal output loop ─────────────────────────────────────
-      // Continuously sample the waveform and broadcast the current
-      // amplitude as a bipolar (-1..+1) signal at ~30Hz.
-      let signalOutputTimer = null;
+      // Compute the waveform value mathematically rather than
+      // sampling the analyser. This gives a smooth, correct signal
+      // at any output rate regardless of oscillator frequency.
+      let signalWorker = null;
+      let signalPhase = 0;
+      let signalLastTime = 0;
+
+      function computeSignal() {
+        const now = performance.now() / 1000; // seconds
+        if (signalLastTime === 0) signalLastTime = now;
+        const dt = now - signalLastTime;
+        signalLastTime = now;
+
+        const freq = osc ? osc.frequency.value : baseFrequency;
+        signalPhase = (signalPhase + freq * dt) % 1;
+
+        const type = osc ? osc.type : "sine";
+        let value;
+        switch (type) {
+          case "sine":
+            value = Math.sin(signalPhase * 2 * Math.PI);
+            break;
+          case "triangle":
+            value = 1 - 4 * Math.abs(signalPhase - 0.5);
+            break;
+          case "sawtooth":
+            value = 2 * signalPhase - 1;
+            break;
+          case "square":
+            value = signalPhase < 0.5 ? 1 : -1;
+            break;
+          default:
+            value = Math.sin(signalPhase * 2 * Math.PI);
+        }
+        return Math.round(value * 1000) / 1000;
+      }
 
       function startSignalOutput() {
-        if (signalOutputTimer) return;
-        signalOutputTimer = setInterval(() => {
-          if (!analyser || !oscRunning) return;
-          const data = analyser.getValue();
-          // Take the middle sample as representative value
-          const sample = data[Math.floor(data.length / 2)];
-          ewObj.setOutput("signal", Math.round(sample * 1000) / 1000, {
-            unit: "bipolar",
-          });
-        }, 33); // ~30Hz
+        if (signalWorker) return;
+        signalPhase = 0;
+        signalLastTime = 0;
+        const blob = new Blob([`
+          let id = setInterval(() => postMessage("tick"), 10);
+          onmessage = () => { clearInterval(id); close(); };
+        `], { type: "application/javascript" });
+        signalWorker = new Worker(URL.createObjectURL(blob));
+        signalWorker.onmessage = () => {
+          if (!oscRunning) return;
+          const value = computeSignal();
+          ewObj.setOutput("signal", value, { unit: "bipolar" });
+        };
       }
 
       function stopSignalOutput() {
-        if (signalOutputTimer) {
-          clearInterval(signalOutputTimer);
-          signalOutputTimer = null;
+        if (signalWorker) {
+          signalWorker.postMessage("stop");
+          signalWorker = null;
         }
+        signalPhase = 0;
+        signalLastTime = 0;
         ewObj.setOutput("signal", 0, { unit: "bipolar", immediate: true });
       }
 
       // ── Input signal handling ──────────────────────────────────
+      // When a room is linked to an input, a local modulator oscillator
+      // is created at audio rate. Incoming room messages sync the
+      // modulator's frequency and waveform from the remote source.
 
       ewObj.onInput("frequency", (value, meta) => {
-        if (typeof value !== "number") return;
+        if (meta && meta.unit === "bipolar") return; // ignore legacy signal samples
 
-        // If the incoming value is bipolar (-1..+1), it's a signal —
-        // apply as FM around the base frequency.
-        // If it's a normal frequency value (>1), set the base frequency.
-        if (value >= -1 && value <= 1 && meta && meta.unit === "bipolar") {
-          // FM modulation: base + signal * depth
-          const modulated = baseFrequency + value * fmDepth;
-          const clamped = Math.max(20, Math.min(20000, modulated));
-          if (osc) osc.frequency.value = clamped;
-        } else if (value >= 20 && value <= 20000) {
-          // Direct frequency set
+        if (fmModOsc) {
+          // A local FM modulator is active — sync its params from remote
+          if (meta && meta.port === "frequency" && typeof value === "number") {
+            fmModOsc.frequency.value = value;
+          } else if (meta && meta.port === "waveform" && typeof value === "string") {
+            try { fmModOsc.type = value; } catch (_) {}
+          }
+          // ignore other ports
+          return;
+        }
+
+        // No modulator — direct frequency set
+        if (typeof value === "number" && value >= 20 && value <= 20000) {
           baseFrequency = value;
           if (osc) osc.frequency.rampTo(value, 0.01);
           freqSlider.value = freqToSlider(value);
@@ -607,15 +758,18 @@
       });
 
       ewObj.onInput("detune", (value, meta) => {
-        if (typeof value !== "number") return;
+        if (meta && meta.unit === "bipolar") return;
 
-        if (meta && meta.unit === "bipolar") {
-          // Signal modulation: base + signal * depth
-          const modulated = baseDetune + value * detuneModDepth;
-          const clamped = Math.max(-1200, Math.min(1200, modulated));
-          if (osc) osc.detune.value = clamped;
-        } else {
-          // Direct detune set
+        if (detuneModOsc) {
+          if (meta && meta.port === "frequency" && typeof value === "number") {
+            detuneModOsc.frequency.value = value;
+          } else if (meta && meta.port === "waveform" && typeof value === "string") {
+            try { detuneModOsc.type = value; } catch (_) {}
+          }
+          return;
+        }
+
+        if (typeof value === "number") {
           const clamped = Math.max(-1200, Math.min(1200, value));
           baseDetune = clamped;
           if (osc) osc.detune.rampTo(clamped, 0.01);
@@ -627,15 +781,18 @@
       });
 
       ewObj.onInput("gain", (value, meta) => {
-        if (typeof value !== "number") return;
+        if (meta && meta.unit === "bipolar") return;
 
-        if (meta && meta.unit === "bipolar") {
-          // Signal modulation: base + signal * depth, clamped to 0-1
-          const modulated = baseGain + value * gainModDepth;
-          const clamped = Math.max(0, Math.min(1, modulated));
-          if (gainNode) gainNode.gain.value = clamped;
-        } else {
-          // Direct gain set
+        if (gainModOsc) {
+          if (meta && meta.port === "frequency" && typeof value === "number") {
+            gainModOsc.frequency.value = value;
+          } else if (meta && meta.port === "waveform" && typeof value === "string") {
+            try { gainModOsc.type = value; } catch (_) {}
+          }
+          return;
+        }
+
+        if (typeof value === "number") {
           const clamped = Math.max(0, Math.min(1, value));
           baseGain = clamped;
           if (gainNode) gainNode.gain.rampTo(clamped, 0.01);
@@ -648,22 +805,47 @@
       });
 
       ewObj.onInput("waveform", (value, meta) => {
-        if (meta && meta.unit === "bipolar" && typeof value === "number") {
-          // Signal modulation: map bipolar -1..+1 to waveform index
-          // Positive half cycles through waveforms
-          const idx = Math.floor(((value + 1) / 2) * waveforms.length);
-          const type = waveforms[Math.max(0, Math.min(waveforms.length - 1, idx))];
-          if (osc) osc.type = type;
-          document.getElementById("osc-waveform").value = type;
-        } else {
-          // Direct waveform set
-          const valid = ["sine", "sawtooth", "triangle", "square"];
-          if (!valid.includes(value)) return;
+        if (meta && meta.unit === "bipolar") return;
+        if (typeof value !== "string") return;
+        const valid = ["sine", "sawtooth", "triangle", "square"];
+        if (!valid.includes(value)) return;
+
+        // Sync to any active local modulators
+        if (fmModOsc) { try { fmModOsc.type = value; } catch (_) {} }
+        if (detuneModOsc) { try { detuneModOsc.type = value; } catch (_) {} }
+        if (gainModOsc) { try { gainModOsc.type = value; } catch (_) {} }
+
+        // If no modulators, set own waveform
+        if (!fmModOsc && !detuneModOsc && !gainModOsc) {
           if (osc) osc.type = value;
           document.getElementById("osc-waveform").value = value;
           ewObj.setOutput("waveform", value);
           refreshStats();
         }
+      });
+
+      // Connect/disconnect local modulators when inputs are linked/unlinked
+      ewObj.on("inputConnected", ({ room, portMapping }) => {
+        ensureAudio().then(() => {
+          for (const localPort of Object.values(portMapping)) {
+            if (localPort === "frequency") connectFMMod();
+            if (localPort === "detune") connectDetuneMod();
+            if (localPort === "gain") connectGainMod();
+          }
+        });
+      });
+
+      ewObj.on("inputDisconnected", ({ room }) => {
+        const subs = ewObj.getSubscriptions();
+        const activePorts = new Set();
+        for (const sub of subs) {
+          for (const local of Object.values(sub.portMapping)) {
+            activePorts.add(local);
+          }
+        }
+        if (!activePorts.has("frequency")) disconnectFMMod();
+        if (!activePorts.has("detune")) disconnectDetuneMod();
+        if (!activePorts.has("gain")) disconnectGainMod();
       });
 
       // ── Output stats ───────────────────────────────────────────
