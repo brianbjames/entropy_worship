@@ -30,7 +30,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>EW // OBJECTS</title>
+    <title>EW/OBJECTS</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
       href="https://fonts.googleapis.com/css2?family=VT323&display=swap"
@@ -99,7 +99,7 @@
     <!-- ── App ─────────────────────────────────────────────────── -->
     <div id="app">
       <header>
-        <h1 class="hud-title">EW // OBJECTS</h1>
+        <h1 class="hud-title">EW/OBJECTS</h1>
         <div id="meta">
           <span>build 1.0.28.04.26</span>
           <a href="../index.html">HOME</a>
@@ -110,24 +110,36 @@
 
       <!-- Concept -->
       <div class="hud-panel clip-tr concept-panel">
-        <div class="section-title">// DISTRIBUTED MODULAR AUDIO //</div>
+        <div class="section-title">
+          // COLLABORATIVE DISTRIBUTED MODULAR RELAY NETWORK SYNTHESIZER //
+        </div>
         <p>
-          Each object is a standalone audio module connected via WebSocket
-          rooms.
-          <strong style="color: var(--accent)"
-            >Room URLs are patch cables.</strong
-          >
-          Paste one module's room name into another module's input to connect
-          them.
+          EWObjects is a genuinely new and original modular relay audio
+          synthesis environment that runs entirely in the browser as a
+          distributed network. Each object is a self-contained module — an
+          oscillator, a filter, a delay, a sequencer — that generates,
+          processes, or routes audio and control signals.
         </p>
         <p>
-          Modules can live in different browser tabs, machines, or be shared
-          between users in real-time.
+          What makes this different from other browser synths:
+          <strong style="color: var(--accent)"
+            >every module connects to a shared WebSocket server, and room URLs
+            act as patch cables.</strong
+          >
+          Open an oscillator in one tab and a filter in another. Copy the
+          oscillator's room URL, paste it into the filter's audio input, click
+          LINK — and audio flows between them in real-time. These tabs can be on
+          the same machine, on different machines across a network, or shared
+          between multiple users collaborating on the same patch simultaneously.
         </p>
         <div class="stats-row" style="margin-top: 10px">
           <div class="stat-block">
             <div class="stat-label">PROTOCOL</div>
             <div class="stat-val" style="font-size: 1rem">WebSocket</div>
+          </div>
+          <div class="stat-block">
+            <div class="stat-label">SIGNAL RATE</div>
+            <div class="stat-val" style="font-size: 1rem">~100 Hz</div>
           </div>
           <div class="stat-block">
             <div class="stat-label">CLOCK SYNC</div>
@@ -136,6 +148,10 @@
           <div class="stat-block">
             <div class="stat-label">AUDIO</div>
             <div class="stat-val" style="font-size: 1rem">Tone.js</div>
+          </div>
+          <div class="stat-block">
+            <div class="stat-label">OBJECTS</div>
+            <div class="stat-val" style="font-size: 1rem">24</div>
           </div>
           <div class="stat-block">
             <div class="stat-label">UI</div>
@@ -173,8 +189,8 @@
           <div class="obj-name">LFO</div>
           <div class="obj-desc">
             Low-frequency oscillator with 12 waveforms: sine, triangle,
-            sawtooth, square, pulses, exponentials, staircase, S&H,
-            smooth random, and wander. Control-only output.
+            sawtooth, square, pulses, exponentials, staircase, S&H, smooth
+            random, and wander. Control-only output.
           </div>
           <div class="obj-ports">
             <span class="tag mint">IN: rate</span>
@@ -190,9 +206,9 @@
           <div class="obj-type">SIGNAL PROCESSOR</div>
           <div class="obj-name">FILTER</div>
           <div class="obj-desc">
-            Multimode filter with cutoff, resonance, and type controls.
-            Link an oscillator room to its frequency input for audio-rate
-            cutoff modulation.
+            Multimode filter with cutoff, resonance, and type controls. Link an
+            oscillator room to its frequency input for audio-rate cutoff
+            modulation.
           </div>
           <div class="obj-ports">
             <span class="tag mint">IN: cutoff</span>
@@ -210,9 +226,9 @@
           <div class="obj-type">SIGNAL ROUTING</div>
           <div class="obj-name">MIXER</div>
           <div class="obj-desc">
-            Multi-channel mixer with per-channel faders and mute.
-            Add any number of room sources as input channels.
-            Master gain can be modulated via room link.
+            Multi-channel mixer with per-channel faders and mute. Add any number
+            of room sources as input channels. Master gain can be modulated via
+            room link.
           </div>
           <div class="obj-ports">
             <span class="tag mint">IN: audio (dynamic)</span>
@@ -238,7 +254,8 @@
           <div class="obj-type">SIGNAL SOURCE</div>
           <div class="obj-name">NOISE</div>
           <div class="obj-desc">
-            White, pink, and brown noise generator. Audio source or modulation source.
+            White, pink, and brown noise generator. Audio source or modulation
+            source.
           </div>
           <div class="obj-ports">
             <span class="tag mint">IN: gain</span>
@@ -444,8 +461,8 @@
           <div class="obj-type">UTILITY</div>
           <div class="obj-name">MATH</div>
           <div class="obj-desc">
-            Signal math — combines two inputs with selectable operation.
-            Add, subtract, multiply, min, max, or average.
+            Signal math — combines two inputs with selectable operation. Add,
+            subtract, multiply, min, max, or average.
           </div>
           <div class="obj-ports">
             <span class="tag mint">IN: A</span>
@@ -492,8 +509,8 @@
           <div class="obj-type">EFFECT</div>
           <div class="obj-name">PITCH SHIFT</div>
           <div class="obj-desc">
-            Pitch shifter with modulatable pitch. Shift up or down by
-            up to 24 semitones.
+            Pitch shifter with modulatable pitch. Shift up or down by up to 24
+            semitones.
           </div>
           <div class="obj-ports">
             <span class="tag mint">IN: audio</span>
@@ -522,22 +539,34 @@
       <div class="hud-panel clip-br concept-panel">
         <div class="section-title rose">// HOW TO CONNECT //</div>
         <p>
-          1. Open an object (e.g. Oscillator) in a browser tab. The page
-          auto-generates a room name and displays it in the
-          <code>OUTPUT ROOM</code> panel.
+          1. Open any object above — say, the <code>OSCILLATOR</code>. When the
+          page loads it automatically connects to the WebSocket server and
+          generates a unique room name (something like <code>osc-A2WG9E</code>).
+          You'll see it in the header bar next to the status dot.
         </p>
         <p>
-          2. Open another object in a second tab. In the
-          <code>INPUT CONNECTIONS</code> panel, paste the first object's room
-          name into the desired input port.
+          2. Open a second object in another tab — a <code>FILTER</code>, a
+          <code>DELAY</code>, whatever you want to route into. Look for the
+          input fields at the bottom of the page. Each input port has a text
+          field and a <code>LINK</code> button.
         </p>
         <p>
-          3. Click <code>LINK</code>. The second object now receives real-time
-          parameter updates from the first.
+          3. Go back to the first tab, click <code>COPY URL</code> to grab its
+          room URL, then paste that into the second tab's input port and click
+          <code>LINK</code>. The status dot turns green — the connection is
+          live.
         </p>
         <p>
-          4. Changes to the source object's controls are instantly reflected in
-          all connected subscribers.
+          4. Every knob you turn on the source module is now mirrored in
+          real-time on the receiving module. Change the oscillator's frequency
+          and the filter follows. Chain as many modules together as you want —
+          there's no limit.
+        </p>
+        <p>
+          5. To jam with someone else, just send them a room URL. They paste it
+          into their own module on their own machine and they're patched into
+          your signal chain. Multiple users can subscribe to the same room
+          simultaneously.
         </p>
       </div>
 
