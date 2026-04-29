@@ -1,0 +1,745 @@
+<!-- /-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\ -->
+<!-- |                                                                         | -->
+<!-- \ @@@@@@@@  @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@@@@@   @@@ @@@      / -->
+<!-- - @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@ @@@      - -->
+<!-- / @@!       @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!  @@@  @@! !@@      \ -->
+<!-- | !@!       !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!  @!@  !@! @!!      | -->
+<!-- \ @!!!:!    @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!@@!@!    !@!@!       / -->
+<!-- - !!!!!:    !@!  !!!    !!!    !!@!@!    !@!  !!!  !!@!!!      @!!!       - -->
+<!-- / !!:       !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:         !!:        \ -->
+<!-- | :!:       :!:  !:!    :!:    :!:  !:!  :!:  !:!  :!:         :!:        | -->
+<!-- \  :: ::::   ::   ::     ::    ::   :::  ::::: ::   ::          ::        / -->
+<!-- - : :: ::   ::    :      :      :   : :   : :  :    :           :         - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \ @@@  @@@  @@@   @@@@@@   @@@@@@@    @@@@@@   @@@  @@@  @@@  @@@@@@@     / -->
+<!-- - @@@  @@@  @@@  @@@@@@@@  @@@@@@@@  @@@@@@@   @@@  @@@  @@@  @@@@@@@@    - -->
+<!-- / @@!  @@!  @@!  @@!  @@@  @@!  @@@  !@@       @@!  @@@  @@!  @@!  @@@    \ -->
+<!-- | !@!  !@!  !@!  !@!  @!@  !@!  @!@  !@!       !@!  @!@  !@!  !@!  @!@    | -->
+<!-- \ @!!  !!@  @!@  @!@  !@!  @!@!!@!   !!@@!!    @!@!@!@!  !!@  @!@@!@!     / -->
+<!-- - !@!  !!!  !@!  !@!  !!!  !!@!@!     !!@!!!   !!!@!!!!  !!!  !!@!!!      - -->
+<!-- / !!:  !!:  !!:  !!:  !!!  !!: :!!        !:!  !!:  !!!  !!:  !!:         \ -->
+<!-- | :!:  :!:  :!:  :!:  !:!  :!:  !:!      !:!   :!:  !:!  :!:  :!:         | -->
+<!-- \  :::: :: :::   ::::: ::  ::   :::  :::: ::   ::   :::   ::   ::         / -->
+<!-- -   :: :  : :     : :  :    :   : :  :: : :     :   : :  :     :          - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RING MOD</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=VT323&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css"
+    />
+    <link rel="stylesheet" href="../lib/ewuilib.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+    <style>
+      #rng-scope {
+        display: block;
+        width: 100%;
+        height: 120px;
+        background: #0e0400;
+      }
+      .param-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+      .param-row .control-label {
+        min-width: 80px;
+        margin-bottom: 0;
+        flex-shrink: 0;
+      }
+      #power-toggle .toggle-track.on .toggle-thumb {
+        left: 22px;
+      }
+      #meta .toggle-wrap {
+        align-self: center;
+      }
+      #meta .toggle-track {
+        margin: 0;
+      }
+      .param-row input[type="range"] {
+        flex: 1;
+      }
+      .param-row .range-val {
+        min-width: 72px;
+        text-align: right;
+      }
+      .room-entry {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 10px;
+        border: 1px solid var(--border);
+        margin-bottom: 6px;
+        text-decoration: none;
+        color: var(--text);
+        font-size: 0.82rem;
+        letter-spacing: 0.1em;
+        transition: border-color 0.14s, background 0.14s;
+        cursor: pointer;
+      }
+      .room-entry:hover {
+        border-color: var(--accent);
+        background: rgba(var(--accent-rgb), 0.06);
+      }
+      .room-entry-name {
+        color: var(--accent);
+      }
+      .room-entry-info {
+        font-size: 0.68rem;
+        color: var(--dim);
+        letter-spacing: 0.08em;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="grid-bg"></div>
+    <div id="scanlines"></div>
+    <div id="app"></div>
+
+    <script type="module">
+      import { EWObject } from "../lib/ew-object-base.js";
+      import {
+        buildHeaderBar,
+        buildInputPanel,
+        updateOutputStats,
+        wireRange,
+      } from "../lib/ew-object-ui.js";
+
+      // -- EWObject instance ------------------------------------------
+
+      const ewObj = new EWObject({
+        name: "RNG-1",
+        objectType: "ringmod",
+        roomPrefix: "rng",
+        inputs: [
+          {
+            port: "audio",
+            type: "room",
+            unit: "",
+            default: null,
+          },
+          {
+            port: "frequency",
+            type: "number",
+            unit: "hz",
+            min: 20,
+            max: 5000,
+            default: 440,
+          },
+          {
+            port: "depth",
+            type: "number",
+            unit: "",
+            min: 0,
+            max: 1,
+            default: 1,
+          },
+          {
+            port: "waveform",
+            type: "enum",
+            values: ["sine", "triangle", "sawtooth", "square"],
+            default: "sine",
+          },
+        ],
+        outputs: [
+          { port: "frequency", type: "number", unit: "hz" },
+          { port: "depth", type: "number" },
+          { port: "waveform", type: "string" },
+          { port: "playing", type: "boolean" },
+          { port: "outputMode", type: "string" },
+        ],
+      });
+
+      // -- Ring mod state ---------------------------------------------
+
+      let baseCarrierFreq = 440;
+      let baseDepth = 1;
+      let baseWaveform = "sine";
+      let baseOutputGain = 0.8;
+
+      // -- Tone.js audio ----------------------------------------------
+
+      // Signal chain:
+      //   sourceOsc -> sourceGain -> wetGain (via ringGainNode) -> outputMix -> outputGain -> destination
+      //   sourceOsc -> sourceGain -> dryGain -> outputMix -> outputGain -> destination
+      //   carrierOsc -> ringGainNode.gain (modulates the gain = ring mod)
+
+      let carrierOsc = null;    // Internal carrier oscillator
+      let ringGainNode = null;  // GainNode whose gain is modulated by carrier
+      let dryGain = null;       // Dry signal gain (1 - depth)
+      let wetGain = null;       // Wet signal level (depth)
+      let outputMix = null;     // Mix dry + wet
+      let outputGain = null;    // Final output gain
+      let analyser = null;
+      let ringRunning = false;
+      let audioReady = false;
+      let outputMode = "audio";
+
+      // Source oscillator (audio input from room)
+      let sourceOsc = null;
+      let sourceGain = null;
+      let sourceConnected = false;
+
+      async function ensureAudio() {
+        if (audioReady) return;
+        await Tone.start();
+
+        // Ring modulation node: carrier oscillator modulates the gain
+        ringGainNode = Tone.context.createGain();
+        ringGainNode.gain.value = 0; // carrier will oscillate this
+
+        // Carrier oscillator — connected to ringGainNode.gain for multiplication
+        carrierOsc = new Tone.Oscillator({ frequency: baseCarrierFreq, type: baseWaveform });
+        carrierOsc.connect(ringGainNode.gain);
+
+        // Dry/wet mix
+        dryGain = new Tone.Gain(1 - baseDepth);
+        wetGain = new Tone.Gain(baseDepth);
+        outputMix = new Tone.Gain(1);
+        outputGain = new Tone.Gain(baseOutputGain);
+
+        // Wet path: signal goes through ringGainNode, then scaled by wetGain
+        const wetGainNode = new Tone.Gain(1);
+        Tone.connect(ringGainNode, wetGainNode);
+        wetGainNode.connect(wetGain);
+        wetGain.connect(outputMix);
+
+        // Dry path
+        dryGain.connect(outputMix);
+
+        outputMix.connect(outputGain);
+        applyOutputRouting();
+
+        analyser = new Tone.Analyser("waveform", 256);
+        outputGain.connect(analyser);
+
+        audioReady = true;
+      }
+
+      function applyOutputRouting() {
+        if (!outputGain) return;
+        outputGain.disconnect();
+        if (outputMode === "audio" || outputMode === "both") {
+          outputGain.toDestination();
+        }
+      }
+
+      function updateDepthMix() {
+        if (dryGain) dryGain.gain.rampTo(1 - baseDepth, 0.01);
+        if (wetGain) wetGain.gain.rampTo(baseDepth, 0.01);
+      }
+
+      // -- Source oscillator (audio input from room) ------------------
+
+      function createSourceOsc(freq, type, gain) {
+        if (sourceOsc) destroySourceOsc();
+        sourceOsc = new Tone.Oscillator({ frequency: freq || 440, type: type || "sine" });
+        sourceGain = new Tone.Gain(gain !== undefined ? gain : 0.5);
+        sourceOsc.connect(sourceGain);
+
+        // Route source to both dry and wet (ring mod) paths
+        sourceGain.connect(dryGain);
+        Tone.connect(sourceGain, ringGainNode);
+
+        if (ringRunning) sourceOsc.start();
+        sourceConnected = true;
+      }
+
+      function destroySourceOsc() {
+        if (sourceOsc) {
+          try { sourceOsc.stop(); } catch (_) {}
+          sourceOsc.disconnect();
+          sourceOsc.dispose();
+          sourceOsc = null;
+        }
+        if (sourceGain) {
+          sourceGain.disconnect();
+          sourceGain.dispose();
+          sourceGain = null;
+        }
+        sourceConnected = false;
+      }
+
+      async function startRing() {
+        if (ringRunning) return;
+        await ensureAudio();
+        carrierOsc.start();
+        if (sourceOsc) sourceOsc.start();
+        ringRunning = true;
+        updatePowerUI();
+        ewObj.setOutput("playing", true, { immediate: true });
+      }
+
+      function stopRing() {
+        if (!ringRunning) return;
+
+        // Stop and rebuild carrier
+        carrierOsc.stop();
+        carrierOsc.disconnect();
+        carrierOsc.dispose();
+        carrierOsc = new Tone.Oscillator({ frequency: baseCarrierFreq, type: baseWaveform });
+        carrierOsc.connect(ringGainNode.gain);
+
+        // Stop and rebuild source
+        if (sourceOsc) {
+          const freq = sourceOsc.frequency.value;
+          const type = sourceOsc.type;
+          const gain = sourceGain ? sourceGain.gain.value : 0.5;
+          sourceOsc.stop();
+          sourceOsc.disconnect();
+          sourceOsc.dispose();
+          sourceOsc = new Tone.Oscillator({ frequency: freq, type: type });
+          sourceGain.disconnect();
+          sourceGain.dispose();
+          sourceGain = new Tone.Gain(gain);
+          sourceOsc.connect(sourceGain);
+          sourceGain.connect(dryGain);
+          Tone.connect(sourceGain, ringGainNode);
+        }
+
+        ringRunning = false;
+        updatePowerUI();
+        ewObj.setOutput("playing", false, { immediate: true });
+      }
+
+      // -- Log frequency mapping (20-5000 Hz) -------------------------
+
+      const FREQ_MIN = 20;
+      const FREQ_MAX = 5000;
+      const LOG_MIN = Math.log(FREQ_MIN);
+      const LOG_MAX = Math.log(FREQ_MAX);
+
+      function sliderToFreq(val) {
+        return Math.exp(LOG_MIN + (val / 1000) * (LOG_MAX - LOG_MIN));
+      }
+
+      function freqToSlider(freq) {
+        return Math.round(((Math.log(freq) - LOG_MIN) / (LOG_MAX - LOG_MIN)) * 1000);
+      }
+
+      function formatFreq(val) {
+        const freq = sliderToFreq(val);
+        return freq >= 1000 ? (freq / 1000).toFixed(2) + " kHz" : freq.toFixed(1) + " Hz";
+      }
+
+      // -- Build UI ---------------------------------------------------
+
+      const app = document.getElementById("app");
+
+      buildHeaderBar(ewObj, "RING MOD", app);
+
+      document.getElementById("ew-header-controls").innerHTML = `
+        <select id="ew-theme" style="width:auto; padding:3px 24px 3px 8px">
+          <option value="theme-ethos">ETHOS</option>
+          <option value="">AMBER</option>
+          <option value="theme-phosphor">PHOSPHOR</option>
+          <option value="theme-cobalt">COBALT</option>
+          <option value="theme-plasma">PLASMA</option>
+          <option value="theme-danger">DANGER</option>
+          <option value="theme-matrix">MATRIX</option>
+          <option value="theme-solar">SOLAR</option>
+          <option value="theme-arctic">ARCTIC</option>
+        </select>
+        <select id="rng-output-mode" style="width:auto; padding:3px 24px 3px 8px">
+          <option value="audio">AUDIO</option>
+          <option value="control">CONTROL</option>
+          <option value="both">BOTH</option>
+        </select>
+        <div class="toggle-wrap" id="power-toggle" style="margin-bottom:0; cursor:pointer">
+          <div class="toggle-track" id="power-track">
+            <div class="toggle-thumb"></div>
+          </div>
+        </div>
+      `;
+
+      // Controls panel
+      const controlsPanel = document.createElement("div");
+      controlsPanel.className = "hud-panel clip-tr";
+      controlsPanel.innerHTML = `
+        <div class="control-group">
+          <div class="control-label">CARRIER WAVEFORM</div>
+          <select id="rng-waveform">
+            <option value="sine">SINE</option>
+            <option value="triangle">TRIANGLE</option>
+            <option value="sawtooth">SAWTOOTH</option>
+            <option value="square">SQUARE</option>
+          </select>
+        </div>
+
+        <div class="param-row">
+          <div class="control-label">CARRIER</div>
+          <input type="range" id="rng-freq" min="0" max="1000" value="${freqToSlider(440)}" />
+          <span class="range-val" id="rng-freq-val">440.0 Hz</span>
+        </div>
+
+        <div class="param-row">
+          <div class="control-label">DEPTH</div>
+          <input type="range" id="rng-depth" min="0" max="100" value="100" />
+          <span class="range-val" id="rng-depth-val">1.00</span>
+        </div>
+
+        <div class="param-row">
+          <div class="control-label">GAIN</div>
+          <input type="range" id="rng-gain" min="0" max="100" value="80" />
+          <span class="range-val" id="rng-gain-val">0.80</span>
+        </div>
+      `;
+      app.appendChild(controlsPanel);
+
+      // Theme
+      document.getElementById("ew-theme").addEventListener("change", (e) => {
+        document.documentElement.className = e.target.value;
+      });
+      document.documentElement.className = "theme-ethos";
+
+      // Scope
+      const scopePanel = document.createElement("div");
+      scopePanel.className = "hud-panel";
+      scopePanel.innerHTML = `
+        <div class="screen-wrap">
+          <div class="screen-inner" style="padding:0; min-height:auto">
+            <canvas id="rng-scope"></canvas>
+            <div class="screen-scan"></div>
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
+          </div>
+        </div>
+      `;
+      app.appendChild(scopePanel);
+
+      // Input panel
+      buildInputPanel(ewObj, app);
+
+      // Rooms panel
+      const roomsPanel = document.createElement("div");
+      roomsPanel.className = "hud-panel";
+      roomsPanel.innerHTML = `
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px">
+          <span class="control-label" style="margin:0; flex-shrink:0">ROOM</span>
+          <input type="text" id="room-input" placeholder="ROOM-ID" maxlength="32" spellcheck="false" autocomplete="off" style="flex:1">
+          <button class="btn btn-sm" id="room-join-btn">JOIN</button>
+          <button class="btn btn-sm" id="privacy-btn">PUBLIC</button>
+        </div>
+        <hr class="hud-divider" style="margin:10px 0">
+        <div class="section-title">// AVAILABLE RING MODS //</div>
+        <div id="rooms-list">
+          <span class="type-dim">NO OTHER RING MODS AVAILABLE</span>
+        </div>
+      `;
+      app.appendChild(roomsPanel);
+
+      // Footer
+      const footer = document.createElement("div");
+      footer.style.cssText = "text-align:center; padding:20px 0; font-size:0.72rem; letter-spacing:0.22em; color:var(--dim)";
+      footer.innerHTML = '<a href="../../index.html" style="color:var(--dim); text-decoration:none">ENTROPY WORSHIP</a>';
+      app.appendChild(footer);
+
+      // -- Wire controls ----------------------------------------------
+
+      function updatePowerUI() {
+        const track = document.getElementById("power-track");
+        track.classList.toggle("on", ringRunning);
+      }
+
+      document.getElementById("power-toggle").addEventListener("click", () => {
+        if (ringRunning) stopRing(); else startRing();
+      });
+
+      // Waveform select
+      document.getElementById("rng-waveform").addEventListener("change", (e) => {
+        baseWaveform = e.target.value;
+        if (carrierOsc) { try { carrierOsc.type = baseWaveform; } catch (_) {} }
+        ewObj.setOutput("waveform", baseWaveform, { immediate: true });
+        refreshStats();
+      });
+
+      // Output mode
+      document.getElementById("rng-output-mode").addEventListener("change", (e) => {
+        outputMode = e.target.value;
+        applyOutputRouting();
+        ewObj.setOutput("outputMode", outputMode, { immediate: true });
+      });
+
+      // Carrier frequency slider (logarithmic)
+      const freqSlider = document.getElementById("rng-freq");
+      const freqVal = document.getElementById("rng-freq-val");
+
+      freqSlider.addEventListener("input", () => {
+        const freq = sliderToFreq(+freqSlider.value);
+        baseCarrierFreq = freq;
+        freqVal.textContent = formatFreq(+freqSlider.value);
+        const pct = (+freqSlider.value / 1000) * 100;
+        freqSlider.style.setProperty("--val", pct + "%");
+        if (carrierOsc) carrierOsc.frequency.rampTo(freq, 0.01);
+        ewObj.setOutput("frequency", Math.round(freq * 10) / 10, { unit: "hz" });
+        refreshStats();
+      });
+      (() => {
+        const pct = (+freqSlider.value / 1000) * 100;
+        freqSlider.style.setProperty("--val", pct + "%");
+      })();
+
+      // Depth slider
+      wireRange("rng-depth", "rng-depth-val", (v) => (v / 100).toFixed(2));
+      document.getElementById("rng-depth").addEventListener("input", (e) => {
+        baseDepth = +e.target.value / 100;
+        updateDepthMix();
+        ewObj.setOutput("depth", Math.round(baseDepth * 100) / 100);
+        refreshStats();
+      });
+
+      // Gain slider
+      wireRange("rng-gain", "rng-gain-val", (v) => (v / 100).toFixed(2));
+      document.getElementById("rng-gain").addEventListener("input", (e) => {
+        const gain = +e.target.value / 100;
+        baseOutputGain = gain;
+        if (outputGain) outputGain.gain.rampTo(gain, 0.01);
+        refreshStats();
+      });
+
+      // -- Input signal handling --------------------------------------
+
+      ewObj.onInput("audio", (value, meta) => {
+        if (meta && meta.unit === "bipolar") return;
+        if (!audioReady) return;
+
+        if (meta && meta.port === "frequency" && typeof value === "number") {
+          if (!sourceConnected) {
+            createSourceOsc(value, "sine", 0.5);
+          } else if (sourceOsc) {
+            sourceOsc.frequency.value = value;
+          }
+        } else if (meta && meta.port === "waveform" && typeof value === "string") {
+          if (sourceOsc) { try { sourceOsc.type = value; } catch (_) {} }
+        } else if (meta && meta.port === "gain" && typeof value === "number") {
+          if (sourceGain) sourceGain.gain.value = Math.max(0, Math.min(1, value));
+        } else if (meta && meta.port === "detune" && typeof value === "number") {
+          if (sourceOsc) sourceOsc.detune.value = value;
+        } else if (meta && meta.port === "playing" && typeof value === "boolean") {
+          if (value && sourceConnected && !ringRunning) startRing();
+        }
+      });
+
+      ewObj.on("inputConnected", ({ room, portMapping }) => {
+        ensureAudio().then(() => {
+          for (const localPort of Object.values(portMapping)) {
+            if (localPort === "audio" && !sourceConnected) {
+              createSourceOsc(440, "sine", 0.5);
+            }
+          }
+        });
+      });
+
+      ewObj.on("inputDisconnected", ({ room }) => {
+        const subs = ewObj.getSubscriptions();
+        const activePorts = new Set();
+        for (const sub of subs) {
+          for (const local of Object.values(sub.portMapping)) activePorts.add(local);
+        }
+        if (!activePorts.has("audio")) destroySourceOsc();
+      });
+
+      ewObj.onInput("frequency", (value, meta) => {
+        if (typeof value !== "number") return;
+        if (meta && meta.unit === "bipolar") {
+          // Bipolar signal modulates carrier frequency around base
+          const modulated = baseCarrierFreq + value * 2000;
+          const clamped = Math.max(20, Math.min(5000, modulated));
+          if (carrierOsc) carrierOsc.frequency.rampTo(clamped, 0.012);
+          return;
+        }
+        const clamped = Math.max(20, Math.min(5000, value));
+        baseCarrierFreq = clamped;
+        if (carrierOsc) carrierOsc.frequency.rampTo(clamped, 0.01);
+        freqSlider.value = freqToSlider(clamped);
+        freqVal.textContent = clamped >= 1000 ? (clamped / 1000).toFixed(2) + " kHz" : clamped.toFixed(1) + " Hz";
+        freqSlider.style.setProperty("--val", (+freqSlider.value / 1000) * 100 + "%");
+        ewObj.setOutput("frequency", clamped, { unit: "hz" });
+        refreshStats();
+      });
+
+      ewObj.onInput("depth", (value, meta) => {
+        if (typeof value !== "number") return;
+        if (meta && meta.unit === "bipolar") {
+          const modulated = Math.max(0, Math.min(1, (value + 1) / 2)); // map -1..+1 to 0..1
+          baseDepth = modulated;
+          updateDepthMix();
+          return;
+        }
+        const clamped = Math.max(0, Math.min(1, value));
+        baseDepth = clamped;
+        updateDepthMix();
+        document.getElementById("rng-depth").value = Math.round(clamped * 100);
+        document.getElementById("rng-depth-val").textContent = clamped.toFixed(2);
+        ewObj.setOutput("depth", clamped);
+        refreshStats();
+      });
+
+      ewObj.onInput("waveform", (value, meta) => {
+        if (meta && meta.unit === "bipolar") return;
+        if (typeof value !== "string") return;
+        const valid = ["sine", "triangle", "sawtooth", "square"];
+        if (!valid.includes(value)) return;
+        baseWaveform = value;
+        if (carrierOsc) { try { carrierOsc.type = value; } catch (_) {} }
+        document.getElementById("rng-waveform").value = value;
+        ewObj.setOutput("waveform", value, { immediate: true });
+        refreshStats();
+      });
+
+      ewObj.onInput("playing", async (value) => {
+        if (typeof value !== "boolean") return;
+        if (value && !ringRunning) await startRing();
+        else if (!value && ringRunning) stopRing();
+      });
+
+      ewObj.onInput("outputMode", (value) => {
+        if (typeof value !== "string") return;
+        if (["audio", "control", "both"].includes(value)) {
+          outputMode = value;
+          document.getElementById("rng-output-mode").value = value;
+          applyOutputRouting();
+        }
+      });
+
+      // -- Output stats -----------------------------------------------
+
+      function refreshStats() {
+        updateOutputStats(ewObj, [
+          { port: "frequency", label: "CARRIER", unit: " Hz", formatter: (v) => v ? v.toFixed(1) : "440.0" },
+          { port: "depth", label: "DEPTH", formatter: (v) => v !== undefined ? v.toFixed(2) : "1.00" },
+          { port: "waveform", label: "WAVE", formatter: (v) => v ? v.toUpperCase().slice(0, 4) : "SINE" },
+        ]);
+      }
+
+      // -- Scope ------------------------------------------------------
+
+      const scopeCanvas = document.getElementById("rng-scope");
+      const scopeCtx = scopeCanvas.getContext("2d");
+
+      function resizeScope() {
+        const rect = scopeCanvas.parentElement.getBoundingClientRect();
+        scopeCanvas.width = rect.width;
+        scopeCanvas.height = 120;
+      }
+
+      function drawScope() {
+        requestAnimationFrame(drawScope);
+        const w = scopeCanvas.width;
+        const h = scopeCanvas.height;
+        scopeCtx.fillStyle = "#080808";
+        scopeCtx.fillRect(0, 0, w, h);
+
+        // Grid
+        scopeCtx.strokeStyle = "rgba(128, 128, 128, 0.08)";
+        scopeCtx.lineWidth = 1;
+        for (let y = 0; y < h; y += 20) { scopeCtx.beginPath(); scopeCtx.moveTo(0, y); scopeCtx.lineTo(w, y); scopeCtx.stroke(); }
+        for (let x = 0; x < w; x += 20) { scopeCtx.beginPath(); scopeCtx.moveTo(x, 0); scopeCtx.lineTo(x, h); scopeCtx.stroke(); }
+
+        // Center line
+        scopeCtx.strokeStyle = "rgba(128, 128, 128, 0.2)";
+        scopeCtx.beginPath(); scopeCtx.moveTo(0, h / 2); scopeCtx.lineTo(w, h / 2); scopeCtx.stroke();
+
+        if (!analyser || !ringRunning) return;
+
+        const data = analyser.getValue();
+        scopeCtx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--accent");
+        scopeCtx.lineWidth = 2;
+        scopeCtx.shadowColor = "rgba(210, 210, 210, 0.4)";
+        scopeCtx.shadowBlur = 6;
+        scopeCtx.beginPath();
+        for (let i = 0; i < data.length; i++) {
+          const x = (i / data.length) * w;
+          const y = ((1 - data[i]) / 2) * h;
+          if (i === 0) scopeCtx.moveTo(x, y); else scopeCtx.lineTo(x, y);
+        }
+        scopeCtx.stroke();
+        scopeCtx.shadowBlur = 0;
+      }
+
+      // -- Room UI ----------------------------------------------------
+
+      ewObj.on("connected", () => {
+        document.getElementById("room-input").value = ewObj.getOutputRoom();
+      });
+      document.getElementById("room-join-btn").addEventListener("click", () => {
+        const name = document.getElementById("room-input").value.trim().replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 32) || "default";
+        location.search = `?room=${encodeURIComponent(name)}`;
+      });
+      document.getElementById("room-input").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") document.getElementById("room-join-btn").click();
+      });
+
+      let roomPrivate = false;
+      function updatePrivacyBtn() {
+        const btn = document.getElementById("privacy-btn");
+        btn.textContent = roomPrivate ? "PRIVATE" : "PUBLIC";
+        btn.classList.toggle("active", roomPrivate);
+      }
+      document.getElementById("privacy-btn").addEventListener("click", () => {
+        roomPrivate = !roomPrivate;
+        ewObj.setPrivate(roomPrivate);
+        updatePrivacyBtn();
+      });
+      ewObj.on("stateSync", (msg) => {
+        roomPrivate = msg.private || false;
+        updatePrivacyBtn();
+        document.getElementById("room-input").value = msg.room || ewObj.getOutputRoom();
+      });
+      ewObj.on("roomPrivate", (msg) => { roomPrivate = msg.private; updatePrivacyBtn(); });
+
+      ewObj.on("rooms", (msg) => {
+        const el = document.getElementById("rooms-list");
+        if (!el) return;
+        const currentRoom = ewObj.getOutputRoom();
+        const others = (msg.rooms || []).filter((r) => r.name !== currentRoom);
+        if (!others.length) { el.innerHTML = '<span class="type-dim">NO OTHER RING MODS AVAILABLE</span>'; return; }
+        el.innerHTML = "";
+        for (const r of others) {
+          const a = document.createElement("a");
+          a.className = "room-entry";
+          a.href = `?room=${encodeURIComponent(r.name)}`;
+          const objs = r.objects && r.objects.length ? r.objects.join(", ").toUpperCase() : "";
+          a.innerHTML = `<span class="room-entry-name">${r.name}</span><span class="room-entry-info">${r.clients} PLR${objs ? " · " + objs : ""}</span>`;
+          el.appendChild(a);
+        }
+      });
+
+      // -- Initialize -------------------------------------------------
+
+      (() => {
+        const urlRoom = new URLSearchParams(location.search).get("room");
+        ewObj.connectOutput(urlRoom || undefined);
+
+        ewObj._outputValues["frequency"] = 440;
+        ewObj._outputValues["depth"] = 1;
+        ewObj._outputValues["waveform"] = "sine";
+        ewObj._outputValues["playing"] = false;
+        ewObj._outputValues["outputMode"] = "audio";
+
+        refreshStats();
+        resizeScope();
+        drawScope();
+      })();
+
+      window.addEventListener("resize", resizeScope);
+    </script>
+  </body>
+</html>

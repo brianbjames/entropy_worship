@@ -1,0 +1,1173 @@
+<!-- /-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\ -->
+<!-- |                                                                         | -->
+<!-- \ @@@@@@@@  @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@@@@@   @@@ @@@      / -->
+<!-- - @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@ @@@      - -->
+<!-- / @@!       @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!  @@@  @@! !@@      \ -->
+<!-- | !@!       !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!  @!@  !@! @!!      | -->
+<!-- \ @!!!:!    @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!@@!@!    !@!@!       / -->
+<!-- - !!!!!:    !@!  !!!    !!!    !!@!@!    !@!  !!!  !!@!!!      @!!!       - -->
+<!-- / !!:       !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:         !!:        \ -->
+<!-- | :!:       :!:  !:!    :!:    :!:  !:!  :!:  !:!  :!:         :!:        | -->
+<!-- \  :: ::::   ::   ::     ::    ::   :::  ::::: ::   ::          ::        / -->
+<!-- - : :: ::   ::    :      :      :   : :   : :  :    :           :         - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \ @@@  @@@  @@@   @@@@@@   @@@@@@@    @@@@@@   @@@  @@@  @@@  @@@@@@@     / -->
+<!-- - @@@  @@@  @@@  @@@@@@@@  @@@@@@@@  @@@@@@@   @@@  @@@  @@@  @@@@@@@@    - -->
+<!-- / @@!  @@!  @@!  @@!  @@@  @@!  @@@  !@@       @@!  @@@  @@!  @@!  @@@    \ -->
+<!-- | !@!  !@!  !@!  !@!  @!@  !@!  @!@  !@!       !@!  @!@  !@!  !@!  @!@    | -->
+<!-- \ @!!  !!@  @!@  @!@  !@!  @!@!!@!   !!@@!!    @!@!@!@!  !!@  @!@@!@!     / -->
+<!-- - !@!  !!!  !@!  !@!  !!!  !!@!@!     !!@!!!   !!!@!!!!  !!!  !!@!!!      - -->
+<!-- / !!:  !!:  !!:  !!:  !!!  !!: :!!        !:!  !!:  !!!  !!:  !!:         \ -->
+<!-- | :!:  :!:  :!:  :!:  !:!  :!:  !:!      !:!   :!:  !:!  :!:  :!:         | -->
+<!-- \  :::: :: :::   ::::: ::  ::   :::  :::: ::   ::   :::   ::   ::         / -->
+<!-- -   :: :  : :     : :  :    :   : :  :: : :     :   : :  :     :          - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LOOPER</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=VT323&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css"
+    />
+    <link rel="stylesheet" href="../lib/ewuilib.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+    <style>
+      #loop-scope {
+        display: block;
+        width: 100%;
+        height: 120px;
+        background: #0e0400;
+      }
+      .param-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+      .param-row .control-label {
+        min-width: 80px;
+        margin-bottom: 0;
+        flex-shrink: 0;
+      }
+      #power-toggle .toggle-track.on .toggle-thumb {
+        left: 22px;
+      }
+      #meta .toggle-wrap {
+        align-self: center;
+      }
+      #meta .toggle-track {
+        margin: 0;
+      }
+      .param-row input[type="range"] {
+        flex: 1;
+      }
+      .param-row .range-val {
+        min-width: 72px;
+        text-align: right;
+      }
+      .room-entry {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 10px;
+        border: 1px solid var(--border);
+        margin-bottom: 6px;
+        text-decoration: none;
+        color: var(--text);
+        font-size: 0.82rem;
+        letter-spacing: 0.1em;
+        transition: border-color 0.14s, background 0.14s;
+        cursor: pointer;
+      }
+      .room-entry:hover {
+        border-color: var(--accent);
+        background: rgba(var(--accent-rgb), 0.06);
+      }
+      .room-entry-name {
+        color: var(--accent);
+      }
+      .room-entry-info {
+        font-size: 0.68rem;
+        color: var(--dim);
+        letter-spacing: 0.08em;
+      }
+
+      /* Transport buttons */
+      .transport-row {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 14px;
+      }
+      .transport-btn {
+        flex: 1;
+        padding: 10px 6px;
+        font-family: "VT323", monospace;
+        font-size: 0.88rem;
+        letter-spacing: 0.18em;
+        text-align: center;
+        border: 1px solid var(--border);
+        background: transparent;
+        color: var(--text);
+        cursor: pointer;
+        transition: border-color 0.14s, background 0.14s, color 0.14s;
+      }
+      .transport-btn:hover {
+        border-color: var(--accent);
+        background: rgba(var(--accent-rgb), 0.08);
+      }
+      .transport-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+      .transport-btn.active-rec {
+        border-color: #ff3333;
+        background: rgba(255, 51, 51, 0.15);
+        color: #ff3333;
+        box-shadow: 0 0 12px rgba(255, 51, 51, 0.3);
+      }
+      .transport-btn.active-dub {
+        border-color: #ffaa00;
+        background: rgba(255, 170, 0, 0.15);
+        color: #ffaa00;
+        box-shadow: 0 0 12px rgba(255, 170, 0, 0.3);
+      }
+      .transport-btn.active-play {
+        border-color: #33ff66;
+        background: rgba(51, 255, 102, 0.12);
+        color: #33ff66;
+        box-shadow: 0 0 12px rgba(51, 255, 102, 0.3);
+      }
+
+      /* State display */
+      .state-display {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px;
+        border: 1px solid var(--border);
+        margin-bottom: 14px;
+        font-size: 0.82rem;
+        letter-spacing: 0.16em;
+      }
+      .state-label {
+        color: var(--accent);
+      }
+      .state-value {
+        color: var(--text);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="grid-bg"></div>
+    <div id="scanlines"></div>
+    <div id="app"></div>
+
+    <script type="module">
+      import { EWObject } from "../lib/ew-object-base.js";
+      import {
+        buildHeaderBar,
+        buildInputPanel,
+        updateOutputStats,
+        wireRange,
+      } from "../lib/ew-object-ui.js";
+
+      // ── EWObject instance ──────────────────────────────────────
+
+      const ewObj = new EWObject({
+        name: "LPR-1",
+        objectType: "looper",
+        roomPrefix: "lpr",
+        inputs: [
+          {
+            port: "audio",
+            type: "room",
+            unit: "",
+            default: null,
+          },
+          {
+            port: "trigger",
+            type: "number",
+            unit: "",
+            min: 0,
+            max: 1,
+            default: 0,
+          },
+          {
+            port: "gain",
+            type: "number",
+            unit: "",
+            min: 0,
+            max: 1,
+            default: 0.8,
+          },
+        ],
+        outputs: [
+          { port: "signal", type: "number", unit: "bipolar" },
+          { port: "state", type: "string" },
+          { port: "gain", type: "number" },
+          { port: "playing", type: "boolean" },
+          { port: "outputMode", type: "string" },
+        ],
+      });
+
+      // ── Looper state machine ───────────────────────────────────
+
+      const STATES = {
+        EMPTY: "empty",
+        RECORDING: "recording",
+        PLAYING: "playing",
+        OVERDUBBING: "overdubbing",
+        STOPPED: "stopped",
+      };
+
+      let loopState = STATES.EMPTY;
+
+      // ── Audio state ────────────────────────────────────────────
+
+      let audioReady = false;
+      let looperRunning = false;
+      let outputMode = "audio";
+      let baseGain = 0.8;
+      let feedback = 0.9;
+
+      // Audio nodes
+      let gainNode = null;
+      let analyser = null;
+
+      // Source oscillator (from upstream room)
+      let sourceOsc = null;
+      let sourceGain = null;
+      let sourceConnected = false;
+
+      // Loop buffer management
+      let loopBuffer = null;       // Float32Array — the raw loop data
+      let loopLength = 0;          // number of samples in the loop
+      let writeHead = 0;           // current write position
+      let readHead = 0;            // current read position
+      let maxLoopSamples = 0;      // max buffer size (30 seconds at sample rate)
+
+      // Audio nodes for capture and playback
+      let scriptNode = null;       // ScriptProcessorNode for capture
+      let playbackSource = null;   // AudioBufferSourceNode for playback
+      let captureGain = null;      // Gain node between source and script processor
+
+      // Signal output
+      let signalWorker = null;
+
+      // Trigger edge detection
+      let lastTriggerValue = 0;
+
+      async function ensureAudio() {
+        if (audioReady) return;
+        await Tone.start();
+
+        const ctx = Tone.context.rawContext;
+        maxLoopSamples = ctx.sampleRate * 30; // 30 seconds max
+
+        gainNode = new Tone.Gain(baseGain);
+        analyser = new Tone.Analyser("waveform", 256);
+        gainNode.connect(analyser);
+        applyOutputRouting();
+
+        // ScriptProcessorNode for capturing input audio
+        scriptNode = ctx.createScriptProcessor(4096, 1, 1);
+        scriptNode.onaudioprocess = onAudioProcess;
+
+        // Capture gain — sits between source and scriptProcessor
+        captureGain = ctx.createGain();
+        captureGain.gain.value = 1.0;
+        captureGain.connect(scriptNode);
+        // Connect scriptNode to context destination (required for it to process)
+        // but at zero volume via a silent gain node
+        const silentGain = ctx.createGain();
+        silentGain.gain.value = 0;
+        scriptNode.connect(silentGain);
+        silentGain.connect(ctx.destination);
+
+        audioReady = true;
+      }
+
+      function applyOutputRouting() {
+        if (!gainNode) return;
+        gainNode.disconnect();
+        if (analyser) gainNode.connect(analyser);
+        if (outputMode === "audio" || outputMode === "both") {
+          gainNode.toDestination();
+        }
+      }
+
+      // ── Source oscillator (audio input from room) ──────────────
+
+      function createSourceOsc(freq, type, gain) {
+        if (sourceOsc) destroySourceOsc();
+        sourceOsc = new Tone.Oscillator({ frequency: freq || 440, type: type || "sine" });
+        sourceGain = new Tone.Gain(gain !== undefined ? gain : 0.5);
+        sourceOsc.connect(sourceGain);
+        // Connect source through the capture path
+        if (captureGain) {
+          sourceGain.connect(captureGain);
+        }
+        if (looperRunning) sourceOsc.start();
+        sourceConnected = true;
+      }
+
+      function destroySourceOsc() {
+        if (sourceOsc) {
+          try { sourceOsc.stop(); } catch (_) {}
+          sourceOsc.disconnect();
+          sourceOsc.dispose();
+          sourceOsc = null;
+        }
+        if (sourceGain) {
+          sourceGain.disconnect();
+          sourceGain.dispose();
+          sourceGain = null;
+        }
+        sourceConnected = false;
+      }
+
+      // ── ScriptProcessor callback ───────────────────────────────
+      // This is the heart of the looper. It captures input audio and
+      // handles recording, overdubbing, and keeps the writeHead in sync.
+
+      function onAudioProcess(e) {
+        const input = e.inputBuffer.getChannelData(0);
+        const output = e.outputBuffer.getChannelData(0);
+        const len = input.length;
+
+        if (loopState === STATES.RECORDING) {
+          // First recording pass — capture audio into the buffer
+          if (!loopBuffer) {
+            loopBuffer = new Float32Array(maxLoopSamples);
+            writeHead = 0;
+          }
+          for (let i = 0; i < len; i++) {
+            if (writeHead < maxLoopSamples) {
+              loopBuffer[writeHead] = input[i];
+              writeHead++;
+            }
+          }
+          // Pass through the input to output so we can hear it
+          for (let i = 0; i < len; i++) {
+            output[i] = input[i];
+          }
+        } else if (loopState === STATES.OVERDUBBING) {
+          // Mix new input with existing buffer content
+          for (let i = 0; i < len; i++) {
+            const pos = readHead % loopLength;
+            const existing = loopBuffer[pos];
+            // Mix: existing * feedback + new input
+            loopBuffer[pos] = existing * feedback + input[i];
+            // Soft clip to prevent runaway
+            if (loopBuffer[pos] > 1.0) loopBuffer[pos] = 1.0;
+            if (loopBuffer[pos] < -1.0) loopBuffer[pos] = -1.0;
+            output[i] = loopBuffer[pos];
+            readHead++;
+            if (readHead >= loopLength) readHead = 0;
+          }
+        } else if (loopState === STATES.PLAYING) {
+          // Playback from buffer
+          for (let i = 0; i < len; i++) {
+            if (loopLength > 0) {
+              output[i] = loopBuffer[readHead % loopLength];
+              readHead++;
+              if (readHead >= loopLength) readHead = 0;
+            } else {
+              output[i] = 0;
+            }
+          }
+        } else {
+          // EMPTY or STOPPED — silence
+          for (let i = 0; i < len; i++) {
+            output[i] = 0;
+          }
+        }
+      }
+
+      // ── Playback via AudioBufferSourceNode ─────────────────────
+      // For high-quality playback, create an AudioBufferSourceNode from
+      // the loop buffer data. The ScriptProcessor handles recording and
+      // overdub, but for clean looping playback we use a proper source.
+
+      function startPlaybackSource() {
+        stopPlaybackSource();
+        if (!loopBuffer || loopLength === 0) return;
+
+        const ctx = Tone.context.rawContext;
+        const audioBuffer = ctx.createBuffer(1, loopLength, ctx.sampleRate);
+        const channelData = audioBuffer.getChannelData(0);
+        for (let i = 0; i < loopLength; i++) {
+          channelData[i] = loopBuffer[i];
+        }
+
+        playbackSource = ctx.createBufferSource();
+        playbackSource.buffer = audioBuffer;
+        playbackSource.loop = true;
+
+        // Connect to output gain (Tone.js node — use its input)
+        playbackSource.connect(gainNode.input);
+        playbackSource.start(0);
+      }
+
+      function stopPlaybackSource() {
+        if (playbackSource) {
+          try { playbackSource.stop(); } catch (_) {}
+          try { playbackSource.disconnect(); } catch (_) {}
+          playbackSource = null;
+        }
+      }
+
+      // Refresh the playback source with current buffer data (for overdub updates)
+      function refreshPlaybackSource() {
+        if (!playbackSource || !loopBuffer || loopLength === 0) return;
+
+        const ctx = Tone.context.rawContext;
+        const audioBuffer = ctx.createBuffer(1, loopLength, ctx.sampleRate);
+        const channelData = audioBuffer.getChannelData(0);
+        for (let i = 0; i < loopLength; i++) {
+          channelData[i] = loopBuffer[i];
+        }
+
+        // Store current time position for seamless transition
+        stopPlaybackSource();
+
+        playbackSource = ctx.createBufferSource();
+        playbackSource.buffer = audioBuffer;
+        playbackSource.loop = true;
+        playbackSource.connect(gainNode.input);
+
+        // Start from current readHead position
+        const offset = (readHead / loopLength) * (loopLength / ctx.sampleRate);
+        playbackSource.start(0, offset);
+      }
+
+      // Timer to refresh playback during overdub
+      let overdubRefreshTimer = null;
+
+      // ── State transitions ──────────────────────────────────────
+
+      function transitionTo(newState) {
+        const oldState = loopState;
+        console.log(`[LOOPER] ${oldState} -> ${newState}`);
+
+        // Exit actions for old state
+        if (oldState === STATES.RECORDING) {
+          // Finalize recording — set the loop length
+          loopLength = writeHead;
+          console.log(`[LOOPER] Recorded ${loopLength} samples (${(loopLength / Tone.context.rawContext.sampleRate).toFixed(2)}s)`);
+        }
+        if (oldState === STATES.OVERDUBBING) {
+          if (overdubRefreshTimer) {
+            clearInterval(overdubRefreshTimer);
+            overdubRefreshTimer = null;
+          }
+        }
+        if (oldState === STATES.PLAYING || oldState === STATES.OVERDUBBING) {
+          // Stop playback source when leaving these states (unless going to the other)
+          if (newState !== STATES.PLAYING && newState !== STATES.OVERDUBBING) {
+            stopPlaybackSource();
+          }
+        }
+
+        // Enter actions for new state
+        loopState = newState;
+
+        if (newState === STATES.RECORDING) {
+          // Reset buffer for fresh recording
+          loopBuffer = null;
+          loopLength = 0;
+          writeHead = 0;
+          readHead = 0;
+          stopPlaybackSource();
+        } else if (newState === STATES.PLAYING) {
+          readHead = 0;
+          if (oldState === STATES.RECORDING) {
+            // Just finished recording — start playback from buffer
+            startPlaybackSource();
+          } else if (oldState === STATES.OVERDUBBING) {
+            // Coming from overdub — refresh the source with updated buffer
+            refreshPlaybackSource();
+          } else if (oldState === STATES.STOPPED) {
+            startPlaybackSource();
+          }
+          startSignalOutput();
+        } else if (newState === STATES.OVERDUBBING) {
+          if (oldState === STATES.PLAYING) {
+            // Keep the playback source running, but also capture new input
+            // Periodically refresh the playback source with overdubbed data
+            overdubRefreshTimer = setInterval(() => {
+              if (loopState === STATES.OVERDUBBING) {
+                refreshPlaybackSource();
+              }
+            }, 150);
+          } else if (oldState === STATES.STOPPED) {
+            readHead = 0;
+            startPlaybackSource();
+            overdubRefreshTimer = setInterval(() => {
+              if (loopState === STATES.OVERDUBBING) {
+                refreshPlaybackSource();
+              }
+            }, 150);
+          }
+          startSignalOutput();
+        } else if (newState === STATES.STOPPED) {
+          stopPlaybackSource();
+          stopSignalOutput();
+        } else if (newState === STATES.EMPTY) {
+          loopBuffer = null;
+          loopLength = 0;
+          writeHead = 0;
+          readHead = 0;
+          stopPlaybackSource();
+          stopSignalOutput();
+        }
+
+        updateTransportUI();
+        updateStateDisplay();
+        ewObj.setOutput("state", newState, { immediate: true });
+        ewObj.setOutput("playing", newState === STATES.PLAYING || newState === STATES.OVERDUBBING, { immediate: true });
+        refreshStats();
+      }
+
+      // ── Trigger cycling ────────────────────────────────────────
+      // Positive edge on trigger input cycles through states:
+      // EMPTY -> REC -> PLAY -> DUB -> PLAY -> DUB -> PLAY ...
+
+      function triggerCycle() {
+        switch (loopState) {
+          case STATES.EMPTY:
+            transitionTo(STATES.RECORDING);
+            break;
+          case STATES.RECORDING:
+            transitionTo(STATES.PLAYING);
+            break;
+          case STATES.PLAYING:
+            transitionTo(STATES.OVERDUBBING);
+            break;
+          case STATES.OVERDUBBING:
+            transitionTo(STATES.PLAYING);
+            break;
+          case STATES.STOPPED:
+            transitionTo(STATES.PLAYING);
+            break;
+        }
+      }
+
+      // ── Start / Stop ───────────────────────────────────────────
+
+      async function startLooper() {
+        if (looperRunning) return;
+        await ensureAudio();
+        if (sourceOsc) sourceOsc.start();
+        looperRunning = true;
+        updatePowerUI();
+        ewObj.setOutput("playing", false, { immediate: true });
+      }
+
+      function stopLooper() {
+        if (!looperRunning) return;
+        if (loopState !== STATES.EMPTY && loopState !== STATES.STOPPED) {
+          transitionTo(STATES.STOPPED);
+        }
+        if (sourceOsc) {
+          const freq = sourceOsc.frequency.value;
+          const type = sourceOsc.type;
+          const gain = sourceGain ? sourceGain.gain.value : 0.5;
+          sourceOsc.stop();
+          sourceOsc.disconnect();
+          sourceOsc.dispose();
+          sourceOsc = new Tone.Oscillator({ frequency: freq, type: type });
+          sourceGain.disconnect();
+          sourceGain.dispose();
+          sourceGain = new Tone.Gain(gain);
+          sourceOsc.connect(sourceGain);
+          if (captureGain) sourceGain.connect(captureGain);
+        }
+        looperRunning = false;
+        updatePowerUI();
+        ewObj.setOutput("playing", false, { immediate: true });
+      }
+
+      // ── Signal output loop ─────────────────────────────────────
+      // Broadcasts the current playback amplitude as a bipolar signal
+
+      function startSignalOutput() {
+        if (signalWorker) return;
+        const blob = new Blob([`
+          let id = setInterval(() => postMessage("tick"), 33);
+          onmessage = () => { clearInterval(id); close(); };
+        `], { type: "application/javascript" });
+        signalWorker = new Worker(URL.createObjectURL(blob));
+        signalWorker.onmessage = () => {
+          if (loopState !== STATES.PLAYING && loopState !== STATES.OVERDUBBING) return;
+          if (!loopBuffer || loopLength === 0) return;
+          // Sample current buffer position
+          const pos = readHead % loopLength;
+          const value = Math.round(loopBuffer[pos] * 1000) / 1000;
+          ewObj.setOutput("signal", value, { unit: "bipolar" });
+        };
+      }
+
+      function stopSignalOutput() {
+        if (signalWorker) {
+          signalWorker.postMessage("stop");
+          signalWorker = null;
+        }
+        ewObj.setOutput("signal", 0, { unit: "bipolar", immediate: true });
+      }
+
+      // ── Build UI ───────────────────────────────────────────────
+
+      const app = document.getElementById("app");
+
+      buildHeaderBar(ewObj, "LOOPER", app);
+
+      document.getElementById("ew-header-controls").innerHTML = `
+        <select id="ew-theme" style="width:auto; padding:3px 24px 3px 8px">
+          <option value="theme-ethos">ETHOS</option>
+          <option value="">AMBER</option>
+          <option value="theme-phosphor">PHOSPHOR</option>
+          <option value="theme-cobalt">COBALT</option>
+          <option value="theme-plasma">PLASMA</option>
+          <option value="theme-danger">DANGER</option>
+          <option value="theme-matrix">MATRIX</option>
+          <option value="theme-solar">SOLAR</option>
+          <option value="theme-arctic">ARCTIC</option>
+        </select>
+        <select id="loop-output-mode" style="width:auto; padding:3px 24px 3px 8px">
+          <option value="audio">AUDIO</option>
+          <option value="control">CONTROL</option>
+          <option value="both">BOTH</option>
+        </select>
+        <div class="toggle-wrap" id="power-toggle" style="margin-bottom:0; cursor:pointer">
+          <div class="toggle-track" id="power-track">
+            <div class="toggle-thumb"></div>
+          </div>
+        </div>
+      `;
+
+      // Transport panel
+      const transportPanel = document.createElement("div");
+      transportPanel.className = "hud-panel clip-tr";
+      transportPanel.innerHTML = `
+        <div class="transport-row">
+          <button class="transport-btn" id="btn-rec">REC</button>
+          <button class="transport-btn" id="btn-dub" disabled>DUB</button>
+          <button class="transport-btn" id="btn-play" disabled>PLAY</button>
+          <button class="transport-btn" id="btn-stop" disabled>STOP</button>
+          <button class="transport-btn" id="btn-clr">CLR</button>
+        </div>
+
+        <div class="state-display">
+          <span class="state-label">STATE</span>
+          <span class="state-value" id="state-text">EMPTY</span>
+        </div>
+        <div class="state-display">
+          <span class="state-label">LOOP</span>
+          <span class="state-value" id="loop-length-text">-- s</span>
+        </div>
+      `;
+      app.appendChild(transportPanel);
+
+      // Controls panel
+      const controlsPanel = document.createElement("div");
+      controlsPanel.className = "hud-panel";
+      controlsPanel.innerHTML = `
+        <div class="param-row">
+          <div class="control-label">GAIN</div>
+          <input type="range" id="loop-gain" min="0" max="100" value="80" />
+          <span class="range-val" id="loop-gain-val">0.80</span>
+        </div>
+
+        <div class="param-row">
+          <div class="control-label">FEEDBACK</div>
+          <input type="range" id="loop-feedback" min="0" max="100" value="90" />
+          <span class="range-val" id="loop-feedback-val">0.90</span>
+        </div>
+      `;
+      app.appendChild(controlsPanel);
+
+      // Theme
+      document.getElementById("ew-theme").addEventListener("change", (e) => {
+        document.documentElement.className = e.target.value;
+      });
+      document.documentElement.className = "theme-ethos";
+
+      // Scope
+      const scopePanel = document.createElement("div");
+      scopePanel.className = "hud-panel";
+      scopePanel.innerHTML = `
+        <div class="screen-wrap">
+          <div class="screen-inner" style="padding:0; min-height:auto">
+            <canvas id="loop-scope"></canvas>
+            <div class="screen-scan"></div>
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
+          </div>
+        </div>
+      `;
+      app.appendChild(scopePanel);
+
+      // Input panel
+      buildInputPanel(ewObj, app);
+
+      // Rooms panel
+      const roomsPanel = document.createElement("div");
+      roomsPanel.className = "hud-panel";
+      roomsPanel.innerHTML = `
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px">
+          <span class="control-label" style="margin:0; flex-shrink:0">ROOM</span>
+          <input type="text" id="room-input" placeholder="ROOM-ID" maxlength="32" spellcheck="false" autocomplete="off" style="flex:1">
+          <button class="btn btn-sm" id="room-join-btn">JOIN</button>
+          <button class="btn btn-sm" id="privacy-btn">PUBLIC</button>
+        </div>
+        <hr class="hud-divider" style="margin:10px 0">
+        <div class="section-title">// AVAILABLE LOOPERS //</div>
+        <div id="rooms-list">
+          <span class="type-dim">NO OTHER LOOPERS AVAILABLE</span>
+        </div>
+      `;
+      app.appendChild(roomsPanel);
+
+      // Footer
+      const footer = document.createElement("div");
+      footer.style.cssText = "text-align:center; padding:20px 0; font-size:0.72rem; letter-spacing:0.22em; color:var(--dim)";
+      footer.innerHTML = '<a href="../../index.html" style="color:var(--dim); text-decoration:none">ENTROPY WORSHIP</a>';
+      app.appendChild(footer);
+
+      // ── Wire transport controls ────────────────────────────────
+
+      function updateTransportUI() {
+        const rec = document.getElementById("btn-rec");
+        const dub = document.getElementById("btn-dub");
+        const play = document.getElementById("btn-play");
+        const stop = document.getElementById("btn-stop");
+        const clr = document.getElementById("btn-clr");
+
+        // Remove all active classes
+        rec.classList.remove("active-rec");
+        dub.classList.remove("active-dub");
+        play.classList.remove("active-play");
+
+        // Enable/disable based on state
+        switch (loopState) {
+          case STATES.EMPTY:
+            rec.disabled = false;
+            dub.disabled = true;
+            play.disabled = true;
+            stop.disabled = true;
+            clr.disabled = false;
+            break;
+          case STATES.RECORDING:
+            rec.disabled = false;
+            rec.classList.add("active-rec");
+            dub.disabled = true;
+            play.disabled = false;
+            stop.disabled = false;
+            clr.disabled = true;
+            break;
+          case STATES.PLAYING:
+            rec.disabled = false;
+            play.classList.add("active-play");
+            dub.disabled = false;
+            play.disabled = false;
+            stop.disabled = false;
+            clr.disabled = false;
+            break;
+          case STATES.OVERDUBBING:
+            rec.disabled = false;
+            dub.classList.add("active-dub");
+            dub.disabled = false;
+            play.disabled = false;
+            stop.disabled = false;
+            clr.disabled = false;
+            break;
+          case STATES.STOPPED:
+            rec.disabled = false;
+            dub.disabled = false;
+            play.disabled = false;
+            stop.disabled = true;
+            clr.disabled = false;
+            break;
+        }
+      }
+
+      function updateStateDisplay() {
+        document.getElementById("state-text").textContent = loopState.toUpperCase();
+        if (loopLength > 0 && Tone.context && Tone.context.rawContext) {
+          const secs = loopLength / Tone.context.rawContext.sampleRate;
+          document.getElementById("loop-length-text").textContent = secs.toFixed(2) + " s";
+        } else {
+          document.getElementById("loop-length-text").textContent = "-- s";
+        }
+      }
+
+      document.getElementById("btn-rec").addEventListener("click", async () => {
+        await startLooper();
+        if (loopState === STATES.EMPTY || loopState === STATES.STOPPED || loopState === STATES.PLAYING) {
+          transitionTo(STATES.RECORDING);
+        } else if (loopState === STATES.RECORDING) {
+          // Stop recording, go to play
+          transitionTo(STATES.PLAYING);
+        }
+      });
+
+      document.getElementById("btn-dub").addEventListener("click", async () => {
+        await startLooper();
+        if (loopState === STATES.PLAYING || loopState === STATES.STOPPED) {
+          transitionTo(STATES.OVERDUBBING);
+        } else if (loopState === STATES.OVERDUBBING) {
+          transitionTo(STATES.PLAYING);
+        }
+      });
+
+      document.getElementById("btn-play").addEventListener("click", async () => {
+        await startLooper();
+        if (loopState === STATES.RECORDING) {
+          transitionTo(STATES.PLAYING);
+        } else if (loopState === STATES.OVERDUBBING) {
+          transitionTo(STATES.PLAYING);
+        } else if (loopState === STATES.STOPPED) {
+          transitionTo(STATES.PLAYING);
+        }
+      });
+
+      document.getElementById("btn-stop").addEventListener("click", () => {
+        if (loopState === STATES.RECORDING || loopState === STATES.PLAYING || loopState === STATES.OVERDUBBING) {
+          if (loopState === STATES.RECORDING && writeHead === 0) {
+            // Nothing recorded yet — go back to empty
+            transitionTo(STATES.EMPTY);
+          } else if (loopState === STATES.RECORDING) {
+            // Finalize recording then stop
+            loopLength = writeHead;
+            loopState = STATES.RECORDING; // keep state so transitionTo exit actions fire
+            transitionTo(STATES.STOPPED);
+          } else {
+            transitionTo(STATES.STOPPED);
+          }
+        }
+      });
+
+      document.getElementById("btn-clr").addEventListener("click", () => {
+        transitionTo(STATES.EMPTY);
+      });
+
+      // ── Wire controls ──────────────────────────────────────────
+
+      function updatePowerUI() {
+        const track = document.getElementById("power-track");
+        track.classList.toggle("on", looperRunning);
+      }
+
+      document.getElementById("power-toggle").addEventListener("click", () => {
+        if (looperRunning) stopLooper(); else startLooper();
+      });
+
+      // Output mode
+      document.getElementById("loop-output-mode").addEventListener("change", (e) => {
+        outputMode = e.target.value;
+        applyOutputRouting();
+        ewObj.setOutput("outputMode", outputMode, { immediate: true });
+      });
+
+      // Gain slider
+      wireRange("loop-gain", "loop-gain-val", (v) => (v / 100).toFixed(2));
+      document.getElementById("loop-gain").addEventListener("input", (e) => {
+        const gain = +e.target.value / 100;
+        baseGain = gain;
+        if (gainNode) gainNode.gain.rampTo(gain, 0.01);
+        ewObj.setOutput("gain", Math.round(gain * 100) / 100);
+        refreshStats();
+      });
+
+      // Feedback slider
+      wireRange("loop-feedback", "loop-feedback-val", (v) => (v / 100).toFixed(2));
+      document.getElementById("loop-feedback").addEventListener("input", (e) => {
+        feedback = +e.target.value / 100;
+      });
+
+      // ── Input signal handling ──────────────────────────────────
+
+      // Audio input — creates a local oscillator mirroring the remote
+      ewObj.onInput("audio", (value, meta) => {
+        if (meta && meta.unit === "bipolar") return;
+        if (!captureGain) return;
+
+        if (meta && meta.port === "frequency" && typeof value === "number") {
+          if (!sourceConnected) {
+            createSourceOsc(value, "sine", 0.5);
+          } else if (sourceOsc) {
+            sourceOsc.frequency.value = value;
+          }
+        } else if (meta && meta.port === "waveform" && typeof value === "string") {
+          if (sourceOsc) { try { sourceOsc.type = value; } catch (_) {} }
+        } else if (meta && meta.port === "gain" && typeof value === "number") {
+          if (sourceGain) sourceGain.gain.value = Math.max(0, Math.min(1, value));
+        } else if (meta && meta.port === "detune" && typeof value === "number") {
+          if (sourceOsc) sourceOsc.detune.value = value;
+        } else if (meta && meta.port === "playing" && typeof value === "boolean") {
+          if (value && sourceConnected && !looperRunning) startLooper();
+        }
+      });
+
+      ewObj.on("inputConnected", ({ room, portMapping }) => {
+        ensureAudio().then(() => {
+          for (const localPort of Object.values(portMapping)) {
+            if (localPort === "audio" && !sourceConnected) {
+              createSourceOsc(440, "sine", 0.5);
+            }
+          }
+        });
+      });
+
+      ewObj.on("inputDisconnected", ({ room }) => {
+        const subs = ewObj.getSubscriptions();
+        const activePorts = new Set();
+        for (const sub of subs) {
+          for (const local of Object.values(sub.portMapping)) activePorts.add(local);
+        }
+        if (!activePorts.has("audio")) destroySourceOsc();
+      });
+
+      // Trigger input — positive edge cycles through states
+      ewObj.onInput("trigger", (value, meta) => {
+        if (typeof value !== "number") return;
+        if (value > 0.5 && lastTriggerValue <= 0.5) {
+          triggerCycle();
+        }
+        lastTriggerValue = value;
+      });
+
+      // Gain input
+      ewObj.onInput("gain", (value, meta) => {
+        if (typeof value === "number") {
+          const clamped = Math.max(0, Math.min(1, value));
+          baseGain = clamped;
+          if (gainNode) gainNode.gain.rampTo(clamped, 0.01);
+          document.getElementById("loop-gain").value = Math.round(clamped * 100);
+          document.getElementById("loop-gain-val").textContent = clamped.toFixed(2);
+          const pct = Math.round(clamped * 100);
+          document.getElementById("loop-gain").style.setProperty("--val", pct + "%");
+          ewObj.setOutput("gain", clamped);
+          refreshStats();
+        }
+      });
+
+      // Room state sync
+      ewObj.onInput("playing", async (value) => {
+        if (typeof value !== "boolean") return;
+        if (value && !looperRunning) await startLooper();
+        else if (!value && looperRunning) stopLooper();
+      });
+
+      ewObj.onInput("outputMode", (value) => {
+        if (typeof value !== "string") return;
+        if (["audio", "control", "both"].includes(value)) {
+          outputMode = value;
+          document.getElementById("loop-output-mode").value = value;
+          applyOutputRouting();
+        }
+      });
+
+      // ── Output stats ───────────────────────────────────────────
+
+      function refreshStats() {
+        const loopSecs = loopLength > 0 && Tone.context && Tone.context.rawContext
+          ? (loopLength / Tone.context.rawContext.sampleRate).toFixed(2) + "s"
+          : "--";
+        updateOutputStats(ewObj, [
+          { port: "signal", label: "SIG", formatter: (v) => v !== undefined ? v.toFixed(3) : "0.000" },
+          { port: "state", label: "STATE", formatter: (v) => v ? v.toUpperCase().slice(0, 4) : "EMPT" },
+          { port: "gain", label: "GAIN", formatter: (v) => v !== undefined ? v.toFixed(2) : "--" },
+        ]);
+      }
+
+      // ── Scope ──────────────────────────────────────────────────
+
+      const scopeCanvas = document.getElementById("loop-scope");
+      const scopeCtx = scopeCanvas.getContext("2d");
+
+      function resizeScope() {
+        const rect = scopeCanvas.parentElement.getBoundingClientRect();
+        scopeCanvas.width = rect.width;
+        scopeCanvas.height = 120;
+      }
+
+      function drawScope() {
+        requestAnimationFrame(drawScope);
+        const w = scopeCanvas.width;
+        const h = scopeCanvas.height;
+        scopeCtx.fillStyle = "#080808";
+        scopeCtx.fillRect(0, 0, w, h);
+
+        // Grid
+        scopeCtx.strokeStyle = "rgba(128, 128, 128, 0.08)";
+        scopeCtx.lineWidth = 1;
+        for (let y = 0; y < h; y += 20) { scopeCtx.beginPath(); scopeCtx.moveTo(0, y); scopeCtx.lineTo(w, y); scopeCtx.stroke(); }
+        for (let x = 0; x < w; x += 20) { scopeCtx.beginPath(); scopeCtx.moveTo(x, 0); scopeCtx.lineTo(x, h); scopeCtx.stroke(); }
+
+        // Center line
+        scopeCtx.strokeStyle = "rgba(128, 128, 128, 0.2)";
+        scopeCtx.beginPath(); scopeCtx.moveTo(0, h / 2); scopeCtx.lineTo(w, h / 2); scopeCtx.stroke();
+
+        // Draw the loop buffer waveform overview (if we have data)
+        if (loopBuffer && loopLength > 0) {
+          const accent = getComputedStyle(document.documentElement).getPropertyValue("--accent");
+
+          // Draw full buffer overview
+          scopeCtx.strokeStyle = accent;
+          scopeCtx.globalAlpha = 0.4;
+          scopeCtx.lineWidth = 1;
+          scopeCtx.beginPath();
+          const samplesPerPixel = Math.max(1, Math.floor(loopLength / w));
+          for (let x = 0; x < w; x++) {
+            const sampleIdx = Math.floor((x / w) * loopLength);
+            // Find min/max in this pixel's sample range for a better overview
+            let min = 1, max = -1;
+            for (let s = 0; s < samplesPerPixel && sampleIdx + s < loopLength; s++) {
+              const val = loopBuffer[sampleIdx + s];
+              if (val < min) min = val;
+              if (val > max) max = val;
+            }
+            const yMin = ((1 - min) / 2) * h;
+            const yMax = ((1 - max) / 2) * h;
+            scopeCtx.moveTo(x, yMax);
+            scopeCtx.lineTo(x, yMin);
+          }
+          scopeCtx.stroke();
+          scopeCtx.globalAlpha = 1.0;
+
+          // Draw playhead position
+          if (loopState === STATES.PLAYING || loopState === STATES.OVERDUBBING) {
+            const playX = (readHead / loopLength) * w;
+            scopeCtx.strokeStyle = loopState === STATES.OVERDUBBING ? "#ffaa00" : "#33ff66";
+            scopeCtx.lineWidth = 2;
+            scopeCtx.shadowColor = scopeCtx.strokeStyle;
+            scopeCtx.shadowBlur = 6;
+            scopeCtx.beginPath();
+            scopeCtx.moveTo(playX, 0);
+            scopeCtx.lineTo(playX, h);
+            scopeCtx.stroke();
+            scopeCtx.shadowBlur = 0;
+          }
+
+          // Draw write head during recording
+          if (loopState === STATES.RECORDING) {
+            const writeX = (writeHead / maxLoopSamples) * w;
+            scopeCtx.strokeStyle = "#ff3333";
+            scopeCtx.lineWidth = 2;
+            scopeCtx.shadowColor = "#ff3333";
+            scopeCtx.shadowBlur = 6;
+            scopeCtx.beginPath();
+            scopeCtx.moveTo(writeX, 0);
+            scopeCtx.lineTo(writeX, h);
+            scopeCtx.stroke();
+            scopeCtx.shadowBlur = 0;
+          }
+        }
+
+        // If recording and no buffer yet, show live analyser input
+        if (loopState === STATES.RECORDING && analyser && looperRunning && (!loopBuffer || writeHead < 256)) {
+          const data = analyser.getValue();
+          const accent = getComputedStyle(document.documentElement).getPropertyValue("--accent");
+          scopeCtx.strokeStyle = accent;
+          scopeCtx.lineWidth = 2;
+          scopeCtx.shadowColor = "rgba(210, 210, 210, 0.4)";
+          scopeCtx.shadowBlur = 6;
+          scopeCtx.beginPath();
+          for (let i = 0; i < data.length; i++) {
+            const x = (i / data.length) * w;
+            const y = ((1 - data[i]) / 2) * h;
+            if (i === 0) scopeCtx.moveTo(x, y); else scopeCtx.lineTo(x, y);
+          }
+          scopeCtx.stroke();
+          scopeCtx.shadowBlur = 0;
+        }
+      }
+
+      // ── Room UI ────────────────────────────────────────────────
+
+      ewObj.on("connected", () => {
+        document.getElementById("room-input").value = ewObj.getOutputRoom();
+      });
+      document.getElementById("room-join-btn").addEventListener("click", () => {
+        const name = document.getElementById("room-input").value.trim().replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 32) || "default";
+        location.search = `?room=${encodeURIComponent(name)}`;
+      });
+      document.getElementById("room-input").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") document.getElementById("room-join-btn").click();
+      });
+
+      let roomPrivate = false;
+      function updatePrivacyBtn() {
+        const btn = document.getElementById("privacy-btn");
+        btn.textContent = roomPrivate ? "PRIVATE" : "PUBLIC";
+        btn.classList.toggle("active", roomPrivate);
+      }
+      document.getElementById("privacy-btn").addEventListener("click", () => {
+        roomPrivate = !roomPrivate;
+        ewObj.setPrivate(roomPrivate);
+        updatePrivacyBtn();
+      });
+      ewObj.on("stateSync", (msg) => {
+        roomPrivate = msg.private || false;
+        updatePrivacyBtn();
+        document.getElementById("room-input").value = msg.room || ewObj.getOutputRoom();
+      });
+      ewObj.on("roomPrivate", (msg) => { roomPrivate = msg.private; updatePrivacyBtn(); });
+
+      ewObj.on("rooms", (msg) => {
+        const el = document.getElementById("rooms-list");
+        if (!el) return;
+        const currentRoom = ewObj.getOutputRoom();
+        const others = (msg.rooms || []).filter((r) => r.name !== currentRoom);
+        if (!others.length) { el.innerHTML = '<span class="type-dim">NO OTHER LOOPERS AVAILABLE</span>'; return; }
+        el.innerHTML = "";
+        for (const r of others) {
+          const a = document.createElement("a");
+          a.className = "room-entry";
+          a.href = `?room=${encodeURIComponent(r.name)}`;
+          const objs = r.objects && r.objects.length ? r.objects.join(", ").toUpperCase() : "";
+          a.innerHTML = `<span class="room-entry-name">${r.name}</span><span class="room-entry-info">${r.clients} PLR${objs ? " · " + objs : ""}</span>`;
+          el.appendChild(a);
+        }
+      });
+
+      // ── Initialize ─────────────────────────────────────────────
+
+      (() => {
+        const urlRoom = new URLSearchParams(location.search).get("room");
+        ewObj.connectOutput(urlRoom || undefined);
+
+        ewObj._outputValues["signal"] = 0;
+        ewObj._outputValues["state"] = "empty";
+        ewObj._outputValues["gain"] = 0.8;
+        ewObj._outputValues["playing"] = false;
+        ewObj._outputValues["outputMode"] = "audio";
+
+        refreshStats();
+        updateTransportUI();
+        updateStateDisplay();
+        resizeScope();
+        drawScope();
+      })();
+
+      window.addEventListener("resize", resizeScope);
+    </script>
+  </body>
+</html>

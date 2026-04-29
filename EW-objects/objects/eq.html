@@ -1,0 +1,833 @@
+<!-- /-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\ -->
+<!-- |                                                                         | -->
+<!-- \ @@@@@@@@  @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@@@@@   @@@ @@@      / -->
+<!-- - @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@ @@@      - -->
+<!-- / @@!       @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!  @@@  @@! !@@      \ -->
+<!-- | !@!       !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!  @!@  !@! @!!      | -->
+<!-- \ @!!!:!    @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!@@!@!    !@!@!       / -->
+<!-- - !!!!!:    !@!  !!!    !!!    !!@!@!    !@!  !!!  !!@!!!      @!!!       - -->
+<!-- / !!:       !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:         !!:        \ -->
+<!-- | :!:       :!:  !:!    :!:    :!:  !:!  :!:  !:!  :!:         :!:        | -->
+<!-- \  :: ::::   ::   ::     ::    ::   :::  ::::: ::   ::          ::        / -->
+<!-- - : :: ::   ::    :      :      :   : :   : :  :    :           :         - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \ @@@  @@@  @@@   @@@@@@   @@@@@@@    @@@@@@   @@@  @@@  @@@  @@@@@@@     / -->
+<!-- - @@@  @@@  @@@  @@@@@@@@  @@@@@@@@  @@@@@@@   @@@  @@@  @@@  @@@@@@@@    - -->
+<!-- / @@!  @@!  @@!  @@!  @@@  @@!  @@@  !@@       @@!  @@@  @@!  @@!  @@@    \ -->
+<!-- | !@!  !@!  !@!  !@!  @!@  !@!  @!@  !@!       !@!  @!@  !@!  !@!  @!@    | -->
+<!-- \ @!!  !!@  @!@  @!@  !@!  @!@!!@!   !!@@!!    @!@!@!@!  !!@  @!@@!@!     / -->
+<!-- - !@!  !!!  !@!  !@!  !!!  !!@!@!     !!@!!!   !!!@!!!!  !!!  !!@!!!      - -->
+<!-- / !!:  !!:  !!:  !!:  !!!  !!: :!!        !:!  !!:  !!!  !!:  !!:         \ -->
+<!-- | :!:  :!:  :!:  :!:  !:!  :!:  !:!      !:!   :!:  !:!  :!:  :!:         | -->
+<!-- \  :::: :: :::   ::::: ::  ::   :::  :::: ::   ::   :::   ::   ::         / -->
+<!-- -   :: :  : :     : :  :    :   : :  :: : :     :   : :  :     :          - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EQ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=VT323&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css"
+    />
+    <link rel="stylesheet" href="../lib/ewuilib.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+
+    <style>
+      #eq-scope {
+        display: block;
+        width: 100%;
+        height: 120px;
+        background: #0e0400;
+      }
+      .param-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 14px;
+      }
+      .param-row .control-label {
+        min-width: 80px;
+        margin-bottom: 0;
+        flex-shrink: 0;
+      }
+      #power-toggle .toggle-track.on .toggle-thumb {
+        left: 22px;
+      }
+      #meta .toggle-wrap {
+        align-self: center;
+      }
+      #meta .toggle-track {
+        margin: 0;
+      }
+      .param-row input[type="range"] {
+        flex: 1;
+      }
+      .param-row .range-val {
+        min-width: 72px;
+        text-align: right;
+      }
+      .room-entry {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 6px 10px;
+        border: 1px solid var(--border);
+        margin-bottom: 6px;
+        text-decoration: none;
+        color: var(--text);
+        font-size: 0.82rem;
+        letter-spacing: 0.1em;
+        transition: border-color 0.14s, background 0.14s;
+        cursor: pointer;
+      }
+      .room-entry:hover {
+        border-color: var(--accent);
+        background: rgba(var(--accent-rgb), 0.06);
+      }
+      .room-entry-name {
+        color: var(--accent);
+      }
+      .room-entry-info {
+        font-size: 0.68rem;
+        color: var(--dim);
+        letter-spacing: 0.08em;
+      }
+      .mod-row {
+        opacity: 0.3;
+        pointer-events: none;
+        transition: opacity 0.2s;
+      }
+      .mod-row.active {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .band-section {
+        border-top: 1px solid var(--border);
+        padding-top: 10px;
+        margin-top: 6px;
+      }
+      .band-title {
+        font-size: 0.72rem;
+        letter-spacing: 0.18em;
+        color: var(--accent);
+        margin-bottom: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="grid-bg"></div>
+    <div id="scanlines"></div>
+    <div id="app"></div>
+
+    <script type="module">
+      import { EWObject } from "../lib/ew-object-base.js";
+      import {
+        buildHeaderBar,
+        buildInputPanel,
+        updateOutputStats,
+        wireRange,
+      } from "../lib/ew-object-ui.js";
+
+      // ── EWObject instance ──────────────────────────────────────
+
+      const ewObj = new EWObject({
+        name: "EQ-1",
+        objectType: "eq",
+        roomPrefix: "eq",
+        inputs: [
+          {
+            port: "audio",
+            type: "room",
+            unit: "",
+            default: null,
+          },
+          {
+            port: "low",
+            type: "number",
+            unit: "dB",
+            min: -24,
+            max: 24,
+            default: 0,
+          },
+          {
+            port: "mid",
+            type: "number",
+            unit: "dB",
+            min: -24,
+            max: 24,
+            default: 0,
+          },
+          {
+            port: "high",
+            type: "number",
+            unit: "dB",
+            min: -24,
+            max: 24,
+            default: 0,
+          },
+          {
+            port: "lowFreq",
+            type: "number",
+            unit: "hz",
+            min: 20,
+            max: 1000,
+            default: 400,
+          },
+          {
+            port: "highFreq",
+            type: "number",
+            unit: "hz",
+            min: 1000,
+            max: 20000,
+            default: 2500,
+          },
+        ],
+        outputs: [
+          { port: "low", type: "number", unit: "dB" },
+          { port: "mid", type: "number", unit: "dB" },
+          { port: "high", type: "number", unit: "dB" },
+          { port: "lowFreq", type: "number", unit: "hz" },
+          { port: "highFreq", type: "number", unit: "hz" },
+          { port: "playing", type: "boolean" },
+          { port: "outputMode", type: "string" },
+        ],
+      });
+
+      // ── EQ state ───────────────────────────────────────────────
+
+      let baseLow = 0;
+      let baseMid = 0;
+      let baseHigh = 0;
+      let baseLowFreq = 400;
+      let baseHighFreq = 2500;
+
+      // Modulation depths for bipolar input
+      let lowModDepth = 12;
+      let midModDepth = 12;
+      let highModDepth = 12;
+      let lowFreqModDepth = 300;
+      let highFreqModDepth = 5000;
+
+      // ── Tone.js audio ──────────────────────────────────────────
+
+      let eq = null;
+      let analyser = null;
+      let eqRunning = false;
+      let audioReady = false;
+      let outputMode = "audio";
+
+      // Local source oscillator
+      let sourceOsc = null;
+      let sourceGain = null;
+      let sourceConnected = false;
+
+      async function ensureAudio() {
+        if (audioReady) return;
+        eq = new Tone.EQ3({
+          low: baseLow,
+          mid: baseMid,
+          high: baseHigh,
+          lowFrequency: baseLowFreq,
+          highFrequency: baseHighFreq,
+        });
+        applyOutputRouting();
+        analyser = new Tone.Analyser("waveform", 256);
+        eq.connect(analyser);
+        audioReady = true;
+      }
+
+      function applyOutputRouting() {
+        if (!eq) return;
+        eq.disconnect();
+        if (analyser) eq.connect(analyser);
+        if (outputMode === "audio" || outputMode === "both") {
+          eq.toDestination();
+        }
+      }
+
+      // ── Source oscillator (audio input from room) ──────────────
+
+      function createSourceOsc(freq, type, gain) {
+        if (sourceOsc) destroySourceOsc();
+        sourceOsc = new Tone.Oscillator({ frequency: freq || 440, type: type || "sine" });
+        sourceGain = new Tone.Gain(gain !== undefined ? gain : 0.5);
+        sourceOsc.connect(sourceGain);
+        sourceGain.connect(eq);
+        if (eqRunning) sourceOsc.start();
+        sourceConnected = true;
+      }
+
+      function destroySourceOsc() {
+        if (sourceOsc) {
+          try { sourceOsc.stop(); } catch (_) {}
+          sourceOsc.disconnect();
+          sourceOsc.dispose();
+          sourceOsc = null;
+        }
+        if (sourceGain) {
+          sourceGain.disconnect();
+          sourceGain.dispose();
+          sourceGain = null;
+        }
+        sourceConnected = false;
+      }
+
+      async function startEQ() {
+        if (eqRunning) return;
+        await Tone.start();
+        await ensureAudio();
+        if (sourceOsc) sourceOsc.start();
+        eqRunning = true;
+        updatePowerUI();
+        ewObj.setOutput("playing", true, { immediate: true });
+      }
+
+      function stopEQ() {
+        if (!eqRunning) return;
+        if (sourceOsc) {
+          const freq = sourceOsc.frequency.value;
+          const type = sourceOsc.type;
+          const gain = sourceGain ? sourceGain.gain.value : 0.5;
+          sourceOsc.stop();
+          sourceOsc.disconnect();
+          sourceOsc.dispose();
+          sourceOsc = new Tone.Oscillator({ frequency: freq, type: type });
+          sourceGain.disconnect();
+          sourceGain.dispose();
+          sourceGain = new Tone.Gain(gain);
+          sourceOsc.connect(sourceGain);
+          sourceGain.connect(eq);
+        }
+        eqRunning = false;
+        updatePowerUI();
+        ewObj.setOutput("playing", false, { immediate: true });
+      }
+
+      // ── Log frequency mapping for crossover controls ───────────
+
+      const LF_MIN = 20;
+      const LF_MAX = 1000;
+      const LF_LOG_MIN = Math.log(LF_MIN);
+      const LF_LOG_MAX = Math.log(LF_MAX);
+
+      function sliderToLowFreq(val) {
+        return Math.exp(LF_LOG_MIN + (val / 1000) * (LF_LOG_MAX - LF_LOG_MIN));
+      }
+      function lowFreqToSlider(freq) {
+        return Math.round(((Math.log(freq) - LF_LOG_MIN) / (LF_LOG_MAX - LF_LOG_MIN)) * 1000);
+      }
+      function formatLowFreq(val) {
+        const freq = sliderToLowFreq(val);
+        return freq >= 1000 ? (freq / 1000).toFixed(2) + " kHz" : freq.toFixed(0) + " Hz";
+      }
+
+      const HF_MIN = 1000;
+      const HF_MAX = 20000;
+      const HF_LOG_MIN = Math.log(HF_MIN);
+      const HF_LOG_MAX = Math.log(HF_MAX);
+
+      function sliderToHighFreq(val) {
+        return Math.exp(HF_LOG_MIN + (val / 1000) * (HF_LOG_MAX - HF_LOG_MIN));
+      }
+      function highFreqToSlider(freq) {
+        return Math.round(((Math.log(freq) - HF_LOG_MIN) / (HF_LOG_MAX - HF_LOG_MIN)) * 1000);
+      }
+      function formatHighFreq(val) {
+        const freq = sliderToHighFreq(val);
+        return freq >= 1000 ? (freq / 1000).toFixed(2) + " kHz" : freq.toFixed(0) + " Hz";
+      }
+
+      // ── Build UI ───────────────────────────────────────────────
+
+      const app = document.getElementById("app");
+
+      buildHeaderBar(ewObj, "EQ", app);
+
+      document.getElementById("ew-header-controls").innerHTML = `
+        <select id="ew-theme" style="width:auto; padding:3px 24px 3px 8px">
+          <option value="theme-ethos">ETHOS</option>
+          <option value="">AMBER</option>
+          <option value="theme-phosphor">PHOSPHOR</option>
+          <option value="theme-cobalt">COBALT</option>
+          <option value="theme-plasma">PLASMA</option>
+          <option value="theme-danger">DANGER</option>
+          <option value="theme-matrix">MATRIX</option>
+          <option value="theme-solar">SOLAR</option>
+          <option value="theme-arctic">ARCTIC</option>
+        </select>
+        <select id="eq-output-mode" style="width:auto; padding:3px 24px 3px 8px">
+          <option value="audio">AUDIO</option>
+          <option value="control">CONTROL</option>
+          <option value="both">BOTH</option>
+        </select>
+        <div class="toggle-wrap" id="power-toggle" style="margin-bottom:0; cursor:pointer">
+          <div class="toggle-track" id="power-track">
+            <div class="toggle-thumb"></div>
+          </div>
+        </div>
+      `;
+
+      // Controls panel
+      const controlsPanel = document.createElement("div");
+      controlsPanel.className = "hud-panel clip-tr";
+      controlsPanel.innerHTML = `
+        <div class="band-title">// LOW BAND //</div>
+        <div class="param-row">
+          <div class="control-label">LOW</div>
+          <input type="range" id="eq-low" min="-240" max="240" value="0" />
+          <span class="range-val" id="eq-low-val">0.0 dB</span>
+        </div>
+        <div class="param-row">
+          <div class="control-label">LO XOVER</div>
+          <input type="range" id="eq-low-freq" min="0" max="1000" value="${lowFreqToSlider(400)}" />
+          <span class="range-val" id="eq-low-freq-val">${formatLowFreq(lowFreqToSlider(400))}</span>
+        </div>
+
+        <div class="band-section">
+          <div class="band-title">// MID BAND //</div>
+          <div class="param-row">
+            <div class="control-label">MID</div>
+            <input type="range" id="eq-mid" min="-240" max="240" value="0" />
+            <span class="range-val" id="eq-mid-val">0.0 dB</span>
+          </div>
+        </div>
+
+        <div class="band-section">
+          <div class="band-title">// HIGH BAND //</div>
+          <div class="param-row">
+            <div class="control-label">HIGH</div>
+            <input type="range" id="eq-high" min="-240" max="240" value="0" />
+            <span class="range-val" id="eq-high-val">0.0 dB</span>
+          </div>
+          <div class="param-row">
+            <div class="control-label">HI XOVER</div>
+            <input type="range" id="eq-high-freq" min="0" max="1000" value="${highFreqToSlider(2500)}" />
+            <span class="range-val" id="eq-high-freq-val">${formatHighFreq(highFreqToSlider(2500))}</span>
+          </div>
+        </div>
+      `;
+      app.appendChild(controlsPanel);
+
+      // Theme
+      document.getElementById("ew-theme").addEventListener("change", (e) => {
+        document.documentElement.className = e.target.value;
+      });
+      document.documentElement.className = "theme-ethos";
+
+      // Scope
+      const scopePanel = document.createElement("div");
+      scopePanel.className = "hud-panel";
+      scopePanel.innerHTML = `
+        <div class="screen-wrap">
+          <div class="screen-inner" style="padding:0; min-height:auto">
+            <canvas id="eq-scope"></canvas>
+            <div class="screen-scan"></div>
+            <div class="corner tl"></div>
+            <div class="corner tr"></div>
+            <div class="corner bl"></div>
+            <div class="corner br"></div>
+          </div>
+        </div>
+      `;
+      app.appendChild(scopePanel);
+
+      // Input panel
+      buildInputPanel(ewObj, app);
+
+      // Rooms panel
+      const roomsPanel = document.createElement("div");
+      roomsPanel.className = "hud-panel";
+      roomsPanel.innerHTML = `
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px">
+          <span class="control-label" style="margin:0; flex-shrink:0">ROOM</span>
+          <input type="text" id="room-input" placeholder="ROOM-ID" maxlength="32" spellcheck="false" autocomplete="off" style="flex:1">
+          <button class="btn btn-sm" id="room-join-btn">JOIN</button>
+          <button class="btn btn-sm" id="privacy-btn">PUBLIC</button>
+        </div>
+        <hr class="hud-divider" style="margin:10px 0">
+        <div class="section-title">// AVAILABLE EQS //</div>
+        <div id="rooms-list">
+          <span class="type-dim">NO OTHER EQS AVAILABLE</span>
+        </div>
+      `;
+      app.appendChild(roomsPanel);
+
+      // Footer
+      const footer = document.createElement("div");
+      footer.style.cssText = "text-align:center; padding:20px 0; font-size:0.72rem; letter-spacing:0.22em; color:var(--dim)";
+      footer.innerHTML = '<a href="../../index.html" style="color:var(--dim); text-decoration:none">ENTROPY WORSHIP</a>';
+      app.appendChild(footer);
+
+      // ── Wire controls ──────────────────────────────────────────
+
+      function updatePowerUI() {
+        const track = document.getElementById("power-track");
+        track.classList.toggle("on", eqRunning);
+      }
+
+      document.getElementById("power-toggle").addEventListener("click", () => {
+        if (eqRunning) stopEQ(); else startEQ();
+      });
+
+      // Output mode
+      document.getElementById("eq-output-mode").addEventListener("change", (e) => {
+        outputMode = e.target.value;
+        applyOutputRouting();
+        ewObj.setOutput("outputMode", outputMode, { immediate: true });
+      });
+
+      // Low gain slider (-240 to 240 maps to -24 to +24 dB)
+      wireRange("eq-low", "eq-low-val", (v) => (v / 10).toFixed(1) + " dB");
+      document.getElementById("eq-low").addEventListener("input", (e) => {
+        baseLow = +e.target.value / 10;
+        if (eq) eq.low.rampTo(baseLow, 0.01);
+        ewObj.setOutput("low", Math.round(baseLow * 10) / 10, { unit: "dB" });
+        refreshStats();
+      });
+
+      // Mid gain slider
+      wireRange("eq-mid", "eq-mid-val", (v) => (v / 10).toFixed(1) + " dB");
+      document.getElementById("eq-mid").addEventListener("input", (e) => {
+        baseMid = +e.target.value / 10;
+        if (eq) eq.mid.rampTo(baseMid, 0.01);
+        ewObj.setOutput("mid", Math.round(baseMid * 10) / 10, { unit: "dB" });
+        refreshStats();
+      });
+
+      // High gain slider
+      wireRange("eq-high", "eq-high-val", (v) => (v / 10).toFixed(1) + " dB");
+      document.getElementById("eq-high").addEventListener("input", (e) => {
+        baseHigh = +e.target.value / 10;
+        if (eq) eq.high.rampTo(baseHigh, 0.01);
+        ewObj.setOutput("high", Math.round(baseHigh * 10) / 10, { unit: "dB" });
+        refreshStats();
+      });
+
+      // Low crossover frequency slider (logarithmic)
+      const lowFreqSlider = document.getElementById("eq-low-freq");
+      const lowFreqVal = document.getElementById("eq-low-freq-val");
+      lowFreqSlider.addEventListener("input", () => {
+        const freq = sliderToLowFreq(+lowFreqSlider.value);
+        baseLowFreq = freq;
+        lowFreqVal.textContent = formatLowFreq(+lowFreqSlider.value);
+        const pct = (+lowFreqSlider.value / 1000) * 100;
+        lowFreqSlider.style.setProperty("--val", pct + "%");
+        if (eq) eq.lowFrequency.rampTo(freq, 0.01);
+        ewObj.setOutput("lowFreq", Math.round(freq), { unit: "hz" });
+        refreshStats();
+      });
+      (() => {
+        const pct = (+lowFreqSlider.value / 1000) * 100;
+        lowFreqSlider.style.setProperty("--val", pct + "%");
+      })();
+
+      // High crossover frequency slider (logarithmic)
+      const highFreqSlider = document.getElementById("eq-high-freq");
+      const highFreqVal = document.getElementById("eq-high-freq-val");
+      highFreqSlider.addEventListener("input", () => {
+        const freq = sliderToHighFreq(+highFreqSlider.value);
+        baseHighFreq = freq;
+        highFreqVal.textContent = formatHighFreq(+highFreqSlider.value);
+        const pct = (+highFreqSlider.value / 1000) * 100;
+        highFreqSlider.style.setProperty("--val", pct + "%");
+        if (eq) eq.highFrequency.rampTo(freq, 0.01);
+        ewObj.setOutput("highFreq", Math.round(freq), { unit: "hz" });
+        refreshStats();
+      });
+      (() => {
+        const pct = (+highFreqSlider.value / 1000) * 100;
+        highFreqSlider.style.setProperty("--val", pct + "%");
+      })();
+
+      // ── Input signal handling ──────────────────────────────────
+
+      ewObj.onInput("audio", (value, meta) => {
+        if (meta && meta.unit === "bipolar") return;
+        if (!eq) return;
+
+        if (meta && meta.port === "frequency" && typeof value === "number") {
+          if (!sourceConnected) {
+            createSourceOsc(value, "sine", 0.5);
+          } else if (sourceOsc) {
+            sourceOsc.frequency.value = value;
+          }
+        } else if (meta && meta.port === "waveform" && typeof value === "string") {
+          if (sourceOsc) { try { sourceOsc.type = value; } catch (_) {} }
+        } else if (meta && meta.port === "gain" && typeof value === "number") {
+          if (sourceGain) sourceGain.gain.value = Math.max(0, Math.min(1, value));
+        } else if (meta && meta.port === "detune" && typeof value === "number") {
+          if (sourceOsc) sourceOsc.detune.value = value;
+        } else if (meta && meta.port === "playing" && typeof value === "boolean") {
+          if (value && sourceConnected && !eqRunning) startEQ();
+        }
+      });
+
+      ewObj.on("inputConnected", ({ room, portMapping }) => {
+        ensureAudio().then(() => {
+          for (const localPort of Object.values(portMapping)) {
+            if (localPort === "audio" && !sourceConnected) {
+              createSourceOsc(440, "sine", 0.5);
+            }
+          }
+        });
+      });
+
+      ewObj.on("inputDisconnected", ({ room }) => {
+        const subs = ewObj.getSubscriptions();
+        const activePorts = new Set();
+        for (const sub of subs) {
+          for (const local of Object.values(sub.portMapping)) activePorts.add(local);
+        }
+        if (!activePorts.has("audio")) destroySourceOsc();
+      });
+
+      ewObj.onInput("low", (value, meta) => {
+        if (meta && meta.unit === "bipolar" && typeof value === "number") {
+          const modulated = baseLow + value * lowModDepth;
+          const clamped = Math.max(-24, Math.min(24, modulated));
+          if (eq) eq.low.rampTo(clamped, 0.012);
+          return;
+        }
+        if (typeof value === "number") {
+          const clamped = Math.max(-24, Math.min(24, value));
+          baseLow = clamped;
+          if (eq) eq.low.rampTo(clamped, 0.01);
+          document.getElementById("eq-low").value = Math.round(clamped * 10);
+          document.getElementById("eq-low-val").textContent = clamped.toFixed(1) + " dB";
+          ewObj.setOutput("low", Math.round(clamped * 10) / 10, { unit: "dB" });
+          refreshStats();
+        }
+      });
+
+      ewObj.onInput("mid", (value, meta) => {
+        if (meta && meta.unit === "bipolar" && typeof value === "number") {
+          const modulated = baseMid + value * midModDepth;
+          const clamped = Math.max(-24, Math.min(24, modulated));
+          if (eq) eq.mid.rampTo(clamped, 0.012);
+          return;
+        }
+        if (typeof value === "number") {
+          const clamped = Math.max(-24, Math.min(24, value));
+          baseMid = clamped;
+          if (eq) eq.mid.rampTo(clamped, 0.01);
+          document.getElementById("eq-mid").value = Math.round(clamped * 10);
+          document.getElementById("eq-mid-val").textContent = clamped.toFixed(1) + " dB";
+          ewObj.setOutput("mid", Math.round(clamped * 10) / 10, { unit: "dB" });
+          refreshStats();
+        }
+      });
+
+      ewObj.onInput("high", (value, meta) => {
+        if (meta && meta.unit === "bipolar" && typeof value === "number") {
+          const modulated = baseHigh + value * highModDepth;
+          const clamped = Math.max(-24, Math.min(24, modulated));
+          if (eq) eq.high.rampTo(clamped, 0.012);
+          return;
+        }
+        if (typeof value === "number") {
+          const clamped = Math.max(-24, Math.min(24, value));
+          baseHigh = clamped;
+          if (eq) eq.high.rampTo(clamped, 0.01);
+          document.getElementById("eq-high").value = Math.round(clamped * 10);
+          document.getElementById("eq-high-val").textContent = clamped.toFixed(1) + " dB";
+          ewObj.setOutput("high", Math.round(clamped * 10) / 10, { unit: "dB" });
+          refreshStats();
+        }
+      });
+
+      ewObj.onInput("lowFreq", (value, meta) => {
+        if (meta && meta.unit === "bipolar" && typeof value === "number") {
+          const modulated = baseLowFreq + value * lowFreqModDepth;
+          const clamped = Math.max(20, Math.min(1000, modulated));
+          if (eq) eq.lowFrequency.rampTo(clamped, 0.012);
+          return;
+        }
+        if (typeof value === "number") {
+          const clamped = Math.max(20, Math.min(1000, value));
+          baseLowFreq = clamped;
+          if (eq) eq.lowFrequency.rampTo(clamped, 0.01);
+          lowFreqSlider.value = lowFreqToSlider(clamped);
+          lowFreqVal.textContent = clamped >= 1000 ? (clamped / 1000).toFixed(2) + " kHz" : clamped.toFixed(0) + " Hz";
+          const pct = (+lowFreqSlider.value / 1000) * 100;
+          lowFreqSlider.style.setProperty("--val", pct + "%");
+          ewObj.setOutput("lowFreq", Math.round(clamped), { unit: "hz" });
+          refreshStats();
+        }
+      });
+
+      ewObj.onInput("highFreq", (value, meta) => {
+        if (meta && meta.unit === "bipolar" && typeof value === "number") {
+          const modulated = baseHighFreq + value * highFreqModDepth;
+          const clamped = Math.max(1000, Math.min(20000, modulated));
+          if (eq) eq.highFrequency.rampTo(clamped, 0.012);
+          return;
+        }
+        if (typeof value === "number") {
+          const clamped = Math.max(1000, Math.min(20000, value));
+          baseHighFreq = clamped;
+          if (eq) eq.highFrequency.rampTo(clamped, 0.01);
+          highFreqSlider.value = highFreqToSlider(clamped);
+          highFreqVal.textContent = clamped >= 1000 ? (clamped / 1000).toFixed(2) + " kHz" : clamped.toFixed(0) + " Hz";
+          const pct = (+highFreqSlider.value / 1000) * 100;
+          highFreqSlider.style.setProperty("--val", pct + "%");
+          ewObj.setOutput("highFreq", Math.round(clamped), { unit: "hz" });
+          refreshStats();
+        }
+      });
+
+      // Room state sync
+      ewObj.onInput("playing", async (value) => {
+        if (typeof value !== "boolean") return;
+        if (value && !eqRunning) await startEQ();
+        else if (!value && eqRunning) stopEQ();
+      });
+
+      ewObj.onInput("outputMode", (value) => {
+        if (typeof value !== "string") return;
+        if (["audio", "control", "both"].includes(value)) {
+          outputMode = value;
+          document.getElementById("eq-output-mode").value = value;
+          applyOutputRouting();
+        }
+      });
+
+      // ── Output stats ───────────────────────────────────────────
+
+      function refreshStats() {
+        updateOutputStats(ewObj, [
+          { port: "low", label: "LOW", unit: " dB", formatter: (v) => v !== undefined ? v.toFixed(1) : "0.0" },
+          { port: "mid", label: "MID", unit: " dB", formatter: (v) => v !== undefined ? v.toFixed(1) : "0.0" },
+          { port: "high", label: "HIGH", unit: " dB", formatter: (v) => v !== undefined ? v.toFixed(1) : "0.0" },
+          { port: "lowFreq", label: "LO X", unit: " Hz", formatter: (v) => v !== undefined ? v.toFixed(0) : "-" },
+          { port: "highFreq", label: "HI X", unit: " Hz", formatter: (v) => v !== undefined ? v.toFixed(0) : "-" },
+        ]);
+      }
+
+      // ── Scope ──────────────────────────────────────────────────
+
+      const scopeCanvas = document.getElementById("eq-scope");
+      const scopeCtx = scopeCanvas.getContext("2d");
+
+      function resizeScope() {
+        const rect = scopeCanvas.parentElement.getBoundingClientRect();
+        scopeCanvas.width = rect.width;
+        scopeCanvas.height = 120;
+      }
+
+      function drawScope() {
+        requestAnimationFrame(drawScope);
+        const w = scopeCanvas.width;
+        const h = scopeCanvas.height;
+        scopeCtx.fillStyle = "#080808";
+        scopeCtx.fillRect(0, 0, w, h);
+
+        // Grid
+        scopeCtx.strokeStyle = "rgba(128, 128, 128, 0.08)";
+        scopeCtx.lineWidth = 1;
+        for (let y = 0; y < h; y += 20) { scopeCtx.beginPath(); scopeCtx.moveTo(0, y); scopeCtx.lineTo(w, y); scopeCtx.stroke(); }
+        for (let x = 0; x < w; x += 20) { scopeCtx.beginPath(); scopeCtx.moveTo(x, 0); scopeCtx.lineTo(x, h); scopeCtx.stroke(); }
+
+        // Center line
+        scopeCtx.strokeStyle = "rgba(128, 128, 128, 0.2)";
+        scopeCtx.beginPath(); scopeCtx.moveTo(0, h / 2); scopeCtx.lineTo(w, h / 2); scopeCtx.stroke();
+
+        if (!analyser || !eqRunning) return;
+
+        const data = analyser.getValue();
+        scopeCtx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--accent");
+        scopeCtx.lineWidth = 2;
+        scopeCtx.shadowColor = "rgba(210, 210, 210, 0.4)";
+        scopeCtx.shadowBlur = 6;
+        scopeCtx.beginPath();
+        for (let i = 0; i < data.length; i++) {
+          const x = (i / data.length) * w;
+          const y = ((1 - data[i]) / 2) * h;
+          if (i === 0) scopeCtx.moveTo(x, y); else scopeCtx.lineTo(x, y);
+        }
+        scopeCtx.stroke();
+        scopeCtx.shadowBlur = 0;
+      }
+
+      // ── Room UI ────────────────────────────────────────────────
+
+      ewObj.on("connected", () => {
+        document.getElementById("room-input").value = ewObj.getOutputRoom();
+      });
+      document.getElementById("room-join-btn").addEventListener("click", () => {
+        const name = document.getElementById("room-input").value.trim().replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 32) || "default";
+        location.search = `?room=${encodeURIComponent(name)}`;
+      });
+      document.getElementById("room-input").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") document.getElementById("room-join-btn").click();
+      });
+
+      let roomPrivate = false;
+      function updatePrivacyBtn() {
+        const btn = document.getElementById("privacy-btn");
+        btn.textContent = roomPrivate ? "PRIVATE" : "PUBLIC";
+        btn.classList.toggle("active", roomPrivate);
+      }
+      document.getElementById("privacy-btn").addEventListener("click", () => {
+        roomPrivate = !roomPrivate;
+        ewObj.setPrivate(roomPrivate);
+        updatePrivacyBtn();
+      });
+      ewObj.on("stateSync", (msg) => {
+        roomPrivate = msg.private || false;
+        updatePrivacyBtn();
+        document.getElementById("room-input").value = msg.room || ewObj.getOutputRoom();
+      });
+      ewObj.on("roomPrivate", (msg) => { roomPrivate = msg.private; updatePrivacyBtn(); });
+
+      ewObj.on("rooms", (msg) => {
+        const el = document.getElementById("rooms-list");
+        if (!el) return;
+        const currentRoom = ewObj.getOutputRoom();
+        const others = (msg.rooms || []).filter((r) => r.name !== currentRoom);
+        if (!others.length) { el.innerHTML = '<span class="type-dim">NO OTHER EQS AVAILABLE</span>'; return; }
+        el.innerHTML = "";
+        for (const r of others) {
+          const a = document.createElement("a");
+          a.className = "room-entry";
+          a.href = `?room=${encodeURIComponent(r.name)}`;
+          const objs = r.objects && r.objects.length ? r.objects.join(", ").toUpperCase() : "";
+          a.innerHTML = `<span class="room-entry-name">${r.name}</span><span class="room-entry-info">${r.clients} PLR${objs ? " · " + objs : ""}</span>`;
+          el.appendChild(a);
+        }
+      });
+
+      // ── Initialize ─────────────────────────────────────────────
+
+      (() => {
+        const urlRoom = new URLSearchParams(location.search).get("room");
+        ewObj.connectOutput(urlRoom || undefined);
+
+        ewObj._outputValues["low"] = 0;
+        ewObj._outputValues["mid"] = 0;
+        ewObj._outputValues["high"] = 0;
+        ewObj._outputValues["lowFreq"] = 400;
+        ewObj._outputValues["highFreq"] = 2500;
+        ewObj._outputValues["playing"] = false;
+        ewObj._outputValues["outputMode"] = "audio";
+
+        refreshStats();
+        resizeScope();
+        drawScope();
+      })();
+
+      window.addEventListener("resize", resizeScope);
+    </script>
+  </body>
+</html>

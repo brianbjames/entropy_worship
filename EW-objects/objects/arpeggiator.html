@@ -1,0 +1,626 @@
+<!-- /-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\ -->
+<!-- |                                                                         | -->
+<!-- \ @@@@@@@@  @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@@@@@   @@@ @@@      / -->
+<!-- - @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@ @@@      - -->
+<!-- / @@!       @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!  @@@  @@! !@@      \ -->
+<!-- | !@!       !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!  @!@  !@! @!!      | -->
+<!-- \ @!!!:!    @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!@@!@!    !@!@!       / -->
+<!-- - !!!!!:    !@!  !!!    !!!    !!@!@!    !@!  !!!  !!@!!!      @!!!       - -->
+<!-- / !!:       !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:         !!:        \ -->
+<!-- | :!:       :!:  !:!    :!:    :!:  !:!  :!:  !:!  :!:         :!:        | -->
+<!-- \  :: ::::   ::   ::     ::    ::   :::  ::::: ::   ::          ::        / -->
+<!-- - : :: ::   ::    :      :      :   : :   : :  :    :           :         - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \ @@@  @@@  @@@   @@@@@@   @@@@@@@    @@@@@@   @@@  @@@  @@@  @@@@@@@     / -->
+<!-- - @@@  @@@  @@@  @@@@@@@@  @@@@@@@@  @@@@@@@   @@@  @@@  @@@  @@@@@@@@    - -->
+<!-- / @@!  @@!  @@!  @@!  @@@  @@!  @@@  !@@       @@!  @@@  @@!  @@!  @@@    \ -->
+<!-- | !@!  !@!  !@!  !@!  @!@  !@!  @!@  !@!       !@!  @!@  !@!  !@!  @!@    | -->
+<!-- \ @!!  !!@  @!@  @!@  !@!  @!@!!@!   !!@@!!    @!@!@!@!  !!@  @!@@!@!     / -->
+<!-- - !@!  !!!  !@!  !@!  !!!  !!@!@!     !!@!!!   !!!@!!!!  !!!  !!@!!!      - -->
+<!-- / !!:  !!:  !!:  !!:  !!!  !!: :!!        !:!  !!:  !!!  !!:  !!:         \ -->
+<!-- | :!:  :!:  :!:  :!:  !:!  :!:  !:!      !:!   :!:  !:!  :!:  :!:         | -->
+<!-- \  :::: :: :::   ::::: ::  ::   :::  :::: ::   ::   :::   ::   ::         / -->
+<!-- -   :: :  : :     : :  :    :   : :  :: : :     :   : :  :     :          - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ARPEGGIATOR</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css" />
+    <link rel="stylesheet" href="../lib/ewuilib.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <style>
+      #arp-scope {
+        display: block; width: 100%; height: 120px; background: #080808;
+      }
+      .param-row {
+        display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+      }
+      .param-row .control-label { min-width: 80px; margin-bottom: 0; flex-shrink: 0; }
+      .param-row input[type="range"] { flex: 1; }
+      .param-row .range-val { min-width: 72px; text-align: right; }
+      #power-toggle .toggle-track.on .toggle-thumb { left: 22px; }
+      #meta .toggle-wrap { align-self: center; }
+      #meta .toggle-track { margin: 0; }
+      .room-entry {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 6px 10px; border: 1px solid var(--border); margin-bottom: 6px;
+        text-decoration: none; color: var(--text); font-size: 0.82rem;
+        letter-spacing: 0.1em; transition: border-color 0.14s, background 0.14s; cursor: pointer;
+      }
+      .room-entry:hover { border-color: var(--accent); background: rgba(var(--accent-rgb), 0.06); }
+      .room-entry-name { color: var(--accent); }
+      .room-entry-info { font-size: 0.68rem; color: var(--dim); letter-spacing: 0.08em; }
+      .note-display {
+        text-align: center; padding: 18px 0;
+      }
+      .note-display .note-name {
+        font-size: 3.2rem; color: var(--accent); letter-spacing: 0.15em;
+      }
+      .note-display .note-freq {
+        font-size: 1rem; color: var(--dim); letter-spacing: 0.12em; margin-top: 2px;
+      }
+      .note-display .note-step {
+        font-size: 0.78rem; color: var(--dim); letter-spacing: 0.18em; margin-top: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="grid-bg"></div>
+    <div id="scanlines"></div>
+    <div id="app"></div>
+
+    <script type="module">
+      import { EWObject } from "../lib/ew-object-base.js";
+      import {
+        buildHeaderBar,
+        buildInputPanel,
+        wireRange,
+      } from "../lib/ew-object-ui.js";
+
+      // ── Scale data ─────────────────────────────────────────────
+
+      const scales = {
+        chromatic: [0,1,2,3,4,5,6,7,8,9,10,11],
+        major: [0,2,4,5,7,9,11],
+        minor: [0,2,3,5,7,8,10],
+        pentatonic: [0,2,4,7,9],
+        blues: [0,3,5,6,7,10],
+        dorian: [0,2,3,5,7,9,10],
+        mixolydian: [0,2,4,5,7,9,10],
+        "whole-tone": [0,2,4,6,8,10],
+      };
+      const noteNames = ["C","C#","D","D#","E","F","F#","G","G#","A","A#","B"];
+
+      // ── EWObject instance ──────────────────────────────────────
+
+      const ewObj = new EWObject({
+        name: "ARP-1",
+        objectType: "arpeggiator",
+        roomPrefix: "arp",
+        inputs: [
+          { port: "trigger", type: "number", unit: "bipolar", min: -1, max: 1, default: 0 },
+          { port: "root", type: "string", unit: "", default: "C" },
+          { port: "scale", type: "string", unit: "", default: "major" },
+          { port: "octave", type: "number", unit: "", min: 1, max: 8, default: 4 },
+        ],
+        outputs: [
+          { port: "signal", type: "number", unit: "bipolar" },
+          { port: "frequency", type: "number", unit: "hz" },
+          { port: "gate", type: "number", unit: "bipolar" },
+          { port: "step", type: "number" },
+        ],
+      });
+
+      // ── Arpeggiator state ──────────────────────────────────────
+
+      let rootIndex = 0; // 0=C, 1=C#, ...
+      let currentScale = "major";
+      let baseOctave = 4;
+      let octaveRange = 2;
+      let patternMode = "UP";
+      let gateLength = 80; // percent of step
+
+      let noteList = []; // built list of MIDI notes
+      let currentStep = 0;
+      let direction = 1; // for UP-DOWN / DOWN-UP
+      let gateOpen = false;
+      let gateTimer = null;
+
+      let currentFrequency = 0;
+      let currentSignal = 0;
+      let currentGate = -1;
+
+      // Trigger edge detection
+      let prevTriggerValue = 0;
+
+      // ── Note list builder ──────────────────────────────────────
+
+      function buildNoteList() {
+        const intervals = scales[currentScale] || scales.major;
+        const rootMidi = rootIndex; // root note class (0-11)
+        noteList = [];
+        for (let oct = 0; oct < octaveRange; oct++) {
+          for (const interval of intervals) {
+            const midi = rootMidi + interval + (baseOctave + oct) * 12;
+            if (midi >= 0 && midi <= 127) {
+              noteList.push(midi);
+            }
+          }
+        }
+        // Remove duplicates and sort ascending
+        noteList = [...new Set(noteList)].sort((a, b) => a - b);
+        // Reset step if out of bounds
+        if (currentStep >= noteList.length) {
+          currentStep = 0;
+          direction = 1;
+        }
+      }
+
+      function midiToFreq(midi) {
+        return 440 * Math.pow(2, (midi - 69) / 12);
+      }
+
+      function midiToName(midi) {
+        const name = noteNames[((midi % 12) + 12) % 12];
+        const oct = Math.floor(midi / 12) - 1;
+        return name + oct;
+      }
+
+      function midiToBipolar(midi) {
+        // Map MIDI 0-127 to -1..+1
+        return Math.round(((midi / 127) * 2 - 1) * 1000) / 1000;
+      }
+
+      // ── Step logic ─────────────────────────────────────────────
+
+      function advanceStep() {
+        if (noteList.length === 0) return;
+
+        switch (patternMode) {
+          case "UP":
+            currentStep = (currentStep + 1) % noteList.length;
+            break;
+          case "DOWN":
+            currentStep = (currentStep - 1 + noteList.length) % noteList.length;
+            break;
+          case "UP-DOWN":
+            currentStep += direction;
+            if (currentStep >= noteList.length - 1) {
+              currentStep = noteList.length - 1;
+              direction = -1;
+            } else if (currentStep <= 0) {
+              currentStep = 0;
+              direction = 1;
+            }
+            break;
+          case "DOWN-UP":
+            currentStep += direction;
+            if (currentStep <= 0) {
+              currentStep = 0;
+              direction = 1;
+            } else if (currentStep >= noteList.length - 1) {
+              currentStep = noteList.length - 1;
+              direction = -1;
+            }
+            break;
+          case "RANDOM":
+            currentStep = Math.floor(Math.random() * noteList.length);
+            break;
+        }
+
+        outputCurrentNote();
+        openGate();
+      }
+
+      function outputCurrentNote() {
+        if (noteList.length === 0) return;
+        const midi = noteList[currentStep];
+        currentFrequency = Math.round(midiToFreq(midi) * 100) / 100;
+        currentSignal = midiToBipolar(midi);
+
+        ewObj.setOutput("signal", currentSignal, { unit: "bipolar", immediate: true });
+        ewObj.setOutput("frequency", currentFrequency, { unit: "hz", immediate: true });
+        ewObj.setOutput("step", currentStep, { immediate: true });
+
+        updateDisplay();
+        pushScopeValue(currentSignal);
+      }
+
+      function openGate() {
+        // Gate ON
+        currentGate = 1;
+        ewObj.setOutput("gate", 1, { unit: "bipolar", immediate: true });
+
+        // Schedule gate OFF based on gate length percentage
+        // We use a fixed gate time relative to last trigger interval
+        // For simplicity, gate closes after a timeout proportional to gate%
+        if (gateTimer) clearTimeout(gateTimer);
+
+        // Use a reasonable gate duration — 50ms at 100%, scale down
+        const gateDurationMs = (gateLength / 100) * 200;
+        gateTimer = setTimeout(() => {
+          currentGate = -1;
+          ewObj.setOutput("gate", -1, { unit: "bipolar", immediate: true });
+        }, gateDurationMs);
+      }
+
+      function updateDisplay() {
+        if (noteList.length === 0) {
+          document.getElementById("note-name").textContent = "---";
+          document.getElementById("note-freq").textContent = "--- Hz";
+          document.getElementById("note-step").textContent = "STEP 0 / 0";
+          return;
+        }
+        const midi = noteList[currentStep];
+        document.getElementById("note-name").textContent = midiToName(midi);
+        document.getElementById("note-freq").textContent = currentFrequency + " Hz";
+        document.getElementById("note-step").textContent = `STEP ${currentStep + 1} / ${noteList.length}`;
+      }
+
+      // ── Signal broadcast Worker (100Hz) ────────────────────────
+
+      let signalWorker = null;
+
+      function startSignalWorker() {
+        if (signalWorker) return;
+        const blob = new Blob([`
+          let id = setInterval(() => postMessage("tick"), 10);
+          onmessage = () => { clearInterval(id); close(); };
+        `], { type: "application/javascript" });
+        signalWorker = new Worker(URL.createObjectURL(blob));
+        signalWorker.onmessage = () => {
+          ewObj.setOutput("signal", currentSignal, { unit: "bipolar" });
+          ewObj.setOutput("gate", currentGate, { unit: "bipolar" });
+        };
+      }
+
+      function stopSignalWorker() {
+        if (signalWorker) {
+          signalWorker.postMessage("stop");
+          signalWorker = null;
+        }
+      }
+
+      // ── Scope ──────────────────────────────────────────────────
+
+      const SCOPE_SAMPLES = 200;
+      let scopeHistory = new Float32Array(SCOPE_SAMPLES);
+      let scopeWriteIdx = 0;
+
+      function pushScopeValue(val) {
+        scopeHistory[scopeWriteIdx] = val;
+        scopeWriteIdx = (scopeWriteIdx + 1) % SCOPE_SAMPLES;
+      }
+
+      // ── Build UI ───────────────────────────────────────────────
+
+      const app = document.getElementById("app");
+
+      buildHeaderBar(ewObj, "ARPEGGIATOR", app);
+
+      document.getElementById("ew-header-controls").innerHTML = `
+        <select id="ew-theme" style="width:auto; padding:3px 24px 3px 8px">
+          <option value="theme-ethos">ETHOS</option>
+          <option value="">AMBER</option>
+          <option value="theme-phosphor">PHOSPHOR</option>
+          <option value="theme-cobalt">COBALT</option>
+          <option value="theme-plasma">PLASMA</option>
+          <option value="theme-danger">DANGER</option>
+          <option value="theme-matrix">MATRIX</option>
+          <option value="theme-solar">SOLAR</option>
+          <option value="theme-arctic">ARCTIC</option>
+        </select>
+      `;
+
+      // Note display
+      const displayPanel = document.createElement("div");
+      displayPanel.className = "hud-panel clip-tr";
+      displayPanel.innerHTML = `
+        <div class="note-display">
+          <div class="note-name" id="note-name">---</div>
+          <div class="note-freq" id="note-freq">--- Hz</div>
+          <div class="note-step" id="note-step">STEP 0 / 0</div>
+        </div>
+      `;
+      app.appendChild(displayPanel);
+
+      // Controls
+      const controlsPanel = document.createElement("div");
+      controlsPanel.className = "hud-panel";
+      controlsPanel.innerHTML = `
+        <div class="control-group">
+          <div class="control-label">ROOT</div>
+          <select id="arp-root">
+            ${noteNames.map((n, i) => `<option value="${i}"${i === 0 ? " selected" : ""}>${n}</option>`).join("")}
+          </select>
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">SCALE</div>
+          <select id="arp-scale">
+            ${Object.keys(scales).map(s => `<option value="${s}"${s === "major" ? " selected" : ""}>${s.toUpperCase()}</option>`).join("")}
+          </select>
+        </div>
+
+        <div class="param-row">
+          <div class="control-label">OCTAVE</div>
+          <input type="range" id="arp-octave" min="1" max="8" value="4" />
+          <span class="range-val" id="arp-octave-val">4</span>
+        </div>
+
+        <div class="param-row">
+          <div class="control-label">RANGE</div>
+          <input type="range" id="arp-range" min="1" max="4" value="2" />
+          <span class="range-val" id="arp-range-val">2 OCT</span>
+        </div>
+
+        <div class="control-group">
+          <div class="control-label">PATTERN</div>
+          <select id="arp-mode">
+            <option value="UP">UP</option>
+            <option value="DOWN">DOWN</option>
+            <option value="UP-DOWN">UP-DOWN</option>
+            <option value="DOWN-UP">DOWN-UP</option>
+            <option value="RANDOM">RANDOM</option>
+          </select>
+        </div>
+
+        <div class="param-row">
+          <div class="control-label">GATE</div>
+          <input type="range" id="arp-gate" min="10" max="100" value="80" />
+          <span class="range-val" id="arp-gate-val">80%</span>
+        </div>
+      `;
+      app.appendChild(controlsPanel);
+
+      // Theme
+      document.getElementById("ew-theme").addEventListener("change", (e) => {
+        document.documentElement.className = e.target.value;
+      });
+      document.documentElement.className = "theme-ethos";
+
+      // Scope
+      const scopePanel = document.createElement("div");
+      scopePanel.className = "hud-panel";
+      scopePanel.innerHTML = `
+        <div class="screen-wrap">
+          <div class="screen-inner" style="padding:0; min-height:auto">
+            <canvas id="arp-scope"></canvas>
+            <div class="screen-scan"></div>
+            <div class="corner tl"></div><div class="corner tr"></div>
+            <div class="corner bl"></div><div class="corner br"></div>
+          </div>
+        </div>
+      `;
+      app.appendChild(scopePanel);
+
+      // Input panel
+      buildInputPanel(ewObj, app);
+
+      // Rooms
+      const roomsPanel = document.createElement("div");
+      roomsPanel.className = "hud-panel";
+      roomsPanel.innerHTML = `
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px">
+          <span class="control-label" style="margin:0; flex-shrink:0">ROOM</span>
+          <input type="text" id="room-input" placeholder="ROOM-ID" maxlength="32" spellcheck="false" autocomplete="off" style="flex:1">
+          <button class="btn btn-sm" id="room-join-btn">JOIN</button>
+          <button class="btn btn-sm" id="privacy-btn">PUBLIC</button>
+        </div>
+        <hr class="hud-divider" style="margin:10px 0">
+        <div class="section-title">// AVAILABLE ARPEGGIATORS //</div>
+        <div id="rooms-list"><span class="type-dim">NO OTHER ARPEGGIATORS AVAILABLE</span></div>
+      `;
+      app.appendChild(roomsPanel);
+
+      // Footer
+      const footer = document.createElement("div");
+      footer.style.cssText = "text-align:center; padding:20px 0; font-size:0.72rem; letter-spacing:0.22em; color:var(--dim)";
+      footer.innerHTML = '<a href="../../index.html" style="color:var(--dim); text-decoration:none">ENTROPY WORSHIP</a>';
+      app.appendChild(footer);
+
+      // ── Wire controls ──────────────────────────────────────────
+
+      // Root
+      document.getElementById("arp-root").addEventListener("change", (e) => {
+        rootIndex = +e.target.value;
+        buildNoteList();
+        if (noteList.length > 0) outputCurrentNote();
+      });
+
+      // Scale
+      document.getElementById("arp-scale").addEventListener("change", (e) => {
+        currentScale = e.target.value;
+        buildNoteList();
+        if (noteList.length > 0) outputCurrentNote();
+      });
+
+      // Octave
+      wireRange("arp-octave", "arp-octave-val", (v) => String(v));
+      document.getElementById("arp-octave").addEventListener("input", (e) => {
+        baseOctave = +e.target.value;
+        buildNoteList();
+        if (noteList.length > 0) outputCurrentNote();
+      });
+
+      // Range
+      wireRange("arp-range", "arp-range-val", (v) => v + " OCT");
+      document.getElementById("arp-range").addEventListener("input", (e) => {
+        octaveRange = +e.target.value;
+        buildNoteList();
+        if (noteList.length > 0) outputCurrentNote();
+      });
+
+      // Pattern mode
+      document.getElementById("arp-mode").addEventListener("change", (e) => {
+        patternMode = e.target.value;
+        direction = patternMode === "DOWN-UP" ? -1 : 1;
+        if (patternMode === "DOWN-UP" && noteList.length > 0) {
+          currentStep = noteList.length - 1;
+        }
+      });
+
+      // Gate
+      wireRange("arp-gate", "arp-gate-val", (v) => v + "%");
+      document.getElementById("arp-gate").addEventListener("input", (e) => {
+        gateLength = +e.target.value;
+      });
+
+      // ── Input handlers ─────────────────────────────────────────
+
+      ewObj.onInput("trigger", (value, meta) => {
+        if (typeof value !== "number") return;
+        // Bipolar edge detection: fire on positive crossing
+        if (prevTriggerValue <= 0 && value > 0) {
+          advanceStep();
+        }
+        prevTriggerValue = value;
+      });
+
+      ewObj.onInput("root", (value, meta) => {
+        if (typeof value === "string") {
+          const idx = noteNames.indexOf(value.toUpperCase());
+          if (idx >= 0) {
+            rootIndex = idx;
+            document.getElementById("arp-root").value = idx;
+            buildNoteList();
+          }
+        } else if (typeof value === "number" && value >= 0 && value < 12) {
+          rootIndex = Math.floor(value);
+          document.getElementById("arp-root").value = rootIndex;
+          buildNoteList();
+        }
+      });
+
+      ewObj.onInput("scale", (value, meta) => {
+        if (typeof value !== "string") return;
+        const lower = value.toLowerCase();
+        if (scales[lower]) {
+          currentScale = lower;
+          document.getElementById("arp-scale").value = lower;
+          buildNoteList();
+        }
+      });
+
+      ewObj.onInput("octave", (value, meta) => {
+        if (typeof value !== "number") return;
+        const clamped = Math.max(1, Math.min(8, Math.floor(value)));
+        baseOctave = clamped;
+        document.getElementById("arp-octave").value = clamped;
+        document.getElementById("arp-octave-val").textContent = String(clamped);
+        buildNoteList();
+      });
+
+      // ── Scope drawing ──────────────────────────────────────────
+
+      const scopeCanvas = document.getElementById("arp-scope");
+      const scopeCtx = scopeCanvas.getContext("2d");
+
+      function resizeScope() {
+        const rect = scopeCanvas.parentElement.getBoundingClientRect();
+        scopeCanvas.width = rect.width;
+        scopeCanvas.height = 120;
+      }
+
+      function drawScope() {
+        requestAnimationFrame(drawScope);
+        const w = scopeCanvas.width, h = scopeCanvas.height;
+        scopeCtx.fillStyle = "#080808";
+        scopeCtx.fillRect(0, 0, w, h);
+
+        // Grid
+        scopeCtx.strokeStyle = "rgba(128,128,128,0.08)";
+        scopeCtx.lineWidth = 1;
+        for (let y = 0; y < h; y += 20) { scopeCtx.beginPath(); scopeCtx.moveTo(0, y); scopeCtx.lineTo(w, y); scopeCtx.stroke(); }
+        for (let x = 0; x < w; x += 20) { scopeCtx.beginPath(); scopeCtx.moveTo(x, 0); scopeCtx.lineTo(x, h); scopeCtx.stroke(); }
+        scopeCtx.strokeStyle = "rgba(128,128,128,0.2)";
+        scopeCtx.beginPath(); scopeCtx.moveTo(0, h / 2); scopeCtx.lineTo(w, h / 2); scopeCtx.stroke();
+
+        // Draw history
+        scopeCtx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--accent");
+        scopeCtx.lineWidth = 2;
+        scopeCtx.shadowColor = "rgba(210,210,210,0.4)";
+        scopeCtx.shadowBlur = 6;
+        scopeCtx.beginPath();
+        for (let i = 0; i < SCOPE_SAMPLES; i++) {
+          const idx = (scopeWriteIdx + i) % SCOPE_SAMPLES;
+          const x = (i / SCOPE_SAMPLES) * w;
+          const y = ((1 - scopeHistory[idx]) / 2) * h;
+          if (i === 0) scopeCtx.moveTo(x, y); else scopeCtx.lineTo(x, y);
+        }
+        scopeCtx.stroke();
+        scopeCtx.shadowBlur = 0;
+      }
+
+      // ── Room UI ────────────────────────────────────────────────
+
+      ewObj.on("connected", () => {
+        document.getElementById("room-input").value = ewObj.getOutputRoom();
+      });
+      document.getElementById("room-join-btn").addEventListener("click", () => {
+        const name = document.getElementById("room-input").value.trim().replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 32) || "default";
+        location.search = `?room=${encodeURIComponent(name)}`;
+      });
+      document.getElementById("room-input").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") document.getElementById("room-join-btn").click();
+      });
+
+      let roomPrivate = false;
+      function updatePrivacyBtn() {
+        const btn = document.getElementById("privacy-btn");
+        btn.textContent = roomPrivate ? "PRIVATE" : "PUBLIC";
+        btn.classList.toggle("active", roomPrivate);
+      }
+      document.getElementById("privacy-btn").addEventListener("click", () => {
+        roomPrivate = !roomPrivate; ewObj.setPrivate(roomPrivate); updatePrivacyBtn();
+      });
+      ewObj.on("stateSync", (msg) => {
+        roomPrivate = msg.private || false; updatePrivacyBtn();
+        document.getElementById("room-input").value = msg.room || ewObj.getOutputRoom();
+      });
+      ewObj.on("roomPrivate", (msg) => { roomPrivate = msg.private; updatePrivacyBtn(); });
+      ewObj.on("rooms", (msg) => {
+        const el = document.getElementById("rooms-list");
+        if (!el) return;
+        const currentRoom = ewObj.getOutputRoom();
+        const others = (msg.rooms || []).filter((r) => r.name !== currentRoom);
+        if (!others.length) { el.innerHTML = '<span class="type-dim">NO OTHER ARPEGGIATORS AVAILABLE</span>'; return; }
+        el.innerHTML = "";
+        for (const r of others) {
+          const a = document.createElement("a");
+          a.className = "room-entry";
+          a.href = `?room=${encodeURIComponent(r.name)}`;
+          const objs = r.objects && r.objects.length ? r.objects.join(", ").toUpperCase() : "";
+          a.innerHTML = `<span class="room-entry-name">${r.name}</span><span class="room-entry-info">${r.clients} PLR${objs ? " · " + objs : ""}</span>`;
+          el.appendChild(a);
+        }
+      });
+
+      // ── Initialize ─────────────────────────────────────────────
+
+      (() => {
+        const urlRoom = new URLSearchParams(location.search).get("room");
+        ewObj.connectOutput(urlRoom || undefined);
+        ewObj._outputValues["signal"] = 0;
+        ewObj._outputValues["frequency"] = 0;
+        ewObj._outputValues["gate"] = -1;
+        ewObj._outputValues["step"] = 0;
+        buildNoteList();
+        startSignalWorker();
+        updateDisplay();
+        resizeScope();
+        drawScope();
+      })();
+
+      window.addEventListener("resize", resizeScope);
+    </script>
+  </body>
+</html>

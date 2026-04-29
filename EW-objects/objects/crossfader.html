@@ -1,0 +1,713 @@
+<!-- /-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\|/-\ -->
+<!-- |                                                                         | -->
+<!-- \ @@@@@@@@  @@@  @@@  @@@@@@@  @@@@@@@    @@@@@@   @@@@@@@   @@@ @@@      / -->
+<!-- - @@@@@@@@  @@@@ @@@  @@@@@@@  @@@@@@@@  @@@@@@@@  @@@@@@@@  @@@ @@@      - -->
+<!-- / @@!       @@!@!@@@    @@!    @@!  @@@  @@!  @@@  @@!  @@@  @@! !@@      \ -->
+<!-- | !@!       !@!!@!@!    !@!    !@!  @!@  !@!  @!@  !@!  @!@  !@! @!!      | -->
+<!-- \ @!!!:!    @!@ !!@!    @!!    @!@!!@!   @!@  !@!  @!@@!@!    !@!@!       / -->
+<!-- - !!!!!:    !@!  !!!    !!!    !!@!@!    !@!  !!!  !!@!!!      @!!!       - -->
+<!-- / !!:       !!:  !!!    !!:    !!: :!!   !!:  !!!  !!:         !!:        \ -->
+<!-- | :!:       :!:  !:!    :!:    :!:  !:!  :!:  !:!  :!:         :!:        | -->
+<!-- \  :: ::::   ::   ::     ::    ::   :::  ::::: ::   ::          ::        / -->
+<!-- - : :: ::   ::    :      :      :   : :   : :  :    :           :         - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \ @@@  @@@  @@@   @@@@@@   @@@@@@@    @@@@@@   @@@  @@@  @@@  @@@@@@@     / -->
+<!-- - @@@  @@@  @@@  @@@@@@@@  @@@@@@@@  @@@@@@@   @@@  @@@  @@@  @@@@@@@@    - -->
+<!-- / @@!  @@!  @@!  @@!  @@@  @@!  @@@  !@@       @@!  @@@  @@!  @@!  @@@    \ -->
+<!-- | !@!  !@!  !@!  !@!  @!@  !@!  @!@  !@!       !@!  @!@  !@!  !@!  @!@    | -->
+<!-- \ @!!  !!@  @!@  @!@  !@!  @!@!!@!   !!@@!!    @!@!@!@!  !!@  @!@@!@!     / -->
+<!-- - !@!  !!!  !@!  !@!  !!!  !!@!@!     !!@!!!   !!!@!!!!  !!!  !!@!!!      - -->
+<!-- / !!:  !!:  !!:  !!:  !!!  !!: :!!        !:!  !!:  !!!  !!:  !!:         \ -->
+<!-- | :!:  :!:  :!:  :!:  !:!  :!:  !:!      !:!   :!:  !:!  :!:  :!:         | -->
+<!-- \  :::: :: :::   ::::: ::  ::   :::  :::: ::   ::   :::   ::   ::         / -->
+<!-- -   :: :  : :     : :  :    :   : :  :: : :     :   : :  :     :          - -->
+<!-- /                                                                         \ -->
+<!-- |                                                                         | -->
+<!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CROSSFADER</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/augmented-ui@2/augmented-ui.min.css" />
+    <link rel="stylesheet" href="../lib/ewuilib.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <style>
+      #xfd-scope {
+        display: block; width: 100%; height: 120px; background: #080808;
+      }
+      .param-row {
+        display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+      }
+      .param-row .control-label { min-width: 80px; margin-bottom: 0; flex-shrink: 0; }
+      .param-row input[type="range"] { flex: 1; }
+      .param-row .range-val { min-width: 72px; text-align: right; }
+      #power-toggle .toggle-track.on .toggle-thumb { left: 22px; }
+      #meta .toggle-wrap { align-self: center; }
+      #meta .toggle-track { margin: 0; }
+      .room-entry {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 6px 10px; border: 1px solid var(--border); margin-bottom: 6px;
+        text-decoration: none; color: var(--text); font-size: 0.82rem;
+        letter-spacing: 0.1em; transition: border-color 0.14s, background 0.14s; cursor: pointer;
+      }
+      .room-entry:hover { border-color: var(--accent); background: rgba(var(--accent-rgb), 0.06); }
+      .room-entry-name { color: var(--accent); }
+      .room-entry-info { font-size: 0.68rem; color: var(--dim); letter-spacing: 0.08em; }
+      .input-port-group {
+        margin-bottom: 14px;
+      }
+      .input-port-group .section-title {
+        margin-bottom: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="grid-bg"></div>
+    <div id="scanlines"></div>
+    <div id="app"></div>
+
+    <script type="module">
+      import { EWObject } from "../lib/ew-object-base.js";
+      import {
+        buildHeaderBar,
+        updateOutputStats,
+        wireRange,
+      } from "../lib/ew-object-ui.js";
+
+      // ── EWObject instance ──────────────────────────────────────
+
+      const ewObj = new EWObject({
+        name: "XFD-1",
+        objectType: "crossfader",
+        roomPrefix: "xfd",
+        inputs: [
+          { port: "audioA", type: "room", unit: "", default: null },
+          { port: "audioB", type: "room", unit: "", default: null },
+          { port: "fade", type: "number", unit: "bipolar", min: -1, max: 1, default: 0 },
+        ],
+        outputs: [
+          { port: "fade", type: "number" },
+          { port: "playing", type: "boolean" },
+          { port: "outputMode", type: "string" },
+        ],
+      });
+
+      // ── Crossfader state ───────────────────────────────────────
+
+      let baseFade = 0.5; // 0 = full A, 1 = full B
+      let baseOutputGain = 0.8;
+      let xfdRunning = false;
+      let audioReady = false;
+      let outputMode = "audio";
+
+      // ── Tone.js audio ──────────────────────────────────────────
+
+      let crossfade = null;
+      let outputGain = null;
+      let analyser = null;
+
+      // Source oscillators for audio inputs A and B
+      let sourceOscA = null;
+      let sourceGainA = null;
+      let sourceConnectedA = false;
+
+      let sourceOscB = null;
+      let sourceGainB = null;
+      let sourceConnectedB = false;
+
+      async function ensureAudio() {
+        if (audioReady) return;
+        await Tone.start();
+        crossfade = new Tone.CrossFade(baseFade);
+        outputGain = new Tone.Gain(baseOutputGain);
+        crossfade.connect(outputGain);
+        applyOutputRouting();
+        analyser = new Tone.Analyser("waveform", 256);
+        outputGain.connect(analyser);
+        audioReady = true;
+      }
+
+      function applyOutputRouting() {
+        if (!outputGain) return;
+        outputGain.disconnect();
+        if (analyser) outputGain.connect(analyser);
+        if (outputMode === "audio" || outputMode === "both") {
+          outputGain.toDestination();
+        }
+      }
+
+      // ── Source oscillators (audio inputs from rooms) ───────────
+
+      function createSourceOscA(freq, type, gain) {
+        if (sourceOscA) destroySourceOscA();
+        sourceOscA = new Tone.Oscillator({ frequency: freq || 440, type: type || "sine" });
+        sourceGainA = new Tone.Gain(gain !== undefined ? gain : 0.5);
+        sourceOscA.connect(sourceGainA);
+        sourceGainA.connect(crossfade.a);
+        if (xfdRunning) sourceOscA.start();
+        sourceConnectedA = true;
+      }
+
+      function destroySourceOscA() {
+        if (sourceOscA) {
+          try { sourceOscA.stop(); } catch (_) {}
+          sourceOscA.disconnect();
+          sourceOscA.dispose();
+          sourceOscA = null;
+        }
+        if (sourceGainA) {
+          sourceGainA.disconnect();
+          sourceGainA.dispose();
+          sourceGainA = null;
+        }
+        sourceConnectedA = false;
+      }
+
+      function createSourceOscB(freq, type, gain) {
+        if (sourceOscB) destroySourceOscB();
+        sourceOscB = new Tone.Oscillator({ frequency: freq || 440, type: type || "sine" });
+        sourceGainB = new Tone.Gain(gain !== undefined ? gain : 0.5);
+        sourceOscB.connect(sourceGainB);
+        sourceGainB.connect(crossfade.b);
+        if (xfdRunning) sourceOscB.start();
+        sourceConnectedB = true;
+      }
+
+      function destroySourceOscB() {
+        if (sourceOscB) {
+          try { sourceOscB.stop(); } catch (_) {}
+          sourceOscB.disconnect();
+          sourceOscB.dispose();
+          sourceOscB = null;
+        }
+        if (sourceGainB) {
+          sourceGainB.disconnect();
+          sourceGainB.dispose();
+          sourceGainB = null;
+        }
+        sourceConnectedB = false;
+      }
+
+      // ── Start / Stop ──────────────────────────────────────────
+
+      async function startXfd() {
+        if (xfdRunning) return;
+        await ensureAudio();
+        if (sourceOscA) sourceOscA.start();
+        if (sourceOscB) sourceOscB.start();
+        xfdRunning = true;
+        updatePowerUI();
+        ewObj.setOutput("playing", true, { immediate: true });
+      }
+
+      function stopXfd() {
+        if (!xfdRunning) return;
+
+        // Rebuild source oscillators in stopped state
+        if (sourceOscA) {
+          const freq = sourceOscA.frequency.value;
+          const type = sourceOscA.type;
+          const gain = sourceGainA ? sourceGainA.gain.value : 0.5;
+          sourceOscA.stop();
+          sourceOscA.disconnect();
+          sourceOscA.dispose();
+          sourceOscA = new Tone.Oscillator({ frequency: freq, type: type });
+          sourceGainA.disconnect();
+          sourceGainA.dispose();
+          sourceGainA = new Tone.Gain(gain);
+          sourceOscA.connect(sourceGainA);
+          sourceGainA.connect(crossfade.a);
+        }
+        if (sourceOscB) {
+          const freq = sourceOscB.frequency.value;
+          const type = sourceOscB.type;
+          const gain = sourceGainB ? sourceGainB.gain.value : 0.5;
+          sourceOscB.stop();
+          sourceOscB.disconnect();
+          sourceOscB.dispose();
+          sourceOscB = new Tone.Oscillator({ frequency: freq, type: type });
+          sourceGainB.disconnect();
+          sourceGainB.dispose();
+          sourceGainB = new Tone.Gain(gain);
+          sourceOscB.connect(sourceGainB);
+          sourceGainB.connect(crossfade.b);
+        }
+
+        xfdRunning = false;
+        updatePowerUI();
+        ewObj.setOutput("playing", false, { immediate: true });
+      }
+
+      // ── Build UI ───────────────────────────────────────────────
+
+      const app = document.getElementById("app");
+
+      buildHeaderBar(ewObj, "CROSSFADER", app);
+
+      document.getElementById("ew-header-controls").innerHTML = `
+        <select id="ew-theme" style="width:auto; padding:3px 24px 3px 8px">
+          <option value="theme-ethos">ETHOS</option>
+          <option value="">AMBER</option>
+          <option value="theme-phosphor">PHOSPHOR</option>
+          <option value="theme-cobalt">COBALT</option>
+          <option value="theme-plasma">PLASMA</option>
+          <option value="theme-danger">DANGER</option>
+          <option value="theme-matrix">MATRIX</option>
+          <option value="theme-solar">SOLAR</option>
+          <option value="theme-arctic">ARCTIC</option>
+        </select>
+        <select id="xfd-output-mode" style="width:auto; padding:3px 24px 3px 8px">
+          <option value="audio">AUDIO</option>
+          <option value="control">CONTROL</option>
+          <option value="both">BOTH</option>
+        </select>
+        <div class="toggle-wrap" id="power-toggle" style="margin-bottom:0; cursor:pointer">
+          <div class="toggle-track" id="power-track">
+            <div class="toggle-thumb"></div>
+          </div>
+        </div>
+      `;
+
+      // Controls panel
+      const controlsPanel = document.createElement("div");
+      controlsPanel.className = "hud-panel clip-tr";
+      controlsPanel.innerHTML = `
+        <div class="param-row">
+          <div class="control-label">FADE</div>
+          <input type="range" id="xfd-fade" min="0" max="100" value="50" />
+          <span class="range-val" id="xfd-fade-val">0.50</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:0.72rem; letter-spacing:0.12em; color:var(--dim); margin-top:-8px; margin-bottom:14px; padding:0 4px">
+          <span>A</span>
+          <span>B</span>
+        </div>
+        <div class="param-row">
+          <div class="control-label">GAIN</div>
+          <input type="range" id="xfd-gain" min="0" max="100" value="80" />
+          <span class="range-val" id="xfd-gain-val">0.80</span>
+        </div>
+      `;
+      app.appendChild(controlsPanel);
+
+      // Theme
+      document.getElementById("ew-theme").addEventListener("change", (e) => {
+        document.documentElement.className = e.target.value;
+      });
+      document.documentElement.className = "theme-ethos";
+
+      // Scope
+      const scopePanel = document.createElement("div");
+      scopePanel.className = "hud-panel";
+      scopePanel.innerHTML = `
+        <div class="screen-wrap">
+          <div class="screen-inner" style="padding:0; min-height:auto">
+            <canvas id="xfd-scope"></canvas>
+            <div class="screen-scan"></div>
+            <div class="corner tl"></div><div class="corner tr"></div>
+            <div class="corner bl"></div><div class="corner br"></div>
+          </div>
+        </div>
+      `;
+      app.appendChild(scopePanel);
+
+      // ── Custom input panel (two audio inputs + fade) ───────────
+      // We build this manually instead of using buildInputPanel
+      // because we need TWO audio room inputs, not the standard pattern.
+
+      const inputPanel = document.createElement("div");
+      inputPanel.className = "hud-panel";
+      inputPanel.innerHTML = `
+        <div id="ew-input-ports">
+          <div class="input-port-group" data-port="audioA">
+            <div class="control-label" style="display:flex; justify-content:space-between; align-items:center">
+              <span>AUDIO A</span>
+              <span class="status-item" style="gap:4px">
+                <span class="status-dot offline" id="ew-input-dot-audioA"></span>
+                <span class="type-dim" id="ew-input-src-audioA">---</span>
+              </span>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center">
+              <input type="text" id="ew-input-room-audioA" placeholder="PASTE ROOM NAME..." style="flex:1">
+              <button class="btn btn-sm btn-mint" id="ew-input-connect-audioA">LINK</button>
+              <button class="btn btn-sm btn-rose" id="ew-input-disconnect-audioA" style="display:none">UNLINK</button>
+            </div>
+          </div>
+
+          <div class="input-port-group" data-port="audioB">
+            <div class="control-label" style="display:flex; justify-content:space-between; align-items:center">
+              <span>AUDIO B</span>
+              <span class="status-item" style="gap:4px">
+                <span class="status-dot offline" id="ew-input-dot-audioB"></span>
+                <span class="type-dim" id="ew-input-src-audioB">---</span>
+              </span>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center">
+              <input type="text" id="ew-input-room-audioB" placeholder="PASTE ROOM NAME..." style="flex:1">
+              <button class="btn btn-sm btn-mint" id="ew-input-connect-audioB">LINK</button>
+              <button class="btn btn-sm btn-rose" id="ew-input-disconnect-audioB" style="display:none">UNLINK</button>
+            </div>
+          </div>
+
+          <div class="input-port-group" data-port="fade">
+            <div class="control-label" style="display:flex; justify-content:space-between; align-items:center">
+              <span>FADE (bipolar)</span>
+              <span class="status-item" style="gap:4px">
+                <span class="status-dot offline" id="ew-input-dot-fade"></span>
+                <span class="type-dim" id="ew-input-src-fade">---</span>
+              </span>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center">
+              <input type="text" id="ew-input-room-fade" placeholder="PASTE ROOM NAME..." style="flex:1">
+              <button class="btn btn-sm btn-mint" id="ew-input-connect-fade">LINK</button>
+              <button class="btn btn-sm btn-rose" id="ew-input-disconnect-fade" style="display:none">UNLINK</button>
+            </div>
+          </div>
+        </div>
+      `;
+      app.appendChild(inputPanel);
+
+      // Wire input port buttons
+      function wireInputPort(portName) {
+        const connectBtn = document.getElementById(`ew-input-connect-${portName}`);
+        const disconnectBtn = document.getElementById(`ew-input-disconnect-${portName}`);
+        const input = document.getElementById(`ew-input-room-${portName}`);
+        const dot = document.getElementById(`ew-input-dot-${portName}`);
+        const src = document.getElementById(`ew-input-src-${portName}`);
+
+        connectBtn.addEventListener("click", () => {
+          const room = input.value.trim();
+          if (!room) return;
+          const mapping = { "*": portName };
+          const ok = ewObj.subscribe(room, mapping);
+          if (ok) {
+            dot.className = "status-dot warn";
+            src.textContent = room;
+            connectBtn.style.display = "none";
+            disconnectBtn.style.display = "";
+            input.disabled = true;
+          }
+        });
+
+        disconnectBtn.addEventListener("click", () => {
+          const room = input.value.trim();
+          ewObj.unsubscribe(room, portName);
+          dot.className = "status-dot offline";
+          src.textContent = "---";
+          disconnectBtn.style.display = "none";
+          connectBtn.style.display = "";
+          input.disabled = false;
+        });
+
+        input.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") connectBtn.click();
+        });
+      }
+
+      wireInputPort("audioA");
+      wireInputPort("audioB");
+      wireInputPort("fade");
+
+      // Update dots on connection events
+      ewObj.on("inputConnected", ({ room, portMapping }) => {
+        for (const localPort of Object.values(portMapping)) {
+          const dot = document.getElementById(`ew-input-dot-${localPort}`);
+          if (dot) dot.className = "status-dot live";
+        }
+      });
+
+      ewObj.on("inputDisconnected", ({ room }) => {
+        for (const portName of ["audioA", "audioB", "fade"]) {
+          const src = document.getElementById(`ew-input-src-${portName}`);
+          const dot = document.getElementById(`ew-input-dot-${portName}`);
+          if (src && src.textContent === room) {
+            if (dot) dot.className = "status-dot offline";
+            src.textContent = "---";
+          }
+        }
+      });
+
+      // Rooms
+      const roomsPanel = document.createElement("div");
+      roomsPanel.className = "hud-panel";
+      roomsPanel.innerHTML = `
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px">
+          <span class="control-label" style="margin:0; flex-shrink:0">ROOM</span>
+          <input type="text" id="room-input" placeholder="ROOM-ID" maxlength="32" spellcheck="false" autocomplete="off" style="flex:1">
+          <button class="btn btn-sm" id="room-join-btn">JOIN</button>
+          <button class="btn btn-sm" id="privacy-btn">PUBLIC</button>
+        </div>
+        <hr class="hud-divider" style="margin:10px 0">
+        <div class="section-title">// AVAILABLE CROSSFADERS //</div>
+        <div id="rooms-list"><span class="type-dim">NO OTHER CROSSFADERS AVAILABLE</span></div>
+      `;
+      app.appendChild(roomsPanel);
+
+      // Footer
+      const footer = document.createElement("div");
+      footer.style.cssText = "text-align:center; padding:20px 0; font-size:0.72rem; letter-spacing:0.22em; color:var(--dim)";
+      footer.innerHTML = '<a href="../../index.html" style="color:var(--dim); text-decoration:none">ENTROPY WORSHIP</a>';
+      app.appendChild(footer);
+
+      // ── Wire controls ──────────────────────────────────────────
+
+      function updatePowerUI() {
+        const track = document.getElementById("power-track");
+        track.classList.toggle("on", xfdRunning);
+      }
+
+      document.getElementById("power-toggle").addEventListener("click", () => {
+        if (xfdRunning) stopXfd(); else startXfd();
+      });
+
+      // Output mode
+      document.getElementById("xfd-output-mode").addEventListener("change", (e) => {
+        outputMode = e.target.value;
+        applyOutputRouting();
+        ewObj.setOutput("outputMode", outputMode, { immediate: true });
+      });
+
+      // Fade slider
+      wireRange("xfd-fade", "xfd-fade-val", (v) => (v / 100).toFixed(2));
+      document.getElementById("xfd-fade").addEventListener("input", (e) => {
+        baseFade = +e.target.value / 100;
+        if (crossfade) crossfade.fade.rampTo(baseFade, 0.01);
+        ewObj.setOutput("fade", Math.round(baseFade * 100) / 100);
+        refreshStats();
+      });
+
+      // Output gain slider
+      wireRange("xfd-gain", "xfd-gain-val", (v) => (v / 100).toFixed(2));
+      document.getElementById("xfd-gain").addEventListener("input", (e) => {
+        baseOutputGain = +e.target.value / 100;
+        if (outputGain) outputGain.gain.rampTo(baseOutputGain, 0.01);
+      });
+
+      // ── Input signal handling ──────────────────────────────────
+
+      // Audio A input — creates a local oscillator mirroring the remote
+      ewObj.onInput("audioA", (value, meta) => {
+        if (meta && meta.unit === "bipolar") return;
+        if (!crossfade) return;
+
+        if (meta && meta.port === "frequency" && typeof value === "number") {
+          if (!sourceConnectedA) {
+            createSourceOscA(value, "sine", 0.5);
+          } else if (sourceOscA) {
+            sourceOscA.frequency.value = value;
+          }
+        } else if (meta && meta.port === "waveform" && typeof value === "string") {
+          if (sourceOscA) { try { sourceOscA.type = value; } catch (_) {} }
+        } else if (meta && meta.port === "gain" && typeof value === "number") {
+          if (sourceGainA) sourceGainA.gain.value = Math.max(0, Math.min(1, value));
+        } else if (meta && meta.port === "detune" && typeof value === "number") {
+          if (sourceOscA) sourceOscA.detune.value = value;
+        } else if (meta && meta.port === "playing" && typeof value === "boolean") {
+          if (value && sourceConnectedA && !xfdRunning) startXfd();
+        }
+      });
+
+      // Audio B input — creates a local oscillator mirroring the remote
+      ewObj.onInput("audioB", (value, meta) => {
+        if (meta && meta.unit === "bipolar") return;
+        if (!crossfade) return;
+
+        if (meta && meta.port === "frequency" && typeof value === "number") {
+          if (!sourceConnectedB) {
+            createSourceOscB(value, "sine", 0.5);
+          } else if (sourceOscB) {
+            sourceOscB.frequency.value = value;
+          }
+        } else if (meta && meta.port === "waveform" && typeof value === "string") {
+          if (sourceOscB) { try { sourceOscB.type = value; } catch (_) {} }
+        } else if (meta && meta.port === "gain" && typeof value === "number") {
+          if (sourceGainB) sourceGainB.gain.value = Math.max(0, Math.min(1, value));
+        } else if (meta && meta.port === "detune" && typeof value === "number") {
+          if (sourceOscB) sourceOscB.detune.value = value;
+        } else if (meta && meta.port === "playing" && typeof value === "boolean") {
+          if (value && sourceConnectedB && !xfdRunning) startXfd();
+        }
+      });
+
+      // Fade input — modulatable via bipolar signal (great for LFO)
+      ewObj.onInput("fade", (value, meta) => {
+        if (typeof value !== "number") return;
+
+        if (meta && meta.unit === "bipolar") {
+          // Map bipolar -1..+1 to 0..1 crossfade position
+          const modulated = (value + 1) / 2;
+          const clamped = Math.max(0, Math.min(1, modulated));
+          if (crossfade) crossfade.fade.rampTo(clamped, 0.012);
+          return;
+        }
+
+        // Direct value set (0..1)
+        if (value >= 0 && value <= 1) {
+          baseFade = value;
+          if (crossfade) crossfade.fade.rampTo(value, 0.01);
+          document.getElementById("xfd-fade").value = Math.round(value * 100);
+          document.getElementById("xfd-fade-val").textContent = value.toFixed(2);
+          ewObj.setOutput("fade", value);
+          refreshStats();
+        }
+      });
+
+      // Handle input connect/disconnect for source oscillator creation
+      ewObj.on("inputConnected", ({ room, portMapping }) => {
+        ensureAudio().then(() => {
+          for (const localPort of Object.values(portMapping)) {
+            if (localPort === "audioA" && !sourceConnectedA) {
+              createSourceOscA(440, "sine", 0.5);
+            }
+            if (localPort === "audioB" && !sourceConnectedB) {
+              createSourceOscB(440, "sine", 0.5);
+            }
+          }
+        });
+      });
+
+      ewObj.on("inputDisconnected", ({ room }) => {
+        const subs = ewObj.getSubscriptions();
+        const activePorts = new Set();
+        for (const sub of subs) {
+          for (const local of Object.values(sub.portMapping)) activePorts.add(local);
+        }
+        if (!activePorts.has("audioA")) destroySourceOscA();
+        if (!activePorts.has("audioB")) destroySourceOscB();
+      });
+
+      // Room state sync
+      ewObj.onInput("playing", async (value) => {
+        if (typeof value !== "boolean") return;
+        if (value && !xfdRunning) await startXfd();
+        else if (!value && xfdRunning) stopXfd();
+      });
+
+      ewObj.onInput("outputMode", (value) => {
+        if (typeof value !== "string") return;
+        if (["audio", "control", "both"].includes(value)) {
+          outputMode = value;
+          document.getElementById("xfd-output-mode").value = value;
+          applyOutputRouting();
+        }
+      });
+
+      // ── Output stats ───────────────────────────────────────────
+
+      function refreshStats() {
+        updateOutputStats(ewObj, [
+          { port: "fade", label: "FADE", formatter: (v) => v !== undefined ? v.toFixed(2) : "0.50" },
+          { port: "playing", label: "PLAY", formatter: (v) => v ? "ON" : "OFF" },
+          { port: "outputMode", label: "MODE", formatter: (v) => v ? v.toUpperCase() : "AUDIO" },
+        ]);
+      }
+
+      // ── Scope ──────────────────────────────────────────────────
+
+      const scopeCanvas = document.getElementById("xfd-scope");
+      const scopeCtx = scopeCanvas.getContext("2d");
+
+      function resizeScope() {
+        const rect = scopeCanvas.parentElement.getBoundingClientRect();
+        scopeCanvas.width = rect.width;
+        scopeCanvas.height = 120;
+      }
+
+      function drawScope() {
+        requestAnimationFrame(drawScope);
+        const w = scopeCanvas.width, h = scopeCanvas.height;
+        scopeCtx.fillStyle = "#080808";
+        scopeCtx.fillRect(0, 0, w, h);
+
+        // Grid
+        scopeCtx.strokeStyle = "rgba(128,128,128,0.08)";
+        scopeCtx.lineWidth = 1;
+        for (let y = 0; y < h; y += 20) { scopeCtx.beginPath(); scopeCtx.moveTo(0, y); scopeCtx.lineTo(w, y); scopeCtx.stroke(); }
+        for (let x = 0; x < w; x += 20) { scopeCtx.beginPath(); scopeCtx.moveTo(x, 0); scopeCtx.lineTo(x, h); scopeCtx.stroke(); }
+        scopeCtx.strokeStyle = "rgba(128,128,128,0.2)";
+        scopeCtx.beginPath(); scopeCtx.moveTo(0, h / 2); scopeCtx.lineTo(w, h / 2); scopeCtx.stroke();
+
+        if (!analyser || !xfdRunning) return;
+
+        const data = analyser.getValue();
+        scopeCtx.strokeStyle = getComputedStyle(document.documentElement).getPropertyValue("--accent");
+        scopeCtx.lineWidth = 2;
+        scopeCtx.shadowColor = "rgba(210,210,210,0.4)";
+        scopeCtx.shadowBlur = 6;
+        scopeCtx.beginPath();
+        for (let i = 0; i < data.length; i++) {
+          const x = (i / data.length) * w;
+          const y = ((1 - data[i]) / 2) * h;
+          if (i === 0) scopeCtx.moveTo(x, y); else scopeCtx.lineTo(x, y);
+        }
+        scopeCtx.stroke();
+        scopeCtx.shadowBlur = 0;
+      }
+
+      // ── Room UI ────────────────────────────────────────────────
+
+      ewObj.on("connected", () => {
+        document.getElementById("room-input").value = ewObj.getOutputRoom();
+      });
+      document.getElementById("room-join-btn").addEventListener("click", () => {
+        const name = document.getElementById("room-input").value.trim().replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 32) || "default";
+        location.search = `?room=${encodeURIComponent(name)}`;
+      });
+      document.getElementById("room-input").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") document.getElementById("room-join-btn").click();
+      });
+
+      let roomPrivate = false;
+      function updatePrivacyBtn() {
+        const btn = document.getElementById("privacy-btn");
+        btn.textContent = roomPrivate ? "PRIVATE" : "PUBLIC";
+        btn.classList.toggle("active", roomPrivate);
+      }
+      document.getElementById("privacy-btn").addEventListener("click", () => {
+        roomPrivate = !roomPrivate; ewObj.setPrivate(roomPrivate); updatePrivacyBtn();
+      });
+      ewObj.on("stateSync", (msg) => {
+        roomPrivate = msg.private || false; updatePrivacyBtn();
+        document.getElementById("room-input").value = msg.room || ewObj.getOutputRoom();
+      });
+      ewObj.on("roomPrivate", (msg) => { roomPrivate = msg.private; updatePrivacyBtn(); });
+      ewObj.on("rooms", (msg) => {
+        const el = document.getElementById("rooms-list");
+        if (!el) return;
+        const currentRoom = ewObj.getOutputRoom();
+        const others = (msg.rooms || []).filter((r) => r.name !== currentRoom);
+        if (!others.length) { el.innerHTML = '<span class="type-dim">NO OTHER CROSSFADERS AVAILABLE</span>'; return; }
+        el.innerHTML = "";
+        for (const r of others) {
+          const a = document.createElement("a");
+          a.className = "room-entry";
+          a.href = `?room=${encodeURIComponent(r.name)}`;
+          const objs = r.objects && r.objects.length ? r.objects.join(", ").toUpperCase() : "";
+          a.innerHTML = `<span class="room-entry-name">${r.name}</span><span class="room-entry-info">${r.clients} PLR${objs ? " · " + objs : ""}</span>`;
+          el.appendChild(a);
+        }
+      });
+
+      // ── Initialize ─────────────────────────────────────────────
+
+      (() => {
+        const urlRoom = new URLSearchParams(location.search).get("room");
+        ewObj.connectOutput(urlRoom || undefined);
+
+        ewObj._outputValues["fade"] = 0.5;
+        ewObj._outputValues["playing"] = false;
+        ewObj._outputValues["outputMode"] = "audio";
+
+        refreshStats();
+        resizeScope();
+        drawScope();
+      })();
+
+      window.addEventListener("resize", resizeScope);
+    </script>
+  </body>
+</html>

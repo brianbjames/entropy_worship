@@ -102,9 +102,6 @@
         <h1 class="hud-title">EW/OBJECTS</h1>
         <div id="meta">
           <span>build 1.0.28.04.26</span>
-          <a href="../index.html">HOME</a>
-          <a href="../EWUILIB/index.html">UILIB</a>
-          <a href="../MIDI-server/public/index.html">MIDI SERVER</a>
         </div>
       </header>
 
@@ -114,11 +111,10 @@
           // COLLABORATIVE DISTRIBUTED MODULAR RELAY NETWORK SYNTHESIZER //
         </div>
         <p>
-          EWObjects is a genuinely new and original modular relay audio
-          synthesis environment that runs entirely in the browser as a
-          distributed network. Each object is a self-contained module — an
-          oscillator, a filter, a delay, a sequencer — that generates,
-          processes, or routes audio and control signals.
+          EWObjects is a novel modular audio synthesis environment that runs
+          entirely in the browser as a distributed network. Each object is a
+          self-contained module — an oscillator, a filter, a delay, a sequencer
+          — that generates, processes, or routes audio and control signals.
         </p>
         <p>
           What makes this different from other browser synths:
@@ -151,7 +147,7 @@
           </div>
           <div class="stat-block">
             <div class="stat-label">OBJECTS</div>
-            <div class="stat-val" style="font-size: 1rem">24</div>
+            <div class="stat-val" style="font-size: 1rem">33</div>
           </div>
           <div class="stat-block">
             <div class="stat-label">UI</div>
@@ -531,6 +527,161 @@
           <div class="obj-ports">
             <span class="tag mint">IN: audio</span>
             <span class="tag accent">OUT: signal</span>
+          </div>
+        </a>
+
+        <a href="objects/sampler.html" class="hud-panel object-card">
+          <div class="obj-type">INSTRUMENT</div>
+          <div class="obj-name">SAMPLER</div>
+          <div class="obj-desc">
+            Audio file playback with independent pitch and speed control.
+            Built-in library of 80+ drum samples (808/909) plus drag-and-drop
+            for custom files. Trigger via room input or manual button.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: trigger</span>
+            <span class="tag mint">IN: pitch</span>
+            <span class="tag mint">IN: gain</span>
+            <span class="tag mint">IN: speed</span>
+            <span class="tag accent">OUT: signal</span>
+            <span class="tag accent">OUT: playing</span>
+          </div>
+        </a>
+
+        <a href="objects/looper.html" class="hud-panel object-card">
+          <div class="obj-type">INSTRUMENT</div>
+          <div class="obj-name">LOOPER</div>
+          <div class="obj-desc">
+            Record and loop audio in real-time with overdub. Capture from any
+            room source, layer passes with adjustable feedback decay.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: audio</span>
+            <span class="tag mint">IN: trigger</span>
+            <span class="tag mint">IN: gain</span>
+            <span class="tag accent">OUT: signal</span>
+            <span class="tag accent">OUT: state</span>
+          </div>
+        </a>
+
+        <a href="objects/compressor.html" class="hud-panel object-card">
+          <div class="obj-type">EFFECT</div>
+          <div class="obj-name">COMPRESSOR</div>
+          <div class="obj-desc">
+            Dynamics processor with threshold, ratio, attack, release, and knee
+            controls. Visual gain reduction meter. Makeup gain output.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: audio</span>
+            <span class="tag mint">IN: threshold</span>
+            <span class="tag mint">IN: ratio</span>
+            <span class="tag mint">IN: attack</span>
+            <span class="tag mint">IN: release</span>
+            <span class="tag accent">OUT: reduction</span>
+            <span class="tag accent">OUT: gain</span>
+          </div>
+        </a>
+
+        <a href="objects/eq.html" class="hud-panel object-card">
+          <div class="obj-type">EFFECT</div>
+          <div class="obj-name">EQ</div>
+          <div class="obj-desc">
+            3-band parametric equalizer with adjustable crossover frequencies.
+            Low, mid, and high gain controls modulatable via room input.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: audio</span>
+            <span class="tag mint">IN: low</span>
+            <span class="tag mint">IN: mid</span>
+            <span class="tag mint">IN: high</span>
+            <span class="tag accent">OUT: low</span>
+            <span class="tag accent">OUT: mid</span>
+            <span class="tag accent">OUT: high</span>
+          </div>
+        </a>
+
+        <a href="objects/panner.html" class="hud-panel object-card">
+          <div class="obj-type">EFFECT</div>
+          <div class="obj-name">PANNER</div>
+          <div class="obj-desc">
+            Stereo positioning with manual and auto-pan modes. Manual mode sets
+            position directly. Auto mode sweeps with adjustable rate and depth.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: audio</span>
+            <span class="tag mint">IN: pan</span>
+            <span class="tag mint">IN: rate</span>
+            <span class="tag mint">IN: depth</span>
+            <span class="tag accent">OUT: pan</span>
+            <span class="tag accent">OUT: mode</span>
+          </div>
+        </a>
+
+        <a href="objects/wavefolder.html" class="hud-panel object-card">
+          <div class="obj-type">EFFECT</div>
+          <div class="obj-name">WAVEFOLDER</div>
+          <div class="obj-desc">
+            Complex waveshaping for harmonic richness. Iterative folding at
+            signal boundaries with drive, folds, and symmetry controls. Transfer
+            curve visualization.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: audio</span>
+            <span class="tag mint">IN: drive</span>
+            <span class="tag mint">IN: folds</span>
+            <span class="tag mint">IN: symmetry</span>
+            <span class="tag accent">OUT: drive</span>
+            <span class="tag accent">OUT: folds</span>
+          </div>
+        </a>
+
+        <a href="objects/ringmod.html" class="hud-panel object-card">
+          <div class="obj-type">EFFECT</div>
+          <div class="obj-name">RING MOD</div>
+          <div class="obj-desc">
+            Ring modulation — multiplies input signal by an internal carrier
+            oscillator. Modulatable carrier frequency and waveform with dry/wet
+            depth control.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: audio</span>
+            <span class="tag mint">IN: frequency</span>
+            <span class="tag mint">IN: depth</span>
+            <span class="tag accent">OUT: frequency</span>
+            <span class="tag accent">OUT: waveform</span>
+          </div>
+        </a>
+
+        <a href="objects/arpeggiator.html" class="hud-panel object-card">
+          <div class="obj-type">SEQUENCING</div>
+          <div class="obj-name">ARPEGGIATOR</div>
+          <div class="obj-desc">
+            Clock-driven note pattern generator. Builds note sequences from
+            root, scale, and octave range. UP, DOWN, UP-DOWN, DOWN-UP, and
+            RANDOM pattern modes with gate length control.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: trigger</span>
+            <span class="tag mint">IN: root</span>
+            <span class="tag mint">IN: scale</span>
+            <span class="tag accent">OUT: frequency</span>
+            <span class="tag accent">OUT: gate</span>
+            <span class="tag accent">OUT: step</span>
+          </div>
+        </a>
+
+        <a href="objects/crossfader.html" class="hud-panel object-card">
+          <div class="obj-type">SIGNAL ROUTING</div>
+          <div class="obj-name">CROSSFADER</div>
+          <div class="obj-desc">
+            Mix between two audio inputs A and B. Crossfade position modulatable
+            via room input for LFO-driven automated transitions.
+          </div>
+          <div class="obj-ports">
+            <span class="tag mint">IN: audio A</span>
+            <span class="tag mint">IN: audio B</span>
+            <span class="tag mint">IN: fade</span>
+            <span class="tag accent">OUT: fade</span>
           </div>
         </a>
       </div>
