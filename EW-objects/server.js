@@ -256,6 +256,13 @@ wss.on("connection", (ws, req) => {
           broadcastPublicRooms();
         }
         break;
+
+      // ── State request ──────────────────────────────────────
+      // When a new subscriber joins, it asks for the current state.
+      // Relay this to all other clients so they re-broadcast.
+      case "requestState":
+        broadcastRoom(room, { type: "requestState" }, clientId);
+        break;
     }
   });
 

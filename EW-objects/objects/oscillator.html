@@ -172,6 +172,7 @@
           { port: "detune", type: "number", unit: "cents" },
           { port: "waveform", type: "string" },
           { port: "gain", type: "number" },
+          { port: "modChain", type: "object" },
         ],
       });
 
@@ -233,59 +234,117 @@
         audioReady = true;
       }
 
-      // Create a local modulator using Tone.js nodes.
-      // Tone.js Signal.connect() adds the modulator output to the
-      // param value at audio rate — true FM/modulation.
-      function createModulator(toneSignal, depth) {
-        const modOsc = new Tone.Oscillator({ type: "sine", frequency: 2 });
-        const modGain = new Tone.Gain(depth);
+      // Build a modulation chain from a descriptor and connect it
+      // to a Tone.js Signal (e.g. osc.frequency).
+      // A chain descriptor looks like:
+      //   { freq: 440, type: "sine", depth: 200, mod: { freq: 4, type: "sine", depth: 100, mod: null } }
+      // Each level creates an oscillator→gain chain, where the inner
+      // level modulates the outer level's frequency — all at audio rate.
+      function buildModChain(desc, targetSignal) {
+        if (!desc) return null;
+        const modOsc = new Tone.Oscillator({ type: desc.type || "sine", frequency: desc.freq || 2 });
+        const modGain = new Tone.Gain(desc.depth || 200);
         modOsc.connect(modGain);
-        modGain.connect(toneSignal);
+        modGain.connect(targetSignal);
+        // If there's a nested modulator, connect it to this oscillator's frequency
+        let inner = null;
+        if (desc.mod) {
+          inner = buildModChain(desc.mod, modOsc.frequency);
+        }
         modOsc.start();
-        return { modOsc, modGain };
+        return { modOsc, modGain, inner };
       }
 
-      function destroyModulator(mod) {
-        if (!mod) return;
-        mod.modOsc.stop();
-        mod.modOsc.disconnect();
-        mod.modOsc.dispose();
-        mod.modGain.disconnect();
-        mod.modGain.dispose();
+      function destroyModChain(chain) {
+        if (!chain) return;
+        if (chain.inner) destroyModChain(chain.inner);
+        chain.modOsc.stop();
+        chain.modOsc.disconnect();
+        chain.modOsc.dispose();
+        chain.modGain.disconnect();
+        chain.modGain.dispose();
       }
+
+      // Get the current modulation chain descriptor for broadcasting.
+      // This lets downstream oscillators recreate the full FM chain locally.
+      function getModChainDesc() {
+        if (!fmModWanted) return null;
+        return {
+          freq: fmModRemoteFreq,
+          type: fmModRemoteType,
+          depth: fmDepth,
+          mod: fmModUpstreamChain, // nested chain from upstream
+        };
+      }
+
+      // Broadcast modChain whenever it changes so downstream can rebuild
+      function broadcastModChain() {
+        const desc = getModChainDesc();
+        console.log("[OSC] broadcasting modChain:", JSON.stringify(desc));
+        ewObj.setOutput("modChain", desc, { immediate: true });
+      }
+
+      // FM modulator chain state
+      let fmModChain = null; // the built audio chain
+      let fmModUpstreamChain = null; // upstream chain descriptor (from remote)
 
       function connectFMMod() {
-        if (fmModOsc || !osc) return;
-        const mod = createModulator(osc.frequency, fmDepth);
-        fmModOsc = mod.modOsc;
-        fmModGain = mod.modGain;
-        fmModOsc.frequency.value = fmModRemoteFreq;
-        try { fmModOsc.type = fmModRemoteType; } catch (_) {}
+        if (fmModChain || !osc) return;
+        const desc = {
+          freq: fmModRemoteFreq,
+          type: fmModRemoteType,
+          depth: fmDepth,
+          mod: fmModUpstreamChain,
+        };
+        fmModChain = buildModChain(desc, osc.frequency);
         fmModWanted = true;
+        broadcastModChain();
       }
 
       function disconnectFMMod() {
-        if (fmModOsc) {
-          destroyModulator({ modOsc: fmModOsc, modGain: fmModGain });
-          fmModOsc = null;
-          fmModGain = null;
+        if (fmModChain) {
+          destroyModChain(fmModChain);
+          fmModChain = null;
         }
         fmModWanted = false;
+        fmModUpstreamChain = null;
+        broadcastModChain();
+      }
+
+      // Rebuild the FM chain (e.g. when upstream chain changes or params update)
+      function rebuildFMMod() {
+        if (!fmModWanted || !osc) return;
+        if (fmModChain) {
+          destroyModChain(fmModChain);
+          fmModChain = null;
+        }
+        const desc = {
+          freq: fmModRemoteFreq,
+          type: fmModRemoteType,
+          depth: fmDepth,
+          mod: fmModUpstreamChain,
+        };
+        fmModChain = buildModChain(desc, osc.frequency);
+        broadcastModChain();
       }
 
       function connectDetuneMod() {
         if (detuneModOsc || !osc) return;
-        const mod = createModulator(osc.detune, detuneModDepth);
-        detuneModOsc = mod.modOsc;
-        detuneModGain = mod.modGain;
-        detuneModOsc.frequency.value = detuneModRemoteFreq;
-        try { detuneModOsc.type = detuneModRemoteType; } catch (_) {}
+        const desc = { freq: detuneModRemoteFreq, type: detuneModRemoteType, depth: detuneModDepth, mod: null };
+        const chain = buildModChain(desc, osc.detune);
+        detuneModOsc = chain.modOsc;
+        detuneModGain = chain.modGain;
         detuneModWanted = true;
       }
 
       function disconnectDetuneMod() {
         if (detuneModOsc) {
-          destroyModulator({ modOsc: detuneModOsc, modGain: detuneModGain });
+          // Find full chain to destroy — for simplicity, detune/gain don't cascade
+          detuneModOsc.stop();
+          detuneModOsc.disconnect();
+          detuneModOsc.dispose();
+          detuneModGain.disconnect();
+          detuneModGain.dispose();
           detuneModOsc = null;
           detuneModGain = null;
         }
@@ -294,17 +353,20 @@
 
       function connectGainMod() {
         if (gainModOsc || !gainNode) return;
-        const mod = createModulator(gainNode.gain, gainModDepth);
-        gainModOsc = mod.modOsc;
-        gainModGainNode = mod.modGain;
-        gainModOsc.frequency.value = gainModRemoteFreq;
-        try { gainModOsc.type = gainModRemoteType; } catch (_) {}
+        const desc = { freq: gainModRemoteFreq, type: gainModRemoteType, depth: gainModDepth, mod: null };
+        const chain = buildModChain(desc, gainNode.gain);
+        gainModOsc = chain.modOsc;
+        gainModGainNode = chain.modGain;
         gainModWanted = true;
       }
 
       function disconnectGainMod() {
         if (gainModOsc) {
-          destroyModulator({ modOsc: gainModOsc, modGain: gainModGainNode });
+          gainModOsc.stop();
+          gainModOsc.disconnect();
+          gainModOsc.dispose();
+          gainModGainNode.disconnect();
+          gainModGainNode.dispose();
           gainModOsc = null;
           gainModGainNode = null;
         }
@@ -312,21 +374,25 @@
       }
 
       // Reconnect all wanted modulators to the current osc/gainNode.
-      // Called after osc is recreated (stop/start cycle).
       function reconnectModulators() {
         if (fmModWanted) {
-          // Destroy old connection, recreate on new osc
-          if (fmModOsc) destroyModulator({ modOsc: fmModOsc, modGain: fmModGain });
-          fmModOsc = null; fmModGain = null;
+          if (fmModChain) destroyModChain(fmModChain);
+          fmModChain = null;
           connectFMMod();
         }
         if (detuneModWanted) {
-          if (detuneModOsc) destroyModulator({ modOsc: detuneModOsc, modGain: detuneModGain });
+          if (detuneModOsc) {
+            detuneModOsc.stop(); detuneModOsc.disconnect(); detuneModOsc.dispose();
+            detuneModGain.disconnect(); detuneModGain.dispose();
+          }
           detuneModOsc = null; detuneModGain = null;
           connectDetuneMod();
         }
         if (gainModWanted) {
-          if (gainModOsc) destroyModulator({ modOsc: gainModOsc, modGain: gainModGainNode });
+          if (gainModOsc) {
+            gainModOsc.stop(); gainModOsc.disconnect(); gainModOsc.dispose();
+            gainModGainNode.disconnect(); gainModGainNode.dispose();
+          }
           gainModOsc = null; gainModGainNode = null;
           connectGainMod();
         }
@@ -687,7 +753,8 @@
         .getElementById("osc-fm-depth")
         .addEventListener("input", (e) => {
           fmDepth = +e.target.value;
-          if (fmModGain) fmModGain.gain.rampTo(fmDepth, 0.01);
+          if (fmModChain) fmModChain.modGain.gain.rampTo(fmDepth, 0.01);
+          broadcastModChain();
         });
 
       // Detune mod depth slider
@@ -784,12 +851,20 @@
           // A local FM modulator is active — sync its params from remote
           if (meta && meta.port === "frequency" && typeof value === "number") {
             fmModRemoteFreq = value;
-            if (fmModOsc) fmModOsc.frequency.value = value;
+            if (fmModChain) fmModChain.modOsc.frequency.value = value;
           } else if (meta && meta.port === "waveform" && typeof value === "string") {
             fmModRemoteType = value;
-            if (fmModOsc) { try { fmModOsc.type = value; } catch (_) {} }
+            if (fmModChain) { try { fmModChain.modOsc.type = value; } catch (_) {} }
+          } else if (meta && meta.port === "modChain") {
+            // Upstream modulation chain changed — rebuild only if different
+            const incoming = JSON.stringify(value);
+            const current = JSON.stringify(fmModUpstreamChain);
+            if (incoming !== current) {
+              console.log("[OSC] received modChain:", incoming);
+              fmModUpstreamChain = value;
+              rebuildFMMod();
+            }
           }
-          // ignore other ports
           return;
         }
 

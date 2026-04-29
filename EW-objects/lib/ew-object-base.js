@@ -179,6 +179,10 @@ class RoomConnection {
         if (this.handlers.onRoomPrivate) this.handlers.onRoomPrivate(msg, this);
         break;
 
+      case "requestState":
+        if (this.handlers.onRequestState) this.handlers.onRequestState(msg, this);
+        break;
+
       default:
         // Forward any unhandled message types
         if (this.handlers.onMessage) this.handlers.onMessage(msg, this);
@@ -284,6 +288,9 @@ export class EWObject {
         onRoomPrivate: (msg) => {
           this._emit("roomPrivate", msg);
         },
+        onRequestState: () => {
+          this._broadcastFullState();
+        },
       }
     );
 
@@ -344,6 +351,8 @@ export class EWObject {
     const conn = new RoomConnection(this._wsBase, clean, {
       onOpen: () => {
         this._emit("inputConnected", { room: clean, portMapping: mergedMapping });
+        // Ask existing clients in the room to re-broadcast their state
+        conn.send({ type: "requestState" });
       },
       onClose: () => {
         this._emit("inputDisconnected", { room: clean });
