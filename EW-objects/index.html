@@ -26,7 +26,7 @@
 <!-- |                                                                         | -->
 <!-- \-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/|\-/ -->
 <!doctype html>
-<html lang="en">
+<html lang="en" class="theme-ethos">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -88,9 +88,18 @@
         color: var(--mint);
         font-family: var(--font);
       }
+      #kk-bg {
+        display: block;
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        z-index: 0;
+        pointer-events: none;
+      }
     </style>
   </head>
   <body>
+    <!-- ── Three.js Kaluza-Klein background ── -->
+    <canvas id="kk-bg"></canvas>
     <!-- ── Grid overlay ── -->
     <div id="grid-bg"></div>
     <!-- ── Scanline overlay ── -->
@@ -128,32 +137,6 @@
           the same machine, on different machines across a network, or shared
           between multiple users collaborating on the same patch simultaneously.
         </p>
-        <div class="stats-row" style="margin-top: 10px">
-          <div class="stat-block">
-            <div class="stat-label">PROTOCOL</div>
-            <div class="stat-val" style="font-size: 1rem">WebSocket</div>
-          </div>
-          <div class="stat-block">
-            <div class="stat-label">SIGNAL RATE</div>
-            <div class="stat-val" style="font-size: 1rem">~100 Hz</div>
-          </div>
-          <div class="stat-block">
-            <div class="stat-label">CLOCK SYNC</div>
-            <div class="stat-val" style="font-size: 1rem">NTP</div>
-          </div>
-          <div class="stat-block">
-            <div class="stat-label">AUDIO</div>
-            <div class="stat-val" style="font-size: 1rem">Tone.js</div>
-          </div>
-          <div class="stat-block">
-            <div class="stat-label">OBJECTS</div>
-            <div class="stat-val" style="font-size: 1rem">41</div>
-          </div>
-          <div class="stat-block">
-            <div class="stat-label">UI</div>
-            <div class="stat-val" style="font-size: 1rem">EWUILIB</div>
-          </div>
-        </div>
       </div>
 
       <div class="page-section-label">// Signal Sources</div>
@@ -879,6 +862,32 @@
           your signal chain. Multiple users can subscribe to the same room
           simultaneously.
         </p>
+        <div class="stats-row" style="margin-top: 14px">
+          <div class="stat-block">
+            <div class="stat-label">PROTOCOL</div>
+            <div class="stat-val" style="font-size: 1rem">WebSocket</div>
+          </div>
+          <div class="stat-block">
+            <div class="stat-label">SIGNAL RATE</div>
+            <div class="stat-val" style="font-size: 1rem">~100 Hz</div>
+          </div>
+          <div class="stat-block">
+            <div class="stat-label">CLOCK SYNC</div>
+            <div class="stat-val" style="font-size: 1rem">NTP</div>
+          </div>
+          <div class="stat-block">
+            <div class="stat-label">AUDIO</div>
+            <div class="stat-val" style="font-size: 1rem">Tone.js</div>
+          </div>
+          <div class="stat-block">
+            <div class="stat-label">OBJECTS</div>
+            <div class="stat-val" style="font-size: 1rem">41</div>
+          </div>
+          <div class="stat-block">
+            <div class="stat-label">UI</div>
+            <div class="stat-val" style="font-size: 1rem">EWUILIB</div>
+          </div>
+        </div>
       </div>
 
       <div
@@ -895,5 +904,200 @@
         >
       </div>
     </div>
+
+    <!-- ── Kaluza-Klein String Theory Background ── -->
+    <script type="module">
+      import * as THREE from "https://cdn.jsdelivr.net/npm/three@v0.171.0/build/three.module.js";
+
+      const canvas = document.getElementById("kk-bg");
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+      renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+      renderer.setClearColor(0x000000, 0);
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 1000);
+      camera.position.set(0, 0, 22);
+
+      function resize() {
+        renderer.setSize(innerWidth, innerHeight);
+        camera.aspect = innerWidth / innerHeight;
+        camera.updateProjectionMatrix();
+      }
+      resize();
+      addEventListener("resize", resize);
+
+      // Plasma palette — bright
+      const bright = new THREE.Color(0xdd66ff);
+      const mid    = new THREE.Color(0xff66dd);
+      const dim    = new THREE.Color(0x66ffdd);
+      const dark   = new THREE.Color(0x500080);
+
+      // ── Kaluza-Klein compactified dimension strings ──
+      const KK_STRINGS = 14;
+      const kkGroup = new THREE.Group();
+      scene.add(kkGroup);
+
+      const stringMeshes = [];
+      const stringData = [];
+
+      for (let s = 0; s < KK_STRINGS; s++) {
+        const data = {
+          majorR: 25 + Math.random() * 40,
+          minorR: 0.04 + Math.random() * 0.1,
+          tilt: (Math.random() - 0.5) * Math.PI,
+          tiltY: (Math.random() - 0.5) * Math.PI * 0.6,
+          speed: (0.15 + Math.random() * 0.4) * (Math.random() < 0.5 ? 1 : -1),
+          vibFreq: 2 + Math.floor(Math.random() * 6),
+          vibAmp: 0.5 + Math.random() * 2.5,
+          phase: Math.random() * Math.PI * 2,
+          colorMix: Math.random(),
+        };
+        stringData.push(data);
+
+        const pts = [];
+        const segments = 256;
+        for (let i = 0; i <= segments; i++) pts.push(new THREE.Vector3(0, 0, 0));
+        const curve = new THREE.CatmullRomCurve3(pts, true);
+        const tubeGeo = new THREE.TubeGeometry(curve, segments, data.minorR, 5, true);
+
+        const col = data.colorMix < 0.33 ? bright : data.colorMix < 0.66 ? mid : dim;
+
+        const mat = new THREE.MeshBasicMaterial({
+          color: col,
+          transparent: true,
+          opacity: 0.3 + Math.random() * 0.25,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+          wireframe: true,
+        });
+
+        const mesh = new THREE.Mesh(tubeGeo, mat);
+        mesh.rotation.x = data.tilt;
+        mesh.rotation.y = data.tiltY;
+        kkGroup.add(mesh);
+        stringMeshes.push({ mesh, curve, data, segments });
+      }
+
+      // ── Calabi-Yau manifolds ──
+      const manifolds = [];
+      const manifoldConfigs = [
+        { p: 2, q: 3, radius: 22, tube: 7,   opacity: 0.22, color: bright, speed: 0.003 },
+        { p: 3, q: 5, radius: 16, tube: 5,   opacity: 0.18, color: mid,    speed: -0.004 },
+        { p: 2, q: 5, radius: 28, tube: 3.5, opacity: 0.14, color: dim,    speed: 0.002 },
+        { p: 3, q: 7, radius: 13, tube: 4,   opacity: 0.16, color: bright, speed: -0.005 },
+      ];
+
+      manifoldConfigs.forEach(cfg => {
+        const geo = new THREE.TorusKnotGeometry(cfg.radius, cfg.tube, 128, 12, cfg.p, cfg.q);
+        const mat = new THREE.MeshBasicMaterial({
+          color: cfg.color, wireframe: true, transparent: true,
+          opacity: cfg.opacity, blending: THREE.AdditiveBlending, depthWrite: false,
+        });
+        const mesh = new THREE.Mesh(geo, mat);
+        scene.add(mesh);
+        manifolds.push({ mesh, speed: cfg.speed, cfg });
+      });
+
+      // ── Quantum fluctuation particles ──
+      const NPARTS = 1200;
+      const pPos = new Float32Array(NPARTS * 3);
+      const pCol = new Float32Array(NPARTS * 3);
+      const pPhase = new Float32Array(NPARTS);
+      const pRadius = new Float32Array(NPARTS);
+      const pSpeed = new Float32Array(NPARTS);
+      const pAxis = new Float32Array(NPARTS);
+
+      for (let i = 0; i < NPARTS; i++) {
+        pPhase[i] = Math.random() * Math.PI * 2;
+        pRadius[i] = 10 + Math.random() * 60;
+        pSpeed[i] = (0.2 + Math.random() * 0.8) * (Math.random() < 0.5 ? 1 : -1);
+        pAxis[i] = Math.floor(Math.random() * 3);
+        const c = [bright, mid, dim][Math.floor(Math.random() * 3)];
+        const intensity = 0.5 + Math.random() * 0.5;
+        pCol[i * 3]     = c.r * intensity;
+        pCol[i * 3 + 1] = c.g * intensity;
+        pCol[i * 3 + 2] = c.b * intensity;
+      }
+
+      const dotCanvas = document.createElement("canvas");
+      dotCanvas.width = 32; dotCanvas.height = 32;
+      const dctx = dotCanvas.getContext("2d");
+      dctx.beginPath(); dctx.arc(16, 16, 14, 0, Math.PI * 2);
+      dctx.fillStyle = "#ffffff"; dctx.fill();
+      const dotTex = new THREE.CanvasTexture(dotCanvas);
+
+      const pGeo = new THREE.BufferGeometry();
+      pGeo.setAttribute("position", new THREE.BufferAttribute(pPos, 3));
+      pGeo.setAttribute("color", new THREE.BufferAttribute(pCol, 3));
+      const pMat = new THREE.PointsMaterial({
+        size: 0.5, map: dotTex, vertexColors: true, transparent: true, opacity: 0.6,
+        blending: THREE.AdditiveBlending, depthWrite: false,
+      });
+      scene.add(new THREE.Points(pGeo, pMat));
+
+      // ── Animation ──
+      let t = 0;
+
+      function animate() {
+        requestAnimationFrame(animate);
+        t += 0.008;
+
+        stringMeshes.forEach(({ mesh, curve, data, segments }) => {
+          const pts = curve.points;
+          for (let i = 0; i <= segments; i++) {
+            const u = i / segments;
+            const angle = u * Math.PI * 2;
+            let x = Math.cos(angle + t * data.speed) * data.majorR;
+            let y = Math.sin(angle + t * data.speed) * data.majorR;
+            let z = 0;
+            const vib = Math.sin(angle * data.vibFreq + t * 3 + data.phase) * data.vibAmp;
+            const vib2 = Math.cos(angle * (data.vibFreq + 1) + t * 2.3 + data.phase * 0.7) * data.vibAmp * 0.5;
+            x += vib * Math.cos(angle);
+            y += vib * Math.sin(angle);
+            z += vib2;
+            const kkMod = 1 + 0.15 * Math.sin(angle * 3 + t * 1.5 + data.phase);
+            x *= kkMod; y *= kkMod;
+            pts[i].set(x, y, z);
+          }
+          curve.updateArcLengths();
+          const newGeo = new THREE.TubeGeometry(curve, segments, data.minorR, 5, true);
+          mesh.geometry.dispose();
+          mesh.geometry = newGeo;
+        });
+
+        manifolds.forEach(({ mesh, speed, cfg }) => {
+          mesh.rotation.x += speed;
+          mesh.rotation.y += speed * 0.7;
+          mesh.rotation.z += speed * 0.3;
+          mesh.material.opacity = cfg.opacity + Math.sin(t * 2 + cfg.radius) * 0.03;
+        });
+
+        kkGroup.rotation.x = Math.sin(t * 0.08) * 0.3;
+        kkGroup.rotation.y += 0.001;
+        kkGroup.rotation.z = Math.cos(t * 0.06) * 0.15;
+
+        for (let i = 0; i < NPARTS; i++) {
+          const angle = pPhase[i] + t * pSpeed[i];
+          const r = pRadius[i] + Math.sin(t * 1.5 + pPhase[i] * 3) * 2;
+          const wobble = Math.sin(angle * 5 + t * 2) * 1.5;
+          const ax = pAxis[i];
+          if (ax === 0) {
+            pPos[i*3] = Math.cos(angle)*r; pPos[i*3+1] = Math.sin(angle)*r + wobble; pPos[i*3+2] = wobble*0.5;
+          } else if (ax === 1) {
+            pPos[i*3] = Math.cos(angle)*r; pPos[i*3+1] = wobble*0.5; pPos[i*3+2] = Math.sin(angle)*r + wobble;
+          } else {
+            pPos[i*3] = wobble*0.5; pPos[i*3+1] = Math.cos(angle)*r; pPos[i*3+2] = Math.sin(angle)*r + wobble;
+          }
+        }
+        pGeo.attributes.position.needsUpdate = true;
+
+        camera.position.x = Math.sin(t * 0.1) * 12;
+        camera.position.y = Math.cos(t * 0.07) * 8;
+        camera.lookAt(0, 0, 0);
+
+        renderer.render(scene, camera);
+      }
+      animate();
+    </script>
   </body>
 </html>
