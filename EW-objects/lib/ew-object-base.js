@@ -4,17 +4,20 @@
 // Handles WebSocket rooms, NTP clock sync, signal I/O, ports.
 // ============================================================
 
-// Production URL — update when deployed
+// Production URL — fallback if not served from the EW-objects server directly
 const WS_PROD = "wss://ew-objects-production.up.railway.app";
 const WS_LOCAL_PORT = 3001;
 
 function resolveWsBase() {
   const IS_LOCAL =
     location.hostname === "localhost" || location.hostname === "127.0.0.1";
+  if (IS_LOCAL) {
+    const proto = location.protocol === "https:" ? "wss:" : "ws:";
+    return `${proto}//${location.hostname}:${WS_LOCAL_PORT}`;
+  }
+  // When served from the EW-objects server itself, just use the current host
   const proto = location.protocol === "https:" ? "wss:" : "ws:";
-  return IS_LOCAL
-    ? `${proto}//${location.hostname}:${WS_LOCAL_PORT}`
-    : WS_PROD;
+  return `${proto}//${location.host}`;
 }
 
 function sanitizeRoom(name) {
