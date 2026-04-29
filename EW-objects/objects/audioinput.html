@@ -319,16 +319,18 @@
         inputGainNode.connect(monitorGainNode);
         monitorGainNode.toDestination();
 
-        // Raw analyser for RMS dB metering
+        // Raw analyser for RMS dB metering — connected to inputGain (before outputGain)
+        // so that the noise gate and level meter read the true input level,
+        // not a level that's been attenuated by the output gain slider.
         const ctx = Tone.context.rawContext;
         rawAnalyser = ctx.createAnalyser();
         rawAnalyser.smoothingTimeConstant = 0.8;
         rawAnalyser.fftSize = 2048;
 
-        // Connect outputGainNode to rawAnalyser
-        const rawOut = outputGainNode.output || outputGainNode._gainNode || outputGainNode;
+        // Connect inputGainNode to rawAnalyser
+        const rawIn = inputGainNode.output || inputGainNode._gainNode || inputGainNode;
         try {
-          rawOut.connect(rawAnalyser);
+          rawIn.connect(rawAnalyser);
         } catch (_) {
           // Fallback: use Tone's native node
           Tone.connect(outputGainNode, Tone.context.createGain()).connect(rawAnalyser);
@@ -338,37 +340,59 @@
       }
 
       async function openSource(deviceId) {
-        await ensureAudio();
-        closeSource();
-
         if (sourceType === "screen") {
           // Screen/tab audio capture via getDisplayMedia
+          // getDisplayMedia MUST be the very first await from the click — nothing before it
+          let stream;
           try {
-            screenStream = await navigator.mediaDevices.getDisplayMedia({
+            stream = await navigator.mediaDevices.getDisplayMedia({
+              video: true,
               audio: true,
-              video: false,
             });
-            const ctx = Tone.context.rawContext;
-            screenSource = ctx.createMediaStreamSource(screenStream);
-            // Wrap in Tone.Gain to stay in Tone.js graph
-            const bridge = new Tone.Gain(1);
-            screenSource.connect(bridge.input ? bridge.input : bridge._gainNode || bridge);
-            bridge.connect(inputGainNode);
-            // Handle user stopping screen share via browser UI
-            screenStream.getAudioTracks()[0].addEventListener("ended", () => {
-              closeSource();
-            });
-            micRunning = true;
-            startSignalOutput();
-            updatePowerUI();
-            updateEnableUI(true);
-            ewObj.setOutput("playing", true, { immediate: true });
           } catch (err) {
             console.error("[AUDIO INPUT] Screen capture denied:", err);
             updateEnableUI(false, err.message || "ACCESS DENIED");
+            return;
           }
+
+          // Check if the stream actually has audio tracks
+          // (user may have unchecked "Share audio" in the picker)
+          if (stream.getAudioTracks().length === 0) {
+            stream.getTracks().forEach(t => t.stop());
+            console.error("[AUDIO INPUT] No audio tracks in screen capture");
+            updateEnableUI(false, "NO AUDIO — enable 'Share audio' in the picker");
+            return;
+          }
+
+          // Don't stop the video track — in some browsers (Safari) stopping any track
+          // on a getDisplayMedia stream can end the entire capture including audio.
+          // The video track uses negligible resources since we never render it.
+
+          // Now safe to do async work — user gesture is consumed
+          closeSource();
+          screenStream = stream;
+
+          await ensureAudio();
+
+          const ctx = Tone.context.rawContext;
+          screenSource = ctx.createMediaStreamSource(screenStream);
+          const bridge = new Tone.Gain(1);
+          screenSource.connect(bridge.input ? bridge.input : bridge._gainNode || bridge);
+          bridge.connect(inputGainNode);
+          // Handle user stopping screen share via browser UI
+          const audioTrack = screenStream.getAudioTracks()[0];
+          if (audioTrack) {
+            audioTrack.addEventListener("ended", () => closeSource());
+          }
+          micRunning = true;
+          startSignalOutput();
+          updatePowerUI();
+          updateEnableUI(true);
+          ewObj.setOutput("playing", true, { immediate: true });
         } else {
           // Microphone / line-in via UserMedia
+          closeSource();
+          await ensureAudio();
           mic = new Tone.UserMedia();
           try {
             if (deviceId) {
@@ -608,6 +632,14 @@
         ]);
       }
 
+      // -- Feature detection -------------------------------------
+
+      const hasMic = !!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+      const hasDisplayMedia = !!(navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia);
+      // Safari has getDisplayMedia but does NOT support audio capture from it
+      const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+      const hasScreen = hasDisplayMedia && !isSafari;
+
       // -- Build UI --------------------------------------------
 
       const app = document.getElementById("app");
@@ -644,16 +676,26 @@
       const enablePanel = document.createElement("div");
       enablePanel.className = "hud-panel";
       enablePanel.id = "mic-enable-overlay";
+
+      const micOptionAttr = hasMic ? "" : "disabled";
+      const screenOptionAttr = hasScreen ? "" : "disabled";
+      const micWarn = hasMic ? "" : ' <span style="color:var(--rose); font-size:0.72rem">(NOT SUPPORTED)</span>';
+      const screenWarn = hasScreen ? "" : ' <span style="color:var(--rose); font-size:0.72rem">(NOT SUPPORTED)</span>';
+      const noAudioAtAll = !hasMic && !hasScreen;
+
       enablePanel.innerHTML = `
         <div class="mic-enable-overlay">
+          ${noAudioAtAll ? '<div style="color:var(--rose); margin-bottom:12px; font-size:0.9rem">YOUR BROWSER DOES NOT SUPPORT AUDIO INPUT</div>' : ""}
           <div class="control-group" style="margin-bottom:16px; text-align:left; max-width:280px; margin-left:auto; margin-right:auto">
             <div class="control-label">SOURCE</div>
             <select id="source-type-select" style="width:100%">
-              <option value="mic">MICROPHONE</option>
-              <option value="screen">SCREEN / TAB AUDIO</option>
+              <option value="mic" ${micOptionAttr}>MICROPHONE${hasMic ? "" : " (NOT SUPPORTED)"}</option>
+              <option value="screen" ${screenOptionAttr}>SCREEN / TAB AUDIO${hasScreen ? "" : " (NOT SUPPORTED)"}</option>
             </select>
+            ${!hasMic ? '<div style="color:var(--rose); font-size:0.68rem; margin-top:4px; letter-spacing:0.08em">getUserMedia not available — microphone requires HTTPS</div>' : ""}
+            ${!hasScreen ? '<div style="color:var(--rose); font-size:0.68rem; margin-top:4px; letter-spacing:0.08em">' + (isSafari ? 'Safari does not support screen audio capture — use Chrome or Edge' : 'getDisplayMedia not available in this browser') + '</div>' : ""}
           </div>
-          <button class="btn" id="mic-enable-btn">ENABLE AUDIO INPUT</button>
+          <button class="btn" id="mic-enable-btn" ${noAudioAtAll ? "disabled" : ""}>ENABLE AUDIO INPUT</button>
           <span class="type-dim">click to request audio access</span>
           <span class="type-dim mic-error" style="display:none; color:var(--rose); margin-top:6px"></span>
         </div>
@@ -669,8 +711,8 @@
         <div class="control-group">
           <div class="control-label">SOURCE</div>
           <select id="source-type-control" style="width:100%; margin-bottom:10px">
-            <option value="mic">MICROPHONE</option>
-            <option value="screen">SCREEN / TAB AUDIO</option>
+            <option value="mic" ${micOptionAttr}>MICROPHONE${hasMic ? "" : " (NOT SUPPORTED)"}</option>
+            <option value="screen" ${screenOptionAttr}>SCREEN / TAB AUDIO${hasScreen ? "" : " (NOT SUPPORTED)"}</option>
           </select>
         </div>
 
@@ -781,7 +823,13 @@
       document.documentElement.className = "theme-ethos";
 
       // Source type selector (on enable overlay)
-      document.getElementById("source-type-select").addEventListener("change", (e) => {
+      const sourceSelect = document.getElementById("source-type-select");
+      // Auto-select first available source
+      if (!hasMic && hasScreen) {
+        sourceType = "screen";
+        sourceSelect.value = "screen";
+      }
+      sourceSelect.addEventListener("change", (e) => {
         sourceType = e.target.value;
       });
 
