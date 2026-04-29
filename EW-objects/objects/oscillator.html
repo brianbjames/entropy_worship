@@ -207,8 +207,14 @@
         osc.connect(analyser);
       }
 
-      function startOsc() {
-        if (!osc || oscRunning) return;
+      async function startOsc() {
+        if (oscRunning) return;
+        if (!audioReady) {
+          await Tone.start();
+          initAudio();
+          audioReady = true;
+        }
+        if (!osc) return;
         osc.start();
         oscRunning = true;
         startSignalOutput();
@@ -758,10 +764,7 @@
       // ── Initialize ──────────────────────────────────────────────
 
       (async () => {
-        await Tone.start();
-        initAudio();
-
-        // Get room from URL or auto-generate
+        // Connect to room immediately — no user gesture needed for WebSocket
         const urlRoom = new URLSearchParams(location.search).get("room");
         ewObj.connectOutput(urlRoom || undefined);
 
@@ -775,6 +778,15 @@
         resizeScope();
         drawScope();
       })();
+
+      // Defer audio init to first user interaction (browsers require a gesture)
+      let audioReady = false;
+      document.addEventListener("click", async () => {
+        if (audioReady) return;
+        await Tone.start();
+        initAudio();
+        audioReady = true;
+      }, { once: false });
 
       window.addEventListener("resize", resizeScope);
     </script>
