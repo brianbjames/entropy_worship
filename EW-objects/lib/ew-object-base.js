@@ -264,8 +264,8 @@ export class EWObject {
           });
           // Announce ourselves
           this._sendObjectInfo();
-          // Broadcast current state to late joiners
-          this._broadcastFullState();
+          // Ask existing peers to re-broadcast their state
+          this._outputConn.send({ type: "requestState" });
         },
         onClose: () => {
           this._emit("disconnected", {
