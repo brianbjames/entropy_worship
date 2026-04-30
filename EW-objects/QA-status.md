@@ -353,15 +353,15 @@
 
 ### 19. REVERB — `reverb.html`
 
-| #   | Test                                                  | Status | Issues |
-| --- | ----------------------------------------------------- | ------ | ------ |
-| RV1 | Audio input: link to oscillator, audio passes through |        |        |
-| RV2 | Decay slider changes reverb tail length               |        |        |
-| RV3 | Wet slider blends dry/wet                             |        |        |
-| RV4 | Room input for decay: modulatable                     |        |        |
-| RV5 | Room input for wet: modulatable                       |        |        |
-| RV6 | Output mode: AUDIO / CONTROL / BOTH                   |        |        |
-| RV7 | Scope shows output waveform                           |        |        |
+| #   | Test                                                  | Status | Issues                       |
+| --- | ----------------------------------------------------- | ------ | ---------------------------- |
+| RV1 | Audio input: link to oscillator, audio passes through | PASS   |                              |
+| RV2 | Decay slider changes reverb tail length               | FAIL   |                              |
+| RV3 | Wet slider blends dry/wet                             | FAIL   | decay, wet, gain seem broken |
+| RV4 | Room input for decay: modulatable                     |        |                              |
+| RV5 | Room input for wet: modulatable                       |        |                              |
+| RV6 | Output mode: AUDIO / CONTROL / BOTH                   | PASS   |                              |
+| RV7 | Scope shows output waveform                           | PASS   |                              |
 
 ### 20. RING MOD — `ringmod.html`
 
@@ -436,26 +436,26 @@
 
 ### 24. LFO — `lfo.html`
 
-| #    | Test                                                           | Status | Issues |
-| ---- | -------------------------------------------------------------- | ------ | ------ |
-| LF1  | Power toggle starts/stops LFO                                  |        |        |
-| LF2  | Rate slider changes LFO speed (0.01-100 Hz)                    |        |        |
-| LF3  | Depth slider scales output amplitude                           |        |        |
-| LF4  | Sine waveform: smooth oscillation                              |        |        |
-| LF5  | Triangle waveform: linear ramp up/down                         |        |        |
-| LF6  | Sawtooth waveform: ramp up, drop                               |        |        |
-| LF7  | Square waveform: alternating high/low                          |        |        |
-| LF8  | Pulse 25% waveform                                             |        |        |
-| LF9  | Pulse 10% waveform                                             |        |        |
-| LF10 | Exp rise waveform                                              |        |        |
-| LF11 | Exp fall waveform                                              |        |        |
-| LF12 | Staircase waveform: stepped levels                             |        |        |
-| LF13 | Random S&H waveform: random held values                        |        |        |
-| LF14 | Smooth random waveform: interpolated random                    |        |        |
-| LF15 | Wander waveform: brownian drift                                |        |        |
-| LF16 | Signal output modulates another object (link to osc frequency) |        |        |
-| LF17 | Room input for rate: modulatable                               |        |        |
-| LF18 | Scope shows LFO waveform                                       |        |        |
+| #    | Test                                                           | Status | Issues                                |
+| ---- | -------------------------------------------------------------- | ------ | ------------------------------------- |
+| LF1  | Power toggle starts/stops LFO                                  | PASS   |                                       |
+| LF2  | Rate slider changes LFO speed (0.01-100 Hz)                    | PASS   |                                       |
+| LF3  | Depth slider scales output amplitude                           | PASS   |                                       |
+| LF4  | Sine waveform: smooth oscillation                              | PASS   |                                       |
+| LF5  | Triangle waveform: linear ramp up/down                         | PASS   |                                       |
+| LF6  | Sawtooth waveform: ramp up, drop                               | PASS   |                                       |
+| LF7  | Square waveform: alternating high/low                          | PASS   |                                       |
+| LF8  | Pulse 25% waveform                                             |        | sometimes doesnt modulate all targets |
+| LF9  | Pulse 10% waveform                                             |        | sometimes doesnt modulate all targets |
+| LF10 | Exp rise waveform                                              |        | sometimes doesnt modulate all targets |
+| LF11 | Exp fall waveform                                              |        | sometimes doesnt modulate all targets |
+| LF12 | Staircase waveform: stepped levels                             |        | sometimes doesnt modulate all targets |
+| LF13 | Random S&H waveform: random held values                        |        | sometimes doesnt modulate all targets |
+| LF14 | Smooth random waveform: interpolated random                    |        | sometimes doesnt modulate all targets |
+| LF15 | Wander waveform: brownian drift                                |        | sometimes doesnt modulate all targets |
+| LF16 | Signal output modulates another object (link to osc frequency) |        | sometimes doesnt modulate all targets |
+| LF17 | Room input for rate: modulatable                               |        |                                       |
+| LF18 | Scope shows LFO waveform                                       | PASS   |                                       |
 
 ### 25. SAMPLE & HOLD — `samplehold.html`
 
@@ -709,13 +709,13 @@
 
 ### 41. SCOPE — `scope.html`
 
-| #   | Test                                               | Status | Issues |
-| --- | -------------------------------------------------- | ------ | ------ |
-| SC1 | Audio input: link to oscillator, waveform displays |        |        |
-| SC2 | Time scaling: adjusts horizontal zoom              |        |        |
-| SC3 | Gain scaling: adjusts vertical zoom                |        |        |
-| SC4 | Trigger mode: stabilizes waveform display          |        |        |
-| SC5 | Waveform renders smoothly at audio rate            |        |        |
+| #   | Test                                               | Status | Issues          |
+| --- | -------------------------------------------------- | ------ | --------------- |
+| SC1 | Audio input: link to oscillator, waveform displays | PASS   |                 |
+| SC2 | Time scaling: adjusts horizontal zoom              | PASS   |                 |
+| SC3 | Gain scaling: adjusts vertical zoom                | PASS   |                 |
+| SC4 | Trigger mode: stabilizes waveform display          | PASS   |                 |
+| SC5 | Waveform renders smoothly at audio rate            | FAIL   | visual aliasing |
 
 ---
 
@@ -738,28 +738,28 @@
 
 Test signal chains across multiple objects.
 
-| #     | Test                                                                | Status | Issues |
-| ----- | ------------------------------------------------------------------- | ------ | ------ |
-| INT1  | Oscillator → Filter → Reverb → Scope (basic chain)                  |        |        |
-| INT2  | LFO → Oscillator frequency (vibrato)                                |        |        |
-| INT3  | LFO → Filter cutoff (filter sweep)                                  |        |        |
-| INT4  | Clock → Sequencer → Oscillator frequency (sequenced melody)         |        |        |
-| INT5  | Clock → Euclid → Envelope → Oscillator (euclidean rhythm)           |        |        |
-| INT6  | Clock → Arpeggiator → Synth (arpeggiated synth)                     |        |        |
-| INT7  | Oscillator A → Oscillator B frequency (FM synthesis)                |        |        |
-| INT8  | Osc A → Osc B → Osc C frequency (cascading FM)                      |        |        |
-| INT9  | Noise → Sample & Hold → Quantizer → Oscillator (random melody)      |        |        |
-| INT10 | Clock → Probability → Envelope (probabilistic triggers)             |        |        |
-| INT11 | LFO → Math (scale) → Filter cutoff (scaled modulation)              |        |        |
-| INT12 | Audio Input → Filter → Delay → Reverb (live FX chain)               |        |        |
-| INT13 | Oscillator + Noise → Mixer → Compressor → Scope (mix + dynamics)    |        |        |
-| INT14 | Clock → Drums + Sequencer → Mixer (rhythm + melody)                 |        |        |
-| INT15 | RNG → Gate (control) + LFO (signal) → Oscillator (gated random)     |        |        |
-| INT16 | Func Gen → Oscillator frequency (pitch sweep)                       |        |        |
-| INT17 | Sampler triggered by Clock (rhythmic sample playback)               |        |        |
-| INT18 | Granular with LFO → position (scanning granular texture)            |        |        |
-| INT19 | Two users: same room, parameter changes sync in real-time           |        |        |
-| INT20 | Cross-machine: modules on different devices, connected via room URL |        |        |
+| #     | Test                                                                | Status | Issues                                              |
+| ----- | ------------------------------------------------------------------- | ------ | --------------------------------------------------- |
+| INT1  | Oscillator → Filter → Reverb → Scope (basic chain)                  | PASS   |                                                     |
+| INT2  | LFO → Oscillator frequency (vibrato)                                | PASS   |                                                     |
+| INT3  | LFO → Filter cutoff (filter sweep)                                  |        |                                                     |
+| INT4  | Clock → Sequencer → Oscillator frequency (sequenced melody)         |        |                                                     |
+| INT5  | Clock → Euclid → Envelope → Oscillator (euclidean rhythm)           |        |                                                     |
+| INT6  | Clock → Arpeggiator → Synth (arpeggiated synth)                     |        |                                                     |
+| INT7  | Oscillator A → Oscillator B frequency (FM synthesis)                | PASS   |                                                     |
+| INT8  | Osc A → Osc B → Osc C frequency (cascading FM)                      | PASS   |                                                     |
+| INT9  | Noise → Sample & Hold → Quantizer → Oscillator (random melody)      |        |                                                     |
+| INT10 | Clock → Probability → Envelope (probabilistic triggers)             |        |                                                     |
+| INT11 | LFO → Math (scale) → Filter cutoff (scaled modulation)              |        |                                                     |
+| INT12 | Audio Input → Filter → Delay → Reverb (live FX chain)               |        |                                                     |
+| INT13 | Oscillator + Noise → Mixer → Compressor → Scope (mix + dynamics)    |        |                                                     |
+| INT14 | Clock → Drums + Sequencer → Mixer (rhythm + melody)                 |        |                                                     |
+| INT15 | RNG → Gate (control) + LFO (signal) → Oscillator (gated random)     |        |                                                     |
+| INT16 | Func Gen → Oscillator frequency (pitch sweep)                       |        |                                                     |
+| INT17 | Sampler triggered by Clock (rhythmic sample playback)               |        |                                                     |
+| INT18 | Granular with LFO → position (scanning granular texture)            |        |                                                     |
+| INT19 | Two users: same room, parameter changes sync in real-time           | FAIL   | sliders need smoother scaling, they jump and glitch |
+| INT20 | Cross-machine: modules on different devices, connected via room URL |        |                                                     |
 
 ---
 
