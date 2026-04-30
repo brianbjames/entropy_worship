@@ -48,36 +48,46 @@
         gap: 10px;
         margin-top: 8px;
       }
-      .alpha-badge, .issue-btn {
-        display: inline-block;
-        padding: 4px 12px;
-        font-family: var(--font-mono, 'VT323', monospace);
+      .alpha-badge,
+      .issue-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        height: 28px;
+        padding: 0 12px;
+        font-family: var(--font-mono, "VT323", monospace);
         font-size: 0.85rem;
         letter-spacing: 1px;
+        border: 1px solid var(--dim);
         border-radius: 2px;
         box-sizing: border-box;
-        line-height: 1;
-      }
-      .alpha-badge {
-        color: #fff;
-        background: #cc0000;
-        border: 1px solid #ff3333;
-        animation: alpha-flash 1s ease-in-out infinite;
-      }
-      @keyframes alpha-flash {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.25; }
-      }
-      .issue-btn {
         color: var(--text);
         background: transparent;
-        border: 1px solid var(--dim);
         cursor: pointer;
-        transition: border-color 0.14s, color 0.14s;
+        text-decoration: none;
+        clip-path: none;
+        transition:
+          border-color 0.14s,
+          color 0.14s;
       }
+      .alpha-badge:hover,
       .issue-btn:hover {
         border-color: var(--accent);
         color: var(--accent);
+      }
+      .alpha-badge {
+        color: #ff3333;
+        border-color: #ff3333;
+        animation: alpha-flash 1s ease-in-out infinite;
+      }
+      @keyframes alpha-flash {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.25;
+        }
       }
       .object-card {
         display: block;
@@ -125,10 +135,53 @@
         color: var(--mint);
         font-family: var(--font);
       }
+      .intro-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: transparent;
+        z-index: 9999;
+        overflow-y: auto;
+        padding: 40px 20px;
+      }
+      .intro-overlay.active {
+        display: block;
+      }
+      .intro-popup {
+        max-width: 680px;
+        margin: 0 auto;
+        position: relative;
+      }
+      .intro-close {
+        position: sticky;
+        top: 0;
+        float: right;
+        background: transparent;
+        border: 1px solid var(--dim);
+        color: var(--text);
+        font-family: var(--font-mono, "VT323", monospace);
+        font-size: 0.85rem;
+        padding: 4px 12px;
+        cursor: pointer;
+        clip-path: none;
+        transition:
+          border-color 0.14s,
+          color 0.14s;
+      }
+      .intro-close:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
       #kk-bg {
         display: block;
         position: fixed;
-        top: 0; left: 0; right: 0; bottom: 0;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
         z-index: 0;
         pointer-events: none;
       }
@@ -158,8 +211,22 @@
         </div>
         <div class="alpha-row">
           <span class="alpha-badge">ALPHA VERSION</span>
-          <button class="issue-btn" onclick="openIssue()">REPORT BUG</button>
-          <a class="issue-btn" href="https://github.com/brianbjames/entropy_worship/blob/main/EW-objects/QA-status.md" target="_blank" style="text-decoration:none">ISSUES</a>
+          <button class="issue-btn" onclick="openIssue()">REPORT A BUG</button>
+          <a
+            class="issue-btn"
+            href="https://github.com/brianbjames/entropy_worship/blob/main/EW-objects/QA-status.md"
+            target="_blank"
+            style="text-decoration: none"
+            >ISSUE TRACKER</a
+          >
+          <button
+            class="issue-btn"
+            onclick="
+              document.getElementById('intro-overlay').classList.add('active')
+            "
+          >
+            INTRODUCTION
+          </button>
         </div>
       </div>
 
@@ -167,11 +234,15 @@
 
       <a href="objects/dashboard.html" class="hud-panel object-card">
         <div class="obj-type">SYSTEM</div>
-        <div class="obj-name">DISTRIBUTED OBJECTS</div>
+        <div class="obj-name">NETWORK MAP</div>
         <div class="obj-desc">
           Live topology visualization of the distributed patch network. Shows
-          all active rooms, their connections, and signal flow hierarchy as an
-          interactive graph.
+          all active rooms, their connections, and signal flow hierarchy as a
+          graph. Nodes represent objects currently online, and edges represent
+          active room subscriptions between them. Use it to see what is
+          currently connected on the network, trace signal paths, and verify
+          your patch routing at a glance — especially useful when multiple users
+          are collaborating across machines.
         </div>
         <div class="obj-ports">
           <span class="tag accent">TOPOLOGY</span>
@@ -309,9 +380,9 @@
           <div class="obj-type">INSTRUMENT</div>
           <div class="obj-name">SYNTH</div>
           <div class="obj-desc">
-            Complete synthesizer voice with oscillator, multimode filter,
-            filter envelope, and amplitude ADSR. Responds to trigger and
-            frequency inputs from clocks, sequencers, and arpeggiators.
+            Complete synthesizer voice with oscillator, multimode filter, filter
+            envelope, and amplitude ADSR. Responds to trigger and frequency
+            inputs from clocks, sequencers, and arpeggiators.
           </div>
           <div class="obj-ports">
             <span class="tag mint">IN: trigger</span>
@@ -753,8 +824,8 @@
           <div class="obj-type">UTILITY</div>
           <div class="obj-name">LOGIC</div>
           <div class="obj-desc">
-            Boolean logic gate for combining trigger/gate signals. AND, OR,
-            XOR, NAND, NOR, NOT operations with configurable thresholds.
+            Boolean logic gate for combining trigger/gate signals. AND, OR, XOR,
+            NAND, NOR, NOT operations with configurable thresholds.
           </div>
           <div class="obj-ports">
             <span class="tag mint">IN: A</span>
@@ -828,8 +899,8 @@
           <div class="obj-name">RNG</div>
           <div class="obj-desc">
             Random number generator with multiple distributions: uniform,
-            gaussian, bipolar, binary, and brownian walk. Trigger or free-running
-            modes with histogram visualization.
+            gaussian, bipolar, binary, and brownian walk. Trigger or
+            free-running modes with histogram visualization.
           </div>
           <div class="obj-ports">
             <span class="tag mint">IN: trigger</span>
@@ -869,52 +940,96 @@
         </a>
       </div>
 
-      <!-- How to connect -->
-      <div class="hud-panel clip-br concept-panel">
-        <div class="section-title rose">// INTRODUCTION //</div>
+      <div
+        style="
+          text-align: center;
+          padding: 20px 0;
+          font-size: 0.72rem;
+          letter-spacing: 0.22em;
+          color: var(--dim);
+        "
+      >
+        <a href="../" style="color: var(--dim); text-decoration: none"
+          >&copy; 2026 ENTROPY WORSHIP</a
+        >
+      </div>
+    </div>
+
+    <!-- Introduction popup -->
+    <div
+      id="intro-overlay"
+      class="intro-overlay"
+      onclick="if (event.target === this) this.classList.remove('active');"
+    >
+      <div class="intro-popup hud-panel clip-br concept-panel">
+        <button
+          class="intro-close"
+          onclick="
+            document.getElementById('intro-overlay').classList.remove('active')
+          "
+        >
+          CLOSE
+        </button>
+        <div class="section-title rose">
+          // COLLABORATIVE DISTRIBUTED MODULAR RELAY NETWORK SYNTHESIZER //
+        </div>
+        <hr
+          style="
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 14px 0;
+          "
+        />
         <p>
-          EWObjects is a distributed modular audio environment that runs
-          entirely in the browser. Each object is a standalone
-          signal-processing node — an <code>OSCILLATOR</code>, a
-          <code>FILTER</code>, a <code>DELAY</code>, a sequencer — handling
-          synthesis, processing, or routing at the module level, with Tone.js
-          driving all DSP client-side.
+          Welcome to an experimental modular audio patching environment that
+          runs entirely in the browser as a distributed and collaborative audio
+          network.
         </p>
         <p>
-          The key architectural decision: WebSocket rooms replace patch cables.
-          Open an <code>OSCILLATOR</code> in one tab and a
-          <code>FILTER</code> in another. Copy the oscillator's room URL into
-          the filter's audio input, hit <code>LINK</code>, and control signals
-          flow between them at ~30Hz — the same publish/subscribe pattern that
-          Max/MSP uses with send/receive, SuperCollider uses with Buses, or Pd
-          uses with send/receive, except
-          the connection layer is the network itself. Modules can live in tabs
-          on one machine, across machines on a LAN, or across the internet with
-          multiple players patching into the same signal graph simultaneously.
-          As far as we know, no other modular synthesis environment uses the
-          network as its native patching medium — turning URLs into patch
-          cables and browsers into rack modules.
+          Each object is a standalone signal-processing node which handles
+          synthesis, processing, and routing at the module level. No other
+          modular synthesis environment uses the network as its native patching
+          medium — turning WebSocket room URLs into patch cables, and browsers
+          into rack modules.
         </p>
-        <div class="section-title rose" style="margin-top: 14px">// HOW TO CONNECT //</div>
         <p>
-          1. Open any object above — start with the
+          Control signals flow between them at ~30Hz — the same
+          publish/subscribe pattern that Max/MSP uses with send/receive,
+          SuperCollider uses with buses, or Pd uses with send/receive, except in
+          this case the connection layer is the network itself. Modules can live
+          in tabs on one machine, across machines on a LAN, or across the
+          internet with multiple players patching into the same signal graph
+          simultaneously.
+        </p>
+        <hr
+          style="
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 14px 0;
+          "
+        />
+        <div class="section-title rose" style="margin-top: 14px">
+          // HOW TO CONNECT //
+        </div>
+        <p>
+          1. Open any object below — start with the
           <code>OSCILLATOR</code>. On load, it handshakes with the WebSocket
           server and claims a unique room name (something like
-          <code>osc-A2WG9E</code>). That room name is your output bus. You
-          will see it in the header bar next to the status indicator.
+          <code>osc-A2WG9E</code>). That room name is your output bus. You will
+          see it in the header bar next to the status indicator.
         </p>
         <p>
           2. Open a second object in a new tab — a <code>FILTER</code>, a
-          <code>DELAY</code>, anything that accepts input. At the bottom of
-          the page you will find labeled input ports, each with a text field
-          and a <code>LINK</code> button. These are your inlets.
+          <code>DELAY</code>, anything that accepts input. At the bottom of the
+          page you will find labeled input ports, each with a text field and a
+          <code>LINK</code> button. These are your inlets.
         </p>
         <p>
           3. Go back to the source module, click <code>COPY URL</code> to grab
           its room name, then paste that into the destination module's input
           field and click <code>LINK</code>. The status dot goes green — you
-          have a live connection. Think of it as plugging a patch cable from
-          one module's output jack into another's input jack.
+          have a live connection. Think of it as plugging a patch cable from one
+          module's output jack into another's input jack.
         </p>
         <p>
           4. Parameter changes on the source module now propagate in real-time
@@ -932,52 +1047,157 @@
         </p>
         <p>
           6. Rooms can be set to private, restricting signal flow to only those
-          who know the room name — useful for isolating sub-patches or running
-          a closed session. The server itself is a standard Node.js WebSocket
-          process, so you can spin up your own instance on a local machine or
-          private network for zero-latency patching with full control over who
-          connects.
+          who know the room name — useful for isolating sub-patches or running a
+          closed session. The server itself is a standard Node.js WebSocket
+          process — clone the repo, run <code>npm install</code> and
+          <code>npm start</code> inside the <code>EW-objects/</code>
+          directory, and you have your own signal relay running on
+          <code>localhost:3001</code>. Point your modules at that local address
+          instead of the public server and all traffic stays on your machine or
+          LAN — no internet round-trip, minimal latency, and only devices you
+          allow on your network can connect. This is ideal for live performance
+          setups, private jam sessions, or development without depending on an
+          external host.
         </p>
-        <div class="stats-row" style="margin-top: 14px">
-          <div class="stat-block">
-            <div class="stat-label">PROTOCOL</div>
-            <div class="stat-val" style="font-size: 1rem">WebSocket</div>
+        <hr
+          style="
+            border: none;
+            border-top: 1px solid var(--border);
+            margin: 14px 0;
+          "
+        />
+        <div class="section-title rose" style="margin-top: 14px">
+          // TECH STACK //
+        </div>
+        <div class="grid-3" style="margin-top: 14px; gap: 0">
+          <div style="border-right: 1px solid var(--border); padding: 10px">
+            <div
+              class="section-title mint"
+              style="font-size: 0.58rem; margin-bottom: 10px"
+            >
+              // Audio
+            </div>
+            <div
+              class="stats-row"
+              style="border: none; padding: 0; flex-direction: column; gap: 8px"
+            >
+              <div
+                class="stat-block"
+                style="text-align: left; border: none; padding: 0"
+              >
+                <div class="stat-label">DSP ENGINE</div>
+                <div class="stat-val" style="font-size: 1rem">Tone.js</div>
+              </div>
+              <div
+                class="stat-block"
+                style="text-align: left; border: none; padding: 0"
+              >
+                <div class="stat-label">AUDIO API</div>
+                <div class="stat-val" style="font-size: 1rem">Web Audio</div>
+              </div>
+              <div
+                class="stat-block"
+                style="text-align: left; border: none; padding: 0"
+              >
+                <div class="stat-label">MIDI</div>
+                <div class="stat-val" style="font-size: 1rem">Web MIDI</div>
+              </div>
+              <div
+                class="stat-block"
+                style="text-align: left; border: none; padding: 0"
+              >
+                <div class="stat-label">SIGNAL RATE</div>
+                <div class="stat-val" style="font-size: 1rem">~100 Hz</div>
+              </div>
+            </div>
           </div>
-          <div class="stat-block">
-            <div class="stat-label">SIGNAL RATE</div>
-            <div class="stat-val" style="font-size: 1rem">~100 Hz</div>
+          <div style="border-right: 1px solid var(--border); padding: 10px">
+            <div
+              class="section-title mint"
+              style="font-size: 0.58rem; margin-bottom: 10px"
+            >
+              // Network
+            </div>
+            <div
+              class="stats-row"
+              style="border: none; padding: 0; flex-direction: column; gap: 8px"
+            >
+              <div
+                class="stat-block"
+                style="text-align: left; border: none; padding: 0"
+              >
+                <div class="stat-label">PROTOCOL</div>
+                <div class="stat-val" style="font-size: 1rem">WebSocket</div>
+              </div>
+              <div
+                class="stat-block"
+                style="text-align: left; border: none; padding: 0"
+              >
+                <div class="stat-label">CLOCK SYNC</div>
+                <div class="stat-val" style="font-size: 1rem">NTP</div>
+              </div>
+              <div
+                class="stat-block"
+                style="text-align: left; border: none; padding: 0"
+              >
+                <div class="stat-label">SERVER</div>
+                <div class="stat-val" style="font-size: 1rem">Node.js / ws</div>
+              </div>
+              <div
+                class="stat-block"
+                style="text-align: left; border: none; padding: 0"
+              >
+                <div class="stat-label">OBJECTS</div>
+                <div class="stat-val" style="font-size: 1rem">41</div>
+              </div>
+            </div>
           </div>
-          <div class="stat-block">
-            <div class="stat-label">CLOCK SYNC</div>
-            <div class="stat-val" style="font-size: 1rem">NTP</div>
-          </div>
-          <div class="stat-block">
-            <div class="stat-label">AUDIO</div>
-            <div class="stat-val" style="font-size: 1rem">Tone.js</div>
-          </div>
-          <div class="stat-block">
-            <div class="stat-label">OBJECTS</div>
-            <div class="stat-val" style="font-size: 1rem">41</div>
-          </div>
-          <div class="stat-block">
-            <div class="stat-label">UI</div>
-            <div class="stat-val" style="font-size: 1rem">EWUILIB</div>
+          <div style="padding: 10px">
+            <div
+              class="section-title mint"
+              style="font-size: 0.58rem; margin-bottom: 10px"
+            >
+              // Frontend
+            </div>
+            <div
+              class="stats-row"
+              style="border: none; padding: 0; flex-direction: column; gap: 8px"
+            >
+              <div
+                class="stat-block"
+                style="text-align: left; border: none; padding: 0"
+              >
+                <div class="stat-label">LANGUAGES</div>
+                <div class="stat-val" style="font-size: 1rem">
+                  JS / HTML / CSS
+                </div>
+              </div>
+              <div
+                class="stat-block"
+                style="text-align: left; border: none; padding: 0"
+              >
+                <div class="stat-label">UI SYSTEM</div>
+                <div class="stat-val" style="font-size: 1rem">EWUILIB</div>
+              </div>
+              <div
+                class="stat-block"
+                style="text-align: left; border: none; padding: 0"
+              >
+                <div class="stat-label">CSS</div>
+                <div class="stat-val" style="font-size: 1rem">
+                  cyberpunk / augmented-ui
+                </div>
+              </div>
+              <div
+                class="stat-block"
+                style="text-align: left; border: none; padding: 0"
+              >
+                <div class="stat-label">GRAPHICS</div>
+                <div class="stat-val" style="font-size: 1rem">Three.js</div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-
-      <div
-        style="
-          text-align: center;
-          padding: 20px 0;
-          font-size: 0.72rem;
-          letter-spacing: 0.22em;
-          color: var(--dim);
-        "
-      >
-        <a href="../" style="color: var(--dim); text-decoration: none"
-          >&copy; 2026 ENTROPY WORSHIP</a
-        >
       </div>
     </div>
 
@@ -986,12 +1206,21 @@
       import * as THREE from "https://cdn.jsdelivr.net/npm/three@v0.171.0/build/three.module.js";
 
       const canvas = document.getElementById("kk-bg");
-      const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+      const renderer = new THREE.WebGLRenderer({
+        canvas,
+        antialias: true,
+        alpha: true,
+      });
       renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
       renderer.setClearColor(0x000000, 0);
 
       const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 1000);
+      const camera = new THREE.PerspectiveCamera(
+        60,
+        innerWidth / innerHeight,
+        0.1,
+        1000,
+      );
       camera.position.set(0, 0, 22);
 
       function resize() {
@@ -1004,9 +1233,9 @@
 
       // Plasma palette — bright
       const bright = new THREE.Color(0xdd66ff);
-      const mid    = new THREE.Color(0xff66dd);
-      const dim    = new THREE.Color(0x66ffdd);
-      const dark   = new THREE.Color(0x500080);
+      const mid = new THREE.Color(0xff66dd);
+      const dim = new THREE.Color(0x66ffdd);
+      const dark = new THREE.Color(0x500080);
 
       // ── Kaluza-Klein compactified dimension strings ──
       const KK_STRINGS = 14;
@@ -1032,11 +1261,19 @@
 
         const pts = [];
         const segments = 256;
-        for (let i = 0; i <= segments; i++) pts.push(new THREE.Vector3(0, 0, 0));
+        for (let i = 0; i <= segments; i++)
+          pts.push(new THREE.Vector3(0, 0, 0));
         const curve = new THREE.CatmullRomCurve3(pts, true);
-        const tubeGeo = new THREE.TubeGeometry(curve, segments, data.minorR, 5, true);
+        const tubeGeo = new THREE.TubeGeometry(
+          curve,
+          segments,
+          data.minorR,
+          5,
+          true,
+        );
 
-        const col = data.colorMix < 0.33 ? bright : data.colorMix < 0.66 ? mid : dim;
+        const col =
+          data.colorMix < 0.33 ? bright : data.colorMix < 0.66 ? mid : dim;
 
         const mat = new THREE.MeshBasicMaterial({
           color: col,
@@ -1057,17 +1294,60 @@
       // ── Calabi-Yau manifolds ──
       const manifolds = [];
       const manifoldConfigs = [
-        { p: 2, q: 3, radius: 22, tube: 7,   opacity: 0.22, color: bright, speed: 0.003 },
-        { p: 3, q: 5, radius: 16, tube: 5,   opacity: 0.18, color: mid,    speed: -0.004 },
-        { p: 2, q: 5, radius: 28, tube: 3.5, opacity: 0.14, color: dim,    speed: 0.002 },
-        { p: 3, q: 7, radius: 13, tube: 4,   opacity: 0.16, color: bright, speed: -0.005 },
+        {
+          p: 2,
+          q: 3,
+          radius: 22,
+          tube: 7,
+          opacity: 0.22,
+          color: bright,
+          speed: 0.003,
+        },
+        {
+          p: 3,
+          q: 5,
+          radius: 16,
+          tube: 5,
+          opacity: 0.18,
+          color: mid,
+          speed: -0.004,
+        },
+        {
+          p: 2,
+          q: 5,
+          radius: 28,
+          tube: 3.5,
+          opacity: 0.14,
+          color: dim,
+          speed: 0.002,
+        },
+        {
+          p: 3,
+          q: 7,
+          radius: 13,
+          tube: 4,
+          opacity: 0.16,
+          color: bright,
+          speed: -0.005,
+        },
       ];
 
-      manifoldConfigs.forEach(cfg => {
-        const geo = new THREE.TorusKnotGeometry(cfg.radius, cfg.tube, 128, 12, cfg.p, cfg.q);
+      manifoldConfigs.forEach((cfg) => {
+        const geo = new THREE.TorusKnotGeometry(
+          cfg.radius,
+          cfg.tube,
+          128,
+          12,
+          cfg.p,
+          cfg.q,
+        );
         const mat = new THREE.MeshBasicMaterial({
-          color: cfg.color, wireframe: true, transparent: true,
-          opacity: cfg.opacity, blending: THREE.AdditiveBlending, depthWrite: false,
+          color: cfg.color,
+          wireframe: true,
+          transparent: true,
+          opacity: cfg.opacity,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
         });
         const mesh = new THREE.Mesh(geo, mat);
         scene.add(mesh);
@@ -1086,28 +1366,37 @@
       for (let i = 0; i < NPARTS; i++) {
         pPhase[i] = Math.random() * Math.PI * 2;
         pRadius[i] = 10 + Math.random() * 60;
-        pSpeed[i] = (0.2 + Math.random() * 0.8) * (Math.random() < 0.5 ? 1 : -1);
+        pSpeed[i] =
+          (0.2 + Math.random() * 0.8) * (Math.random() < 0.5 ? 1 : -1);
         pAxis[i] = Math.floor(Math.random() * 3);
         const c = [bright, mid, dim][Math.floor(Math.random() * 3)];
         const intensity = 0.5 + Math.random() * 0.5;
-        pCol[i * 3]     = c.r * intensity;
+        pCol[i * 3] = c.r * intensity;
         pCol[i * 3 + 1] = c.g * intensity;
         pCol[i * 3 + 2] = c.b * intensity;
       }
 
       const dotCanvas = document.createElement("canvas");
-      dotCanvas.width = 32; dotCanvas.height = 32;
+      dotCanvas.width = 32;
+      dotCanvas.height = 32;
       const dctx = dotCanvas.getContext("2d");
-      dctx.beginPath(); dctx.arc(16, 16, 14, 0, Math.PI * 2);
-      dctx.fillStyle = "#ffffff"; dctx.fill();
+      dctx.beginPath();
+      dctx.arc(16, 16, 14, 0, Math.PI * 2);
+      dctx.fillStyle = "#ffffff";
+      dctx.fill();
       const dotTex = new THREE.CanvasTexture(dotCanvas);
 
       const pGeo = new THREE.BufferGeometry();
       pGeo.setAttribute("position", new THREE.BufferAttribute(pPos, 3));
       pGeo.setAttribute("color", new THREE.BufferAttribute(pCol, 3));
       const pMat = new THREE.PointsMaterial({
-        size: 0.5, map: dotTex, vertexColors: true, transparent: true, opacity: 0.6,
-        blending: THREE.AdditiveBlending, depthWrite: false,
+        size: 0.5,
+        map: dotTex,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.6,
+        blending: THREE.AdditiveBlending,
+        depthWrite: false,
       });
       scene.add(new THREE.Points(pGeo, pMat));
 
@@ -1126,17 +1415,30 @@
             let x = Math.cos(angle + t * data.speed) * data.majorR;
             let y = Math.sin(angle + t * data.speed) * data.majorR;
             let z = 0;
-            const vib = Math.sin(angle * data.vibFreq + t * 3 + data.phase) * data.vibAmp;
-            const vib2 = Math.cos(angle * (data.vibFreq + 1) + t * 2.3 + data.phase * 0.7) * data.vibAmp * 0.5;
+            const vib =
+              Math.sin(angle * data.vibFreq + t * 3 + data.phase) * data.vibAmp;
+            const vib2 =
+              Math.cos(
+                angle * (data.vibFreq + 1) + t * 2.3 + data.phase * 0.7,
+              ) *
+              data.vibAmp *
+              0.5;
             x += vib * Math.cos(angle);
             y += vib * Math.sin(angle);
             z += vib2;
             const kkMod = 1 + 0.15 * Math.sin(angle * 3 + t * 1.5 + data.phase);
-            x *= kkMod; y *= kkMod;
+            x *= kkMod;
+            y *= kkMod;
             pts[i].set(x, y, z);
           }
           curve.updateArcLengths();
-          const newGeo = new THREE.TubeGeometry(curve, segments, data.minorR, 5, true);
+          const newGeo = new THREE.TubeGeometry(
+            curve,
+            segments,
+            data.minorR,
+            5,
+            true,
+          );
           mesh.geometry.dispose();
           mesh.geometry = newGeo;
         });
@@ -1145,7 +1447,8 @@
           mesh.rotation.x += speed;
           mesh.rotation.y += speed * 0.7;
           mesh.rotation.z += speed * 0.3;
-          mesh.material.opacity = cfg.opacity + Math.sin(t * 2 + cfg.radius) * 0.03;
+          mesh.material.opacity =
+            cfg.opacity + Math.sin(t * 2 + cfg.radius) * 0.03;
         });
 
         kkGroup.rotation.x = Math.sin(t * 0.08) * 0.3;
@@ -1158,11 +1461,17 @@
           const wobble = Math.sin(angle * 5 + t * 2) * 1.5;
           const ax = pAxis[i];
           if (ax === 0) {
-            pPos[i*3] = Math.cos(angle)*r; pPos[i*3+1] = Math.sin(angle)*r + wobble; pPos[i*3+2] = wobble*0.5;
+            pPos[i * 3] = Math.cos(angle) * r;
+            pPos[i * 3 + 1] = Math.sin(angle) * r + wobble;
+            pPos[i * 3 + 2] = wobble * 0.5;
           } else if (ax === 1) {
-            pPos[i*3] = Math.cos(angle)*r; pPos[i*3+1] = wobble*0.5; pPos[i*3+2] = Math.sin(angle)*r + wobble;
+            pPos[i * 3] = Math.cos(angle) * r;
+            pPos[i * 3 + 1] = wobble * 0.5;
+            pPos[i * 3 + 2] = Math.sin(angle) * r + wobble;
           } else {
-            pPos[i*3] = wobble*0.5; pPos[i*3+1] = Math.cos(angle)*r; pPos[i*3+2] = Math.sin(angle)*r + wobble;
+            pPos[i * 3] = wobble * 0.5;
+            pPos[i * 3 + 1] = Math.cos(angle) * r;
+            pPos[i * 3 + 2] = Math.sin(angle) * r + wobble;
           }
         }
         pGeo.attributes.position.needsUpdate = true;
@@ -1178,52 +1487,63 @@
     <script>
       function openIssue() {
         const ua = navigator.userAgent;
-        const screen = window.screen.width + 'x' + window.screen.height;
+        const screen = window.screen.width + "x" + window.screen.height;
         const dpr = window.devicePixelRatio || 1;
         const audioCtx = window.AudioContext || window.webkitAudioContext;
-        const audioSupport = audioCtx ? 'AudioContext supported' : 'AudioContext NOT supported';
-        const wsSupport = 'WebSocket' in window ? 'WebSocket supported' : 'WebSocket NOT supported';
-        const toneLoaded = typeof Tone !== 'undefined' ? 'Tone.js ' + (Tone.version || 'loaded') : 'Tone.js not loaded';
-        const buildEl = document.querySelector('#meta span');
-        const build = buildEl ? buildEl.textContent.trim() : 'unknown';
+        const audioSupport = audioCtx
+          ? "AudioContext supported"
+          : "AudioContext NOT supported";
+        const wsSupport =
+          "WebSocket" in window
+            ? "WebSocket supported"
+            : "WebSocket NOT supported";
+        const toneLoaded =
+          typeof Tone !== "undefined"
+            ? "Tone.js " + (Tone.version || "loaded")
+            : "Tone.js not loaded";
+        const buildEl = document.querySelector("#meta span");
+        const build = buildEl ? buildEl.textContent.trim() : "unknown";
 
         const body = [
-          '## Bug Report',
-          '',
-          '**Describe the issue:**',
-          '<!-- What happened? What did you expect? -->',
-          '',
-          '',
-          '**Steps to reproduce:**',
-          '1. ',
-          '2. ',
-          '3. ',
-          '',
-          '**Which object(s) are affected?**',
-          '<!-- e.g. OSCILLATOR, FILTER, DELAY -->',
-          '',
-          '',
-          '---',
-          '### Environment (auto-collected)',
-          '',
-          '| Field | Value |',
-          '|-------|-------|',
-          '| Build | `' + build + '` |',
-          '| Browser | `' + ua + '` |',
-          '| Screen | `' + screen + ' @' + dpr + 'x` |',
-          '| Audio | `' + audioSupport + '` |',
-          '| WebSocket | `' + wsSupport + '` |',
-          '| Tone.js | `' + toneLoaded + '` |',
-          '| URL | `' + location.href + '` |',
-          '| Timestamp | `' + new Date().toISOString() + '` |',
-        ].join('\n');
+          "## Bug Report",
+          "",
+          "**Describe the issue:**",
+          "<!-- What happened? What did you expect? -->",
+          "",
+          "",
+          "**Steps to reproduce:**",
+          "1. ",
+          "2. ",
+          "3. ",
+          "",
+          "**Which object(s) are affected?**",
+          "<!-- e.g. OSCILLATOR, FILTER, DELAY -->",
+          "",
+          "",
+          "---",
+          "### Environment (auto-collected)",
+          "",
+          "| Field | Value |",
+          "|-------|-------|",
+          "| Build | `" + build + "` |",
+          "| Browser | `" + ua + "` |",
+          "| Screen | `" + screen + " @" + dpr + "x` |",
+          "| Audio | `" + audioSupport + "` |",
+          "| WebSocket | `" + wsSupport + "` |",
+          "| Tone.js | `" + toneLoaded + "` |",
+          "| URL | `" + location.href + "` |",
+          "| Timestamp | `" + new Date().toISOString() + "` |",
+        ].join("\n");
 
-        const url = 'https://github.com/brianbjames/entropy_worship/issues/new'
-          + '?labels=EW-objects,bug'
-          + '&title=' + encodeURIComponent('[EW-objects] ')
-          + '&body=' + encodeURIComponent(body);
+        const url =
+          "https://github.com/brianbjames/entropy_worship/issues/new" +
+          "?labels=EW-objects,bug" +
+          "&title=" +
+          encodeURIComponent("[EW-objects] ") +
+          "&body=" +
+          encodeURIComponent(body);
 
-        window.open(url, '_blank');
+        window.open(url, "_blank");
       }
     </script>
   </body>

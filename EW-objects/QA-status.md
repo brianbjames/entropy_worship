@@ -763,6 +763,66 @@ Test signal chains across multiple objects.
 
 ---
 
+## MOBILE DEVICE TESTS
+
+Test core functionality on mobile browsers (iOS Safari, Android Chrome).
+
+### Touch Interaction
+
+| #   | Test                                                              | Status | Issues |
+| --- | ----------------------------------------------------------------- | ------ | ------ |
+| MB1 | Sliders respond to touch drag (no accidental page scroll)         |        |        |
+| MB2 | Buttons respond to tap (single tap, no double-tap zoom)           |        |        |
+| MB3 | Step grid cells (drums/sequencer) toggle on tap                   |        |        |
+| MB4 | COPY URL button works (clipboard API available)                   |        |        |
+| MB5 | Room URL paste works from mobile clipboard                        |        |        |
+| MB6 | Long-press does not trigger context menu on interactive elements  |        |        |
+| MB7 | Drag-and-drop file loading (granular/sampler) has fallback picker |        |        |
+
+### Layout & Responsiveness
+
+| #    | Test                                                            | Status | Issues                                                                              |
+| ---- | --------------------------------------------------------------- | ------ | ----------------------------------------------------------------------------------- |
+| MB8  | Page renders without horizontal overflow (no sideways scroll)   |        |                                                                                     |
+| MB9  | Controls are large enough to tap (minimum 44x44px touch target) |        |                                                                                     |
+| MB10 | Text is readable without pinch-to-zoom                          |        |                                                                                     |
+| MB11 | Header/status bar doesn't overlap with device notch/safe area   |        |                                                                                     |
+| MB12 | Theme selector dropdown usable on mobile                        |        |                                                                                     |
+| MB13 | Scope/waveform canvas scales to viewport width                  |        |                                                                                     |
+| MB14 | Room panel and input ports are accessible without scrolling     |        |                                                                                     |
+| MB15 | Landscape / portrait view of distributed networks page          | FAIL   | cannot use two fingers to zoom in on mobile, and cannot drag and move a room object |
+
+### Audio & WebSocket
+
+| #    | Test                                                             | Status | Issues |
+| ---- | ---------------------------------------------------------------- | ------ | ------ |
+| MB15 | Audio context starts after user gesture (mobile autoplay policy) |        |        |
+| MB16 | WebSocket reconnects after app goes to background/foreground     |        |        |
+| MB17 | Audio resumes after phone call / interruption                    |        |        |
+| MB18 | Oscillator/synth produces sound on mobile (Tone.js works)        |        |        |
+| MB19 | Microphone input works on mobile (permission prompt appears)     |        |        |
+| MB20 | Signal output broadcasts correctly from mobile device            |        |        |
+
+### Performance & Battery
+
+| #    | Test                                                          | Status | Issues |
+| ---- | ------------------------------------------------------------- | ------ | ------ |
+| MB21 | Page loads within 5 seconds on 4G connection                  |        |        |
+| MB22 | UI remains responsive while audio is running                  |        |        |
+| MB23 | Scope animation doesn't cause excessive frame drops on mobile |        |        |
+| MB24 | App doesn't drain battery excessively in background           |        |        |
+
+### Cross-Device Connectivity
+
+| #    | Test                                                                  | Status | Issues |
+| ---- | --------------------------------------------------------------------- | ------ | ------ |
+| MB25 | Mobile → Desktop: signal from mobile object received on desktop scope |        |        |
+| MB26 | Desktop → Mobile: signal from desktop object modulates mobile target  |        |        |
+| MB27 | Mobile → Mobile: two phones in same room, signals sync                |        |        |
+| MB28 | Latency display shows reasonable values on mobile network (< 200ms)   |        |        |
+
+---
+
 ## OUTBOUND MODULATION
 
 Test that each object's output signal successfully modulates a parameter on a downstream target.
@@ -892,15 +952,18 @@ Method: connect object output room → target input, verify modulation effect.
 
 ---
 
-### Enhancement/Feature/Change Requests
+### Open Requests By Users
 
-1. // what is it? // intro could be on top; easier to intro that way; maybe collapsible so it doesn't take entire screen
-2. when clicking on a unit it would be nice if it spawned a new tab instead of going to a new page on...
-3. room name - can it just be the string instead of URL?
-4. transfer function might update to reflect wavefolding process
-5. what is the current goal of the [distributed objects] graph / display?
-6. does the scope work?
-7. is there such a thing as "cleanup" where inactive (abandoned) nodes get cut within a certain amount of time?
-8. how does a user notify the rest of the network that nodes have been configured and are "ready"?
-9. disambiguate rooms vs entire network
-10. explain this more — "you can spin up your own instance on a local machine or private network for zero-latency patching with full control over who connects."
+- when clicking on a unit it would be nice if it spawned a new tab instead of going to a new page on...
+- room name - can it just be the string instead of URL?
+- transfer function might update to reflect wavefolding process
+- what is the current goal of the [distributed objects] graph / display?
+- does the scope work?
+- how does a user notify the rest of the network that nodes have been configured and are "ready"?
+- disambiguate rooms vs entire network
+
+### Resolved Requests By Users
+
+- explain this more — "you can spin up your own instance on a local machine or private network for zero-latency patching with full control over who connects." FIXED - added to info popup: 6. Rooms can be set to private, restricting signal flow to only those who know the room name — useful for isolating sub-patches or running a closed session. The server itself is a standard Node.js WebSocket process — clone the repo, run npm install and npm start inside the EW-objects/ directory, and you have your own signal relay running on localhost:3001. Point your modules at that local address instead of the public server and all traffic stays on your machine or LAN — no internet round-trip, minimal latency, and only devices you allow on your network can connect. This is ideal for live performance setups, private jam sessions, or development without depending on an external host.
+- // what is it? // intro could be on top; easier to intro that way; maybe collapsible so it doesn't take entire screen - FIXED - added an INTRODUCTION button with a popup containing all info and instructions
+- is there such a thing as "cleanup" where inactive (abandoned) nodes get cut within a certain amount of time? YES and NO, nodes will stay active as long as at least one user has it running in a browser instance, after the last browser instance closes, the node terminates
