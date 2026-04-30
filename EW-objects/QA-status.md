@@ -2,34 +2,34 @@
 
 ---
 
-## COMMON FEATURES (test on every object)
+## COMMON FEATURES
 
-| #   | Test                                                            | Status | Issues |
-| --- | --------------------------------------------------------------- | ------ | ------ |
-| C1  | Page loads without console errors                               |        |        |
-| C2  | WebSocket connects (status dot turns green, shows ONLINE)       |        |        |
-| C3  | Room name auto-generates (e.g. `osc-A2WG9E`)                    |        |        |
-| C4  | COPY URL button copies full room URL to clipboard               |        |        |
-| C5  | Peer count updates when another tab joins same room             |        |        |
-| C6  | Latency displays (ms) after connection                          |        |        |
-| C7  | `<<` back-link navigates to /EW-objects/ index                  |        |        |
-| C8  | Title link opens new instance in new tab                        |        |        |
-| C9  | Theme selector changes color scheme (all 9 themes)              |        |        |
-| C10 | Input ports show LINK/UNLINK buttons                            |        |        |
-| C11 | Pasting a room URL and clicking LINK connects (dot turns green) |        |        |
-| C12 | UNLINK disconnects input (dot turns gray)                       |        |        |
-| C13 | Enter key in input field triggers LINK                          |        |        |
-| C14 | Room panel JOIN button works                                    |        |        |
-| C15 | Privacy toggle switches PUBLIC/PRIVATE                          |        |        |
-| C16 | Available rooms list populates with other objects               |        |        |
-| C17 | Scope/waveform canvas renders (if present)                      |        |        |
-| C18 | Frequency spectrum analyzer renders below scope (if present)    |        |        |
-| C19 | Footer shows "© 2026 ENTROPY WORSHIP"                           |        |        |
-| C20 | Available rooms section title shows "// AVAILABLE OBJECTS //"   |        |        |
-| C21 | Empty rooms list shows "NO OTHER OBJECTS AVAILABLE"             |        |        |
-| C22 | Works in Chrome                                                 |        |        |
-| C23 | Works in Safari                                                 |        |        |
-| C24 | Works in Firefox                                                |        |        |
+| #   | Test                                                            | Status | Issues                                                                                              |
+| --- | --------------------------------------------------------------- | ------ | --------------------------------------------------------------------------------------------------- |
+| C1  | Page loads without console errors                               | FAIL   | [Error] Failed to load resource: the server responded with a status of 404 () (favicon.ico, line 0) |
+| C2  | WebSocket connects (status dot turns green, shows ONLINE)       | PASS   |                                                                                                     |
+| C3  | Room name auto-generates (e.g. `osc-A2WG9E`)                    | PASS   |                                                                                                     |
+| C4  | COPY URL button copies full room URL to clipboard               | PASS   |                                                                                                     |
+| C5  | Peer count updates when another tab joins same room             | PASS   |                                                                                                     |
+| C6  | Latency displays (ms) after connection                          | PASS   |                                                                                                     |
+| C7  | `<<` back-link navigates to /EW-objects/ index                  | PASS   |                                                                                                     |
+| C8  | Title link opens new instance in new tab                        | PASS   |                                                                                                     |
+| C9  | Theme selector changes color scheme (all 9 themes)              | PASS   |                                                                                                     |
+| C10 | Input ports show LINK/UNLINK buttons                            | PASS   |                                                                                                     |
+| C11 | Pasting a room URL and clicking LINK connects (dot turns green) | PASS   |                                                                                                     |
+| C12 | UNLINK disconnects input (dot turns gray)                       | PASS   |                                                                                                     |
+| C13 | Enter key in input field triggers LINK                          | PASS   |                                                                                                     |
+| C14 | Room panel JOIN button works                                    | PASS   |                                                                                                     |
+| C15 | Privacy toggle switches PUBLIC/PRIVATE                          | PASS   |                                                                                                     |
+| C16 | Available rooms list populates with other objects               | PASS   |                                                                                                     |
+| C17 | Scope/waveform canvas renders (if present)                      | PASS   |                                                                                                     |
+| C18 | Frequency spectrum analyzer renders below scope (if present)    | PASS   |                                                                                                     |
+| C19 | Footer shows "© 2026 ENTROPY WORSHIP"                           | PASS   |                                                                                                     |
+| C20 | Available rooms section title shows "// AVAILABLE OBJECTS //"   | PASS   |                                                                                                     |
+| C21 | Empty rooms list shows "NO OTHER OBJECTS AVAILABLE"             | PASS   |                                                                                                     |
+| C22 | Works in Chrome                                                 | PASS   |                                                                                                     |
+| C23 | Works in Safari                                                 | PASS   |                                                                                                     |
+| C24 | Works in Firefox                                                |        |                                                                                                     |
 
 ---
 
@@ -725,12 +725,12 @@
 
 | #   | Test                                                     | Status | Issues |
 | --- | -------------------------------------------------------- | ------ | ------ |
-| DA1 | Page loads and connects to WebSocket server              |        |        |
-| DA2 | Shows active rooms as nodes in topology graph            |        |        |
-| DA3 | Shows connections between rooms as edges                 |        |        |
-| DA4 | Graph updates in real-time as objects connect/disconnect |        |        |
-| DA5 | Signal flow hierarchy is visible                         |        |        |
-| DA6 | Interactive — nodes can be clicked/dragged               |        |        |
+| DA1 | Page loads and connects to WebSocket server              | PASS   |        |
+| DA2 | Shows active rooms as nodes in topology graph            | PASS   |        |
+| DA3 | Shows connections between rooms as edges                 | PASS   |        |
+| DA4 | Graph updates in real-time as objects connect/disconnect | PASS   |        |
+| DA5 | Signal flow hierarchy is visible                         | PASS   |        |
+| DA6 | Interactive — nodes can be clicked/dragged               | PASS   |        |
 
 ---
 
@@ -891,50 +891,3 @@ Method: connect object output room → target input, verify modulation effect.
 | OM82 | DB Meter → Filter cutoff (envelope follower)     |        |        |
 
 ---
-
-## CROSS-BROWSER MATRIX
-
-| Object        | Chrome | Safari | Firefox | Issues |
-| ------------- | ------ | ------ | ------- | ------ |
-| Audio Input   |        |        |         |        |
-| Noise         |        |        |         |        |
-| Oscillator    |        |        |         |        |
-| Drums         |        |        |         |        |
-| Granular      |        |        |         |        |
-| Looper        |        |        |         |        |
-| Sampler       |        |        |         |        |
-| Synth         |        |        |         |        |
-| Bitcrusher    |        |        |         |        |
-| Chorus        |        |        |         |        |
-| Compressor    |        |        |         |        |
-| Delay         |        |        |         |        |
-| Distortion    |        |        |         |        |
-| EQ            |        |        |         |        |
-| Filter        |        |        |         |        |
-| Panner        |        |        |         |        |
-| Phaser        |        |        |         |        |
-| Pitch Shift   |        |        |         |        |
-| Reverb        |        |        |         |        |
-| Ring Mod      |        |        |         |        |
-| Wavefolder    |        |        |         |        |
-| Envelope      |        |        |         |        |
-| Func Gen      |        |        |         |        |
-| LFO           |        |        |         |        |
-| Sample & Hold |        |        |         |        |
-| Arpeggiator   |        |        |         |        |
-| Clock         |        |        |         |        |
-| Euclid        |        |        |         |        |
-| Sequencer     |        |        |         |        |
-| Crossfader    |        |        |         |        |
-| Mixer         |        |        |         |        |
-| Gain          |        |        |         |        |
-| Gate          |        |        |         |        |
-| Logic         |        |        |         |        |
-| Math          |        |        |         |        |
-| MIDI Calc     |        |        |         |        |
-| Probability   |        |        |         |        |
-| Quantizer     |        |        |         |        |
-| RNG           |        |        |         |        |
-| DB Meter      |        |        |         |        |
-| Scope         |        |        |         |        |
-| Dashboard     |        |        |         |        |
