@@ -64,21 +64,31 @@
 | AI23 | Output mode selector: CONTROL / AUDIO / BOTH                        | PASS   |        |
 | AI24 | Signal output broadcasts to room (link to scope to verify)          | PASS   |        |
 | AI25 | External gate input (positive = open, negative = mute)              | PASS   |        |
+| AI26 | Two tabs same room: audio input state syncs (source, gain, gate)    |        |        |
+| AI27 | Parameter change in tab A (gain slider) reflects in tab B           |        |        |
+| AI28 | COPY URL → new tab joins same instance with matching state          |        |        |
+| AI29 | Privacy toggle hides room from public dashboard topology            |        |        |
+| AI30 | Reconnect after disconnect — state and audio capture restore        |        |        |
 
 ### 2. NOISE — `noise.html`
 
-| #   | Test                                           | Status | Issues |
-| --- | ---------------------------------------------- | ------ | ------ |
-| N1  | Power toggle starts/stops noise                | PASS   |        |
-| N2  | White noise type produces broadband hiss       | PASS   |        |
-| N3  | Pink noise type produces lower-frequency noise | PASS   |        |
-| N4  | Brown noise type produces low rumble           | PASS   |        |
-| N5  | Type selector switches noise color             | PASS   |        |
-| N6  | Gain slider controls output level              | PASS   |        |
-| N7  | Output mode: AUDIO / CONTROL / BOTH            | PASS   |        |
-| N8  | Room input for gain modulates level            | PASS   |        |
-| N9  | Room input for type changes noise color        | PASS   |        |
-| N10 | Scope shows noise waveform                     | PASS   |        |
+| #   | Test                                                       | Status | Issues |
+| --- | ---------------------------------------------------------- | ------ | ------ |
+| N1  | Power toggle starts/stops noise                            | PASS   |        |
+| N2  | White noise type produces broadband hiss                   | PASS   |        |
+| N3  | Pink noise type produces lower-frequency noise             | PASS   |        |
+| N4  | Brown noise type produces low rumble                       | PASS   |        |
+| N5  | Type selector switches noise color                         | PASS   |        |
+| N6  | Gain slider controls output level                          | PASS   |        |
+| N7  | Output mode: AUDIO / CONTROL / BOTH                        | PASS   |        |
+| N8  | Room input for gain modulates level                        | PASS   |        |
+| N9  | Room input for type changes noise color                    | PASS   |        |
+| N10 | Scope shows noise waveform                                 | PASS   |        |
+| N11 | Two tabs same room: noise type/gain state syncs            |        |        |
+| N12 | Parameter change in tab A (type/gain) reflects in tab B    |        |        |
+| N13 | COPY URL → new tab joins same instance with matching state |        |        |
+| N14 | Privacy toggle hides room from public dashboard topology   |        |        |
+| N15 | Reconnect after disconnect — state restores                |        |        |
 
 ### 3. OSCILLATOR — `oscillator.html`
 
@@ -99,6 +109,11 @@
 | O13 | Cascading FM: osc A -> osc B -> osc C produces complex timbres  | PASS   |                                                                       |
 | O14 | Scope shows waveform shape                                      | PASS   |                                                                       |
 | O15 | Signal output broadcasts at ~100Hz                              | PASS   |                                                                       |
+| O16 | Two tabs same room: oscillator state syncs (freq, wave, gain)   |        |                                                                       |
+| O17 | Parameter change in tab A (frequency slider) reflects in tab B  |        |                                                                       |
+| O18 | COPY URL → new tab joins same instance with matching state      |        |                                                                       |
+| O19 | Privacy toggle hides room from public dashboard topology        |        |                                                                       |
+| O20 | Reconnect after disconnect — oscillator state restores          |        |                                                                       |
 
 ---
 
@@ -106,23 +121,28 @@
 
 ### 4. DRUMS — `drums.html`
 
-| #   | Test                                            | Status | Issues |
-| --- | ----------------------------------------------- | ------ | ------ |
-| D1  | Play/stop button starts/stops sequence          |        |        |
-| D2  | 16-step grid displays for all 6 voices          |        |        |
-| D3  | Clicking grid cells toggles steps on/off        |        |        |
-| D4  | Kick voice sounds correct                       |        |        |
-| D5  | Snare voice sounds correct                      |        |        |
-| D6  | Hihat voice sounds correct                      |        |        |
-| D7  | Clap voice sounds correct                       |        |        |
-| D8  | Ride voice sounds correct                       |        |        |
-| D9  | Sub voice sounds correct                        |        |        |
-| D10 | BPM slider changes tempo                        |        |        |
-| D11 | Swing slider adds swing feel                    |        |        |
-| D12 | Room input for BPM syncs tempo                  |        |        |
-| D13 | Room input for trigger advances step externally |        |        |
-| D14 | Output mode: AUDIO / CONTROL / BOTH             |        |        |
-| D15 | Signal output broadcasts trigger pulses         |        |        |
+| #   | Test                                                       | Status | Issues |
+| --- | ---------------------------------------------------------- | ------ | ------ |
+| D1  | Play/stop button starts/stops sequence                     |        |        |
+| D2  | 16-step grid displays for all 6 voices                     |        |        |
+| D3  | Clicking grid cells toggles steps on/off                   |        |        |
+| D4  | Kick voice sounds correct                                  |        |        |
+| D5  | Snare voice sounds correct                                 |        |        |
+| D6  | Hihat voice sounds correct                                 |        |        |
+| D7  | Clap voice sounds correct                                  |        |        |
+| D8  | Ride voice sounds correct                                  |        |        |
+| D9  | Sub voice sounds correct                                   |        |        |
+| D10 | BPM slider changes tempo                                   |        |        |
+| D11 | Swing slider adds swing feel                               |        |        |
+| D12 | Room input for BPM syncs tempo                             |        |        |
+| D13 | Room input for trigger advances step externally            |        |        |
+| D14 | Output mode: AUDIO / CONTROL / BOTH                        |        |        |
+| D15 | Signal output broadcasts trigger pulses                    |        |        |
+| D16 | Two tabs same room: drum pattern/BPM state syncs           |        |        |
+| D17 | Pattern edit in tab A reflects in tab B                    |        |        |
+| D18 | COPY URL → new tab joins same instance with matching state |        |        |
+| D19 | Privacy toggle hides room from public dashboard topology   |        |        |
+| D20 | Reconnect after disconnect — pattern and BPM restore       |        |        |
 
 ### 5. GRANULAR — `granular.html`
 
@@ -146,6 +166,11 @@
 | G16 | Room input for trigger: triggers from clock/sequencer             |        |                                                                                                                    |
 | G17 | Output mode: AUDIO / CONTROL / BOTH                               |        | FIXED: added continuous analyser-based signal output (~100Hz bipolar broadcast, matching oscillator/noise pattern) |
 | G18 | Scope shows output waveform                                       | PASS   |                                                                                                                    |
+| G19 | Two tabs same room: granular state syncs (position, pitch, grain) |        |                                                                                                                    |
+| G20 | Parameter change in tab A (position slider) reflects in tab B     |        |                                                                                                                    |
+| G21 | COPY URL → new tab joins same instance with matching state        |        |                                                                                                                    |
+| G22 | Privacy toggle hides room from public dashboard topology          |        |                                                                                                                    |
+| G23 | Reconnect after disconnect — granular state restores              |        |                                                                                                                    |
 
 ### 6. LOOPER — `looper.html`
 
@@ -167,6 +192,11 @@
 | L14 | Room input for trigger cycles through states                  |        |        |
 | L15 | Output mode: AUDIO / CONTROL / BOTH                           |        |        |
 | L16 | Scope shows buffer waveform with playhead                     |        |        |
+| L17 | Two tabs same room: looper state syncs (mode, feedback, gain) |        |        |
+| L18 | State change in tab A (REC/PLAY/STOP) reflects in tab B       |        |        |
+| L19 | COPY URL → new tab joins same instance with matching state    |        |        |
+| L20 | Privacy toggle hides room from public dashboard topology      |        |        |
+| L21 | Reconnect after disconnect — looper state restores            |        |        |
 
 ### 7. SAMPLER — `sampler.html`
 
@@ -188,6 +218,11 @@
 | S14 | Room input for speed: modulates rate                             |        |        |
 | S15 | Output mode: AUDIO / CONTROL / BOTH                              |        |        |
 | S16 | Scope shows output waveform                                      |        |        |
+| S17 | Two tabs same room: sampler state syncs (pitch, speed, gain)     |        |        |
+| S18 | Parameter change in tab A (pitch slider) reflects in tab B       |        |        |
+| S19 | COPY URL → new tab joins same instance with matching state       |        |        |
+| S20 | Privacy toggle hides room from public dashboard topology         |        |        |
+| S21 | Reconnect after disconnect — sampler state restores              |        |        |
 
 ### 8. SYNTH — `synth.html`
 
@@ -214,6 +249,11 @@
 | SY19 | Current note display shows frequency + note name                           | PASS   |                                                                                                                 |
 | SY20 | Output mode: AUDIO / CONTROL / BOTH                                        | PASS   |                                                                                                                 |
 | SY21 | Scope shows output waveform                                                | PASS   |                                                                                                                 |
+| SY22 | Two tabs same room: synth state syncs (waveform, ADSR, filter)             |        |                                                                                                                 |
+| SY23 | Parameter change in tab A (cutoff slider) reflects in tab B                |        |                                                                                                                 |
+| SY24 | COPY URL → new tab joins same instance with matching state                 |        |                                                                                                                 |
+| SY25 | Privacy toggle hides room from public dashboard topology                   |        |                                                                                                                 |
+| SY26 | Reconnect after disconnect — synth state restores                          |        |                                                                                                                 |
 
 ---
 
@@ -221,80 +261,110 @@
 
 ### 9. BITCRUSHER — `bitcrusher.html`
 
-| #   | Test                                                  | Status | Issues |
-| --- | ----------------------------------------------------- | ------ | ------ |
-| BC1 | Audio input: link to oscillator, audio passes through | PASS   |        |
-| BC2 | Bits slider: 16 = clean, 1 = heavily degraded         |        |        |
-| BC3 | Wet slider blends dry/wet                             |        |        |
-| BC4 | Gain slider controls output level                     |        |        |
-| BC5 | Room input for bits: modulatable                      |        |        |
-| BC6 | Output mode: AUDIO / CONTROL / BOTH                   |        |        |
-| BC7 | Scope shows output waveform                           |        |        |
+| #    | Test                                                       | Status | Issues |
+| ---- | ---------------------------------------------------------- | ------ | ------ |
+| BC1  | Audio input: link to oscillator, audio passes through      | PASS   |        |
+| BC2  | Bits slider: 16 = clean, 1 = heavily degraded              |        |        |
+| BC3  | Wet slider blends dry/wet                                  |        |        |
+| BC4  | Gain slider controls output level                          |        |        |
+| BC5  | Room input for bits: modulatable                           |        |        |
+| BC6  | Output mode: AUDIO / CONTROL / BOTH                        |        |        |
+| BC7  | Scope shows output waveform                                |        |        |
+| BC8  | Two tabs same room: bitcrusher state syncs (bits, wet)     |        |        |
+| BC9  | Parameter change in tab A reflects in tab B                |        |        |
+| BC10 | COPY URL → new tab joins same instance with matching state |        |        |
+| BC11 | Privacy toggle hides room from public dashboard topology   |        |        |
+| BC12 | Reconnect after disconnect — state restores                |        |        |
 
 ### 10. CHORUS — `chorus.html`
 
-| #   | Test                                                  | Status | Issues |
-| --- | ----------------------------------------------------- | ------ | ------ |
-| CH1 | Audio input: link to oscillator, audio passes through | PASS   |        |
-| CH2 | Frequency slider changes chorus rate                  |        |        |
-| CH3 | Depth slider changes chorus intensity                 |        |        |
-| CH4 | Room input for frequency: modulatable                 |        |        |
-| CH5 | Room input for depth: modulatable                     |        |        |
-| CH6 | Output mode: AUDIO / CONTROL / BOTH                   |        |        |
-| CH7 | Scope shows output waveform                           |        |        |
+| #    | Test                                                       | Status | Issues |
+| ---- | ---------------------------------------------------------- | ------ | ------ |
+| CH1  | Audio input: link to oscillator, audio passes through      | PASS   |        |
+| CH2  | Frequency slider changes chorus rate                       |        |        |
+| CH3  | Depth slider changes chorus intensity                      |        |        |
+| CH4  | Room input for frequency: modulatable                      |        |        |
+| CH5  | Room input for depth: modulatable                          |        |        |
+| CH6  | Output mode: AUDIO / CONTROL / BOTH                        |        |        |
+| CH7  | Scope shows output waveform                                |        |        |
+| CH8  | Two tabs same room: chorus state syncs (freq, depth)       |        |        |
+| CH9  | Parameter change in tab A reflects in tab B                |        |        |
+| CH10 | COPY URL → new tab joins same instance with matching state |        |        |
+| CH11 | Privacy toggle hides room from public dashboard topology   |        |        |
+| CH12 | Reconnect after disconnect — state restores                |        |        |
 
 ### 11. COMPRESSOR — `compressor.html`
 
-| #    | Test                                                        | Status | Issues |
-| ---- | ----------------------------------------------------------- | ------ | ------ |
-| CM1  | Audio input: link to oscillator, audio passes through       | PASS   |        |
-| CM2  | Threshold slider: lower threshold = more compression        |        |        |
-| CM3  | Ratio slider: higher ratio = more squash                    |        |        |
-| CM4  | Attack slider: fast attack catches transients               |        |        |
-| CM5  | Release slider: controls recovery time                      |        |        |
-| CM6  | Knee slider: soft vs hard knee                              |        |        |
-| CM7  | Makeup gain: compensates for level reduction                |        |        |
-| CM8  | GR meter shows gain reduction amount                        |        |        |
-| CM9  | Room inputs for threshold/ratio/attack/release: modulatable |        |        |
-| CM10 | Output mode: AUDIO / CONTROL / BOTH                         |        |        |
-| CM11 | Scope shows output waveform                                 |        |        |
+| #    | Test                                                          | Status | Issues |
+| ---- | ------------------------------------------------------------- | ------ | ------ |
+| CM1  | Audio input: link to oscillator, audio passes through         | PASS   |        |
+| CM2  | Threshold slider: lower threshold = more compression          |        |        |
+| CM3  | Ratio slider: higher ratio = more squash                      |        |        |
+| CM4  | Attack slider: fast attack catches transients                 |        |        |
+| CM5  | Release slider: controls recovery time                        |        |        |
+| CM6  | Knee slider: soft vs hard knee                                |        |        |
+| CM7  | Makeup gain: compensates for level reduction                  |        |        |
+| CM8  | GR meter shows gain reduction amount                          |        |        |
+| CM9  | Room inputs for threshold/ratio/attack/release: modulatable   |        |        |
+| CM10 | Output mode: AUDIO / CONTROL / BOTH                           |        |        |
+| CM11 | Scope shows output waveform                                   |        |        |
+| CM12 | Two tabs same room: compressor state syncs (threshold, ratio) |        |        |
+| CM13 | Parameter change in tab A reflects in tab B                   |        |        |
+| CM14 | COPY URL → new tab joins same instance with matching state    |        |        |
+| CM15 | Privacy toggle hides room from public dashboard topology      |        |        |
+| CM16 | Reconnect after disconnect — state restores                   |        |        |
 
 ### 12. DELAY — `delay.html`
 
-| #   | Test                                                  | Status | Issues |
-| --- | ----------------------------------------------------- | ------ | ------ |
-| DL1 | Audio input: link to oscillator, audio passes through | PASS   |        |
-| DL2 | Time slider changes delay time (audible echo spacing) |        |        |
-| DL3 | Feedback slider: higher = more repeats                |        |        |
-| DL4 | Room input for time: modulatable                      |        |        |
-| DL5 | Room input for feedback: modulatable                  |        |        |
-| DL6 | Output mode: AUDIO / CONTROL / BOTH                   |        |        |
-| DL7 | Scope shows output waveform                           |        |        |
+| #    | Test                                                       | Status | Issues |
+| ---- | ---------------------------------------------------------- | ------ | ------ |
+| DL1  | Audio input: link to oscillator, audio passes through      | PASS   |        |
+| DL2  | Time slider changes delay time (audible echo spacing)      |        |        |
+| DL3  | Feedback slider: higher = more repeats                     |        |        |
+| DL4  | Room input for time: modulatable                           |        |        |
+| DL5  | Room input for feedback: modulatable                       |        |        |
+| DL6  | Output mode: AUDIO / CONTROL / BOTH                        |        |        |
+| DL7  | Scope shows output waveform                                |        |        |
+| DL8  | Two tabs same room: delay state syncs (time, feedback)     |        |        |
+| DL9  | Parameter change in tab A reflects in tab B                |        |        |
+| DL10 | COPY URL → new tab joins same instance with matching state |        |        |
+| DL11 | Privacy toggle hides room from public dashboard topology   |        |        |
+| DL12 | Reconnect after disconnect — state restores                |        |        |
 
 ### 13. DISTORTION — `distortion.html`
 
-| #   | Test                                                  | Status | Issues |
-| --- | ----------------------------------------------------- | ------ | ------ |
-| DT1 | Audio input: link to oscillator, audio passes through | PASS   |        |
-| DT2 | Amount slider increases distortion intensity          |        |        |
-| DT3 | Wet slider blends dry/wet                             |        |        |
-| DT4 | Room input for amount: modulatable                    |        |        |
-| DT5 | Output mode: AUDIO / CONTROL / BOTH                   |        |        |
-| DT6 | Scope shows output waveform                           |        |        |
+| #    | Test                                                       | Status | Issues |
+| ---- | ---------------------------------------------------------- | ------ | ------ |
+| DT1  | Audio input: link to oscillator, audio passes through      | PASS   |        |
+| DT2  | Amount slider increases distortion intensity               |        |        |
+| DT3  | Wet slider blends dry/wet                                  |        |        |
+| DT4  | Room input for amount: modulatable                         |        |        |
+| DT5  | Output mode: AUDIO / CONTROL / BOTH                        |        |        |
+| DT6  | Scope shows output waveform                                |        |        |
+| DT7  | Two tabs same room: distortion state syncs (amount, wet)   |        |        |
+| DT8  | Parameter change in tab A reflects in tab B                |        |        |
+| DT9  | COPY URL → new tab joins same instance with matching state |        |        |
+| DT10 | Privacy toggle hides room from public dashboard topology   |        |        |
+| DT11 | Reconnect after disconnect — state restores                |        |        |
 
 ### 14. EQ — `eq.html`
 
-| #   | Test                                                   | Status | Issues |
-| --- | ------------------------------------------------------ | ------ | ------ |
-| EQ1 | Audio input: link to oscillator, audio passes through  | PASS   |        |
-| EQ2 | Low gain slider boosts/cuts low frequencies            |        |        |
-| EQ3 | Mid gain slider boosts/cuts mid frequencies            |        |        |
-| EQ4 | High gain slider boosts/cuts high frequencies          |        |        |
-| EQ5 | Low crossover frequency slider adjusts low/mid split   |        |        |
-| EQ6 | High crossover frequency slider adjusts mid/high split |        |        |
-| EQ7 | Room inputs for low/mid/high: modulatable              |        |        |
-| EQ8 | Output mode: AUDIO / CONTROL / BOTH                    |        |        |
-| EQ9 | Scope shows output waveform                            |        |        |
+| #    | Test                                                       | Status | Issues |
+| ---- | ---------------------------------------------------------- | ------ | ------ |
+| EQ1  | Audio input: link to oscillator, audio passes through      | PASS   |        |
+| EQ2  | Low gain slider boosts/cuts low frequencies                |        |        |
+| EQ3  | Mid gain slider boosts/cuts mid frequencies                |        |        |
+| EQ4  | High gain slider boosts/cuts high frequencies              |        |        |
+| EQ5  | Low crossover frequency slider adjusts low/mid split       |        |        |
+| EQ6  | High crossover frequency slider adjusts mid/high split     |        |        |
+| EQ7  | Room inputs for low/mid/high: modulatable                  |        |        |
+| EQ8  | Output mode: AUDIO / CONTROL / BOTH                        |        |        |
+| EQ9  | Scope shows output waveform                                |        |        |
+| EQ10 | Two tabs same room: EQ state syncs (low, mid, high gains)  |        |        |
+| EQ11 | Parameter change in tab A reflects in tab B                |        |        |
+| EQ12 | COPY URL → new tab joins same instance with matching state |        |        |
+| EQ13 | Privacy toggle hides room from public dashboard topology   |        |        |
+| EQ14 | Reconnect after disconnect — state restores                |        |        |
 
 ### 15. FILTER — `filter.html`
 
@@ -311,84 +381,119 @@
 | F9  | Room input for type: changes filter mode                     |        |        |
 | F10 | Output mode: AUDIO / CONTROL / BOTH                          |        |        |
 | F11 | Scope shows output waveform                                  |        |        |
+| F12 | Two tabs same room: filter state syncs (cutoff, Q, type)     |        |        |
+| F13 | Parameter change in tab A reflects in tab B                  |        |        |
+| F14 | COPY URL → new tab joins same instance with matching state   |        |        |
+| F15 | Privacy toggle hides room from public dashboard topology     |        |        |
+| F16 | Reconnect after disconnect — state restores                  |        |        |
 
 ### 16. PANNER — `panner.html`
 
-| #   | Test                                                  | Status | Issues |
-| --- | ----------------------------------------------------- | ------ | ------ |
-| P1  | Audio input: link to oscillator, audio passes through | PASS   |        |
-| P2  | MANUAL mode: pan slider moves audio left/right        | PASS   |        |
-| P3  | AUTO mode: audio sweeps left/right automatically      |        |        |
-| P4  | AUTO mode: rate slider changes sweep speed            |        |        |
-| P5  | AUTO mode: depth slider changes sweep width           |        |        |
-| P6  | Mode switch: MANUAL ↔ AUTO toggles correctly          |        |        |
-| P7  | Room input for pan: modulatable (manual mode)         |        |        |
-| P8  | Room input for rate/depth: modulatable (auto mode)    |        |        |
-| P9  | Output mode: AUDIO / CONTROL / BOTH                   |        |        |
-| P10 | Scope shows output waveform                           |        |        |
+| #   | Test                                                       | Status | Issues |
+| --- | ---------------------------------------------------------- | ------ | ------ |
+| P1  | Audio input: link to oscillator, audio passes through      | PASS   |        |
+| P2  | MANUAL mode: pan slider moves audio left/right             | PASS   |        |
+| P3  | AUTO mode: audio sweeps left/right automatically           |        |        |
+| P4  | AUTO mode: rate slider changes sweep speed                 |        |        |
+| P5  | AUTO mode: depth slider changes sweep width                |        |        |
+| P6  | Mode switch: MANUAL ↔ AUTO toggles correctly               |        |        |
+| P7  | Room input for pan: modulatable (manual mode)              |        |        |
+| P8  | Room input for rate/depth: modulatable (auto mode)         |        |        |
+| P9  | Output mode: AUDIO / CONTROL / BOTH                        |        |        |
+| P10 | Scope shows output waveform                                |        |        |
+| P11 | Two tabs same room: panner state syncs (pan, mode, rate)   |        |        |
+| P12 | Parameter change in tab A reflects in tab B                |        |        |
+| P13 | COPY URL → new tab joins same instance with matching state |        |        |
+| P14 | Privacy toggle hides room from public dashboard topology   |        |        |
+| P15 | Reconnect after disconnect — state restores                |        |        |
 
 ### 17. PHASER — `phaser.html`
 
-| #   | Test                                                  | Status | Issues |
-| --- | ----------------------------------------------------- | ------ | ------ |
-| PH1 | Audio input: link to oscillator, audio passes through | PASS   |        |
-| PH2 | Frequency slider changes phaser sweep rate            | PASS   |        |
-| PH3 | Octaves slider changes phaser sweep range             | PASS   |        |
-| PH4 | Wet slider blends dry/wet                             | PASS   |        |
-| PH5 | Room input for frequency: modulatable                 |        |        |
-| PH6 | Output mode: AUDIO / CONTROL / BOTH                   |        |        |
-| PH7 | Scope shows output waveform                           |        |        |
+| #    | Test                                                        | Status | Issues |
+| ---- | ----------------------------------------------------------- | ------ | ------ |
+| PH1  | Audio input: link to oscillator, audio passes through       | PASS   |        |
+| PH2  | Frequency slider changes phaser sweep rate                  | PASS   |        |
+| PH3  | Octaves slider changes phaser sweep range                   | PASS   |        |
+| PH4  | Wet slider blends dry/wet                                   | PASS   |        |
+| PH5  | Room input for frequency: modulatable                       |        |        |
+| PH6  | Output mode: AUDIO / CONTROL / BOTH                         |        |        |
+| PH7  | Scope shows output waveform                                 |        |        |
+| PH8  | Two tabs same room: phaser state syncs (freq, octaves, wet) |        |        |
+| PH9  | Parameter change in tab A reflects in tab B                 |        |        |
+| PH10 | COPY URL → new tab joins same instance with matching state  |        |        |
+| PH11 | Privacy toggle hides room from public dashboard topology    |        |        |
+| PH12 | Reconnect after disconnect — state restores                 |        |        |
 
 ### 18. PITCH SHIFT — `pitchshift.html`
 
-| #   | Test                                                  | Status | Issues |
-| --- | ----------------------------------------------------- | ------ | ------ |
-| PS1 | Audio input: link to oscillator, audio passes through | PASS   |        |
-| PS2 | Pitch slider: shifts up/down (-24 to +24 semitones)   | PASS   |        |
-| PS3 | 0 semitones = no change (clean passthrough)           |        |        |
-| PS4 | Wet slider blends dry/wet                             |        |        |
-| PS5 | Room input for pitch: modulatable                     |        |        |
-| PS6 | Output mode: AUDIO / CONTROL / BOTH                   |        |        |
-| PS7 | Scope shows output waveform                           |        |        |
+| #    | Test                                                       | Status | Issues |
+| ---- | ---------------------------------------------------------- | ------ | ------ |
+| PS1  | Audio input: link to oscillator, audio passes through      | PASS   |        |
+| PS2  | Pitch slider: shifts up/down (-24 to +24 semitones)        | PASS   |        |
+| PS3  | 0 semitones = no change (clean passthrough)                |        |        |
+| PS4  | Wet slider blends dry/wet                                  |        |        |
+| PS5  | Room input for pitch: modulatable                          |        |        |
+| PS6  | Output mode: AUDIO / CONTROL / BOTH                        |        |        |
+| PS7  | Scope shows output waveform                                |        |        |
+| PS8  | Two tabs same room: pitch shift state syncs (pitch, wet)   |        |        |
+| PS9  | Parameter change in tab A reflects in tab B                |        |        |
+| PS10 | COPY URL → new tab joins same instance with matching state |        |        |
+| PS11 | Privacy toggle hides room from public dashboard topology   |        |        |
+| PS12 | Reconnect after disconnect — state restores                |        |        |
 
 ### 19. REVERB — `reverb.html`
 
-| #   | Test                                                  | Status | Issues |
-| --- | ----------------------------------------------------- | ------ | ------ |
-| RV1 | Audio input: link to oscillator, audio passes through | PASS   |        |
-| RV2 | Decay slider changes reverb tail length               | PASS   |        |
-| RV3 | Wet slider blends dry/wet                             | PASS   |        |
-| RV4 | Room input for decay: modulatable                     |        |        |
-| RV5 | Room input for wet: modulatable                       |        |        |
-| RV6 | Output mode: AUDIO / CONTROL / BOTH                   | PASS   |        |
-| RV7 | Scope shows output waveform                           | PASS   |        |
+| #    | Test                                                       | Status | Issues |
+| ---- | ---------------------------------------------------------- | ------ | ------ |
+| RV1  | Audio input: link to oscillator, audio passes through      | PASS   |        |
+| RV2  | Decay slider changes reverb tail length                    | PASS   |        |
+| RV3  | Wet slider blends dry/wet                                  | PASS   |        |
+| RV4  | Room input for decay: modulatable                          |        |        |
+| RV5  | Room input for wet: modulatable                            |        |        |
+| RV6  | Output mode: AUDIO / CONTROL / BOTH                        | PASS   |        |
+| RV7  | Scope shows output waveform                                | PASS   |        |
+| RV8  | Two tabs same room: reverb state syncs (decay, wet)        |        |        |
+| RV9  | Parameter change in tab A reflects in tab B                |        |        |
+| RV10 | COPY URL → new tab joins same instance with matching state |        |        |
+| RV11 | Privacy toggle hides room from public dashboard topology   |        |        |
+| RV12 | Reconnect after disconnect — state restores                |        |        |
 
 ### 20. RING MOD — `ringmod.html`
 
-| #   | Test                                                  | Status | Issues |
-| --- | ----------------------------------------------------- | ------ | ------ |
-| RM1 | Audio input: link to oscillator, audio passes through | PASS   |        |
-| RM2 | Carrier frequency slider changes ring mod tone        | PASS   |        |
-| RM3 | Depth slider blends dry/wet                           | PASS   |        |
-| RM4 | Carrier waveform: sine / triangle / sawtooth / square | PASS   |        |
-| RM5 | Room input for frequency: modulatable                 |        |        |
-| RM6 | Output mode: AUDIO / CONTROL / BOTH                   |        |        |
-| RM7 | Scope shows output waveform                           |        |        |
+| #    | Test                                                         | Status | Issues |
+| ---- | ------------------------------------------------------------ | ------ | ------ |
+| RM1  | Audio input: link to oscillator, audio passes through        | PASS   |        |
+| RM2  | Carrier frequency slider changes ring mod tone               | PASS   |        |
+| RM3  | Depth slider blends dry/wet                                  | PASS   |        |
+| RM4  | Carrier waveform: sine / triangle / sawtooth / square        | PASS   |        |
+| RM5  | Room input for frequency: modulatable                        |        |        |
+| RM6  | Output mode: AUDIO / CONTROL / BOTH                          |        |        |
+| RM7  | Scope shows output waveform                                  |        |        |
+| RM8  | Two tabs same room: ring mod state syncs (freq, depth, wave) |        |        |
+| RM9  | Parameter change in tab A reflects in tab B                  |        |        |
+| RM10 | COPY URL → new tab joins same instance with matching state   |        |        |
+| RM11 | Privacy toggle hides room from public dashboard topology     |        |        |
+| RM12 | Reconnect after disconnect — state restores                  |        |        |
 
 ### 21. WAVEFOLDER — `wavefolder.html`
 
-| #    | Test                                                     | Status | Issues                |
-| ---- | -------------------------------------------------------- | ------ | --------------------- |
-| WF1  | Audio input: link to oscillator, audio passes through    | PASS   |                       |
-| WF2  | Drive slider: increases pre-amplification into folder    | PASS   |                       |
-| WF3  | Folds slider: more folds = more harmonic complexity      | FAIL   | slider not responding |
-| WF4  | Symmetry slider: shifts folding threshold asymmetrically | PASS   |                       |
-| WF5  | Gain slider controls output level                        | PASS   |                       |
-| WF6  | Transfer curve canvas shows input/output mapping         | PASS   |                       |
-| WF7  | Transfer curve updates when drive/folds/symmetry change  | PASS   |                       |
-| WF8  | Room inputs for drive/folds/symmetry: modulatable        |        |                       |
-| WF9  | Output mode: AUDIO / CONTROL / BOTH                      | PASS   |                       |
-| WF10 | Scope shows output waveform                              | PASS   |                       |
+| #    | Test                                                           | Status | Issues                |
+| ---- | -------------------------------------------------------------- | ------ | --------------------- |
+| WF1  | Audio input: link to oscillator, audio passes through          | PASS   |                       |
+| WF2  | Drive slider: increases pre-amplification into folder          | PASS   |                       |
+| WF3  | Folds slider: more folds = more harmonic complexity            | FAIL   | slider not responding |
+| WF4  | Symmetry slider: shifts folding threshold asymmetrically       | PASS   |                       |
+| WF5  | Gain slider controls output level                              | PASS   |                       |
+| WF6  | Transfer curve canvas shows input/output mapping               | PASS   |                       |
+| WF7  | Transfer curve updates when drive/folds/symmetry change        | PASS   |                       |
+| WF8  | Room inputs for drive/folds/symmetry: modulatable              |        |                       |
+| WF9  | Output mode: AUDIO / CONTROL / BOTH                            | PASS   |                       |
+| WF10 | Scope shows output waveform                                    | PASS   |                       |
+| WF11 | Two tabs same room: wavefolder state syncs (drive, folds, sym) |        |                       |
+| WF12 | Parameter change in tab A reflects in tab B                    |        |                       |
+| WF13 | COPY URL → new tab joins same instance with matching state     |        |                       |
+| WF14 | Privacy toggle hides room from public dashboard topology       |        |                       |
+| WF15 | Reconnect after disconnect — state restores                    |        |                       |
 
 ---
 
@@ -396,43 +501,53 @@
 
 ### 22. ENVELOPE — `envelope.html`
 
-| #   | Test                                                    | Status | Issues |
-| --- | ------------------------------------------------------- | ------ | ------ |
-| EN1 | Audio input: link to oscillator, audio passes through   |        |        |
-| EN2 | Manual trigger button fires envelope                    |        |        |
-| EN3 | Attack slider: ramp-up time                             |        |        |
-| EN4 | Decay slider: fall time to sustain                      |        |        |
-| EN5 | Sustain slider: held level                              |        |        |
-| EN6 | Release slider: fade-out after trigger off              |        |        |
-| EN7 | Room input for trigger: fires envelope on positive edge |        |        |
-| EN8 | ADSR output broadcasts envelope shape                   |        |        |
-| EN9 | Scope shows envelope shape                              |        |        |
+| #    | Test                                                       | Status | Issues |
+| ---- | ---------------------------------------------------------- | ------ | ------ |
+| EN1  | Audio input: link to oscillator, audio passes through      |        |        |
+| EN2  | Manual trigger button fires envelope                       |        |        |
+| EN3  | Attack slider: ramp-up time                                |        |        |
+| EN4  | Decay slider: fall time to sustain                         |        |        |
+| EN5  | Sustain slider: held level                                 |        |        |
+| EN6  | Release slider: fade-out after trigger off                 |        |        |
+| EN7  | Room input for trigger: fires envelope on positive edge    |        |        |
+| EN8  | ADSR output broadcasts envelope shape                      |        |        |
+| EN9  | Scope shows envelope shape                                 |        |        |
+| EN10 | Two tabs same room: envelope ADSR state syncs              |        |        |
+| EN11 | Parameter change in tab A reflects in tab B                |        |        |
+| EN12 | COPY URL → new tab joins same instance with matching state |        |        |
+| EN13 | Privacy toggle hides room from public dashboard topology   |        |        |
+| EN14 | Reconnect after disconnect — state restores                |        |        |
 
 ### 23. FUNC GEN — `funcgen.html`
 
-| #    | Test                                                 | Status | Issues |
-| ---- | ---------------------------------------------------- | ------ | ------ |
-| FG1  | Manual trigger button starts function                |        |        |
-| FG2  | RAMP UP shape: linear 0 → +1                         |        |        |
-| FG3  | RAMP DOWN shape: linear +1 → 0                       |        |        |
-| FG4  | TRIANGLE shape: 0 → +1 → 0                           |        |        |
-| FG5  | EXPONENTIAL RISE shape: curved 0 → +1                |        |        |
-| FG6  | EXPONENTIAL FALL shape: curved +1 → 0                |        |        |
-| FG7  | S-CURVE shape: smooth sigmoid                        |        |        |
-| FG8  | ATTACK-DECAY shape: fast attack, slower decay        |        |        |
-| FG9  | RANDOM WALK shape: brownian motion                   |        |        |
-| FG10 | Duration slider: controls function length (0.01-30s) |        |        |
-| FG11 | Level slider: scales output amplitude                |        |        |
-| FG12 | Curve slider: adjusts exponential curvature          |        |        |
-| FG13 | Attack % slider: adjusts attack/decay ratio          |        |        |
-| FG14 | HOLD end mode: stays at final value                  |        |        |
-| FG15 | RETURN end mode: snaps back to 0                     |        |        |
-| FG16 | LOOP end mode: restarts automatically                |        |        |
-| FG17 | Shape preview canvas shows theoretical curve         |        |        |
-| FG18 | Playhead dot animates during active function         |        |        |
-| FG19 | Room input for trigger: fires function               |        |        |
-| FG20 | Phase output broadcasts 0-1 progress                 |        |        |
-| FG21 | Active output: +1 while running, -1 when done        |        |        |
+| #    | Test                                                             | Status | Issues |
+| ---- | ---------------------------------------------------------------- | ------ | ------ |
+| FG1  | Manual trigger button starts function                            |        |        |
+| FG2  | RAMP UP shape: linear 0 → +1                                     |        |        |
+| FG3  | RAMP DOWN shape: linear +1 → 0                                   |        |        |
+| FG4  | TRIANGLE shape: 0 → +1 → 0                                       |        |        |
+| FG5  | EXPONENTIAL RISE shape: curved 0 → +1                            |        |        |
+| FG6  | EXPONENTIAL FALL shape: curved +1 → 0                            |        |        |
+| FG7  | S-CURVE shape: smooth sigmoid                                    |        |        |
+| FG8  | ATTACK-DECAY shape: fast attack, slower decay                    |        |        |
+| FG9  | RANDOM WALK shape: brownian motion                               |        |        |
+| FG10 | Duration slider: controls function length (0.01-30s)             |        |        |
+| FG11 | Level slider: scales output amplitude                            |        |        |
+| FG12 | Curve slider: adjusts exponential curvature                      |        |        |
+| FG13 | Attack % slider: adjusts attack/decay ratio                      |        |        |
+| FG14 | HOLD end mode: stays at final value                              |        |        |
+| FG15 | RETURN end mode: snaps back to 0                                 |        |        |
+| FG16 | LOOP end mode: restarts automatically                            |        |        |
+| FG17 | Shape preview canvas shows theoretical curve                     |        |        |
+| FG18 | Playhead dot animates during active function                     |        |        |
+| FG19 | Room input for trigger: fires function                           |        |        |
+| FG20 | Phase output broadcasts 0-1 progress                             |        |        |
+| FG21 | Active output: +1 while running, -1 when done                    |        |        |
+| FG22 | Two tabs same room: func gen state syncs (shape, duration, mode) |        |        |
+| FG23 | Parameter change in tab A reflects in tab B                      |        |        |
+| FG24 | COPY URL → new tab joins same instance with matching state       |        |        |
+| FG25 | Privacy toggle hides room from public dashboard topology         |        |        |
+| FG26 | Reconnect after disconnect — state restores                      |        |        |
 
 ### 24. LFO — `lfo.html`
 
@@ -456,16 +571,26 @@
 | LF16 | Signal output modulates another object (link to osc frequency) |        | sometimes doesnt modulate all targets |
 | LF17 | Room input for rate: modulatable                               |        |                                       |
 | LF18 | Scope shows LFO waveform                                       | PASS   |                                       |
+| LF19 | Two tabs same room: LFO state syncs (rate, depth, waveform)    |        |                                       |
+| LF20 | Parameter change in tab A reflects in tab B                    |        |                                       |
+| LF21 | COPY URL → new tab joins same instance with matching state     |        |                                       |
+| LF22 | Privacy toggle hides room from public dashboard topology       |        |                                       |
+| LF23 | Reconnect after disconnect — state restores                    |        |                                       |
 
 ### 25. SAMPLE & HOLD — `samplehold.html`
 
-| #   | Test                                                   | Status | Issues |
-| --- | ------------------------------------------------------ | ------ | ------ |
-| SH1 | Room input for signal: receives continuous value       |        |        |
-| SH2 | Room input for trigger: samples value on positive edge |        |        |
-| SH3 | Output holds sampled value until next trigger          |        |        |
-| SH4 | Slew slider: 0 = instant, higher = glide to new value  |        |        |
-| SH5 | Scope shows stepped output                             |        |        |
+| #    | Test                                                       | Status | Issues |
+| ---- | ---------------------------------------------------------- | ------ | ------ |
+| SH1  | Room input for signal: receives continuous value           |        |        |
+| SH2  | Room input for trigger: samples value on positive edge     |        |        |
+| SH3  | Output holds sampled value until next trigger              |        |        |
+| SH4  | Slew slider: 0 = instant, higher = glide to new value      |        |        |
+| SH5  | Scope shows stepped output                                 |        |        |
+| SH6  | Two tabs same room: S&H state syncs (slew, held value)     |        |        |
+| SH7  | Parameter change in tab A reflects in tab B                |        |        |
+| SH8  | COPY URL → new tab joins same instance with matching state |        |        |
+| SH9  | Privacy toggle hides room from public dashboard topology   |        |        |
+| SH10 | Reconnect after disconnect — state restores                |        |        |
 
 ---
 
@@ -473,67 +598,87 @@
 
 ### 26. ARPEGGIATOR — `arpeggiator.html`
 
-| #    | Test                                                       | Status | Issues |
-| ---- | ---------------------------------------------------------- | ------ | ------ |
-| AR1  | Root note selector: C through B                            |        |        |
-| AR2  | Scale selector: all 8 scales produce different patterns    |        |        |
-| AR3  | Base octave slider: shifts pitch range                     |        |        |
-| AR4  | Octave range slider: expands pattern span                  |        |        |
-| AR5  | UP pattern: ascending                                      |        |        |
-| AR6  | DOWN pattern: descending                                   |        |        |
-| AR7  | UP-DOWN pattern: pendulum                                  |        |        |
-| AR8  | DOWN-UP pattern: reverse pendulum                          |        |        |
-| AR9  | RANDOM pattern: random note selection                      |        |        |
-| AR10 | Gate length slider: controls note duration percentage      |        |        |
-| AR11 | Room input for trigger: advances to next note (link clock) |        |        |
-| AR12 | Frequency output: Hz value (link to oscillator or synth)   |        |        |
-| AR13 | Gate output: +1 note on, -1 note off (link to envelope)    |        |        |
-| AR14 | Step output: current step number                           |        |        |
-| AR15 | Note name display updates on each step                     |        |        |
+| #    | Test                                                             | Status | Issues |
+| ---- | ---------------------------------------------------------------- | ------ | ------ |
+| AR1  | Root note selector: C through B                                  |        |        |
+| AR2  | Scale selector: all 8 scales produce different patterns          |        |        |
+| AR3  | Base octave slider: shifts pitch range                           |        |        |
+| AR4  | Octave range slider: expands pattern span                        |        |        |
+| AR5  | UP pattern: ascending                                            |        |        |
+| AR6  | DOWN pattern: descending                                         |        |        |
+| AR7  | UP-DOWN pattern: pendulum                                        |        |        |
+| AR8  | DOWN-UP pattern: reverse pendulum                                |        |        |
+| AR9  | RANDOM pattern: random note selection                            |        |        |
+| AR10 | Gate length slider: controls note duration percentage            |        |        |
+| AR11 | Room input for trigger: advances to next note (link clock)       |        |        |
+| AR12 | Frequency output: Hz value (link to oscillator or synth)         |        |        |
+| AR13 | Gate output: +1 note on, -1 note off (link to envelope)          |        |        |
+| AR14 | Step output: current step number                                 |        |        |
+| AR15 | Note name display updates on each step                           |        |        |
+| AR16 | Two tabs same room: arp state syncs (root, scale, pattern, gate) |        |        |
+| AR17 | Parameter change in tab A reflects in tab B                      |        |        |
+| AR18 | COPY URL → new tab joins same instance with matching state       |        |        |
+| AR19 | Privacy toggle hides room from public dashboard topology         |        |        |
+| AR20 | Reconnect after disconnect — state restores                      |        |        |
 
 ### 27. CLOCK — `clock.html`
 
-| #   | Test                                                | Status | Issues |
-| --- | --------------------------------------------------- | ------ | ------ |
-| CK1 | START/STOP button toggles clock                     |        |        |
-| CK2 | BPM slider changes tempo (20-300)                   |        |        |
-| CK3 | Division selector: 1/1, 1/2, 1/4, 1/8, 1/16, 1/32   |        |        |
-| CK4 | Swing slider adds swing feel                        |        |        |
-| CK5 | Tap tempo: tapping sets BPM from tap intervals      |        |        |
-| CK6 | Signal output: trigger pulses at tempo              |        |        |
-| CK7 | Link clock output to sequencer/euclid trigger input |        |        |
-| CK8 | Room input for BPM: sync from external source       |        |        |
-| CK9 | Scope shows trigger pulse train                     |        |        |
+| #    | Test                                                         | Status | Issues |
+| ---- | ------------------------------------------------------------ | ------ | ------ |
+| CK1  | START/STOP button toggles clock                              |        |        |
+| CK2  | BPM slider changes tempo (20-300)                            |        |        |
+| CK3  | Division selector: 1/1, 1/2, 1/4, 1/8, 1/16, 1/32            |        |        |
+| CK4  | Swing slider adds swing feel                                 |        |        |
+| CK5  | Tap tempo: tapping sets BPM from tap intervals               |        |        |
+| CK6  | Signal output: trigger pulses at tempo                       |        |        |
+| CK7  | Link clock output to sequencer/euclid trigger input          |        |        |
+| CK8  | Room input for BPM: sync from external source                |        |        |
+| CK9  | Scope shows trigger pulse train                              |        |        |
+| CK10 | Two tabs same room: clock state syncs (BPM, division, swing) |        |        |
+| CK11 | Parameter change in tab A reflects in tab B                  |        |        |
+| CK12 | COPY URL → new tab joins same instance with matching state   |        |        |
+| CK13 | Privacy toggle hides room from public dashboard topology     |        |        |
+| CK14 | Reconnect after disconnect — state restores                  |        |        |
 
 ### 28. EUCLID — `euclid.html`
 
-| #   | Test                                                           | Status | Issues |
-| --- | -------------------------------------------------------------- | ------ | ------ |
-| EU1 | Steps slider: changes total steps (2-32)                       |        |        |
-| EU2 | Beats slider: changes active beats (0-steps)                   |        |        |
-| EU3 | Offset slider: rotates pattern                                 |        |        |
-| EU4 | Ring visualization shows pattern with active beats highlighted |        |        |
-| EU5 | Room input for trigger: advances step (link clock)             |        |        |
-| EU6 | Signal output: +1 on active step, -1 on inactive               |        |        |
-| EU7 | Pattern output: broadcasts array                               |        |        |
-| EU8 | Room inputs for steps/beats/offset: modulatable                |        |        |
-| EU9 | Playhead shows current position on ring                        |        |        |
+| #    | Test                                                           | Status | Issues |
+| ---- | -------------------------------------------------------------- | ------ | ------ |
+| EU1  | Steps slider: changes total steps (2-32)                       |        |        |
+| EU2  | Beats slider: changes active beats (0-steps)                   |        |        |
+| EU3  | Offset slider: rotates pattern                                 |        |        |
+| EU4  | Ring visualization shows pattern with active beats highlighted |        |        |
+| EU5  | Room input for trigger: advances step (link clock)             |        |        |
+| EU6  | Signal output: +1 on active step, -1 on inactive               |        |        |
+| EU7  | Pattern output: broadcasts array                               |        |        |
+| EU8  | Room inputs for steps/beats/offset: modulatable                |        |        |
+| EU9  | Playhead shows current position on ring                        |        |        |
+| EU10 | Two tabs same room: euclid state syncs (steps, beats, offset)  |        |        |
+| EU11 | Parameter change in tab A reflects in tab B                    |        |        |
+| EU12 | COPY URL → new tab joins same instance with matching state     |        |        |
+| EU13 | Privacy toggle hides room from public dashboard topology       |        |        |
+| EU14 | Reconnect after disconnect — state restores                    |        |        |
 
 ### 29. SEQUENCER — `sequencer.html`
 
-| #    | Test                                                | Status | Issues |
-| ---- | --------------------------------------------------- | ------ | ------ |
-| SQ1  | 8 step faders visible and adjustable                |        |        |
-| SQ2  | Steps slider: changes active step count (1-8)       |        |        |
-| SQ3  | Forward mode: steps advance left to right           |        |        |
-| SQ4  | Reverse mode: steps advance right to left           |        |        |
-| SQ5  | Pendulum mode: bounces back and forth               |        |        |
-| SQ6  | Random mode: random step selection                  |        |        |
-| SQ7  | Room input for trigger: advances step (link clock)  |        |        |
-| SQ8  | Room input for reset: returns to step 1             |        |        |
-| SQ9  | Signal output: current step value mapped to bipolar |        |        |
-| SQ10 | Step output: current step number                    |        |        |
-| SQ11 | Current step highlighted visually                   |        |        |
+| #    | Test                                                            | Status | Issues |
+| ---- | --------------------------------------------------------------- | ------ | ------ |
+| SQ1  | 8 step faders visible and adjustable                            |        |        |
+| SQ2  | Steps slider: changes active step count (1-8)                   |        |        |
+| SQ3  | Forward mode: steps advance left to right                       |        |        |
+| SQ4  | Reverse mode: steps advance right to left                       |        |        |
+| SQ5  | Pendulum mode: bounces back and forth                           |        |        |
+| SQ6  | Random mode: random step selection                              |        |        |
+| SQ7  | Room input for trigger: advances step (link clock)              |        |        |
+| SQ8  | Room input for reset: returns to step 1                         |        |        |
+| SQ9  | Signal output: current step value mapped to bipolar             |        |        |
+| SQ10 | Step output: current step number                                |        |        |
+| SQ11 | Current step highlighted visually                               |        |        |
+| SQ12 | Two tabs same room: sequencer state syncs (faders, mode, steps) |        |        |
+| SQ13 | Parameter change in tab A (fader position) reflects in tab B    |        |        |
+| SQ14 | COPY URL → new tab joins same instance with matching state      |        |        |
+| SQ15 | Privacy toggle hides room from public dashboard topology        |        |        |
+| SQ16 | Reconnect after disconnect — state restores                     |        |        |
 
 ---
 
@@ -541,31 +686,41 @@
 
 ### 30. CROSSFADER — `crossfader.html`
 
-| #   | Test                                                 | Status | Issues |
-| --- | ---------------------------------------------------- | ------ | ------ |
-| XF1 | Audio input A: link to first oscillator              |        |        |
-| XF2 | Audio input B: link to second oscillator             |        |        |
-| XF3 | Crossfade slider at 0: only A audible                |        |        |
-| XF4 | Crossfade slider at 1: only B audible                |        |        |
-| XF5 | Crossfade slider at 0.5: equal mix of A and B        |        |        |
-| XF6 | Output gain slider controls level                    |        |        |
-| XF7 | Room input for fade: LFO-driven crossfade automation |        |        |
-| XF8 | Output mode: AUDIO / CONTROL / BOTH                  |        |        |
-| XF9 | Scope shows output waveform                          |        |        |
+| #    | Test                                                             | Status | Issues |
+| ---- | ---------------------------------------------------------------- | ------ | ------ |
+| XF1  | Audio input A: link to first oscillator                          |        |        |
+| XF2  | Audio input B: link to second oscillator                         |        |        |
+| XF3  | Crossfade slider at 0: only A audible                            |        |        |
+| XF4  | Crossfade slider at 1: only B audible                            |        |        |
+| XF5  | Crossfade slider at 0.5: equal mix of A and B                    |        |        |
+| XF6  | Output gain slider controls level                                |        |        |
+| XF7  | Room input for fade: LFO-driven crossfade automation             |        |        |
+| XF8  | Output mode: AUDIO / CONTROL / BOTH                              |        |        |
+| XF9  | Scope shows output waveform                                      |        |        |
+| XF10 | Two tabs same room: crossfader state syncs (fade position, gain) |        |        |
+| XF11 | Parameter change in tab A reflects in tab B                      |        |        |
+| XF12 | COPY URL → new tab joins same instance with matching state       |        |        |
+| XF13 | Privacy toggle hides room from public dashboard topology         |        |        |
+| XF14 | Reconnect after disconnect — state restores                      |        |        |
 
 ### 31. MIXER — `mixer.html`
 
-| #   | Test                                             | Status | Issues |
-| --- | ------------------------------------------------ | ------ | ------ |
-| MX1 | Add channel: paste room URL, channel appears     |        |        |
-| MX2 | Multiple channels: add 2+ sources                |        |        |
-| MX3 | Per-channel fader: adjusts individual level      |        |        |
-| MX4 | Per-channel mute: silences individual channel    |        |        |
-| MX5 | Remove channel button works                      |        |        |
-| MX6 | Master gain slider controls overall output       |        |        |
-| MX7 | Room input for master mod: modulates master gain |        |        |
-| MX8 | Output mode: AUDIO / CONTROL / BOTH              |        |        |
-| MX9 | Scope shows mixed output waveform                |        |        |
+| #    | Test                                                            | Status | Issues |
+| ---- | --------------------------------------------------------------- | ------ | ------ |
+| MX1  | Add channel: paste room URL, channel appears                    |        |        |
+| MX2  | Multiple channels: add 2+ sources                               |        |        |
+| MX3  | Per-channel fader: adjusts individual level                     |        |        |
+| MX4  | Per-channel mute: silences individual channel                   |        |        |
+| MX5  | Remove channel button works                                     |        |        |
+| MX6  | Master gain slider controls overall output                      |        |        |
+| MX7  | Room input for master mod: modulates master gain                |        |        |
+| MX8  | Output mode: AUDIO / CONTROL / BOTH                             |        |        |
+| MX9  | Scope shows mixed output waveform                               |        |        |
+| MX10 | Two tabs same room: mixer state syncs (channels, faders, mutes) |        |        |
+| MX11 | Channel added in tab A appears in tab B                         |        |        |
+| MX12 | COPY URL → new tab joins same instance with matching state      |        |        |
+| MX13 | Privacy toggle hides room from public dashboard topology        |        |        |
+| MX14 | Reconnect after disconnect — state restores                     |        |        |
 
 ---
 
@@ -580,6 +735,11 @@
 | GA3 | Room input for gain: modulatable                      |        |        |
 | GA4 | Output mode: AUDIO / CONTROL / BOTH                   |        |        |
 | GA5 | Scope shows output waveform                           |        |        |
+| GA6 | Two tabs same room: gain state syncs (gain value)              |        |        |
+| GA7 | Parameter change in tab A reflects in tab B                    |        |        |
+| GA8 | COPY URL → new tab joins same instance with matching state     |        |        |
+| GA9 | Privacy toggle hides room from public dashboard topology       |        |        |
+| GA10 | Reconnect after disconnect — state restores                   |        |        |
 
 ### 33. GATE — `gate.html`
 
@@ -594,6 +754,11 @@
 | GT7 | Slew slider: smooths gate transitions                         |        |        |
 | GT8 | OPEN/CLOSED indicator displays current state                  |        |        |
 | GT9 | State output: +1 open, -1 closed                              |        |        |
+| GT10 | Two tabs same room: gate state syncs (mode, threshold, slew)  |        |        |
+| GT11 | Parameter change in tab A reflects in tab B                   |        |        |
+| GT12 | COPY URL → new tab joins same instance with matching state    |        |        |
+| GT13 | Privacy toggle hides room from public dashboard topology      |        |        |
+| GT14 | Reconnect after disconnect — state restores                   |        |        |
 
 ### 34. LOGIC — `logic.html`
 
@@ -610,6 +775,11 @@
 | LG9  | A threshold slider: adjusts true/false boundary        |        |        |
 | LG10 | B threshold slider: adjusts true/false boundary        |        |        |
 | LG11 | Truth table display shows A/B/output states with color |        |        |
+| LG12 | Two tabs same room: logic state syncs (operation, thresholds)  |        |        |
+| LG13 | Parameter change in tab A reflects in tab B                    |        |        |
+| LG14 | COPY URL → new tab joins same instance with matching state     |        |        |
+| LG15 | Privacy toggle hides room from public dashboard topology       |        |        |
+| LG16 | Reconnect after disconnect — state restores                    |        |        |
 
 ### 35. MATH — `math.html`
 
@@ -627,6 +797,11 @@
 | MT10 | Scale B slider: pre-scales input B        |        |        |
 | MT11 | Offset slider: adds constant to result    |        |        |
 | MT12 | Output clamped to -1..+1                  |        |        |
+| MT13 | Two tabs same room: math state syncs (operation, scales, offset)   |        |        |
+| MT14 | Parameter change in tab A reflects in tab B                        |        |        |
+| MT15 | COPY URL → new tab joins same instance with matching state         |        |        |
+| MT16 | Privacy toggle hides room from public dashboard topology           |        |        |
+| MT17 | Reconnect after disconnect — state restores                        |        |        |
 
 ### 36. MIDI CALC — `midicalc.html`
 
@@ -638,6 +813,11 @@
 | MC4 | Table updates when root or mode changes                       |        |        |
 | MC5 | Clicking a note broadcasts its frequency                      |        |        |
 | MC6 | Outputs: root, mode, scale values broadcast to room           |        |        |
+| MC7 | Two tabs same room: midicalc state syncs (root, mode)          |        |        |
+| MC8 | Parameter change in tab A reflects in tab B                    |        |        |
+| MC9 | COPY URL → new tab joins same instance with matching state     |        |        |
+| MC10 | Privacy toggle hides room from public dashboard topology      |        |        |
+| MC11 | Reconnect after disconnect — state restores                   |        |        |
 
 ### 37. PROBABILITY — `probability.html`
 
@@ -653,6 +833,11 @@
 | PR8  | History dots: green = passed, dim = blocked                  |        |        |
 | PR9  | Room input for probability: modulatable                      |        |        |
 | PR10 | passCount and totalCount outputs increment                   |        |        |
+| PR11 | Two tabs same room: probability state syncs (%, mode)         |        |        |
+| PR12 | Parameter change in tab A reflects in tab B                   |        |        |
+| PR13 | COPY URL → new tab joins same instance with matching state    |        |        |
+| PR14 | Privacy toggle hides room from public dashboard topology      |        |        |
+| PR15 | Reconnect after disconnect — state restores                   |        |        |
 
 ### 38. QUANTIZER — `quantizer.html`
 
@@ -671,6 +856,11 @@
 | QN11 | Signal output: quantized bipolar                         |        |        |
 | QN12 | Note name display shows current note                     |        |        |
 | QN13 | Range slider adjusts octave span                         |        |        |
+| QN14 | Two tabs same room: quantizer state syncs (root, scale, range) |        |        |
+| QN15 | Parameter change in tab A reflects in tab B                    |        |        |
+| QN16 | COPY URL → new tab joins same instance with matching state     |        |        |
+| QN17 | Privacy toggle hides room from public dashboard topology       |        |        |
+| QN18 | Reconnect after disconnect — state restores                    |        |        |
 
 ### 39. RNG — `rng.html`
 
@@ -690,6 +880,11 @@
 | RN12 | Histogram shows distribution shape               |        |        |
 | RN13 | Room input for trigger: fires in TRIGGER mode    |        |        |
 | RN14 | Large value display updates in real-time         |        |        |
+| RN15 | Two tabs same room: RNG state syncs (mode, dist, rate, range)  |        |        |
+| RN16 | Parameter change in tab A reflects in tab B                    |        |        |
+| RN17 | COPY URL → new tab joins same instance with matching state     |        |        |
+| RN18 | Privacy toggle hides room from public dashboard topology       |        |        |
+| RN19 | Reconnect after disconnect — state restores                    |        |        |
 
 ---
 
@@ -706,16 +901,26 @@
 | DB5 | dB readout displays current level                          |        |        |
 | DB6 | Smoothing slider adjusts meter response                    |        |        |
 | DB7 | Signal output: level mapped to 0..1 (usable as mod source) |        |        |
+| DB8 | Two tabs same room: dB meter state syncs (source, smoothing)       |        |        |
+| DB9 | Parameter change in tab A reflects in tab B                        |        |        |
+| DB10 | COPY URL → new tab joins same instance with matching state        |        |        |
+| DB11 | Privacy toggle hides room from public dashboard topology          |        |        |
+| DB12 | Reconnect after disconnect — state restores                       |        |        |
 
 ### 41. SCOPE — `scope.html`
 
-| #   | Test                                               | Status | Issues          |
-| --- | -------------------------------------------------- | ------ | --------------- |
-| SC1 | Audio input: link to oscillator, waveform displays | PASS   |                 |
-| SC2 | Time scaling: adjusts horizontal zoom              | PASS   |                 |
-| SC3 | Gain scaling: adjusts vertical zoom                | PASS   |                 |
-| SC4 | Trigger mode: stabilizes waveform display          | PASS   |                 |
-| SC5 | Waveform renders smoothly at audio rate            | FAIL   | visual aliasing |
+| #   | Test                                               | Status | Issues                                               |
+| --- | -------------------------------------------------- | ------ | ---------------------------------------------------- |
+| SC1 | Audio input: link to oscillator, waveform displays | PASS   |                                                      |
+| SC2 | Time scaling: adjusts horizontal zoom              | PASS   |                                                      |
+| SC3 | Gain scaling: adjusts vertical zoom                | PASS   |                                                      |
+| SC4 | Trigger mode: stabilizes waveform display          | PASS   |                                                      |
+| SC5 | Waveform renders smoothly at audio rate            | FAIL   | visual aliasing, consider adding adjustment controls |
+| SC6 | Two tabs same room: scope state syncs (time, gain, trigger)    |        |                                                      |
+| SC7 | Parameter change in tab A reflects in tab B                    |        |                                                      |
+| SC8 | COPY URL → new tab joins same instance with matching state     |        |                                                      |
+| SC9 | Privacy toggle hides room from public dashboard topology       |        |                                                      |
+| SC10 | Reconnect after disconnect — state restores                   |        |                                                      |
 
 ---
 
@@ -723,14 +928,65 @@
 
 ### 42. DISTRIBUTED OBJECTS (Dashboard) — `dashboard.html`
 
-| #   | Test                                                     | Status | Issues |
-| --- | -------------------------------------------------------- | ------ | ------ |
-| DA1 | Page loads and connects to WebSocket server              | PASS   |        |
-| DA2 | Shows active rooms as nodes in topology graph            | PASS   |        |
-| DA3 | Shows connections between rooms as edges                 | PASS   |        |
-| DA4 | Graph updates in real-time as objects connect/disconnect | PASS   |        |
-| DA5 | Signal flow hierarchy is visible                         | PASS   |        |
-| DA6 | Interactive — nodes can be clicked/dragged               | PASS   |        |
+| #    | Test                                                                | Status | Issues |
+| ---- | ------------------------------------------------------------------- | ------ | ------ |
+| DA1  | Page loads and connects to WebSocket server                         | PASS   |        |
+| DA2  | Shows active rooms as nodes in topology graph                       | PASS   |        |
+| DA3  | Shows connections between rooms as edges                            | PASS   |        |
+| DA4  | Graph updates in real-time as objects connect/disconnect            | PASS   |        |
+| DA5  | Signal flow hierarchy is visible                                    | PASS   |        |
+| DA6  | Interactive — nodes can be clicked/dragged                          | PASS   |        |
+| DA7  | Default room is "dashboard" (no random instance generated)          | PASS   |        |
+| DA8  | ?room= URL param joins a specific dashboard room                    | PASS   |        |
+| DA9  | ROOM input pre-populated with current room name                     | PASS   |        |
+| DA10 | JOIN button navigates to entered room name                          | PASS   |        |
+| DA11 | Enter key in ROOM input triggers JOIN                               | PASS   |        |
+| DA12 | PUBLIC/PRIVATE toggle switches room privacy                         | PASS   |        |
+| DA13 | Privacy state syncs from server (stateSync / roomPrivate events)    | PASS   |        |
+| DA14 | COPY URL button copies full dashboard room URL to clipboard         | PASS   |        |
+| DA15 | Status dot and text show ONLINE/OFFLINE                             | PASS   |        |
+| DA16 | Room name displays in header after connection                       | PASS   |        |
+| DA17 | Private rooms panel appears when dashboard set to PRIVATE           | PASS   |        |
+| DA18 | Private rooms panel hidden when dashboard set to PUBLIC             | PASS   |        |
+| DA19 | Switching PUBLIC → PRIVATE shows empty private rooms panel          | PASS   |        |
+| DA20 | Switching PRIVATE → PUBLIC clears all private rooms and hides panel | PASS   |        |
+| DA21 | ADD button adds a private room by name                              | PASS   |        |
+| DA22 | ADD button accepts full room URL (extracts room param)              | PASS   |        |
+| DA23 | Enter key in private room input triggers ADD                        | PASS   |        |
+| DA24 | Added private rooms appear in the graph with correct color/type     | PASS   |        |
+| DA25 | Private room nodes show objectType, category, and client count      | PASS   |        |
+| DA26 | Private room connections (subscribedRooms) show as edges            | PASS   |        |
+| DA27 | × button removes a private room from list and graph                 | PASS   |        |
+| DA28 | Duplicate room names are not added twice                            | PASS   |        |
+| DA29 | Node tiles use black background matching panel color                | PASS   |        |
+| DA30 | Multiple dashboard rooms can coexist independently                  | PASS   |        |
+
+### 43. DISTRIBUTED INSTANCES — `dashboard.html` (multi-user / multi-room)
+
+Test distributed collaboration scenarios across multiple browser tabs, devices, and dashboard rooms.
+
+| #    | Test                                                                                 | Status | Issues |
+| ---- | ------------------------------------------------------------------------------------ | ------ | ------ |
+| DI1  | Two tabs join same dashboard room — both see identical topology graph                |        |        |
+| DI2  | Object connects on network — both dashboard tabs update simultaneously               |        |        |
+| DI3  | Object disconnects — both dashboard tabs remove the node                             |        |        |
+| DI4  | Privacy toggle in one tab propagates to other tabs in same room                      |        |        |
+| DI5  | Private room added in tab A appears in tab B's graph (same dashboard room)           |        |        |
+| DI6  | Private room removed in tab A disappears from tab B's graph                          |        |        |
+| DI7  | Two separate dashboard rooms (e.g. ?room=team-a, ?room=team-b) are independent       |        |        |
+| DI8  | Dashboard room A set PRIVATE — not visible in dashboard room B's topology            |        |        |
+| DI9  | Cross-device: desktop and mobile join same dashboard room, topology matches          |        |        |
+| DI10 | Cross-network: dashboard on different LAN connects to production server successfully |        |        |
+| DI11 | Reconnect: dashboard auto-reconnects after network drop, topology repopulates        |        |        |
+| DI12 | Stale state: after reconnect, old nodes don't persist if they've since disconnected  |        |        |
+| DI13 | Private room on device A — device B adds it via URL, node appears with correct info  |        |        |
+| DI14 | High fan-out: 10+ objects across 3+ rooms — dashboard renders all without lag        |        |        |
+| DI15 | Concurrent edits: two users drag nodes simultaneously, no desync or fighting         |        |        |
+| DI16 | Dashboard room link shared via COPY URL — recipient joins same view                  |        |        |
+| DI17 | Private dashboard with private rooms — only users with room URL can see the graph    |        |        |
+| DI18 | Object goes private mid-session — disappears from public dashboard, stays on private |        |        |
+| DI19 | Object goes public mid-session — appears on public dashboard within poll interval    |        |        |
+| DI20 | Latency: topology updates arrive within 4s poll cycle under normal conditions        |        |        |
 
 ---
 
