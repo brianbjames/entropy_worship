@@ -886,10 +886,14 @@
           <code>FILTER</code> in another. Copy the oscillator's room URL into
           the filter's audio input, hit <code>LINK</code>, and control signals
           flow between them at ~30Hz — the same publish/subscribe pattern that
-          SuperCollider uses with Buses or Pd uses with send/receive, except
+          Max/MSP uses with send/receive, SuperCollider uses with Buses, or Pd
+          uses with send/receive, except
           the connection layer is the network itself. Modules can live in tabs
           on one machine, across machines on a LAN, or across the internet with
           multiple players patching into the same signal graph simultaneously.
+          As far as we know, no other modular synthesis environment uses the
+          network as its native patching medium — turning URLs into patch
+          cables and browsers into rack modules.
         </p>
         <div class="section-title rose" style="margin-top: 14px">// HOW TO CONNECT //</div>
         <p>
