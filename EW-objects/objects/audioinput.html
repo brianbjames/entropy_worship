@@ -318,15 +318,16 @@
         outputGainNode = new Tone.Gain(outputGainVal);
         monitorGainNode = new Tone.Gain(0); // monitor OFF by default
 
-        // Signal flow: inputGain -> outputGain -> analyser
+        // Signal flow: inputGain -> outputGain -> analyser + monitor
         inputGainNode.connect(outputGainNode);
         analyser = new Tone.Analyser("waveform", 256);
         outputGainNode.connect(analyser);
         fftAnalyser = new Tone.Analyser("fft", 1024);
         outputGainNode.connect(fftAnalyser);
 
-        // Monitor path: inputGain -> monitorGain -> Destination
-        inputGainNode.connect(monitorGainNode);
+        // Monitor path: outputGain -> monitorGain -> Destination
+        // (post-outputGain so OUT GAIN and gate affect what you hear)
+        outputGainNode.connect(monitorGainNode);
         monitorGainNode.toDestination();
 
         // Raw analyser for RMS dB metering — connected to inputGain (before outputGain)
@@ -543,8 +544,12 @@
             gateEl.classList.toggle("open", gateOpen);
           }
 
-          // Update level display
-          updateLevelDisplay(dB, normalized);
+          // Compute effective output level
+          const effectiveGain = gateOpen ? outputGainVal : 0;
+          const scaledNorm = normalized * effectiveGain;
+
+          // Update level display (reflects output-gain-scaled level)
+          updateLevelDisplay(Math.round(dB * effectiveGain), scaledNorm);
 
           // Track peak
           if (dB > peakDb) {
@@ -553,10 +558,10 @@
             peakDecayTimer = setTimeout(decayPeak, 1500);
           }
 
-          // Broadcast signal (bipolar: map 0..1 to -1..+1)
-          const bipolarSignal = Math.round((normalized * 2 - 1) * 1000) / 1000;
+          // Broadcast signal (bipolar: map 0..1 to -1..+1, scaled by output gain)
+          const bipolarSignal = Math.round((scaledNorm * 2 - 1) * 1000) / 1000;
           ewObj.setOutput("signal", bipolarSignal, { unit: "bipolar" });
-          ewObj.setOutput("level", dB);
+          ewObj.setOutput("level", Math.round(dB * effectiveGain));
           ewObj.setOutput("gain", outputGainVal);
         };
       }

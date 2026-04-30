@@ -52,53 +52,53 @@
 | AI11 | SCREEN mode: no-audio warning if user doesn't share audio           |        |        |
 | AI12 | Input gain slider adjusts pre-amplification (0-2x)                  | PASS   |        |
 | AI13 | Output gain slider adjusts level without killing signal             | PASS   |        |
-| AI14 | Monitor OFF: no local speaker output                                |        |        |
-| AI15 | Monitor ON: audio plays through speakers                            |        |        |
-| AI16 | Noise gate: signal mutes below threshold                            |        |        |
-| AI17 | Noise gate: signal passes above threshold                           |        |        |
-| AI18 | Gate threshold slider adjusts noise floor                           |        |        |
+| AI14 | Monitor OFF: no local speaker output                                | PASS   |        |
+| AI15 | Monitor ON: audio plays through speakers                            | PASS   |        |
+| AI16 | Noise gate: signal mutes below threshold                            | PASS   |        |
+| AI17 | Noise gate: signal passes above threshold                           | PASS   |        |
+| AI18 | Gate threshold slider adjusts noise floor                           | PASS   |        |
 | AI19 | Level meter bar tracks input amplitude                              | PASS   |        |
-| AI20 | Peak hold indicator appears and decays                              |        |        |
-| AI21 | dB readout updates in real-time                                     |        |        |
+| AI20 | Peak hold indicator appears and decays                              | PASS   |        |
+| AI21 | dB readout updates in real-time                                     | PASS   |        |
 | AI22 | Power toggle starts/stops capture                                   | PASS   |        |
 | AI23 | Output mode selector: CONTROL / AUDIO / BOTH                        | PASS   |        |
-| AI24 | Signal output broadcasts to room (link to scope to verify)          |        |        |
-| AI25 | External gate input (positive = open, negative = mute)              |        |        |
+| AI24 | Signal output broadcasts to room (link to scope to verify)          | PASS   |        |
+| AI25 | External gate input (positive = open, negative = mute)              | PASS   |        |
 
 ### 2. NOISE — `noise.html`
 
-| #   | Test                                           | Status | Issues                                                                                                                                |
-| --- | ---------------------------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------- |
-| N1  | Power toggle starts/stops noise                | PASS   |                                                                                                                                       |
-| N2  | White noise type produces broadband hiss       | PASS   |                                                                                                                                       |
-| N3  | Pink noise type produces lower-frequency noise | PASS   |                                                                                                                                       |
-| N4  | Brown noise type produces low rumble           | PASS   |                                                                                                                                       |
-| N5  | Type selector switches noise color             | PASS   |                                                                                                                                       |
-| N6  | Gain slider controls output level              | PASS   |                                                                                                                                       |
-| N7  | Output mode: AUDIO / CONTROL / BOTH            | PASS   |                                                                                                                                       |
-| N8  | Room input for gain modulates level            | FIXED  | Was: LFO custom shapes failed silently. Fix: destroy local modulator for non-standard waveforms, let bipolar signal handle modulation |
-| N9  | Room input for type changes noise color        | PASS   |                                                                                                                                       |
-| N10 | Scope shows noise waveform                     | PASS   |                                                                                                                                       |
+| #   | Test                                           | Status | Issues |
+| --- | ---------------------------------------------- | ------ | ------ |
+| N1  | Power toggle starts/stops noise                | PASS   |        |
+| N2  | White noise type produces broadband hiss       | PASS   |        |
+| N3  | Pink noise type produces lower-frequency noise | PASS   |        |
+| N4  | Brown noise type produces low rumble           | PASS   |        |
+| N5  | Type selector switches noise color             | PASS   |        |
+| N6  | Gain slider controls output level              | PASS   |        |
+| N7  | Output mode: AUDIO / CONTROL / BOTH            | PASS   |        |
+| N8  | Room input for gain modulates level            | PASS   |        |
+| N9  | Room input for type changes noise color        | PASS   |        |
+| N10 | Scope shows noise waveform                     | PASS   |        |
 
 ### 3. OSCILLATOR — `oscillator.html`
 
-| #   | Test                                                            | Status | Issues                                                                    |
-| --- | --------------------------------------------------------------- | ------ | ------------------------------------------------------------------------- |
-| O1  | Power toggle starts/stops oscillator                            | PASS   |                                                                           |
-| O2  | Frequency slider changes pitch audibly                          | PASS   |                                                                           |
-| O3  | Detune slider shifts pitch in cents                             | PASS   |                                                                           |
-| O4  | Gain slider controls volume                                     | PASS   |                                                                           |
-| O5  | Waveform selector: sine / triangle / sawtooth / square          | PASS   |                                                                           |
-| O6  | Each waveform sounds distinct                                   | PASS   |                                                                           |
-| O7  | Output mode: AUDIO / CONTROL / BOTH                             | PASS   |                                                                           |
-| O8  | Room input for frequency: modulates pitch                       | PASS   |                                                                           |
-| O9  | Room input for frequency: FM synthesis works (link another osc) | PASS   | FIXED: frequency/detune/gain now snap back to slider values on unlink     |
-| O10 | Room input for detune modulates tuning                          | PASS   |                                                                           |
-| O11 | Room input for gain modulates amplitude                         | PASS   |                                                                           |
-| O12 | Room input for waveform changes shape                           | PASS   | FIXED: invalid room inputs now show red border + "INVALID" warning for 2s |
-| O13 | Cascading FM: osc A -> osc B -> osc C produces complex timbres  | PASS   |                                                                           |
-| O14 | Scope shows waveform shape                                      | PASS   |                                                                           |
-| O15 | Signal output broadcasts at ~100Hz                              | PASS   |                                                                           |
+| #   | Test                                                            | Status | Issues                                                                |
+| --- | --------------------------------------------------------------- | ------ | --------------------------------------------------------------------- |
+| O1  | Power toggle starts/stops oscillator                            | PASS   |                                                                       |
+| O2  | Frequency slider changes pitch audibly                          | PASS   |                                                                       |
+| O3  | Detune slider shifts pitch in cents                             | PASS   |                                                                       |
+| O4  | Gain slider controls volume                                     | PASS   |                                                                       |
+| O5  | Waveform selector: sine / triangle / sawtooth / square          | PASS   |                                                                       |
+| O6  | Each waveform sounds distinct                                   | PASS   |                                                                       |
+| O7  | Output mode: AUDIO / CONTROL / BOTH                             | PASS   |                                                                       |
+| O8  | Room input for frequency: modulates pitch                       | PASS   |                                                                       |
+| O9  | Room input for frequency: FM synthesis works (link another osc) | PASS   | FIXED: frequency/detune/gain now snap back to slider values on unlink |
+| O10 | Room input for detune modulates tuning                          | PASS   |                                                                       |
+| O11 | Room input for gain modulates amplitude                         | PASS   |                                                                       |
+| O12 | Room input for waveform changes shape                           | PASS   |                                                                       |
+| O13 | Cascading FM: osc A -> osc B -> osc C produces complex timbres  | PASS   |                                                                       |
+| O14 | Scope shows waveform shape                                      | PASS   |                                                                       |
+| O15 | Signal output broadcasts at ~100Hz                              | PASS   |                                                                       |
 
 ---
 
@@ -223,7 +223,7 @@
 
 | #   | Test                                                  | Status | Issues |
 | --- | ----------------------------------------------------- | ------ | ------ |
-| BC1 | Audio input: link to oscillator, audio passes through |        |        |
+| BC1 | Audio input: link to oscillator, audio passes through | PASS   |        |
 | BC2 | Bits slider: 16 = clean, 1 = heavily degraded         |        |        |
 | BC3 | Wet slider blends dry/wet                             |        |        |
 | BC4 | Gain slider controls output level                     |        |        |
@@ -235,7 +235,7 @@
 
 | #   | Test                                                  | Status | Issues |
 | --- | ----------------------------------------------------- | ------ | ------ |
-| CH1 | Audio input: link to oscillator, audio passes through |        |        |
+| CH1 | Audio input: link to oscillator, audio passes through | PASS   |        |
 | CH2 | Frequency slider changes chorus rate                  |        |        |
 | CH3 | Depth slider changes chorus intensity                 |        |        |
 | CH4 | Room input for frequency: modulatable                 |        |        |
@@ -247,7 +247,7 @@
 
 | #    | Test                                                        | Status | Issues |
 | ---- | ----------------------------------------------------------- | ------ | ------ |
-| CM1  | Audio input: link to oscillator, audio passes through       |        |        |
+| CM1  | Audio input: link to oscillator, audio passes through       | PASS   |        |
 | CM2  | Threshold slider: lower threshold = more compression        |        |        |
 | CM3  | Ratio slider: higher ratio = more squash                    |        |        |
 | CM4  | Attack slider: fast attack catches transients               |        |        |
@@ -263,7 +263,7 @@
 
 | #   | Test                                                  | Status | Issues |
 | --- | ----------------------------------------------------- | ------ | ------ |
-| DL1 | Audio input: link to oscillator, audio passes through |        |        |
+| DL1 | Audio input: link to oscillator, audio passes through | PASS   |        |
 | DL2 | Time slider changes delay time (audible echo spacing) |        |        |
 | DL3 | Feedback slider: higher = more repeats                |        |        |
 | DL4 | Room input for time: modulatable                      |        |        |
@@ -275,7 +275,7 @@
 
 | #   | Test                                                  | Status | Issues |
 | --- | ----------------------------------------------------- | ------ | ------ |
-| DT1 | Audio input: link to oscillator, audio passes through |        |        |
+| DT1 | Audio input: link to oscillator, audio passes through | PASS   |        |
 | DT2 | Amount slider increases distortion intensity          |        |        |
 | DT3 | Wet slider blends dry/wet                             |        |        |
 | DT4 | Room input for amount: modulatable                    |        |        |
@@ -286,7 +286,7 @@
 
 | #   | Test                                                   | Status | Issues |
 | --- | ------------------------------------------------------ | ------ | ------ |
-| EQ1 | Audio input: link to oscillator, audio passes through  |        |        |
+| EQ1 | Audio input: link to oscillator, audio passes through  | PASS   |        |
 | EQ2 | Low gain slider boosts/cuts low frequencies            |        |        |
 | EQ3 | Mid gain slider boosts/cuts mid frequencies            |        |        |
 | EQ4 | High gain slider boosts/cuts high frequencies          |        |        |
@@ -300,7 +300,7 @@
 
 | #   | Test                                                         | Status | Issues |
 | --- | ------------------------------------------------------------ | ------ | ------ |
-| F1  | Audio input: link to oscillator, audio passes through        |        |        |
+| F1  | Audio input: link to oscillator, audio passes through        | PASS   |        |
 | F2  | Cutoff slider sweeps filter (audible tonal change)           |        |        |
 | F3  | Q/resonance slider adds emphasis at cutoff                   |        |        |
 | F4  | Filter type: lowpass / highpass / bandpass / notch           |        |        |
@@ -316,8 +316,8 @@
 
 | #   | Test                                                  | Status | Issues |
 | --- | ----------------------------------------------------- | ------ | ------ |
-| P1  | Audio input: link to oscillator, audio passes through |        |        |
-| P2  | MANUAL mode: pan slider moves audio left/right        |        |        |
+| P1  | Audio input: link to oscillator, audio passes through | PASS   |        |
+| P2  | MANUAL mode: pan slider moves audio left/right        | PASS   |        |
 | P3  | AUTO mode: audio sweeps left/right automatically      |        |        |
 | P4  | AUTO mode: rate slider changes sweep speed            |        |        |
 | P5  | AUTO mode: depth slider changes sweep width           |        |        |
@@ -331,10 +331,10 @@
 
 | #   | Test                                                  | Status | Issues |
 | --- | ----------------------------------------------------- | ------ | ------ |
-| PH1 | Audio input: link to oscillator, audio passes through |        |        |
-| PH2 | Frequency slider changes phaser sweep rate            |        |        |
-| PH3 | Octaves slider changes phaser sweep range             |        |        |
-| PH4 | Wet slider blends dry/wet                             |        |        |
+| PH1 | Audio input: link to oscillator, audio passes through | PASS   |        |
+| PH2 | Frequency slider changes phaser sweep rate            | PASS   |        |
+| PH3 | Octaves slider changes phaser sweep range             | PASS   |        |
+| PH4 | Wet slider blends dry/wet                             | PASS   |        |
 | PH5 | Room input for frequency: modulatable                 |        |        |
 | PH6 | Output mode: AUDIO / CONTROL / BOTH                   |        |        |
 | PH7 | Scope shows output waveform                           |        |        |
@@ -343,8 +343,8 @@
 
 | #   | Test                                                  | Status | Issues |
 | --- | ----------------------------------------------------- | ------ | ------ |
-| PS1 | Audio input: link to oscillator, audio passes through |        |        |
-| PS2 | Pitch slider: shifts up/down (-24 to +24 semitones)   |        |        |
+| PS1 | Audio input: link to oscillator, audio passes through | PASS   |        |
+| PS2 | Pitch slider: shifts up/down (-24 to +24 semitones)   | PASS   |        |
 | PS3 | 0 semitones = no change (clean passthrough)           |        |        |
 | PS4 | Wet slider blends dry/wet                             |        |        |
 | PS5 | Room input for pitch: modulatable                     |        |        |
@@ -353,42 +353,42 @@
 
 ### 19. REVERB — `reverb.html`
 
-| #   | Test                                                  | Status | Issues                       |
-| --- | ----------------------------------------------------- | ------ | ---------------------------- |
-| RV1 | Audio input: link to oscillator, audio passes through | PASS   |                              |
-| RV2 | Decay slider changes reverb tail length               | FAIL   |                              |
-| RV3 | Wet slider blends dry/wet                             | FAIL   | decay, wet, gain seem broken |
-| RV4 | Room input for decay: modulatable                     |        |                              |
-| RV5 | Room input for wet: modulatable                       |        |                              |
-| RV6 | Output mode: AUDIO / CONTROL / BOTH                   | PASS   |                              |
-| RV7 | Scope shows output waveform                           | PASS   |                              |
+| #   | Test                                                  | Status | Issues |
+| --- | ----------------------------------------------------- | ------ | ------ |
+| RV1 | Audio input: link to oscillator, audio passes through | PASS   |        |
+| RV2 | Decay slider changes reverb tail length               | PASS   |        |
+| RV3 | Wet slider blends dry/wet                             | PASS   |        |
+| RV4 | Room input for decay: modulatable                     |        |        |
+| RV5 | Room input for wet: modulatable                       |        |        |
+| RV6 | Output mode: AUDIO / CONTROL / BOTH                   | PASS   |        |
+| RV7 | Scope shows output waveform                           | PASS   |        |
 
 ### 20. RING MOD — `ringmod.html`
 
 | #   | Test                                                  | Status | Issues |
 | --- | ----------------------------------------------------- | ------ | ------ |
-| RM1 | Audio input: link to oscillator, audio passes through |        |        |
-| RM2 | Carrier frequency slider changes ring mod tone        |        |        |
-| RM3 | Depth slider blends dry/wet                           |        |        |
-| RM4 | Carrier waveform: sine / triangle / sawtooth / square |        |        |
+| RM1 | Audio input: link to oscillator, audio passes through | PASS   |        |
+| RM2 | Carrier frequency slider changes ring mod tone        | PASS   |        |
+| RM3 | Depth slider blends dry/wet                           | PASS   |        |
+| RM4 | Carrier waveform: sine / triangle / sawtooth / square | PASS   |        |
 | RM5 | Room input for frequency: modulatable                 |        |        |
 | RM6 | Output mode: AUDIO / CONTROL / BOTH                   |        |        |
 | RM7 | Scope shows output waveform                           |        |        |
 
 ### 21. WAVEFOLDER — `wavefolder.html`
 
-| #    | Test                                                     | Status | Issues |
-| ---- | -------------------------------------------------------- | ------ | ------ |
-| WF1  | Audio input: link to oscillator, audio passes through    |        |        |
-| WF2  | Drive slider: increases pre-amplification into folder    |        |        |
-| WF3  | Folds slider: more folds = more harmonic complexity      |        |        |
-| WF4  | Symmetry slider: shifts folding threshold asymmetrically |        |        |
-| WF5  | Gain slider controls output level                        |        |        |
-| WF6  | Transfer curve canvas shows input/output mapping         |        |        |
-| WF7  | Transfer curve updates when drive/folds/symmetry change  |        |        |
-| WF8  | Room inputs for drive/folds/symmetry: modulatable        |        |        |
-| WF9  | Output mode: AUDIO / CONTROL / BOTH                      |        |        |
-| WF10 | Scope shows output waveform                              |        |        |
+| #    | Test                                                     | Status | Issues                |
+| ---- | -------------------------------------------------------- | ------ | --------------------- |
+| WF1  | Audio input: link to oscillator, audio passes through    | PASS   |                       |
+| WF2  | Drive slider: increases pre-amplification into folder    | PASS   |                       |
+| WF3  | Folds slider: more folds = more harmonic complexity      | FAIL   | slider not responding |
+| WF4  | Symmetry slider: shifts folding threshold asymmetrically | PASS   |                       |
+| WF5  | Gain slider controls output level                        | PASS   |                       |
+| WF6  | Transfer curve canvas shows input/output mapping         | PASS   |                       |
+| WF7  | Transfer curve updates when drive/folds/symmetry change  | PASS   |                       |
+| WF8  | Room inputs for drive/folds/symmetry: modulatable        |        |                       |
+| WF9  | Output mode: AUDIO / CONTROL / BOTH                      | PASS   |                       |
+| WF10 | Scope shows output waveform                              | PASS   |                       |
 
 ---
 
@@ -773,7 +773,7 @@ Method: connect object output room → target input, verify modulation effect.
 | #   | Source → Target                                          | Status | Issues |
 | --- | -------------------------------------------------------- | ------ | ------ |
 | OM1 | Audio Input → Filter cutoff (envelope follower behavior) |        |        |
-| OM2 | Audio Input → Scope (waveform visible)                   |        |        |
+| OM2 | Audio Input → Scope (waveform visible)                   | PASS   |        |
 | OM3 | Noise → Filter cutoff (random modulation)                |        |        |
 | OM4 | Noise → Oscillator frequency (noise FM)                  |        |        |
 | OM5 | Oscillator → Oscillator frequency (FM synthesis)         |        |        |

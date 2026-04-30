@@ -102,6 +102,10 @@
         color: var(--dim);
         letter-spacing: 0.08em;
       }
+      /* Disable the sweeping scan-line overlay — conflicts with scope display */
+      .screen-scan {
+        display: none;
+      }
     </style>
   </head>
   <body>
@@ -445,10 +449,11 @@
 
         // Draw waveform
         const accent = getComputedStyle(document.documentElement).getPropertyValue("--accent");
+
+        // Glow pass — wider, semi-transparent, no shadow
         scopeCtx.strokeStyle = accent;
-        scopeCtx.lineWidth = 2;
-        scopeCtx.shadowColor = accent;
-        scopeCtx.shadowBlur = 8;
+        scopeCtx.globalAlpha = 0.25;
+        scopeCtx.lineWidth = 6;
         scopeCtx.beginPath();
 
         const count = endIdx - startIdx;
@@ -459,7 +464,11 @@
           if (i === 0) scopeCtx.moveTo(x, y); else scopeCtx.lineTo(x, y);
         }
         scopeCtx.stroke();
-        scopeCtx.shadowBlur = 0;
+
+        // Crisp pass — thin, full opacity
+        scopeCtx.globalAlpha = 1.0;
+        scopeCtx.lineWidth = 2;
+        scopeCtx.stroke();
         drawFreq();
       }
 
