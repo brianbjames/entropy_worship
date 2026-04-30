@@ -740,7 +740,7 @@ Test signal chains across multiple objects.
 
 | #     | Test                                                                | Status | Issues                                              |
 | ----- | ------------------------------------------------------------------- | ------ | --------------------------------------------------- |
-| INT1  | Oscillator → Filter → Reverb → Scope (basic chain)                  | PASS   |                                                     |
+| INT1  | Oscillator → Filter → Reverb → Scope (basic chain)                  | PASS   | with issues noted in reverb tests                   |
 | INT2  | LFO → Oscillator frequency (vibrato)                                | PASS   |                                                     |
 | INT3  | LFO → Filter cutoff (filter sweep)                                  |        |                                                     |
 | INT4  | Clock → Sequencer → Oscillator frequency (sequenced melody)         |        |                                                     |
@@ -891,3 +891,16 @@ Method: connect object output room → target input, verify modulation effect.
 | OM82 | DB Meter → Filter cutoff (envelope follower)     |        |        |
 
 ---
+
+### Enhancement/Feature/Change Requests
+
+1. // what is it? // intro could be on top; easier to intro that way; maybe collapsible so it doesn't take entire screen
+2. when clicking on a unit it would be nice if it spawned a new tab instead of going to a new page on...
+3. room name - can it just be the string instead of URL?
+4. transfer function might update to reflect wavefolding process
+5. what is the current goal of the [distributed objects] graph / display?
+6. does the scope work?
+7. is there such a thing as "cleanup" where inactive (abandoned) nodes get cut within a certain amount of time?
+8. how does a user notify the rest of the network that nodes have been configured and are "ready"?
+9. disambiguate rooms vs entire network
+10. explain this more — "you can spin up your own instance on a local machine or private network for zero-latency patching with full control over who connects."
