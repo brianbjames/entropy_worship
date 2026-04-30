@@ -107,14 +107,11 @@
           >
           NETWORK MAP
         </h1>
+        <span class="status-dot offline" id="status-dot"></span>
         <div id="meta">
-          <span class="status-item">
-            <span class="status-dot offline" id="status-dot"></span>
-            <span id="ew-status-text">OFFLINE</span>
-          </span>
+          <span id="ew-status-text">OFFLINE</span>
           <span class="type-mono" id="ew-output-room" style="font-size:0.82rem"></span>
           <button class="btn btn-sm btn-mint" id="ew-copy-room" style="padding:2px 8px; font-size:0.62rem">COPY URL</button>
-          <button class="btn btn-sm" id="privacy-btn" style="padding:2px 8px; font-size:0.62rem">PUBLIC</button>
         </div>
       </header>
 
@@ -137,6 +134,15 @@
             <div class="stat-label">SUBGRAPHS</div>
             <div class="stat-val" id="stat-subgraphs">0</div>
           </div>
+        </div>
+      </div>
+
+      <div class="hud-panel clip-tr" id="room-panel">
+        <div style="display:flex; gap:8px; align-items:center; margin-bottom:10px">
+          <span class="control-label" style="margin:0; flex-shrink:0">ROOM</span>
+          <input type="text" id="room-input" placeholder="ROOM-ID" maxlength="32" spellcheck="false" autocomplete="off" style="flex:1">
+          <button class="btn btn-sm" id="room-join-btn">JOIN</button>
+          <button class="btn btn-sm" id="privacy-btn">PUBLIC</button>
         </div>
       </div>
 
@@ -997,6 +1003,21 @@
         history.replaceState(null, "", url.toString());
       }
 
+      // Populate room input
+      document.getElementById("room-input").value = dashboardRoom;
+
+      // Join button — navigates to new room
+      document.getElementById("room-join-btn").addEventListener("click", () => {
+        const name = document.getElementById("room-input").value
+          .trim()
+          .replace(/[^a-zA-Z0-9_-]/g, "")
+          .slice(0, 32) || "dashboard";
+        location.search = `?room=${encodeURIComponent(name)}`;
+      });
+      document.getElementById("room-input").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") document.getElementById("room-join-btn").click();
+      });
+
       // Privacy toggle
       function updatePrivacyBtn() {
         const btn = document.getElementById("privacy-btn");
@@ -1004,6 +1025,12 @@
         btn.classList.toggle("active", roomPrivate);
         // Show/hide private rooms panel
         document.getElementById("private-rooms-panel").style.display = roomPrivate ? "" : "none";
+        // Clear private rooms when switching to public
+        if (!roomPrivate && privateRooms.size > 0) {
+          for (const [name] of [...privateRooms]) {
+            removePrivateRoom(name);
+          }
+        }
       }
 
       document.getElementById("privacy-btn").addEventListener("click", () => {
@@ -1048,27 +1075,28 @@
             privConn.send({ type: "requestState" });
           },
           onSignal: () => {},
-          onState: (msg) => {
-            // We got state from this room — update the private room data
-            privateRoomData.set(roomName, {
-              name: roomName,
-              clients: msg.peers ? msg.peers.length : 1,
-              objects: msg.objects || [],
-            });
-            // Re-reconcile with merged topology
+          onObjectList: (msg) => {
+            // Server sends objectList with all objects in the room
+            const objects = (msg.objects || []).map((o) => ({
+              objectType: o.objectType || null,
+              name: o.name || null,
+              subscribedRooms: o.subscribedRooms || [],
+            }));
+            const existing = privateRoomData.get(roomName) || { name: roomName, clients: 0, objects: [] };
+            existing.objects = objects;
+            privateRoomData.set(roomName, existing);
             if (currentTopology) reconcile(currentTopology);
           },
-          onMessage: (msg) => {
-            if (msg.type === "objectInfo") {
-              const existing = privateRoomData.get(roomName) || { name: roomName, clients: 1, objects: [] };
-              existing.objects = [msg.info];
-              privateRoomData.set(roomName, existing);
-              if (currentTopology) reconcile(currentTopology);
-            }
-          },
           onPeers: (msg) => {
+            const count = msg.count || (msg.peers ? msg.peers.length : 0);
             const existing = privateRoomData.get(roomName) || { name: roomName, clients: 0, objects: [] };
-            existing.clients = msg.count || (msg.peers ? msg.peers.length : 0);
+            existing.clients = count;
+            privateRoomData.set(roomName, existing);
+            if (currentTopology) reconcile(currentTopology);
+          },
+          onState: (msg) => {
+            const existing = privateRoomData.get(roomName) || { name: roomName, clients: 0, objects: [] };
+            existing.clients = msg.peers ? msg.peers.length : existing.clients;
             privateRoomData.set(roomName, existing);
           },
         });
@@ -1149,6 +1177,7 @@
             roomPrivate = msg.private;
             updatePrivacyBtn();
           }
+          document.getElementById("room-input").value = msg.room || dashboardRoom;
         },
       });
 
